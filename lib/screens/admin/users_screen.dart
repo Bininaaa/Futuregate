@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/opportunity_model.dart';
 import '../../providers/admin_provider.dart';
@@ -9,6 +8,7 @@ import '../../models/user_model.dart';
 import '../../services/company_service.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_type.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -1757,79 +1757,130 @@ class _UsersScreenState extends State<UsersScreen> {
         ? _l10n.uiNotProvided
         : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
 
+    final typeLabel = user.commercialRegisterIsPdf
+        ? 'PDF'
+        : user.commercialRegisterIsImage
+        ? 'Image'
+        : 'Document';
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AdminPalette.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AdminPalette.accent.withValues(alpha: 0.14)),
+        color: AdminPalette.accent.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AdminPalette.accent.withValues(alpha: 0.16)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.uiCommercialRegister,
-            style: AppTypography.product(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: AdminPalette.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          if (user.hasCommercialRegister) ...[
-            Text(
-              user.commercialRegisterFileName.isNotEmpty
-                  ? user.commercialRegisterFileName
-                  : l10n.uiCommercialRegisterUploaded,
-              style: AppTypography.product(
-                fontSize: 12,
-                color: AdminPalette.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              l10n.uiUploadedUploadedatlabel(uploadedAtLabel),
-              style: AppTypography.product(
-                fontSize: 12,
-                color: AdminPalette.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _openCommercialRegister(user.uid),
-                    icon: const Icon(Icons.visibility_outlined, size: 18),
-                    label: Text('${l10n.uiView} ${l10n.uiCommercialRegister}'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AdminPalette.accent,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AdminPalette.accent.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () =>
-                        _openCommercialRegister(user.uid, download: true),
-                    icon: const Icon(Icons.download_outlined, size: 18),
-                    label: Text(
-                      '${l10n.uiDownload} ${l10n.uiCommercialRegister}',
+                child: Icon(
+                  user.commercialRegisterIsPdf
+                      ? Icons.picture_as_pdf_outlined
+                      : Icons.description_outlined,
+                  color: AdminPalette.accent,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.uiCommercialRegister,
+                      style: AppTypography.product(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w800,
+                        color: AdminPalette.textPrimary,
+                      ),
                     ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AdminPalette.accent,
-                      side: BorderSide(
-                        color: AdminPalette.accent.withValues(alpha: 0.24),
+                    const SizedBox(height: 3),
+                    Text(
+                      user.hasCommercialRegister
+                          ? '$typeLabel - ${l10n.uiUploadedUploadedatlabel(uploadedAtLabel)}'
+                          : l10n.uiCommercialRegisterMissing,
+                      style: AppTypography.product(
+                        fontSize: 12,
+                        color: user.hasCommercialRegister
+                            ? AdminPalette.textSecondary
+                            : AdminPalette.danger,
+                        fontWeight: user.hasCommercialRegister
+                            ? FontWeight.w500
+                            : FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (user.hasCommercialRegister) ...[
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AdminPalette.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AdminPalette.border.withValues(alpha: 0.7),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.verified_outlined,
+                    color: AdminPalette.success,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      user.commercialRegisterFileName.isNotEmpty
+                          ? user.commercialRegisterFileName
+                          : l10n.uiCommercialRegisterUploaded,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.product(
+                        fontSize: 12.5,
+                        color: AdminPalette.textPrimary,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ] else
+            const SizedBox(height: 12),
+            _buildAdaptiveActionGroup([
+              _buildDocumentButton(
+                label: '${l10n.uiView} ${l10n.uiCommercialRegister}',
+                icon: Icons.visibility_outlined,
+                onPressed: () => _openCommercialRegister(user.uid),
+                color: AdminPalette.accent,
+              ),
+              _buildDocumentButton(
+                label: '${l10n.uiDownload} ${l10n.uiCommercialRegister}',
+                icon: Icons.download_outlined,
+                onPressed: () =>
+                    _openCommercialRegister(user.uid, download: true),
+                color: AdminPalette.accent,
+                outlined: true,
+              ),
+            ]),
+          ] else ...[
+            const SizedBox(height: 10),
             Text(
               l10n.uiCommercialRegisterMissing,
               style: AppTypography.product(
@@ -1838,6 +1889,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
+          ],
         ],
       ),
     );
@@ -1851,25 +1903,17 @@ class _UsersScreenState extends State<UsersScreen> {
     try {
       final document = await _documentAccessService
           .getCompanyCommercialRegister(companyId: companyId);
-      final uri = Uri.tryParse(
-        download ? document.downloadUrl : document.viewUrl,
+      if (!mounted) return;
+      await DocumentLaunchHelper.openSecureDocument(
+        context,
+        document: document,
+        download: download,
+        requirePdf: false,
+        notPdfMessage: l10n.uiThisDocumentIsNotAValidPdfFile,
+        notPdfTitle: l10n.uiPreviewUnavailable,
+        unavailableMessage: l10n.uiCouldNotOpenTheDocumentRightNow,
+        unavailableTitle: l10n.uiDocumentUnavailable,
       );
-      if (uri == null) {
-        throw Exception('File unavailable.');
-      }
-
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_blank',
-      );
-      if (!launched && mounted) {
-        context.showAppSnackBar(
-          l10n.uiCouldNotOpenTheDocumentRightNow,
-          title: l10n.uiDocumentUnavailable,
-          type: AppFeedbackType.error,
-        );
-      }
     } catch (e) {
       if (!mounted) return;
       context.showAppSnackBar(

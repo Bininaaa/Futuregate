@@ -181,6 +181,7 @@ class _AdminOpportunityEditorScreenState
       onSubmit: _submit,
       child: Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           children: [
             AdminEditorSection(
@@ -281,7 +282,10 @@ class _AdminOpportunityEditorScreenState
                 label: 'Description',
                 hint: 'Describe the role, scope, and value clearly',
                 maxLines: 6,
-                validator: adminRequiredMin('Description', min: 20),
+                minLength: 60,
+                helperText:
+                    'Add enough detail for students to understand scope, expectations, and value.',
+                validator: adminRequiredMin('Description', min: 60),
               ),
             ),
             const SizedBox(height: 12),
@@ -552,18 +556,21 @@ class _AdminOpportunityEditorScreenState
         widget.initialOpportunity ?? const <String, dynamic>{};
     String existingString(String key) =>
         (existingOpportunity[key] ?? '').toString().trim();
-    final publisherUserId = _isEditing && existingString('companyId').isNotEmpty
-        ? existingString('companyId')
-        : auth.uid;
+    final existingCompanyId = existingString('companyId');
+    final isOwnedAdminPost =
+        !_isEditing ||
+        existingCompanyId.isEmpty ||
+        existingCompanyId == auth.uid;
+    final publisherUserId = isOwnedAdminPost ? auth.uid : existingCompanyId;
     final publisherLogo = _isEditing
         ? existingString('companyLogo')
         : currentAdminLogo;
-    final creatorId = _isEditing && existingString('createdBy').isNotEmpty
-        ? existingString('createdBy')
-        : publisherUserId;
-    final creatorRole = _isEditing && existingString('createdByRole').isNotEmpty
-        ? existingString('createdByRole')
-        : 'admin';
+    final creatorId = isOwnedAdminPost ? auth.uid : existingString('createdBy');
+    final creatorRole = isOwnedAdminPost
+        ? 'admin'
+        : (existingString('createdByRole').isNotEmpty
+              ? existingString('createdByRole')
+              : 'admin');
     final requirementText = _requirementItems.join('\n');
     final payload = <String, dynamic>{
       'companyId': publisherUserId,

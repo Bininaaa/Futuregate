@@ -1707,7 +1707,6 @@ class _InternshipFeaturedCard extends StatelessWidget {
                                   logoUrl: item.logoUrl,
                                   fallbackLabel: item.fallbackLabel,
                                   size: logoSize,
-                                  borderRadius: isTight ? 15 : 17,
                                   backgroundColor: style.logoSurface,
                                   foregroundColor: style.logoForeground,
                                 ),
@@ -2332,7 +2331,6 @@ class _AvailableInternshipCard extends StatelessWidget {
                                   logoUrl: item.logoUrl,
                                   fallbackLabel: item.fallbackLabel,
                                   size: iconTileSize,
-                                  borderRadius: isTight ? 12 : 14,
                                   backgroundColor: Colors.transparent,
                                   foregroundColor: palette.accentColor,
                                 ),
@@ -2704,7 +2702,6 @@ class _AvailableInternshipListTile extends StatelessWidget {
                           logoUrl: item.logoUrl,
                           fallbackLabel: item.fallbackLabel,
                           size: compact ? 34 : 38,
-                          borderRadius: 14,
                           backgroundColor: Colors.transparent,
                           foregroundColor: palette.accentColor,
                         ),
@@ -3142,7 +3139,6 @@ class _CompanyLogoTile extends StatelessWidget {
   final Color backgroundColor;
   final Color foregroundColor;
   final double size;
-  final double borderRadius;
 
   const _CompanyLogoTile({
     required this.logoUrl,
@@ -3150,7 +3146,6 @@ class _CompanyLogoTile extends StatelessWidget {
     required this.backgroundColor,
     required this.foregroundColor,
     this.size = 48,
-    this.borderRadius = 16,
   });
 
   @override
@@ -3182,7 +3177,7 @@ class _CompanyLogoTile extends StatelessWidget {
       padding: hasLogo ? EdgeInsets.all(size * 0.12) : EdgeInsets.zero,
       decoration: BoxDecoration(
         color: hasLogo ? backgroundColor : foregroundColor,
-        borderRadius: BorderRadius.circular(borderRadius),
+        shape: BoxShape.circle,
       ),
       clipBehavior: Clip.antiAlias,
       child: !hasLogo

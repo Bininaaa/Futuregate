@@ -121,6 +121,7 @@ class _AdminProjectIdeaEditorScreenState
       onSubmit: _submit,
       child: Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           children: [
             AdminEditorSection(
@@ -202,7 +203,10 @@ class _AdminProjectIdeaEditorScreenState
                     label: 'Full description',
                     hint: 'Describe the idea clearly and with enough depth',
                     maxLines: 6,
-                    validator: adminRequiredMin('Description', min: 20),
+                    minLength: 60,
+                    helperText:
+                        'Describe the problem, solution, audience, and expected impact.',
+                    validator: adminRequiredMin('Description', min: 60),
                   ),
                 ],
               ),

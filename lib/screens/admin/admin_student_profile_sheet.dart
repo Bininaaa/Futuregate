@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
@@ -12,10 +11,12 @@ import '../../services/cv_service.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
+import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
+import '../../widgets/shared/reviewer_cv_widgets.dart';
 
 Future<void> showAdminStudentProfileSheet(
   BuildContext context, {
@@ -223,94 +224,62 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
             title: l10n.uiStudentCv,
           ),
           const SizedBox(height: 14),
-          _SectionCopy(
+          ReviewerCvDocumentCard(
             title: l10n.uiPrimaryCv,
-            value: cv == null
+            subtitle: cv == null
                 ? l10n.uiNoCvHasBeenCreatedForThisStudent
                 : cv.hasUploadedCv
                 ? l10n.uiPrimaryCvValue(cv.uploadedCvDisplayName)
                 : l10n.uiPrimaryCvNotUploaded,
+            accentColor: AdminPalette.accent,
+            viewLabel: l10n.uiViewCv,
+            downloadLabel: l10n.uiDownloadCv,
+            warningText: cv != null && cv.hasUploadedCv && !cv.isUploadedCvPdf
+                ? l10n.uiTheUploadedFileIsNotAValidPdf
+                : null,
+            onView: cv != null && cv.hasUploadedCv && cv.isUploadedCvPdf
+                ? () => _openUserCvDocument(
+                    widget.user.uid,
+                    variant: 'primary',
+                    requirePdf: true,
+                  )
+                : null,
+            onDownload: cv != null && cv.hasUploadedCv
+                ? () => _openUserCvDocument(
+                    widget.user.uid,
+                    variant: 'primary',
+                    download: true,
+                  )
+                : null,
           ),
-          const SizedBox(height: 6),
-          _SectionCopy(
+          const SizedBox(height: 10),
+          ReviewerCvDocumentCard(
             title: l10n.uiBuiltCv,
-            value: cv == null
+            subtitle: cv == null
                 ? l10n.uiBuiltCvUnavailable
                 : cv.hasExportedPdf
                 ? l10n.uiBuiltCvPdfAvailable
                 : cv.hasBuilderContent
                 ? l10n.uiBuiltCvInformationAvailable
                 : l10n.uiBuiltCvUnavailable,
-          ),
-          if (cv != null && cv.hasUploadedCv) ...[
-            const SizedBox(height: 12),
-            _AdaptiveActionGroup(
-              buttons: [
-                _DocumentButton(
-                  label: l10n.uiViewCv,
-                  icon: Icons.visibility_outlined,
-                  onPressed: cv.isUploadedCvPdf
-                      ? () => _openUserCvDocument(
-                          widget.user.uid,
-                          variant: 'primary',
-                          requirePdf: true,
-                        )
-                      : null,
-                  color: AdminPalette.accent,
-                ),
-                _DocumentButton(
-                  label: l10n.uiDownloadCv,
-                  icon: Icons.download_outlined,
-                  onPressed: () => _openUserCvDocument(
-                    widget.user.uid,
-                    variant: 'primary',
-                    download: true,
-                  ),
-                  color: AdminPalette.accent,
-                  outlined: true,
-                ),
-              ],
-            ),
-            if (!cv.isUploadedCvPdf) ...[
-              const SizedBox(height: 10),
-              Text(
-                l10n.uiTheUploadedFileIsNotAValidPdf,
-                style: AppTypography.product(
-                  fontSize: 12,
-                  color: AdminPalette.warning,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ],
-          if (cv != null && cv.hasExportedPdf) ...[
-            const SizedBox(height: 10),
-            _AdaptiveActionGroup(
-              buttons: [
-                _DocumentButton(
-                  label: l10n.uiViewBuiltCv,
-                  icon: Icons.picture_as_pdf_outlined,
-                  onPressed: () => _openUserCvDocument(
+            accentColor: AdminPalette.primaryDark,
+            viewLabel: l10n.uiViewBuiltCv,
+            downloadLabel: l10n.uiDownloadBuiltCv,
+            onView: cv != null && cv.hasExportedPdf
+                ? () => _openUserCvDocument(
                     widget.user.uid,
                     variant: 'built',
                     requirePdf: true,
-                  ),
-                  color: AdminPalette.primaryDark,
-                ),
-                _DocumentButton(
-                  label: l10n.uiDownloadBuiltCv,
-                  icon: Icons.download_outlined,
-                  onPressed: () => _openUserCvDocument(
+                  )
+                : null,
+            onDownload: cv != null && cv.hasExportedPdf
+                ? () => _openUserCvDocument(
                     widget.user.uid,
                     variant: 'built',
                     download: true,
-                  ),
-                  color: AdminPalette.primaryDark,
-                  outlined: true,
-                ),
-              ],
-            ),
-          ],
+                  )
+                : null,
+          ),
         ],
       ),
     );
@@ -398,29 +367,16 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
         return;
       }
 
-      final uri = Uri.tryParse(
-        download ? document.downloadUrl : document.viewUrl,
+      await DocumentLaunchHelper.openSecureDocument(
+        context,
+        document: document,
+        download: download,
+        requirePdf: requirePdf,
+        notPdfMessage: l10n.uiThisDocumentIsNotAValidPdfFile,
+        notPdfTitle: l10n.uiPreviewUnavailable,
+        unavailableMessage: l10n.uiCouldNotOpenTheDocumentRightNow,
+        unavailableTitle: l10n.uiDocumentUnavailable,
       );
-      if (uri == null) {
-        throw Exception('File unavailable.');
-      }
-
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_blank',
-      );
-      if (!mounted) {
-        return;
-      }
-
-      if (!launched) {
-        context.showAppSnackBar(
-          l10n.uiCouldNotOpenTheDocumentRightNow,
-          title: l10n.uiDocumentUnavailable,
-          type: AppFeedbackType.error,
-        );
-      }
     } catch (error) {
       if (!mounted) {
         return;
@@ -975,78 +931,21 @@ class _SectionCopy extends StatelessWidget {
   }
 }
 
-class _AdaptiveActionGroup extends StatelessWidget {
-  final List<Widget> buttons;
-
-  const _AdaptiveActionGroup({required this.buttons});
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (buttons.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        if (buttons.length == 1) {
-          return SizedBox(width: double.infinity, child: buttons.first);
-        }
-
-        if (constraints.maxWidth < 440) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var index = 0; index < buttons.length; index++) ...[
-                buttons[index],
-                if (index < buttons.length - 1) const SizedBox(height: 10),
-              ],
-            ],
-          );
-        }
-
-        return Row(
-          children: [
-            for (var index = 0; index < buttons.length; index++) ...[
-              Expanded(child: buttons[index]),
-              if (index < buttons.length - 1) const SizedBox(width: 10),
-            ],
-          ],
-        );
-      },
-    );
-  }
-}
-
 class _DocumentButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback? onPressed;
   final Color color;
-  final bool outlined;
 
   const _DocumentButton({
     required this.label,
     required this.icon,
     required this.onPressed,
     required this.color,
-    this.outlined = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (outlined) {
-      return OutlinedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 18),
-        label: Text(label),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: color,
-          side: BorderSide(color: color.withValues(alpha: 0.24)),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
-        ),
-      );
-    }
-
     return FilledButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, size: 18),

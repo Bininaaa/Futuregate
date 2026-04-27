@@ -21,6 +21,7 @@ import '../../theme/app_typography.dart';
 import '../../utils/admin_identity.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
+import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -28,6 +29,7 @@ import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
+import '../../widgets/shared/reviewer_cv_widgets.dart';
 import 'admin_student_profile_sheet.dart';
 import 'admin_library_screen.dart';
 import 'admin_opportunity_editor_screen.dart';
@@ -2356,7 +2358,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return false;
     }
 
-    return opportunity.isAdminPosted;
+    return opportunity.companyId.trim() == normalizedAdminId;
   }
 
   Widget _buildCardActionRow(List<Widget> actions) {
@@ -3969,35 +3971,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                   controller: scrollController,
                   padding: const EdgeInsets.all(20),
                   children: [
-                    Text(
-                      cv.fullName.isNotEmpty ? cv.fullName : l10n.uiApplicant,
-                      style: AppTypography.product(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: _primaryColor,
-                      ),
+                    ReviewerCvHeader(
+                      name: cv.fullName.isNotEmpty
+                          ? cv.fullName
+                          : l10n.uiApplicant,
+                      accentColor: _accentColor,
+                      details: [cv.email, cv.phone, cv.address],
                     ),
-                    const SizedBox(height: 6),
-                    if (cv.email.isNotEmpty)
-                      Text(
-                        cv.email,
-                        style: AppTypography.product(
-                          fontSize: 13,
-                          color: AdminPalette.textMuted,
-                        ),
-                      ),
-                    if (cv.phone.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        cv.phone,
-                        style: AppTypography.product(
-                          fontSize: 13,
-                          color: AdminPalette.textMuted,
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 18),
-                    _buildApplicationDocumentCard(
+                    ReviewerCvDocumentCard(
                       title: l10n.uiPrimaryCvPdf,
                       subtitle: cv.hasUploadedCv
                           ? l10n.uiFileUploadedAt(
@@ -4009,6 +3991,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             )
                           : l10n.uiNoUploadedCv,
                       accentColor: _accentColor,
+                      viewLabel: l10n.uiViewCv,
+                      downloadLabel: l10n.uiDownloadCv,
                       warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
                           ? l10n.uiUploadedFileInvalidPdfAskReplace
                           : null,
@@ -4028,7 +4012,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           : null,
                     ),
                     const SizedBox(height: 10),
-                    _buildApplicationDocumentCard(
+                    ReviewerCvDocumentCard(
                       title: l10n.uiBuiltCv,
                       subtitle: cv.hasExportedPdf
                           ? l10n.uiBuiltCvPdfReadyForReview
@@ -4036,6 +4020,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           ? l10n.uiBuiltCvDetailsAvailableNoPdfYet
                           : l10n.uiNoBuiltCvDetailsAvailable,
                       accentColor: _primaryColor,
+                      viewLabel: l10n.uiViewBuiltCv,
+                      downloadLabel: l10n.uiDownloadBuiltCv,
                       onView: cv.hasExportedPdf
                           ? () => _openApplicationDocument(
                               applicationId,
@@ -4124,26 +4110,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         return;
       }
 
-      final uri = Uri.tryParse(
-        download ? document.downloadUrl : document.viewUrl,
+      await DocumentLaunchHelper.openSecureDocument(
+        context,
+        document: document,
+        download: download,
+        requirePdf: requirePdf,
+        notPdfMessage: l10n.uiThisDocumentIsNotAValidPdfFile,
+        notPdfTitle: l10n.uiPreviewUnavailable,
+        unavailableMessage: l10n.uiCouldNotOpenTheDocumentRightNow,
+        unavailableTitle: l10n.uiDocumentUnavailable,
       );
-      if (uri == null) {
-        throw Exception('File unavailable.');
-      }
-
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_blank',
-      );
-      if (!mounted) return;
-      if (!launched) {
-        context.showAppSnackBar(
-          l10n.uiCouldNotOpenTheDocumentRightNow,
-          title: l10n.uiDocumentUnavailable,
-          type: AppFeedbackType.error,
-        );
-      }
     } catch (e) {
       if (!mounted) return;
       context.showAppSnackBar(
@@ -4152,90 +4128,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         type: AppFeedbackType.error,
       );
     }
-  }
-
-  Widget _buildApplicationDocumentCard({
-    required String title,
-    required String subtitle,
-    required Color accentColor,
-    VoidCallback? onView,
-    VoidCallback? onDownload,
-    String? warningText,
-  }) {
-    final hasActions = onView != null || onDownload != null;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: accentColor.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: accentColor.withValues(alpha: 0.18)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTypography.product(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: _primaryColor,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: AppTypography.product(
-              fontSize: 12,
-              height: 1.5,
-              color: AdminPalette.textSecondary,
-            ),
-          ),
-          if (warningText != null) ...[
-            const SizedBox(height: 10),
-            Text(
-              warningText,
-              style: AppTypography.product(
-                fontSize: 12,
-                height: 1.5,
-                color: AdminPalette.activity,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-          if (hasActions) ...[
-            const SizedBox(height: 12),
-            _buildResponsiveActionGroup([
-              if (onView != null)
-                FilledButton.icon(
-                  onPressed: onView,
-                  icon: const Icon(Icons.visibility_outlined, size: 18),
-                  label: Text(AppLocalizations.of(context)!.uiViewCv),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: accentColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              if (onDownload != null)
-                OutlinedButton.icon(
-                  onPressed: onDownload,
-                  icon: const Icon(Icons.download_outlined, size: 18),
-                  label: Text(AppLocalizations.of(context)!.uiDownloadCv),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: accentColor,
-                    side: BorderSide(
-                      color: accentColor.withValues(alpha: 0.22),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-            ]),
-          ],
-        ],
-      ),
-    );
   }
 
   String _formatDocumentDate(Timestamp? value, AppLocalizations l10n) {

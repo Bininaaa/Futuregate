@@ -82,7 +82,11 @@ void _handleNotificationTap(Map<String, dynamic> data) {
     NotificationService.pendingNotificationData = data;
     return;
   }
-  state.push(MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+  state.push(
+    MaterialPageRoute(
+      builder: (_) => NotificationsScreen(initialNotificationData: data),
+    ),
+  );
 }
 
 class FutureGateApp extends StatelessWidget {

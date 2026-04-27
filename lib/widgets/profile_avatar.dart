@@ -196,7 +196,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
         padding: EdgeInsets.all(widget.radius * 0.16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(diameter * 0.28),
+          shape: BoxShape.circle,
           border: Border.all(color: const Color(0xFFE2E8F0)),
           boxShadow: [
             BoxShadow(
@@ -255,7 +255,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(diameter * 0.28),
+          shape: BoxShape.circle,
           border: Border.all(color: Colors.white.withValues(alpha: 0.72)),
           boxShadow: [
             BoxShadow(

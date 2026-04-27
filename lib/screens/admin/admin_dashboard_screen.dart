@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/admin_activity_model.dart';
+import '../../models/opportunity_model.dart';
+import '../../models/user_model.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../theme/app_typography.dart';
@@ -22,6 +25,9 @@ import '../notifications_screen.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'users_screen.dart';
+import 'admin_home_navigation.dart';
+import 'admin_opportunity_editor_screen.dart';
+import 'admin_student_profile_sheet.dart';
 
 const int _dashboardPreviewLimit = 5;
 
@@ -118,6 +124,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   onTap: _openLibrary,
                 ),
               ],
+            ),
+            const SizedBox(height: 18),
+            _PendingAdminAlert(
+              pendingCompanies: _intStat(stats, 'pendingCompanies'),
+              pendingIdeas: _intStat(stats, 'pendingIdeas'),
+              pendingApplications: _intStat(stats, 'pendingApplications'),
+              onOpenCompanies: () => AdminHomeNavigation.switchToUsers(
+                context,
+                roleFilter: 'company',
+                companyApprovalFilter: 'pending',
+              ),
+              onOpenIdeas: () =>
+                  _openContent(AdminContentCenterScreen.projectIdeasTab),
+              onOpenApplications: () =>
+                  _openContent(AdminContentCenterScreen.opportunitiesTab),
             ),
             const SizedBox(height: 18),
             AdminSectionHeader(
@@ -345,12 +366,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             const SizedBox(height: 16),
             _RecentUsersCard(
               users: provider.recentUsers.take(_dashboardPreviewLimit).toList(),
+              onOpenUser: _openRecentUser,
             ),
             const SizedBox(height: 16),
             _RecentOpportunitiesCard(
               opportunities: provider.recentOpportunities
                   .take(_dashboardPreviewLimit)
                   .toList(),
+              onOpenOpportunity: _openRecentOpportunity,
             ),
           ],
         ),
@@ -373,6 +396,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
       ),
     );
+  }
+
+  int _intStat(Map<String, dynamic> stats, String key) {
+    final value = stats[key];
+    return value is int ? value : int.tryParse(value?.toString() ?? '') ?? 0;
   }
 
   void _openActivityCenter() {
@@ -413,6 +441,246 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             foregroundColor: AdminPalette.textPrimary,
           ),
           body: const SafeArea(child: UsersScreen()),
+        ),
+      ),
+    );
+  }
+
+  void _openRecentUser(UserModel user) {
+    if (user.role == 'student') {
+      showAdminStudentProfileSheet(context, user: user);
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _SheetHandle(),
+              const SizedBox(height: 16),
+              ProfileAvatar(user: user, radius: 38),
+              const SizedBox(height: 12),
+              Text(
+                user.fullName.isNotEmpty
+                    ? user.fullName
+                    : (user.companyName ?? ''),
+                textAlign: TextAlign.center,
+                style: AppTypography.product(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AdminPalette.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                user.email,
+                textAlign: TextAlign.center,
+                style: AppTypography.product(
+                  fontSize: 12.5,
+                  color: AdminPalette.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  AdminPill(
+                    label: DisplayText.capitalizeLeadingLabel(user.role),
+                    color: _roleColor(user.role),
+                    icon: user.role == 'company'
+                        ? Icons.business_outlined
+                        : Icons.shield_outlined,
+                  ),
+                  if (user.role == 'company')
+                    AdminPill(
+                      label: DisplayText.capitalizeLeadingLabel(
+                        user.approvalStatus,
+                      ),
+                      color: user.isCompanyPendingApproval
+                          ? AdminPalette.warning
+                          : user.isCompanyRejected
+                          ? AdminPalette.danger
+                          : AdminPalette.success,
+                      icon: Icons.verified_user_outlined,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    Navigator.pop(sheetContext);
+                    AdminHomeNavigation.switchToUsers(
+                      context,
+                      targetId: user.uid,
+                      roleFilter: user.role,
+                      companyApprovalFilter: user.role == 'company'
+                          ? user.approvalStatus
+                          : 'all',
+                    );
+                  },
+                  icon: const Icon(Icons.open_in_new_rounded),
+                  label: Text(l10n.uiOpen),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openRecentOpportunity(Map<String, dynamic> opportunity) {
+    final l10n = AppLocalizations.of(context)!;
+    final model = OpportunityModel.fromMap(opportunity);
+    final typeColor = OpportunityType.color(model.type);
+    final canEdit =
+        model.companyId.trim() ==
+        (context.read<AuthProvider>().userModel?.uid.trim() ?? '');
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: 0.58,
+        minChildSize: 0.36,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => ListView(
+          controller: scrollController,
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
+          children: [
+            const _SheetHandle(),
+            const SizedBox(height: 16),
+            AdminSurface(
+              radius: 24,
+              gradient: AdminPalette.heroGradient(typeColor),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(OpportunityType.icon(model.type), color: Colors.white),
+                  const SizedBox(height: 12),
+                  Text(
+                    model.title.trim().isEmpty
+                        ? l10n.uiUntitledOpportunity
+                        : model.title,
+                    style: AppTypography.product(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    model.companyName.trim().isEmpty
+                        ? l10n.uiUnknownCompany
+                        : model.companyName,
+                    style: AppTypography.product(
+                      fontSize: 12.5,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                AdminPill(
+                  label: OpportunityType.label(model.type, l10n),
+                  color: typeColor,
+                  icon: OpportunityType.icon(model.type),
+                ),
+                AdminPill(
+                  label: DisplayText.capitalizeLeadingLabel(
+                    model.effectiveStatus(),
+                  ),
+                  color: model.effectiveStatus() == 'closed'
+                      ? AdminPalette.warning
+                      : AdminPalette.success,
+                  icon: model.effectiveStatus() == 'closed'
+                      ? Icons.pause_circle_outline_rounded
+                      : Icons.check_circle_outline_rounded,
+                ),
+                if (model.deadlineLabel.trim().isNotEmpty)
+                  AdminPill(
+                    label: model.deadlineLabel,
+                    color: AdminPalette.info,
+                    icon: Icons.event_outlined,
+                  ),
+              ],
+            ),
+            if (model.description.trim().isNotEmpty) ...[
+              const SizedBox(height: 12),
+              AdminSurface(
+                radius: 18,
+                padding: const EdgeInsets.all(14),
+                child: Text(
+                  DisplayText.capitalizeLeadingLabel(model.description),
+                  style: AppTypography.product(
+                    fontSize: 13,
+                    height: 1.55,
+                    color: AdminPalette.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(sheetContext);
+                      _openContent(
+                        AdminContentCenterScreen.opportunitiesTab,
+                        targetId: model.id,
+                      );
+                    },
+                    icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                    label: Text(l10n.uiManageOpportunity),
+                  ),
+                ),
+                if (canEdit) ...[
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        Navigator.pop(sheetContext);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => AdminOpportunityEditorScreen(
+                              initialOpportunity: opportunity,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: Text(l10n.uiEdit),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -722,6 +990,197 @@ class _RankedListCard extends StatelessWidget {
             );
           }),
         ],
+      ),
+    );
+  }
+}
+
+class _PendingAdminAlert extends StatelessWidget {
+  final int pendingCompanies;
+  final int pendingIdeas;
+  final int pendingApplications;
+  final VoidCallback onOpenCompanies;
+  final VoidCallback onOpenIdeas;
+  final VoidCallback onOpenApplications;
+
+  const _PendingAdminAlert({
+    required this.pendingCompanies,
+    required this.pendingIdeas,
+    required this.pendingApplications,
+    required this.onOpenCompanies,
+    required this.onOpenIdeas,
+    required this.onOpenApplications,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final total = pendingCompanies + pendingIdeas + pendingApplications;
+    if (total <= 0) {
+      return const SizedBox.shrink();
+    }
+
+    final items = [
+      if (pendingCompanies > 0)
+        _PendingAlertItem(
+          label: 'Companies',
+          count: pendingCompanies,
+          icon: Icons.business_center_outlined,
+          color: AdminPalette.warning,
+          onTap: onOpenCompanies,
+        ),
+      if (pendingIdeas > 0)
+        _PendingAlertItem(
+          label: 'Ideas',
+          count: pendingIdeas,
+          icon: Icons.lightbulb_outline_rounded,
+          color: Colors.amber.shade700,
+          onTap: onOpenIdeas,
+        ),
+      if (pendingApplications > 0)
+        _PendingAlertItem(
+          label: 'Applications',
+          count: pendingApplications,
+          icon: Icons.assignment_late_outlined,
+          color: AdminPalette.activity,
+          onTap: onOpenApplications,
+        ),
+    ];
+
+    return AdminSurface(
+      radius: 22,
+      padding: const EdgeInsets.all(14),
+      border: Border.all(color: AdminPalette.warning.withValues(alpha: 0.2)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AdminPalette.warning.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.pending_actions_rounded,
+                  color: AdminPalette.warning,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$total pending item${total == 1 ? '' : 's'} need attention',
+                      style: AppTypography.product(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w800,
+                        color: AdminPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Jump straight into the queue that needs review.',
+                      style: AppTypography.product(
+                        fontSize: 12,
+                        color: AdminPalette.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 420) {
+                return Column(
+                  children: [
+                    for (var index = 0; index < items.length; index++) ...[
+                      items[index],
+                      if (index < items.length - 1) const SizedBox(height: 8),
+                    ],
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  for (var index = 0; index < items.length; index++) ...[
+                    Expanded(child: items[index]),
+                    if (index < items.length - 1) const SizedBox(width: 8),
+                  ],
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PendingAlertItem extends StatelessWidget {
+  final String label;
+  final int count;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _PendingAlertItem({
+    required this.label,
+    required this.count,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withValues(alpha: 0.14)),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: color, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.product(
+                    fontSize: 12.3,
+                    fontWeight: FontWeight.w700,
+                    color: AdminPalette.textPrimary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '$count',
+                style: AppTypography.product(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1144,9 +1603,10 @@ class _ActivityMetaChip extends StatelessWidget {
 }
 
 class _RecentUsersCard extends StatelessWidget {
-  final List<dynamic> users;
+  final List<UserModel> users;
+  final ValueChanged<UserModel> onOpenUser;
 
-  const _RecentUsersCard({required this.users});
+  const _RecentUsersCard({required this.users, required this.onOpenUser});
 
   @override
   Widget build(BuildContext context) {
@@ -1197,75 +1657,91 @@ class _RecentUsersCard extends StatelessWidget {
                       color: AdminPalette.border.withValues(alpha: 0.72),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final isCompact = constraints.maxWidth < 360;
+                Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => onOpenUser(user),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 8,
+                      ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isCompact = constraints.maxWidth < 360;
 
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: roleColor.withValues(alpha: 0.08),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: ProfileAvatar(user: user, radius: 20),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 2),
-                                        child: Text(
-                                          user.fullName,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: AppTypography.product(
-                                            fontSize: 14.2,
-                                            fontWeight: FontWeight.w700,
-                                            color: AdminPalette.textPrimary,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: isCompact ? 6 : 8),
-                                    _ActivityMetaChip(
-                                      label: roleLabel,
-                                      color: roleColor,
-                                      icon: roleIcon,
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: roleColor.withValues(alpha: 0.08),
+                                      blurRadius: 14,
+                                      offset: const Offset(0, 6),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  email,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTypography.product(
-                                    fontSize: 11.8,
-                                    color: AdminPalette.textMuted,
-                                  ),
+                                child: ProfileAvatar(user: user, radius: 20),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 2,
+                                            ),
+                                            child: Text(
+                                              user.fullName.trim().isNotEmpty
+                                                  ? user.fullName
+                                                  : (user.companyName ?? ''),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: AppTypography.product(
+                                                fontSize: 14.2,
+                                                fontWeight: FontWeight.w700,
+                                                color: AdminPalette.textPrimary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: isCompact ? 6 : 8),
+                                        _ActivityMetaChip(
+                                          label: roleLabel,
+                                          color: roleColor,
+                                          icon: roleIcon,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      email,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTypography.product(
+                                        fontSize: 11.8,
+                                        color: AdminPalette.textMuted,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -1279,8 +1755,12 @@ class _RecentUsersCard extends StatelessWidget {
 
 class _RecentOpportunitiesCard extends StatelessWidget {
   final List<Map<String, dynamic>> opportunities;
+  final ValueChanged<Map<String, dynamic>> onOpenOpportunity;
 
-  const _RecentOpportunitiesCard({required this.opportunities});
+  const _RecentOpportunitiesCard({
+    required this.opportunities,
+    required this.onOpenOpportunity,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1327,85 +1807,114 @@ class _RecentOpportunitiesCard extends StatelessWidget {
                       color: AdminPalette.border.withValues(alpha: 0.72),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: OpportunityType.color(
-                            type,
-                          ).withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: OpportunityType.color(
-                              type,
-                            ).withValues(alpha: 0.14),
-                          ),
-                        ),
-                        child: Icon(
-                          OpportunityType.icon(type),
-                          size: 18,
-                          color: OpportunityType.color(type),
-                        ),
+                Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => onOpenOpportunity(offer),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 8,
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: OpportunityType.color(
+                                type,
+                              ).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: OpportunityType.color(
+                                  type,
+                                ).withValues(alpha: 0.14),
+                              ),
+                            ),
+                            child: Icon(
+                              OpportunityType.icon(type),
+                              size: 18,
+                              color: OpportunityType.color(type),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 2),
-                                    child: Text(
-                                      title.isNotEmpty
-                                          ? title
-                                          : l10n.uiUntitledOpportunity,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: AppTypography.product(
-                                        fontSize: 14.2,
-                                        fontWeight: FontWeight.w700,
-                                        color: AdminPalette.textPrimary,
-                                        height: 1.18,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 2),
+                                        child: Text(
+                                          title.isNotEmpty
+                                              ? title
+                                              : l10n.uiUntitledOpportunity,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppTypography.product(
+                                            fontSize: 14.2,
+                                            fontWeight: FontWeight.w700,
+                                            color: AdminPalette.textPrimary,
+                                            height: 1.18,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    const SizedBox(width: 8),
+                                    OpportunityTypeBadge(
+                                      type: type,
+                                      fontSize: 10.2,
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                OpportunityTypeBadge(
-                                  type: type,
-                                  fontSize: 10.2,
+                                const SizedBox(height: 5),
+                                Text(
+                                  companyName.isNotEmpty
+                                      ? companyName
+                                      : l10n.uiCompanyNameNotAdded,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.product(
+                                    fontSize: 11.8,
+                                    color: AdminPalette.textMuted,
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 5),
-                            Text(
-                              companyName.isNotEmpty
-                                  ? companyName
-                                  : l10n.uiCompanyNameNotAdded,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.product(
-                                fontSize: 11.8,
-                                color: AdminPalette.textMuted,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
             );
           }),
         ],
+      ),
+    );
+  }
+}
+
+class _SheetHandle extends StatelessWidget {
+  const _SheetHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 44,
+        height: 5,
+        decoration: BoxDecoration(
+          color: AdminPalette.border,
+          borderRadius: BorderRadius.circular(999),
+        ),
       ),
     );
   }

@@ -31,6 +31,7 @@ class AdminActivityCenterScreen extends StatefulWidget {
 
 class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
   final TextEditingController _searchController = TextEditingController();
+  _ActivitySectionFilter _sectionFilter = _ActivitySectionFilter.all;
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
     final query = _searchController.text.trim();
     final activities = provider.recentActivity
         .where((activity) => activity.matchesQuery(query))
+        .where(_matchesSectionFilter)
         .toList();
 
     final content = provider.activityLoading && provider.recentActivity.isEmpty
@@ -126,6 +128,17 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
                         _searchController.clear();
                         setState(() {});
                       },
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                    child: _ActivitySectionChips(
+                      selected: _sectionFilter,
+                      activities: provider.recentActivity,
+                      onChanged: (filter) =>
+                          setState(() => _sectionFilter = filter),
                     ),
                   ),
                 ),
@@ -223,6 +236,24 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
     );
   }
 
+  bool _matchesSectionFilter(AdminActivityModel activity) {
+    switch (_sectionFilter) {
+      case _ActivitySectionFilter.all:
+        return true;
+      case _ActivitySectionFilter.reviews:
+        return activity.type == 'application' ||
+            activity.status.trim().toLowerCase() == 'pending';
+      case _ActivitySectionFilter.content:
+        return activity.type == 'opportunity' ||
+            activity.type == 'scholarship' ||
+            activity.type == 'project_idea';
+      case _ActivitySectionFilter.library:
+        return activity.type == 'training';
+      case _ActivitySectionFilter.pending:
+        return activity.status.trim().toLowerCase() == 'pending';
+    }
+  }
+
   Future<void> _openActivity(AdminActivityModel activity) {
     final target = switch (activity.type) {
       'application' => AdminContentCenterScreen.opportunitiesTab,
@@ -271,6 +302,84 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
       'scholarship' => l10n.uiManageScholarship,
       'training' => l10n.uiManageLibraryResource,
       _ => l10n.uiManageProjectIdea,
+    };
+  }
+}
+
+enum _ActivitySectionFilter { all, reviews, content, library, pending }
+
+class _ActivitySectionChips extends StatelessWidget {
+  final _ActivitySectionFilter selected;
+  final List<AdminActivityModel> activities;
+  final ValueChanged<_ActivitySectionFilter> onChanged;
+
+  const _ActivitySectionChips({
+    required this.selected,
+    required this.activities,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final filters = _ActivitySectionFilter.values;
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (final filter in filters) ...[
+            AdminFilterChip(
+              label: _label(filter),
+              selected: selected == filter,
+              icon: _icon(filter),
+              badgeCount: _count(filter),
+              onTap: () => onChanged(filter),
+              compact: true,
+            ),
+            if (filter != filters.last) const SizedBox(width: 8),
+          ],
+        ],
+      ),
+    );
+  }
+
+  int _count(_ActivitySectionFilter filter) {
+    return activities.where((activity) {
+      switch (filter) {
+        case _ActivitySectionFilter.all:
+          return true;
+        case _ActivitySectionFilter.reviews:
+          return activity.type == 'application' ||
+              activity.status.trim().toLowerCase() == 'pending';
+        case _ActivitySectionFilter.content:
+          return activity.type == 'opportunity' ||
+              activity.type == 'scholarship' ||
+              activity.type == 'project_idea';
+        case _ActivitySectionFilter.library:
+          return activity.type == 'training';
+        case _ActivitySectionFilter.pending:
+          return activity.status.trim().toLowerCase() == 'pending';
+      }
+    }).length;
+  }
+
+  IconData _icon(_ActivitySectionFilter filter) {
+    return switch (filter) {
+      _ActivitySectionFilter.all => Icons.timeline_rounded,
+      _ActivitySectionFilter.reviews => Icons.rate_review_outlined,
+      _ActivitySectionFilter.content => Icons.auto_awesome_mosaic_outlined,
+      _ActivitySectionFilter.library => Icons.menu_book_outlined,
+      _ActivitySectionFilter.pending => Icons.pending_actions_rounded,
+    };
+  }
+
+  String _label(_ActivitySectionFilter filter) {
+    return switch (filter) {
+      _ActivitySectionFilter.all => 'All',
+      _ActivitySectionFilter.reviews => 'Reviews',
+      _ActivitySectionFilter.content => 'Content',
+      _ActivitySectionFilter.library => 'Library',
+      _ActivitySectionFilter.pending => 'Pending',
     };
   }
 }

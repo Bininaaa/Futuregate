@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../theme/app_typography.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/application_model.dart';
@@ -17,6 +16,7 @@ import '../../services/document_access_service.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
+import '../../utils/document_launch_helper.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -24,6 +24,7 @@ import '../../widgets/application_status_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
+import '../../widgets/shared/reviewer_cv_widgets.dart';
 import '../chat/user_profile_preview_screen.dart';
 import '../notifications_screen.dart';
 import 'chat_screen.dart';
@@ -1806,41 +1807,22 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        cv.fullName.isNotEmpty
+                      ReviewerCvHeader(
+                        name: cv.fullName.isNotEmpty
                             ? cv.fullName
                             : application.studentName,
-                        style: AppTypography.product(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: _ApplicationsPalette.textPrimary,
-                        ),
+                        accentColor: _ApplicationsPalette.primary,
+                        details: [cv.email, cv.phone, cv.address],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${cv.email} - ${cv.phone}',
-                        style: AppTypography.product(
-                          fontSize: 12,
-                          color: _ApplicationsPalette.textSecondary,
-                        ),
-                      ),
-                      if (cv.address.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          cv.address,
-                          style: AppTypography.product(
-                            fontSize: 12,
-                            color: _ApplicationsPalette.textSecondary,
-                          ),
-                        ),
-                      ],
                       const SizedBox(height: 18),
-                      _buildDocumentReviewCard(
+                      ReviewerCvDocumentCard(
                         title: _l10n.uiPrimaryCvPdf,
                         subtitle: cv.hasUploadedCv
                             ? '${_l10n.uiFile}: ${cv.uploadedCvDisplayName}\n${_l10n.uiUploadedUploadedatlabel(_formatDate(cv.uploadedCvUploadedAt))}'
                             : _l10n.uiNoUploadedCv,
                         accentColor: _ApplicationsPalette.primary,
+                        viewLabel: _l10n.uiViewCv,
+                        downloadLabel: _l10n.uiDownloadCv,
                         warningText: cv.hasUploadedCv && !cv.isUploadedCvPdf
                             ? _l10n.uiTheRequestedFileIsNotAValidPdf
                             : null,
@@ -1860,7 +1842,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                             : null,
                       ),
                       const SizedBox(height: 14),
-                      _buildDocumentReviewCard(
+                      ReviewerCvDocumentCard(
                         title: _l10n.uiBuiltCv,
                         subtitle: cv.hasExportedPdf
                             ? _l10n.uiBuiltCvPdfReadyForReview
@@ -1868,6 +1850,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                             ? _l10n.uiBuiltCvDetailsAvailableNoPdfYet
                             : _l10n.uiNoBuiltCvDetailsAvailable,
                         accentColor: _ApplicationsPalette.secondaryDark,
+                        viewLabel: _l10n.uiViewBuiltCv,
+                        downloadLabel: _l10n.uiDownloadBuiltCv,
                         onView: cv.hasExportedPdf
                             ? () => _openApplicationDocument(
                                 application,
@@ -1999,28 +1983,16 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         return;
       }
 
-      final uri = Uri.tryParse(
-        download ? document.downloadUrl : document.viewUrl,
+      await DocumentLaunchHelper.openSecureDocument(
+        context,
+        document: document,
+        download: download,
+        requirePdf: requirePdf,
+        notPdfMessage: _l10n.uiTheRequestedFileIsNotAValidPdf,
+        notPdfTitle: _l10n.uiPreviewUnavailable,
+        unavailableMessage: _l10n.uiCouldNotOpenTheDocumentRightNow,
+        unavailableTitle: _l10n.uiDocumentUnavailable,
       );
-      if (uri == null) {
-        throw Exception(_l10n.uiTheRequestedFileIsNoLongerAvailable);
-      }
-
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_blank',
-      );
-      if (!mounted) {
-        return;
-      }
-      if (!launched) {
-        context.showAppSnackBar(
-          _l10n.uiCouldNotOpenTheDocumentRightNow,
-          title: _l10n.uiDocumentUnavailable,
-          type: AppFeedbackType.error,
-        );
-      }
     } catch (error) {
       if (!mounted) {
         return;
@@ -2031,94 +2003,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         type: AppFeedbackType.error,
       );
     }
-  }
-
-  Widget _buildDocumentReviewCard({
-    required String title,
-    required String subtitle,
-    required Color accentColor,
-    VoidCallback? onView,
-    VoidCallback? onDownload,
-    String? warningText,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: accentColor.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: accentColor.withValues(alpha: 0.14)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTypography.product(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: _ApplicationsPalette.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: AppTypography.product(
-              fontSize: 12,
-              height: 1.5,
-              color: _ApplicationsPalette.textSecondary,
-            ),
-          ),
-          if (warningText != null) ...[
-            const SizedBox(height: 10),
-            Text(
-              warningText,
-              style: AppTypography.product(
-                fontSize: 12,
-                height: 1.4,
-                color: Colors.orange.shade800,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-          if (onView != null || onDownload != null) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                if (onView != null)
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: onView,
-                      icon: const Icon(Icons.visibility_outlined, size: 18),
-                      label: Text(AppLocalizations.of(context)!.uiViewCv),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: accentColor,
-                        side: BorderSide(
-                          color: accentColor.withValues(alpha: 0.24),
-                        ),
-                      ),
-                    ),
-                  ),
-                if (onView != null && onDownload != null)
-                  const SizedBox(width: 10),
-                if (onDownload != null)
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: onDownload,
-                      icon: const Icon(Icons.download_outlined, size: 18),
-                      label: Text(AppLocalizations.of(context)!.uiDownloadCv),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
   }
 
   String _formatDate(Timestamp? value) {

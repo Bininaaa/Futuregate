@@ -15,6 +15,7 @@ import '../settings/settings_screen.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'admin_dashboard_screen.dart';
+import 'admin_home_navigation.dart';
 import 'users_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,10 +27,27 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  int _usersSessionId = 0;
+  String _usersInitialTargetId = '';
+  String _usersInitialRoleFilter = 'all';
+  String _usersInitialCompanyApprovalFilter = 'all';
   int _contentSessionId = 0;
   int _contentInitialTab = AdminContentCenterScreen.projectIdeasTab;
   String _contentInitialTargetId = '';
   final Set<int> _visitedIndexes = <int>{0};
+
+  @override
+  void initState() {
+    super.initState();
+    AdminHomeNavigation.request.addListener(_handleNavigationRequest);
+    _handleNavigationRequest();
+  }
+
+  @override
+  void dispose() {
+    AdminHomeNavigation.request.removeListener(_handleNavigationRequest);
+    super.dispose();
+  }
 
   List<_AdminDestination> _buildDestinations(AppLocalizations l10n) => [
     _AdminDestination(
@@ -258,7 +276,12 @@ class _HomeScreenState extends State<HomeScreen> {
           onOpenLibrary: _openLibraryTab,
         );
       case 1:
-        return const UsersScreen();
+        return UsersScreen(
+          key: ValueKey('embedded-users-$_usersSessionId'),
+          initialRoleFilter: _usersInitialRoleFilter,
+          initialCompanyApprovalFilter: _usersInitialCompanyApprovalFilter,
+          initialTargetId: _usersInitialTargetId,
+        );
       case 2:
         return AdminContentCenterScreen(
           key: ValueKey('embedded-content-$_contentSessionId'),
@@ -296,6 +319,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openUsersTab() => _selectIndex(1);
 
+  void _openUsersTarget({
+    String targetId = '',
+    String roleFilter = 'all',
+    String companyApprovalFilter = 'all',
+  }) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() {
+      _usersInitialTargetId = targetId;
+      _usersInitialRoleFilter = roleFilter;
+      _usersInitialCompanyApprovalFilter = companyApprovalFilter;
+      _usersSessionId++;
+      _currentIndex = 1;
+      _visitedIndexes.add(1);
+    });
+  }
+
   void _openActivityTab() => _selectIndex(3);
 
   void _openLibraryTab() =>
@@ -313,6 +352,34 @@ class _HomeScreenState extends State<HomeScreen> {
       _currentIndex = 2;
       _visitedIndexes.add(2);
     });
+  }
+
+  void _handleNavigationRequest() {
+    final request = AdminHomeNavigation.request.value;
+    if (request == null) {
+      return;
+    }
+
+    AdminHomeNavigation.request.value = null;
+    if (!mounted) {
+      return;
+    }
+
+    if (request.tabIndex == AdminHomeNavigation.usersTab) {
+      _openUsersTarget(
+        targetId: request.targetId,
+        roleFilter: request.userRoleFilter,
+        companyApprovalFilter: request.companyApprovalFilter,
+      );
+      return;
+    }
+
+    if (request.tabIndex == AdminHomeNavigation.contentTab) {
+      _openContentTab(request.contentTab, targetId: request.targetId);
+      return;
+    }
+
+    _selectIndex(request.tabIndex);
   }
 
   void _showLogoutDialog() {

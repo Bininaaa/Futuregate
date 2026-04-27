@@ -711,6 +711,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           absorbing: _isLocked,
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
               children: [
@@ -898,7 +899,10 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                         label: AppLocalizations.of(context)!.uiIdeaOverview,
                         hint:
                             'Describe the concept, what it does, and how it comes to life.',
-                        validator: _requiredValidator,
+                        helper:
+                            'Add enough context for reviewers to understand the idea quickly.',
+                        minLength: 60,
+                        validator: _descriptionValidator,
                         minLines: 4,
                         maxLines: 6,
                       ),
@@ -1273,6 +1277,17 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     }
     return null;
   }
+
+  String? _descriptionValidator(String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) {
+      return 'This field is required.';
+    }
+    if (text.length < 60) {
+      return 'Please add more detail.';
+    }
+    return null;
+  }
 }
 
 class _SectionCard extends StatelessWidget {
@@ -1304,6 +1319,7 @@ class _StyledField extends StatelessWidget {
   final String? helper;
   final int minLines;
   final int maxLines;
+  final int? minLength;
   final String? Function(String?)? validator;
 
   const _StyledField({
@@ -1313,38 +1329,23 @@ class _StyledField extends StatelessWidget {
     this.helper,
     this.minLines = 1,
     this.maxLines = 1,
+    this.minLength,
     this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_CreateIdeaScreenState>();
-    final helperText = helper?.trim();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppFormField(
-          theme: state!._theme,
-          controller: controller,
-          label: label,
-          hint: hint,
-          minLines: minLines,
-          maxLines: maxLines,
-          validator: validator,
-        ),
-        if (helperText != null && helperText.isNotEmpty) ...[
-          const SizedBox(height: 6),
-          Text(
-            helperText,
-            style: state._theme.body(
-              size: 11.8,
-              color: state._theme.textSecondary,
-              height: 1.35,
-            ),
-          ),
-        ],
-      ],
+    return AppFormField(
+      theme: state!._theme,
+      controller: controller,
+      label: label,
+      hint: hint,
+      minLines: minLines,
+      maxLines: maxLines,
+      validator: validator,
+      minLength: minLength,
+      helperText: helper,
     );
   }
 }

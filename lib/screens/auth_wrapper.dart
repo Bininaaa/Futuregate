@@ -103,7 +103,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
       if (pending != null && mounted) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+          MaterialPageRoute(
+            builder: (_) =>
+                NotificationsScreen(initialNotificationData: pending),
+          ),
         );
       }
     });

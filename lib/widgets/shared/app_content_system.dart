@@ -436,11 +436,14 @@ class AppFormField extends StatelessWidget {
   final int minLines;
   final int maxLines;
   final String? Function(String?)? validator;
+  final AutovalidateMode? autovalidateMode;
   final TextInputType? keyboardType;
   final bool readOnly;
   final VoidCallback? onTap;
   final Widget? suffixIcon;
   final ValueChanged<String>? onChanged;
+  final int? minLength;
+  final String? helperText;
 
   const AppFormField({
     super.key,
@@ -451,38 +454,88 @@ class AppFormField extends StatelessWidget {
     this.minLines = 1,
     this.maxLines = 1,
     this.validator,
+    this.autovalidateMode,
     this.keyboardType,
     this.readOnly = false,
     this.onTap,
     this.suffixIcon,
     this.onChanged,
+    this.minLength,
+    this.helperText,
   });
 
   @override
   Widget build(BuildContext context) {
     final showLabel = label.trim().isNotEmpty;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        if (showLabel) Text(label, style: theme.label(size: 12)),
-        if (showLabel) const SizedBox(height: AppContentSpacing.xs),
-        TextFormField(
-          controller: controller,
-          minLines: minLines,
-          maxLines: maxLines,
-          validator: validator,
-          keyboardType: keyboardType,
-          readOnly: readOnly,
-          onTap: onTap,
-          onChanged: onChanged,
-          style: theme.body(color: theme.textPrimary, weight: FontWeight.w500),
-          decoration: _fieldDecoration(
-            theme: theme,
-            hint: hint,
-            suffixIcon: suffixIcon,
-          ),
-        ),
-      ],
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final minimum = minLength ?? 0;
+        final currentLength = controller.text.trim().length;
+        final showCounter = minimum > 0;
+        final helper = helperText?.trim() ?? '';
+        final meetsMinimum = !showCounter || currentLength >= minimum;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            if (showLabel) Text(label, style: theme.label(size: 12)),
+            if (showLabel) const SizedBox(height: AppContentSpacing.xs),
+            TextFormField(
+              controller: controller,
+              minLines: minLines,
+              maxLines: maxLines,
+              validator: validator,
+              autovalidateMode: autovalidateMode,
+              keyboardType: keyboardType,
+              readOnly: readOnly,
+              onTap: onTap,
+              onChanged: onChanged,
+              style: theme.body(
+                color: theme.textPrimary,
+                weight: FontWeight.w500,
+              ),
+              decoration: _fieldDecoration(
+                theme: theme,
+                hint: hint,
+                suffixIcon: suffixIcon,
+              ),
+            ),
+            if (helper.isNotEmpty || showCounter) ...[
+              const SizedBox(height: 6),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (helper.isNotEmpty)
+                    Expanded(
+                      child: Text(
+                        helper,
+                        style: theme.body(
+                          size: 11.5,
+                          height: 1.35,
+                          color: theme.textSecondary,
+                        ),
+                      ),
+                    )
+                  else
+                    const Spacer(),
+                  if (showCounter) ...[
+                    if (helper.isNotEmpty) const SizedBox(width: 12),
+                    Text(
+                      '$currentLength/$minimum',
+                      style: theme.label(
+                        size: 11.2,
+                        weight: FontWeight.w700,
+                        color: meetsMinimum ? theme.success : theme.warning,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }

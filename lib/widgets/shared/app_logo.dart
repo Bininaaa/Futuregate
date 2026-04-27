@@ -137,7 +137,8 @@ class AppLogoMark extends StatelessWidget {
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         color: backgroundColor ?? Colors.white,
-        borderRadius: borderRadius ?? BorderRadius.circular(size * 0.24),
+        shape: borderRadius == null ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: borderRadius,
       ),
       child: Image.asset(
         AppBrandAssets.compact,

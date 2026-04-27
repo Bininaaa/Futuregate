@@ -360,6 +360,9 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                               _l10n,
                             ),
                             maxLines: 6,
+                            minLength: 60,
+                            helperText:
+                                'Include scope, expectations, requirements, and why students should apply.',
                             validator: _validateDescription,
                           ),
                         ),
@@ -693,6 +696,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     bool readOnly = false,
     Widget? suffixIcon,
     TextInputType? keyboardType,
+    int? minLength,
+    String? helperText,
   }) {
     return AppFormField(
       theme: _theme,
@@ -705,6 +710,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       readOnly: readOnly,
       keyboardType: keyboardType,
       suffixIcon: suffixIcon,
+      minLength: minLength,
+      helperText: helperText,
     );
   }
 
@@ -779,7 +786,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     if (text.isEmpty) {
       return _l10n.validationDescriptionRequired;
     }
-    if (text.length < 20) {
+    if (text.length < 60) {
       return _l10n.validationAddMoreDetail;
     }
     return null;

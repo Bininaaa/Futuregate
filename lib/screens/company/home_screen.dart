@@ -12,6 +12,7 @@ import '../settings/settings_screen.dart';
 import 'applications_screen.dart';
 import 'chat_list_screen.dart';
 import 'company_dashboard_screen.dart';
+import 'company_home_navigation.dart';
 import 'profile_screen.dart';
 import 'my_opportunities_screen.dart';
 
@@ -24,7 +25,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  int _applicationsSessionId = 0;
+  String _initialApplicationId = '';
+  String _initialOpportunityId = '';
   final Set<int> _visitedIndexes = <int>{0};
+
+  @override
+  void initState() {
+    super.initState();
+    CompanyHomeNavigation.request.addListener(_handleNavigationRequest);
+    _handleNavigationRequest();
+  }
+
+  @override
+  void dispose() {
+    CompanyHomeNavigation.request.removeListener(_handleNavigationRequest);
+    super.dispose();
+  }
 
   void _selectIndex(int index) {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -35,6 +52,28 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _currentIndex = index;
       _visitedIndexes.add(index);
+    });
+  }
+
+  void _handleNavigationRequest() {
+    final request = CompanyHomeNavigation.request.value;
+    if (request == null) {
+      return;
+    }
+
+    CompanyHomeNavigation.request.value = null;
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _initialApplicationId = request.applicationId;
+      _initialOpportunityId = request.opportunityId;
+      if (request.tabIndex == CompanyHomeNavigation.applicationsTab) {
+        _applicationsSessionId++;
+      }
+      _currentIndex = request.tabIndex.clamp(0, 4);
+      _visitedIndexes.add(_currentIndex);
     });
   }
 
@@ -145,7 +184,12 @@ class _HomeScreenState extends State<HomeScreen> {
         onOpenApplications: () => _selectIndex(2),
       ),
       1 => const MyOpportunitiesScreen(embedded: true),
-      2 => const ApplicationsScreen(embedded: true),
+      2 => ApplicationsScreen(
+        key: ValueKey('embedded-applications-$_applicationsSessionId'),
+        embedded: true,
+        initialApplicationId: _initialApplicationId,
+        initialOpportunityId: _initialOpportunityId,
+      ),
       3 => const ChatListScreen(embedded: true),
       _ => const SettingsScreen(embedded: true),
     };

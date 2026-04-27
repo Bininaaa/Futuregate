@@ -4,6 +4,7 @@ import '../models/admin_activity_model.dart';
 import '../models/admin_activity_preview_model.dart';
 import '../models/admin_application_item_model.dart';
 import '../models/application_model.dart';
+import '../models/opportunity_model.dart';
 import '../models/training_model.dart';
 import '../models/user_model.dart';
 import '../models/project_idea_model.dart';
@@ -133,6 +134,38 @@ class AdminService {
     final double applicationRate = totalOpportunities > 0
         ? (totalApplications / totalOpportunities)
         : 0.0;
+    var pendingApplications = 0;
+    var approvedApplications = 0;
+    var rejectedApplications = 0;
+    for (final doc in applicationsSnapshot.docs) {
+      switch (ApplicationStatus.parse(doc.data()['status'])) {
+        case ApplicationStatus.pending:
+          pendingApplications++;
+          break;
+        case ApplicationStatus.accepted:
+          approvedApplications++;
+          break;
+        case ApplicationStatus.rejected:
+          rejectedApplications++;
+          break;
+        case ApplicationStatus.withdrawn:
+          break;
+      }
+    }
+    var openOpportunities = 0;
+    var closedOpportunities = 0;
+    var hiddenOpportunities = 0;
+    for (final doc in opportunitiesSnapshot.docs) {
+      final model = OpportunityModel.fromMap({...doc.data(), 'id': doc.id});
+      if (model.isHidden) {
+        hiddenOpportunities++;
+      }
+      if (model.effectiveStatus() == 'closed') {
+        closedOpportunities++;
+      } else {
+        openOpportunities++;
+      }
+    }
 
     final int totalCvs = cvsSnapshot.docs.length;
     final double cvCompletionRate = studentsCount > 0
@@ -241,9 +274,15 @@ class AdminService {
       'activeUsers': activeUsersCount,
       'inactiveUsers': inactiveUsersCount,
       'opportunities': totalOpportunities,
+      'openOpportunities': openOpportunities,
+      'closedOpportunities': closedOpportunities,
+      'hiddenOpportunities': hiddenOpportunities,
       'trainings': trainingsSnapshot.docs.length,
       'scholarships': scholarshipsSnapshot.docs.length,
       'applications': totalApplications,
+      'pendingApplications': pendingApplications,
+      'approvedApplications': approvedApplications,
+      'rejectedApplications': rejectedApplications,
       'projectIdeas': projectIdeasSnapshot.docs.length,
       'pendingIdeas': pendingIdeas,
       'approvedIdeas': approvedIdeas,

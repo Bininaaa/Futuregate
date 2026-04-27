@@ -2282,10 +2282,7 @@ class _CompanyIcon extends StatelessWidget {
       width: size,
       height: size,
       padding: logoUrl.isEmpty ? EdgeInsets.zero : EdgeInsets.all(size * 0.12),
-      decoration: BoxDecoration(
-        color: iconBgColor,
-        borderRadius: BorderRadius.circular(size * 0.3),
-      ),
+      decoration: BoxDecoration(color: iconBgColor, shape: BoxShape.circle),
       clipBehavior: Clip.antiAlias,
       child: logoUrl.isEmpty
           ? Icon(iconData, color: iconColor, size: size * 0.5)

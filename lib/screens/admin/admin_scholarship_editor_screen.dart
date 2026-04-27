@@ -141,6 +141,7 @@ class _AdminScholarshipEditorScreenState
       onSubmit: _submit,
       child: Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           children: [
             AdminEditorSection(
@@ -220,7 +221,10 @@ class _AdminScholarshipEditorScreenState
                     label: '',
                     hint: 'Explain the scholarship and what it supports',
                     maxLines: 5,
-                    validator: adminRequiredMin('Description', min: 20),
+                    minLength: 60,
+                    helperText:
+                        'Include coverage, eligibility, documents, and what students gain.',
+                    validator: adminRequiredMin('Description', min: 60),
                   ),
                 ],
               ),

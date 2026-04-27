@@ -3744,7 +3744,7 @@ class _CompanyLogoTile extends StatelessWidget {
       padding: hasLogo ? EdgeInsets.all(size * 0.12) : EdgeInsets.zero,
       decoration: BoxDecoration(
         color: hasLogo ? backgroundColor : foregroundColor,
-        borderRadius: BorderRadius.circular(16),
+        shape: BoxShape.circle,
       ),
       clipBehavior: Clip.antiAlias,
       child: !hasLogo

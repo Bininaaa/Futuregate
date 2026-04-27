@@ -180,10 +180,13 @@ class AdminEditorField extends StatelessWidget {
   final String hint;
   final int maxLines;
   final String? Function(String?)? validator;
+  final AutovalidateMode? autovalidateMode;
   final TextInputType? keyboardType;
   final bool readOnly;
   final VoidCallback? onTap;
   final Widget? suffixIcon;
+  final int? minLength;
+  final String? helperText;
 
   const AdminEditorField({
     super.key,
@@ -192,10 +195,13 @@ class AdminEditorField extends StatelessWidget {
     required this.hint,
     this.maxLines = 1,
     this.validator,
+    this.autovalidateMode,
     this.keyboardType,
     this.readOnly = false,
     this.onTap,
     this.suffixIcon,
+    this.minLength,
+    this.helperText,
   });
 
   @override
@@ -207,10 +213,13 @@ class AdminEditorField extends StatelessWidget {
       hint: hint,
       maxLines: maxLines,
       validator: validator,
+      autovalidateMode: autovalidateMode,
       keyboardType: keyboardType,
       readOnly: readOnly,
       onTap: onTap,
       suffixIcon: suffixIcon,
+      minLength: minLength,
+      helperText: helperText,
     );
   }
 }

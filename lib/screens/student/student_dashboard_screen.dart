@@ -2209,7 +2209,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     double size = 42,
   }) {
     final hasLogo = logoUrl.trim().isNotEmpty;
-    final borderRadius = size <= 38 ? 11.0 : 12.0;
     final fontSize = size <= 38 ? 16.0 : 18.0;
     final initial = companyName.trim().isNotEmpty
         ? companyName.trim().substring(0, 1).toUpperCase()
@@ -2237,7 +2236,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       padding: hasLogo ? EdgeInsets.all(size * 0.12) : EdgeInsets.zero,
       decoration: BoxDecoration(
         color: hasLogo ? softLavender : primaryPurple,
-        borderRadius: BorderRadius.circular(borderRadius),
+        shape: BoxShape.circle,
       ),
       clipBehavior: Clip.antiAlias,
       child: hasLogo

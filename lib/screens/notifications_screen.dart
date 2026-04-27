@@ -14,9 +14,9 @@ import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../utils/opportunity_type.dart';
 import 'admin/admin_content_center_screen.dart';
-import 'company/applications_screen.dart';
+import 'admin/admin_home_navigation.dart';
 import 'company/chat_screen.dart' as company_chat;
-import 'admin/users_screen.dart';
+import 'company/company_home_navigation.dart';
 import 'settings/settings_flow_theme.dart';
 import 'settings/settings_flow_widgets.dart';
 import 'student/chat_screen.dart' as student_chat;
@@ -27,7 +27,9 @@ import '../widgets/shared/app_feedback.dart';
 import '../widgets/shared/app_loading.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({super.key});
+  final Map<String, dynamic>? initialNotificationData;
+
+  const NotificationsScreen({super.key, this.initialNotificationData});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -42,6 +44,41 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   final Map<String, String> _opportunityTypeByTargetId = <String, String>{};
   final Set<String> _queuedOpportunityTypeIds = <String>{};
   final Set<String> _loadingOpportunityTypeIds = <String>{};
+  bool _handledInitialNotification = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _handleInitialNotificationData();
+    });
+  }
+
+  Future<void> _handleInitialNotificationData() async {
+    if (_handledInitialNotification) {
+      return;
+    }
+    _handledInitialNotification = true;
+    final data = widget.initialNotificationData;
+    if (data == null || data.isEmpty) {
+      return;
+    }
+
+    final notification = NotificationModel.fromMap({
+      'id': (data['id'] ?? '').toString(),
+      'userId': (data['userId'] ?? '').toString(),
+      'title': (data['title'] ?? '').toString(),
+      'message': (data['message'] ?? data['body'] ?? '').toString(),
+      'type': (data['type'] ?? '').toString(),
+      'conversationId': (data['conversationId'] ?? '').toString(),
+      'targetId': (data['targetId'] ?? '').toString(),
+      'route': (data['route'] ?? '').toString(),
+      'eventKey': (data['eventKey'] ?? '').toString(),
+      'isRead': true,
+    });
+    await _navigateToTarget(context, notification);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -907,25 +944,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         if (!context.mounted) {
           return;
         }
-        Navigator.push(
+        AdminHomeNavigation.switchToUsers(
           context,
-          MaterialPageRoute(
-            builder: (_) => Scaffold(
-              backgroundColor: SettingsFlowPalette.background,
-              appBar: AppBar(
-                title: Text(AppLocalizations.of(context)!.uiCompanyReviews),
-                backgroundColor: SettingsFlowPalette.surface,
-                foregroundColor: SettingsFlowPalette.textPrimary,
-              ),
-              body: SafeArea(
-                child: UsersScreen(
-                  initialRoleFilter: 'company',
-                  initialCompanyApprovalFilter: 'pending',
-                  initialTargetId: notif.targetId,
-                ),
-              ),
-            ),
-          ),
+          targetId: notif.targetId,
+          roleFilter: 'company',
+          companyApprovalFilter: 'pending',
         );
         return;
       }
@@ -947,18 +970,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           'training' => AdminContentCenterScreen.libraryTab,
           _ => AdminContentCenterScreen.projectIdeasTab,
         };
+        final adminTargetId =
+            (notif.type == 'application' || notif.type == 'rejected')
+            ? (_extractApplicationId(notif).isNotEmpty
+                  ? _extractApplicationId(notif)
+                  : notif.targetId)
+            : notif.targetId;
 
         if (!context.mounted) {
           return;
         }
-        Navigator.push(
+        AdminHomeNavigation.switchToContent(
           context,
-          MaterialPageRoute(
-            builder: (_) => AdminContentCenterScreen(
-              initialTab: adminTab,
-              initialTargetId: notif.targetId,
-            ),
-          ),
+          contentTab: adminTab,
+          targetId: adminTargetId,
         );
         return;
       }
@@ -1046,14 +1071,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   .doc(applicationId)
                   .get();
               if (appDoc.exists && context.mounted) {
-                Navigator.push(
+                CompanyHomeNavigation.switchToApplications(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => ApplicationsScreen(
-                      initialApplicationId: applicationId,
-                      showBackButton: true,
-                    ),
-                  ),
+                  applicationId: applicationId,
                 );
                 return;
               }
