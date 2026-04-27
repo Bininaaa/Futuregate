@@ -2635,23 +2635,6 @@ class _ApplicantListTile extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            if (application.cvId.trim().isNotEmpty) ...[
-                              _InlineDot(),
-                              Icon(
-                                Icons.description_outlined,
-                                size: 12,
-                                color: _OpportunityPalette.textMuted,
-                              ),
-                              const SizedBox(width: 3),
-                              Text(
-                                'CV',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: _OpportunityPalette.textMuted,
-                                ),
-                              ),
-                            ],
                           ],
                         ),
                       ],

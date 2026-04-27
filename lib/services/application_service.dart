@@ -234,17 +234,19 @@ class ApplicationService implements IApplicationService {
       throw Exception('This opportunity is no longer available');
     }
 
+    final createData = {
+      'id': applicationRef.id,
+      'studentId': studentId,
+      'studentName': studentName.trim(),
+      'opportunityId': opportunityId,
+      'companyId': resolvedCompanyId,
+      'cvId': resolvedCvId,
+      'status': ApplicationStatus.pending,
+      'appliedAt': FieldValue.serverTimestamp(),
+    };
+
     try {
-      await applicationRef.set({
-        'id': applicationRef.id,
-        'studentId': studentId,
-        'studentName': studentName.trim(),
-        'opportunityId': opportunityId,
-        'companyId': resolvedCompanyId,
-        'cvId': resolvedCvId,
-        'status': ApplicationStatus.pending,
-        'appliedAt': FieldValue.serverTimestamp(),
-      });
+      await applicationRef.set(createData);
     } on FirebaseException catch (e) {
       if (e.code == 'permission-denied') {
         final latestEligibility = await getEligibility(
@@ -264,6 +266,19 @@ class ApplicationService implements IApplicationService {
           case ApplicationEligibilityStatus.available:
             break;
         }
+
+        if (await _tryRestoreWithdrawnApplication(
+          applicationRef: applicationRef,
+          studentId: studentId,
+          studentName: studentName,
+          resolvedCompanyId: resolvedCompanyId,
+          resolvedCvId: resolvedCvId,
+        )) {
+          await _notificationWorker.notifyApplicationSubmitted(
+            applicationRef.id,
+          );
+          return;
+        }
       }
 
       recordNonFatal(e, StackTrace.current, context: 'apply_to_opportunity');
@@ -271,6 +286,49 @@ class ApplicationService implements IApplicationService {
     }
 
     await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
+  }
+
+  Future<bool> _tryRestoreWithdrawnApplication({
+    required DocumentReference<Map<String, dynamic>> applicationRef,
+    required String studentId,
+    required String studentName,
+    required String resolvedCompanyId,
+    required String resolvedCvId,
+  }) async {
+    final applicationSnapshot = await applicationRef.get();
+    if (!applicationSnapshot.exists) {
+      return false;
+    }
+
+    final data = applicationSnapshot.data();
+    if ((data?['studentId'] ?? '').toString().trim() != studentId) {
+      return false;
+    }
+
+    final existingStatus = ApplicationStatus.parse(
+      data?['status'] as String? ?? '',
+    );
+    if (existingStatus != ApplicationStatus.withdrawn) {
+      return false;
+    }
+
+    final updateData = <String, dynamic>{
+      'studentName': studentName.trim(),
+      'companyId': resolvedCompanyId,
+      'cvId': resolvedCvId,
+      'status': ApplicationStatus.pending,
+      'appliedAt': FieldValue.serverTimestamp(),
+      'withdrawnAt': FieldValue.delete(),
+      'hadWithdrawnBefore': true,
+    };
+
+    final previousWithdrawnAt = data?['withdrawnAt'];
+    if (previousWithdrawnAt is Timestamp) {
+      updateData['lastWithdrawnAt'] = previousWithdrawnAt;
+    }
+
+    await applicationRef.update(updateData);
+    return true;
   }
 
   @override

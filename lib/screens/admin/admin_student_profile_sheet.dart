@@ -514,15 +514,6 @@ class _AdminStudentApplicationsSheetState
                     value: appliedLabel,
                     preserveValueFormatting: true,
                   ),
-                  _DetailRow(
-                    icon: Icons.description_outlined,
-                    label: 'CV',
-                    value: item.application.cvId.trim().isEmpty
-                        ? l10n.uiNotProvided
-                        : item.application.cvId.trim(),
-                    preserveValueFormatting: true,
-                    singleLineValue: true,
-                  ),
                   const SizedBox(height: 6),
                   AdminSectionHeader(title: l10n.uiOpportunityDetails),
                   const SizedBox(height: 12),
