@@ -1071,12 +1071,17 @@ service cloud.firestore {
             'companyId',
             'cvId',
             'status',
-            'appliedAt'
+            'appliedAt',
+            'activityAt'
           ]) &&
           request.resource.data.id == applicationId &&
           request.resource.data.studentId == request.auth.uid &&
           applicationId == request.auth.uid + '_' + request.resource.data.opportunityId &&
           request.resource.data.status == 'pending' &&
+          (
+            !request.resource.data.keys().hasAny(['activityAt']) ||
+            request.resource.data.activityAt == request.time
+          ) &&
           canStudentUseOpportunity(request.resource.data.opportunityId) &&
           get(opportunityPath(request.resource.data.opportunityId)).data.companyId ==
               request.resource.data.companyId &&
@@ -1132,7 +1137,9 @@ service cloud.firestore {
             resource.data.status == 'pending' &&
             request.resource.data.diff(resource.data).affectedKeys().hasOnly([
               'status',
-              'withdrawnAt'
+              'withdrawnAt',
+              'activityAt',
+              'hadWithdrawnBefore'
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.studentId == resource.data.studentId &&
@@ -1142,7 +1149,15 @@ service cloud.firestore {
             request.resource.data.cvId == resource.data.cvId &&
             request.resource.data.appliedAt == resource.data.appliedAt &&
             request.resource.data.status == 'withdrawn' &&
-            request.resource.data.withdrawnAt == request.time
+            request.resource.data.withdrawnAt == request.time &&
+            (
+              !request.resource.data.keys().hasAny(['activityAt']) ||
+              request.resource.data.activityAt == request.time
+            ) &&
+            (
+              !request.resource.data.keys().hasAny(['hadWithdrawnBefore']) ||
+              request.resource.data.hadWithdrawnBefore == true
+            )
           ) ||
           (
             isStudent() &&
@@ -1154,7 +1169,10 @@ service cloud.firestore {
               'cvId',
               'status',
               'appliedAt',
-              'withdrawnAt'
+              'withdrawnAt',
+              'activityAt',
+              'hadWithdrawnBefore',
+              'lastWithdrawnAt'
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.studentId == resource.data.studentId &&
@@ -1171,6 +1189,18 @@ service cloud.firestore {
               )
             ) &&
             request.resource.data.appliedAt == request.time &&
+            (
+              !request.resource.data.keys().hasAny(['activityAt']) ||
+              request.resource.data.activityAt == request.time
+            ) &&
+            (
+              !request.resource.data.keys().hasAny(['hadWithdrawnBefore']) ||
+              request.resource.data.hadWithdrawnBefore == true
+            ) &&
+            (
+              !request.resource.data.keys().hasAny(['lastWithdrawnAt']) ||
+              request.resource.data.lastWithdrawnAt == resource.data.withdrawnAt
+            ) &&
             !request.resource.data.keys().hasAny(['withdrawnAt'])
           )
         );

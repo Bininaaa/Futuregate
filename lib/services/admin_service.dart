@@ -485,11 +485,7 @@ class AdminService {
     final safeLimit = perCollectionLimit < 1 ? 1 : perCollectionLimit;
 
     final results = await Future.wait([
-      _firestore
-          .collection('applications')
-          .orderBy('appliedAt', descending: true)
-          .limit(safeLimit)
-          .get(),
+      _getRecentApplicationDocs(safeLimit),
       _firestore
           .collection('opportunities')
           .orderBy('createdAt', descending: true)
@@ -512,13 +508,17 @@ class AdminService {
           .get(),
     ]);
 
-    final applicationSnapshot = results[0];
-    final opportunitySnapshot = results[1];
-    final scholarshipSnapshot = results[2];
-    final trainingSnapshot = results[3];
-    final projectIdeaSnapshot = results[4];
+    final applicationDocs =
+        results[0] as List<QueryDocumentSnapshot<Map<String, dynamic>>>;
+    final opportunitySnapshot =
+        results[1] as QuerySnapshot<Map<String, dynamic>>;
+    final scholarshipSnapshot =
+        results[2] as QuerySnapshot<Map<String, dynamic>>;
+    final trainingSnapshot = results[3] as QuerySnapshot<Map<String, dynamic>>;
+    final projectIdeaSnapshot =
+        results[4] as QuerySnapshot<Map<String, dynamic>>;
 
-    final applicationOpportunityIds = applicationSnapshot.docs
+    final applicationOpportunityIds = applicationDocs
         .map((doc) => (doc.data()['opportunityId'] ?? '').toString())
         .where((id) => id.isNotEmpty)
         .toSet();
@@ -533,7 +533,7 @@ class AdminService {
     final ownerNames = await _fetchUserDisplayNames(projectIdeaOwnerIds);
 
     final activities = <AdminActivityModel>[
-      ...applicationSnapshot.docs.map((doc) {
+      ...applicationDocs.map((doc) {
         final data = doc.data();
         final opportunityId = (data['opportunityId'] ?? '').toString();
         final opportunityMeta = opportunityInfo[opportunityId];
@@ -551,14 +551,12 @@ class AdminService {
           relatedCollection: 'applications',
           title: opportunityTitle.isNotEmpty
               ? opportunityTitle
-              : 'New application submitted',
-          description: companyName.isNotEmpty
-              ? 'Application submitted to $companyName'
-              : 'A student submitted a new application',
+              : _applicationActivityFallbackTitle(data),
+          description: _applicationActivityDescription(data, companyName),
           actorId: (data['studentId'] ?? '').toString(),
           actorName: (data['studentName'] ?? 'Student').toString(),
           status: (data['status'] ?? '').toString(),
-          createdAt: data['appliedAt'] as Timestamp?,
+          createdAt: _applicationActivityTimestamp(data),
         );
       }),
       ...opportunitySnapshot.docs.map((doc) {
@@ -741,13 +739,15 @@ class AdminService {
     DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
   }) async {
     final safeLimit = limit < 1 ? 1 : limit;
-    final snapshot = await _getActivitySnapshot(
-      collection: activitySourceApplications,
-      orderField: 'appliedAt',
-      limit: safeLimit,
-      startAfterDocument: startAfterDocument,
-    );
-    final pageDocs = _pageDocs(snapshot.docs, safeLimit);
+    final docs = startAfterDocument == null
+        ? await _getRecentApplicationDocs(safeLimit + 1)
+        : (await _getActivitySnapshot(
+            collection: activitySourceApplications,
+            orderField: 'appliedAt',
+            limit: safeLimit,
+            startAfterDocument: startAfterDocument,
+          )).docs;
+    final pageDocs = _pageDocs(docs, safeLimit);
     final opportunityInfo = await _fetchOpportunityInfo(
       pageDocs
           .map((doc) => (doc.data()['opportunityId'] ?? '').toString())
@@ -773,21 +773,19 @@ class AdminService {
         relatedCollection: activitySourceApplications,
         title: opportunityTitle.isNotEmpty
             ? opportunityTitle
-            : 'New application submitted',
-        description: companyName.isNotEmpty
-            ? 'Application submitted to $companyName'
-            : 'A student submitted a new application',
+            : _applicationActivityFallbackTitle(data),
+        description: _applicationActivityDescription(data, companyName),
         actorId: (data['studentId'] ?? '').toString(),
         actorName: (data['studentName'] ?? 'Student').toString(),
         status: (data['status'] ?? '').toString(),
-        createdAt: data['appliedAt'] as Timestamp?,
+        createdAt: _applicationActivityTimestamp(data),
       );
     }).toList();
 
     return AdminActivityBatch(
       activities: activities,
       lastDocument: pageDocs.isEmpty ? startAfterDocument : pageDocs.last,
-      hasMore: snapshot.docs.length > safeLimit,
+      hasMore: docs.length > safeLimit,
     );
   }
 
@@ -1429,6 +1427,96 @@ class AdminService {
     }
 
     return query.get();
+  }
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+  _getRecentApplicationDocs(int limit) async {
+    final safeLimit = limit < 1 ? 1 : limit;
+    final results = await Future.wait([
+      _firestore
+          .collection(activitySourceApplications)
+          .orderBy('activityAt', descending: true)
+          .limit(safeLimit)
+          .get(),
+      _firestore
+          .collection(activitySourceApplications)
+          .orderBy('withdrawnAt', descending: true)
+          .limit(safeLimit)
+          .get(),
+      _firestore
+          .collection(activitySourceApplications)
+          .orderBy('appliedAt', descending: true)
+          .limit(safeLimit)
+          .get(),
+    ]);
+
+    final docsById = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
+    for (final snapshot in results) {
+      for (final doc in snapshot.docs) {
+        docsById[doc.id] = doc;
+      }
+    }
+
+    final docs = docsById.values.toList();
+    docs.sort((first, second) {
+      final firstTime = _applicationActivityTimestamp(first.data());
+      final secondTime = _applicationActivityTimestamp(second.data());
+      if (firstTime == null && secondTime == null) {
+        return 0;
+      }
+      if (firstTime == null) {
+        return 1;
+      }
+      if (secondTime == null) {
+        return -1;
+      }
+      return secondTime.compareTo(firstTime);
+    });
+
+    return docs.take(safeLimit).toList();
+  }
+
+  Timestamp? _applicationActivityTimestamp(Map<String, dynamic> data) {
+    final activityAt = data['activityAt'];
+    if (activityAt is Timestamp) {
+      return activityAt;
+    }
+
+    if (ApplicationStatus.parse(data['status']?.toString()) ==
+        ApplicationStatus.withdrawn) {
+      final withdrawnAt = data['withdrawnAt'];
+      if (withdrawnAt is Timestamp) {
+        return withdrawnAt;
+      }
+    }
+
+    final appliedAt = data['appliedAt'];
+    return appliedAt is Timestamp ? appliedAt : null;
+  }
+
+  String _applicationActivityFallbackTitle(Map<String, dynamic> data) {
+    return ApplicationStatus.parse(data['status']?.toString()) ==
+            ApplicationStatus.withdrawn
+        ? 'Application withdrawn'
+        : 'New application submitted';
+  }
+
+  String _applicationActivityDescription(
+    Map<String, dynamic> data,
+    String companyName,
+  ) {
+    final isWithdrawn =
+        ApplicationStatus.parse(data['status']?.toString()) ==
+        ApplicationStatus.withdrawn;
+    if (isWithdrawn) {
+      return companyName.isNotEmpty
+          ? 'Application withdrawn from $companyName'
+          : 'A student withdrew an application';
+    }
+
+    return companyName.isNotEmpty
+        ? 'Application submitted to $companyName'
+        : 'A student submitted a new application';
   }
 
   List<QueryDocumentSnapshot<Map<String, dynamic>>> _pageDocs(

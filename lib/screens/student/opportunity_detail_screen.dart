@@ -855,8 +855,14 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final applicationProvider = context.watch<ApplicationProvider>();
+    final submittedApplication = _submittedApplication(applicationProvider);
     final acceptedApplication = _acceptedApplication(applicationProvider);
     final isAcceptedApplication = acceptedApplication != null;
+    final hasWithdrawalHistory =
+        submittedApplication != null &&
+        (ApplicationStatus.parse(submittedApplication.status) ==
+                ApplicationStatus.withdrawn ||
+            submittedApplication.hadWithdrawnBefore);
     final isAdminAcceptedOpportunity =
         isAcceptedApplication && widget.opportunity.isAdminPosted;
     final canOpenCompanyChat =
@@ -1069,6 +1075,15 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           if (isAdminAcceptedOpportunity) ...<Widget>[
             const SizedBox(height: 16),
             _ApprovedEmailContactNotice(theme: _theme),
+          ],
+          if (hasWithdrawalHistory) ...<Widget>[
+            const SizedBox(height: 16),
+            _WithdrawnApplicationNotice(
+              theme: _theme,
+              isCurrentlyWithdrawn:
+                  ApplicationStatus.parse(submittedApplication.status) ==
+                  ApplicationStatus.withdrawn,
+            ),
           ],
           const SizedBox(height: 16),
           AppInfoTileGrid(
@@ -1421,6 +1436,72 @@ class _ApprovedEmailContactNotice extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'The company will contact you by email soon.',
+                  style: theme.body(
+                    size: 12.2,
+                    color: theme.textSecondary,
+                    weight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WithdrawnApplicationNotice extends StatelessWidget {
+  final AppContentTheme theme;
+  final bool isCurrentlyWithdrawn;
+
+  const _WithdrawnApplicationNotice({
+    required this.theme,
+    required this.isCurrentlyWithdrawn,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = AppColors.current.warning;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: accent.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.undo_rounded, size: 18, color: accent),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Application withdrawn before',
+                  style: theme.label(
+                    size: 12.8,
+                    color: accent,
+                    weight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isCurrentlyWithdrawn
+                      ? 'You withdrew your application for this opportunity. You can apply again while it remains open.'
+                      : 'You previously withdrew an application for this opportunity.',
                   style: theme.body(
                     size: 12.2,
                     color: theme.textSecondary,

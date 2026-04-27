@@ -35,6 +35,8 @@ class StudentApplicationItemModel {
   String get description => opportunity?.description.trim() ?? '';
 
   DateTime? get appliedAt => application.appliedAt?.toDate();
+  DateTime? get withdrawnAt => application.withdrawnAt?.toDate();
+  bool get hadWithdrawnBefore => application.hadWithdrawnBefore;
 
   DateTime? get deadline =>
       opportunity?.applicationDeadline ??

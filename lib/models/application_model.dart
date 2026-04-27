@@ -11,6 +11,8 @@ class ApplicationModel {
   final String cvId;
   final String status;
   final Timestamp? appliedAt;
+  final Timestamp? withdrawnAt;
+  final bool hadWithdrawnBefore;
 
   ApplicationModel({
     required this.id,
@@ -21,6 +23,8 @@ class ApplicationModel {
     required this.cvId,
     required this.status,
     this.appliedAt,
+    this.withdrawnAt,
+    this.hadWithdrawnBefore = false,
   });
 
   factory ApplicationModel.fromMap(Map<String, dynamic> map) {
@@ -33,6 +37,8 @@ class ApplicationModel {
       cvId: map['cvId'] ?? '',
       status: ApplicationStatus.parse(map['status']),
       appliedAt: map['appliedAt'],
+      withdrawnAt: map['withdrawnAt'],
+      hadWithdrawnBefore: map['hadWithdrawnBefore'] == true,
     );
   }
 
@@ -46,6 +52,8 @@ class ApplicationModel {
       'cvId': cvId,
       'status': status,
       'appliedAt': appliedAt,
+      'withdrawnAt': withdrawnAt,
+      'hadWithdrawnBefore': hadWithdrawnBefore,
     };
   }
 
@@ -58,6 +66,8 @@ class ApplicationModel {
     String? cvId,
     String? status,
     Timestamp? appliedAt,
+    Timestamp? withdrawnAt,
+    bool? hadWithdrawnBefore,
   }) {
     return ApplicationModel(
       id: id ?? this.id,
@@ -68,6 +78,8 @@ class ApplicationModel {
       cvId: cvId ?? this.cvId,
       status: status ?? this.status,
       appliedAt: appliedAt ?? this.appliedAt,
+      withdrawnAt: withdrawnAt ?? this.withdrawnAt,
+      hadWithdrawnBefore: hadWithdrawnBefore ?? this.hadWithdrawnBefore,
     );
   }
 }
