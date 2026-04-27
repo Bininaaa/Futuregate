@@ -8,6 +8,8 @@ import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
 
+enum UserProfilePreviewPresentation { floatingDialog, bottomSheet }
+
 Future<void> showFloatingUserProfilePreview(
   BuildContext context, {
   required String userId,
@@ -18,7 +20,42 @@ Future<void> showFloatingUserProfilePreview(
   String fallbackLocation = '',
   String fallbackWebsite = '',
   String contextLabel = '',
+  bool showRole = true,
+  UserProfilePreviewPresentation presentation =
+      UserProfilePreviewPresentation.floatingDialog,
 }) {
+  if (presentation == UserProfilePreviewPresentation.bottomSheet) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.68,
+          minChildSize: 0.42,
+          maxChildSize: 0.90,
+          expand: false,
+          builder: (context, scrollController) {
+            return UserProfilePreviewScreen(
+              userId: userId,
+              fallbackName: fallbackName,
+              fallbackRole: fallbackRole,
+              fallbackHeadline: fallbackHeadline,
+              fallbackAbout: fallbackAbout,
+              fallbackLocation: fallbackLocation,
+              fallbackWebsite: fallbackWebsite,
+              contextLabel: contextLabel,
+              showRole: showRole,
+              scrollController: scrollController,
+              asSheet: true,
+            );
+          },
+        );
+      },
+    );
+  }
+
   final size = MediaQuery.sizeOf(context);
   final isCompact = size.width < 520;
   final horizontalInset = isCompact ? 10.0 : 24.0;
@@ -58,6 +95,7 @@ Future<void> showFloatingUserProfilePreview(
                 fallbackLocation: fallbackLocation,
                 fallbackWebsite: fallbackWebsite,
                 contextLabel: contextLabel,
+                showRole: showRole,
               ),
             ),
           ),
@@ -76,6 +114,9 @@ class UserProfilePreviewScreen extends StatefulWidget {
   final String fallbackLocation;
   final String fallbackWebsite;
   final String contextLabel;
+  final bool showRole;
+  final ScrollController? scrollController;
+  final bool asSheet;
 
   const UserProfilePreviewScreen({
     super.key,
@@ -87,6 +128,9 @@ class UserProfilePreviewScreen extends StatefulWidget {
     this.fallbackLocation = '',
     this.fallbackWebsite = '',
     this.contextLabel = '',
+    this.showRole = true,
+    this.scrollController,
+    this.asSheet = false,
   });
 
   @override
@@ -118,7 +162,9 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
         return Container(
           decoration: BoxDecoration(
             color: ChatThemePalette.background,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: widget.asSheet
+                ? const BorderRadius.vertical(top: Radius.circular(28))
+                : BorderRadius.circular(28),
             border: Border.all(
               color: ChatThemePalette.border.withValues(alpha: 0.9),
             ),
@@ -126,6 +172,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
           ),
           clipBehavior: Clip.antiAlias,
           child: SingleChildScrollView(
+            controller: widget.scrollController,
             padding: const EdgeInsets.fromLTRB(14, 10, 14, 18),
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -146,6 +193,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                   fallbackName: widget.fallbackName,
                   fallbackRole: widget.fallbackRole,
                   contextLabel: widget.contextLabel,
+                  showRole: widget.showRole,
                 ),
                 if (snapshot.connectionState == ConnectionState.waiting) ...[
                   const SizedBox(height: 12),
@@ -196,14 +244,17 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
 
   List<_ProfileDetailItem> _buildDetails(UserModel? user) {
     final role = _resolvedRole(user);
-    final items = <_ProfileDetailItem>[
-      _ProfileDetailItem(
-        title: 'Role',
-        value: _roleLabel(user),
-        icon: Icons.verified_user_outlined,
-        preserveCase: true,
-      ),
-    ];
+    final items = <_ProfileDetailItem>[];
+    if (widget.showRole) {
+      items.add(
+        _ProfileDetailItem(
+          title: 'Role',
+          value: _roleLabel(user),
+          icon: Icons.verified_user_outlined,
+          preserveCase: true,
+        ),
+      );
+    }
 
     if (role == 'admin') {
       return items;
@@ -472,6 +523,7 @@ class _ProfileIdentityBlock extends StatelessWidget {
   final String fallbackName;
   final String fallbackRole;
   final String contextLabel;
+  final bool showRole;
 
   const _ProfileIdentityBlock({
     required this.user,
@@ -482,6 +534,7 @@ class _ProfileIdentityBlock extends StatelessWidget {
     required this.fallbackName,
     required this.fallbackRole,
     required this.contextLabel,
+    required this.showRole,
   });
 
   @override
@@ -529,7 +582,7 @@ class _ProfileIdentityBlock extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _RolePill(label: roleLabel),
+              if (showRole) _RolePill(label: roleLabel),
               _PresencePill(label: presence, isOnline: user?.isOnline ?? false),
               if (resolvedContext.isNotEmpty)
                 _ContextPill(label: resolvedContext),

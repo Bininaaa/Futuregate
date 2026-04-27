@@ -2542,6 +2542,8 @@ function buildPublicUserProfile(userId, userData) {
   return {
     uid: trim(userId),
     role,
+    email: trim(safeUserData.email),
+    phone: trim(safeUserData.phone),
     fullName: isAdmin ? PUBLIC_ADMIN_NAME : trim(safeUserData.fullName),
     companyName: trim(safeUserData.companyName),
     profileImage: trim(safeUserData.profileImage),

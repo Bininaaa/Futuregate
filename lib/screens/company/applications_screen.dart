@@ -1679,6 +1679,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       fallbackName: application.studentName,
       fallbackRole: 'student',
       contextLabel: _l10n.uiApplication,
+      showRole: false,
+      presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }
 
