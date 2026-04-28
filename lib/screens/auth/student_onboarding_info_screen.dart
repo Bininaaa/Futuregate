@@ -26,12 +26,6 @@ class _StudentOnboardingInfoScreenState
   final TextEditingController _universityController = TextEditingController();
   final TextEditingController _fieldOfStudyController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
-  final TextEditingController _researchTopicController =
-      TextEditingController();
-  final TextEditingController _laboratoryController = TextEditingController();
-  final TextEditingController _supervisorController = TextEditingController();
-  final TextEditingController _researchDomainController =
-      TextEditingController();
 
   bool _initialized = false;
 
@@ -49,10 +43,6 @@ class _StudentOnboardingInfoScreenState
     _universityController.text = (user?.university ?? '').trim();
     _fieldOfStudyController.text = (user?.fieldOfStudy ?? '').trim();
     _bioController.text = (user?.bio ?? '').trim();
-    _researchTopicController.text = (user?.researchTopic ?? '').trim();
-    _laboratoryController.text = (user?.laboratory ?? '').trim();
-    _supervisorController.text = (user?.supervisor ?? '').trim();
-    _researchDomainController.text = (user?.researchDomain ?? '').trim();
 
     _initialized = true;
   }
@@ -65,10 +55,6 @@ class _StudentOnboardingInfoScreenState
     _universityController.dispose();
     _fieldOfStudyController.dispose();
     _bioController.dispose();
-    _researchTopicController.dispose();
-    _laboratoryController.dispose();
-    _supervisorController.dispose();
-    _researchDomainController.dispose();
     super.dispose();
   }
 
@@ -86,10 +72,6 @@ class _StudentOnboardingInfoScreenState
       university: _universityController.text.trim(),
       fieldOfStudy: _fieldOfStudyController.text.trim(),
       bio: _bioController.text.trim(),
-      researchTopic: _researchTopicController.text.trim(),
-      laboratory: _laboratoryController.text.trim(),
-      supervisor: _supervisorController.text.trim(),
-      researchDomain: _researchDomainController.text.trim(),
     );
 
     if (!mounted || error == null) {
@@ -118,7 +100,6 @@ class _StudentOnboardingInfoScreenState
     final l10n = AppLocalizations.of(context)!;
     final user = authProvider.userModel;
     final academicLevel = (user?.academicLevel ?? '').trim();
-    final isDoctorat = academicLevel == 'doctorat';
     final levelLabel = authLevelOption(
       academicLevel.isEmpty ? 'bac' : academicLevel,
       l10n,
@@ -233,15 +214,6 @@ class _StudentOnboardingInfoScreenState
                   ),
                   const SizedBox(height: 14),
                   _AboutYouField(controller: _bioController),
-                  if (isDoctorat) ...<Widget>[
-                    const SizedBox(height: 16),
-                    _ResearchCard(
-                      researchTopicController: _researchTopicController,
-                      laboratoryController: _laboratoryController,
-                      supervisorController: _supervisorController,
-                      researchDomainController: _researchDomainController,
-                    ),
-                  ],
                   const SizedBox(height: 22),
                   AppPrimaryButton(
                     theme: authFlowTheme,
@@ -318,148 +290,6 @@ class _StudentOnboardingInfoScreenState
       textInputAction: TextInputAction.next,
       autofillHints: const <String>[AutofillHints.addressCity],
       companyTone: true,
-    );
-  }
-}
-
-class _ResearchCard extends StatelessWidget {
-  final TextEditingController researchTopicController;
-  final TextEditingController laboratoryController;
-  final TextEditingController supervisorController;
-  final TextEditingController researchDomainController;
-
-  const _ResearchCard({
-    required this.researchTopicController,
-    required this.laboratoryController,
-    required this.supervisorController,
-    required this.researchDomainController,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[
-            authFlowTheme.accentSoft.withValues(alpha: 0.82),
-            authFlowTheme.secondary.withValues(alpha: 0.08),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: authFlowTheme.accent.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(
-                l10n.uiResearch,
-                style: authFlowTheme.section(
-                  size: 14.3,
-                  color: authFlowTheme.textPrimary,
-                  weight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: authFlowTheme.surface.withValues(alpha: 0.86),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  l10n.uiOptional,
-                  style: authFlowTheme.label(
-                    size: 10.7,
-                    color: AuthFlowPalette.link,
-                    weight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          AuthTextField(
-            controller: researchTopicController,
-            label: l10n.uiResearchTopic,
-            hint: l10n.uiResearchTopicHint,
-            icon: Icons.topic_outlined,
-            textInputAction: TextInputAction.next,
-            companyTone: true,
-          ),
-          const SizedBox(height: 12),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isWide = constraints.maxWidth >= 520;
-
-              if (isWide) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: AuthTextField(
-                        controller: laboratoryController,
-                        label: l10n.uiLaboratory,
-                        hint: l10n.uiLabName,
-                        icon: Icons.biotech_outlined,
-                        textInputAction: TextInputAction.next,
-                        companyTone: true,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AuthTextField(
-                        controller: researchDomainController,
-                        label: l10n.uiResearchDomain,
-                        hint: l10n.uiAiFinance,
-                        icon: Icons.category_outlined,
-                        textInputAction: TextInputAction.next,
-                        companyTone: true,
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              return Column(
-                children: <Widget>[
-                  AuthTextField(
-                    controller: laboratoryController,
-                    label: l10n.uiLaboratory,
-                    hint: l10n.uiLabName,
-                    icon: Icons.biotech_outlined,
-                    textInputAction: TextInputAction.next,
-                    companyTone: true,
-                  ),
-                  const SizedBox(height: 12),
-                  AuthTextField(
-                    controller: researchDomainController,
-                    label: l10n.uiResearchDomain,
-                    hint: l10n.uiAiFinance,
-                    icon: Icons.category_outlined,
-                    textInputAction: TextInputAction.next,
-                    companyTone: true,
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          AuthTextField(
-            controller: supervisorController,
-            label: l10n.uiSupervisor,
-            hint: l10n.uiSupervisorHint,
-            icon: Icons.person_outline_rounded,
-            textInputAction: TextInputAction.done,
-            companyTone: true,
-          ),
-        ],
-      ),
     );
   }
 }

@@ -26,12 +26,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  final TextEditingController _researchTopicController =
-      TextEditingController();
-  final TextEditingController _laboratoryController = TextEditingController();
-  final TextEditingController _supervisorController = TextEditingController();
-  final TextEditingController _researchDomainController =
-      TextEditingController();
 
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
@@ -53,10 +47,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _researchTopicController.dispose();
-    _laboratoryController.dispose();
-    _supervisorController.dispose();
-    _researchDomainController.dispose();
     super.dispose();
   }
 
@@ -74,10 +64,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
       selectedRole: _selectedRole,
-      researchTopic: _researchTopicController.text.trim(),
-      laboratory: _laboratoryController.text.trim(),
-      supervisor: _supervisorController.text.trim(),
-      researchDomain: _researchDomainController.text.trim(),
     );
 
     if (!mounted) {
@@ -216,20 +202,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 20),
                     _buildProfileSelection(),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 180),
-                      switchInCurve: Curves.easeOut,
-                      switchOutCurve: Curves.easeIn,
-                      child: _selectedRole == 'doctorat'
-                          ? Padding(
-                              key: const ValueKey<String>('doctorat-fields'),
-                              padding: const EdgeInsets.only(top: 16),
-                              child: _buildDoctoratFields(),
-                            )
-                          : const SizedBox.shrink(
-                              key: ValueKey<String>('no-doctorat-fields'),
-                            ),
-                    ),
                     const SizedBox(height: 24),
                     AppPrimaryButton(
                       theme: authFlowTheme,
@@ -461,90 +433,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               );
             },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDoctoratFields() {
-    final l10n = AppLocalizations.of(context)!;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[
-            authFlowTheme.accentSoft.withValues(alpha: 0.82),
-            authFlowTheme.secondary.withValues(alpha: 0.07),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: authFlowTheme.accent.withValues(alpha: 0.22)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(
-                l10n.uiResearchDetails,
-                style: authFlowTheme.section(
-                  size: 14.3,
-                  color: authFlowTheme.textPrimary,
-                  weight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: authFlowTheme.surface.withValues(alpha: 0.86),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  l10n.uiOptional,
-                  style: authFlowTheme.label(
-                    size: 10.7,
-                    color: authFlowTheme.accent,
-                    weight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          AuthTextField(
-            controller: _researchTopicController,
-            label: l10n.uiResearchTopic,
-            hint: l10n.uiResearchTopicHint,
-            icon: Icons.topic_outlined,
-            companyTone: true,
-          ),
-          const SizedBox(height: 12),
-          AuthTextField(
-            controller: _laboratoryController,
-            label: l10n.uiLaboratory,
-            hint: l10n.uiLaboratoryHint,
-            icon: Icons.biotech_outlined,
-            companyTone: true,
-          ),
-          const SizedBox(height: 12),
-          AuthTextField(
-            controller: _supervisorController,
-            label: l10n.uiSupervisor,
-            hint: l10n.uiSupervisorHint,
-            icon: Icons.person_outline_rounded,
-            companyTone: true,
-          ),
-          const SizedBox(height: 12),
-          AuthTextField(
-            controller: _researchDomainController,
-            label: l10n.uiResearchDomain,
-            hint: l10n.uiResearchDomainHint,
-            icon: Icons.category_outlined,
-            companyTone: true,
           ),
         ],
       ),
