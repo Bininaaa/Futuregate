@@ -39,6 +39,7 @@ class UsersScreen extends StatefulWidget {
 class _UsersScreenState extends State<UsersScreen> {
   final TextEditingController _searchController = TextEditingController();
   final DocumentAccessService _documentAccessService = DocumentAccessService();
+  final Set<String> _busyUserActionKeys = <String>{};
   bool _didOpenInitialTarget = false;
 
   AppLocalizations get _l10n => AppLocalizations.of(context)!;
@@ -584,6 +585,42 @@ class _UsersScreenState extends State<UsersScreen> {
     return user.normalizedApprovalStatus == 'approved';
   }
 
+  String _companyApprovalActionKey(String uid, String status) {
+    return 'companyApproval:$uid:${status.trim().toLowerCase()}';
+  }
+
+  bool _isCompanyApprovalBusy(String uid, String status) {
+    return _busyUserActionKeys.contains(_companyApprovalActionKey(uid, status));
+  }
+
+  bool _isUserModerationBusy(String uid) {
+    return _busyUserActionKeys.any(
+      (key) => key.startsWith('companyApproval:$uid:'),
+    );
+  }
+
+  Future<String?> _runCompanyApprovalAction(
+    UserModel user,
+    AdminProvider provider,
+    String nextStatus,
+  ) async {
+    final key = _companyApprovalActionKey(user.uid, nextStatus);
+    if (_busyUserActionKeys.contains(key)) {
+      return 'This company update is already in progress';
+    }
+
+    setState(() => _busyUserActionKeys.add(key));
+    try {
+      return await provider.updateCompanyApprovalStatus(user.uid, nextStatus);
+    } finally {
+      if (mounted) {
+        setState(() => _busyUserActionKeys.remove(key));
+      } else {
+        _busyUserActionKeys.remove(key);
+      }
+    }
+  }
+
   Color _statusColorForUser(UserModel user) {
     if (!user.isActive) {
       return AdminPalette.danger;
@@ -615,23 +652,32 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   Widget _buildCompanyQuickActions(UserModel user, AdminProvider provider) {
+    final approvalBusy = _isUserModerationBusy(user.uid);
     final actions = <Widget>[
       if (!user.isCompanyApproved)
         _buildCompanyQuickActionButton(
-          label: _l10n.uiApprove,
+          label: _isCompanyApprovalBusy(user.uid, 'approved')
+              ? _l10n.uiWorking
+              : _l10n.uiApprove,
           icon: Icons.verified_rounded,
           color: AdminPalette.success,
           filled: true,
-          onPressed: () =>
-              _showCompanyApprovalDialog(user, provider, 'approved'),
+          isBusy: _isCompanyApprovalBusy(user.uid, 'approved'),
+          onPressed: approvalBusy
+              ? null
+              : () => _showCompanyApprovalDialog(user, provider, 'approved'),
         ),
       if (user.isCompanyPendingApproval)
         _buildCompanyQuickActionButton(
-          label: _l10n.uiReject,
+          label: _isCompanyApprovalBusy(user.uid, 'rejected')
+              ? _l10n.uiWorking
+              : _l10n.uiReject,
           icon: Icons.gpp_bad_outlined,
           color: AdminPalette.danger,
-          onPressed: () =>
-              _showCompanyApprovalDialog(user, provider, 'rejected'),
+          isBusy: _isCompanyApprovalBusy(user.uid, 'rejected'),
+          onPressed: approvalBusy
+              ? null
+              : () => _showCompanyApprovalDialog(user, provider, 'rejected'),
         ),
     ];
 
@@ -656,8 +702,9 @@ class _UsersScreenState extends State<UsersScreen> {
     required String label,
     required IconData icon,
     required Color color,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
     bool filled = false,
+    bool isBusy = false,
   }) {
     final style = filled
         ? FilledButton.styleFrom(
@@ -680,7 +727,17 @@ class _UsersScreenState extends State<UsersScreen> {
     final child = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 16),
+        if (isBusy)
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: filled ? Colors.white : color,
+            ),
+          )
+        else
+          Icon(icon, size: 16),
         const SizedBox(width: 6),
         Flexible(
           child: Text(
@@ -1009,10 +1066,16 @@ class _UsersScreenState extends State<UsersScreen> {
                       title: l10n.uiApproveCompany,
                       subtitle: l10n.uiApproveCompanySubtitle,
                       color: AdminPalette.success,
-                      onTap: () {
-                        Navigator.pop(sheetContext);
-                        _showCompanyApprovalDialog(user, provider, 'approved');
-                      },
+                      onTap: _isUserModerationBusy(user.uid)
+                          ? null
+                          : () {
+                              Navigator.pop(sheetContext);
+                              _showCompanyApprovalDialog(
+                                user,
+                                provider,
+                                'approved',
+                              );
+                            },
                     ),
                   ],
                   if (user.role == 'company' && !user.isCompanyRejected) ...[
@@ -1022,10 +1085,16 @@ class _UsersScreenState extends State<UsersScreen> {
                       title: l10n.uiRejectCompany,
                       subtitle: l10n.uiRejectCompanySubtitle,
                       color: AdminPalette.danger,
-                      onTap: () {
-                        Navigator.pop(sheetContext);
-                        _showCompanyApprovalDialog(user, provider, 'rejected');
-                      },
+                      onTap: _isUserModerationBusy(user.uid)
+                          ? null
+                          : () {
+                              Navigator.pop(sheetContext);
+                              _showCompanyApprovalDialog(
+                                user,
+                                provider,
+                                'rejected',
+                              );
+                            },
                     ),
                   ],
                   if (user.role == 'company' &&
@@ -1036,10 +1105,16 @@ class _UsersScreenState extends State<UsersScreen> {
                       title: l10n.uiMarkPendingReview,
                       subtitle: l10n.uiMarkPendingSubtitle,
                       color: AdminPalette.warning,
-                      onTap: () {
-                        Navigator.pop(sheetContext);
-                        _showCompanyApprovalDialog(user, provider, 'pending');
-                      },
+                      onTap: _isUserModerationBusy(user.uid)
+                          ? null
+                          : () {
+                              Navigator.pop(sheetContext);
+                              _showCompanyApprovalDialog(
+                                user,
+                                provider,
+                                'pending',
+                              );
+                            },
                     ),
                   ],
                   const SizedBox(height: 10),
@@ -1121,8 +1196,7 @@ class _UsersScreenState extends State<UsersScreen> {
         _ => AppFeedbackType.warning,
       },
       successIcon: actionIcon,
-      onConfirm: () =>
-          provider.updateCompanyApprovalStatus(user.uid, nextStatus),
+      onConfirm: () => _runCompanyApprovalAction(user, provider, nextStatus),
     );
   }
 
@@ -1141,167 +1215,182 @@ class _UsersScreenState extends State<UsersScreen> {
     required AppFeedbackType successType,
     required IconData successIcon,
   }) {
+    var isSubmitting = false;
     showDialog(
       context: context,
       barrierColor: const Color(0xFF0F172A).withValues(alpha: 0.4),
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AdminPalette.surface,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: accentColor.withValues(alpha: 0.16)),
-              boxShadow: AdminPalette.softShadow,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(icon, color: accentColor, size: 24),
-                    ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AdminPalette.surfaceMuted,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        eyebrow,
-                        style: AppTypography.product(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: AdminPalette.textMuted,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  title,
-                  style: AppTypography.product(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AdminPalette.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  message,
-                  style: AppTypography.product(
-                    fontSize: 13,
-                    height: 1.5,
-                    color: AdminPalette.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AdminPalette.surfaceMuted,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: AdminPalette.border.withValues(alpha: 0.92),
-                    ),
-                  ),
-                  child: Row(
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AdminPalette.surface,
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: accentColor.withValues(alpha: 0.16)),
+                boxShadow: AdminPalette.softShadow,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
                       Container(
-                        width: 38,
-                        height: 38,
+                        width: 50,
+                        height: 50,
                         decoration: BoxDecoration(
                           color: accentColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Icon(icon, color: accentColor, size: 18),
+                        child: Icon(icon, color: accentColor, size: 24),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              targetHint,
-                              style: AppTypography.product(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: AdminPalette.textMuted,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              targetLabel,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.product(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w700,
-                                color: AdminPalette.textPrimary,
-                              ),
-                            ),
-                          ],
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AdminPalette.surfaceMuted,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          eyebrow,
+                          style: AppTypography.product(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AdminPalette.textMuted,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 18),
-                _buildAdaptiveActionGroup([
-                  _buildDocumentButton(
-                    label: AppLocalizations.of(context)!.cancelLabel,
-                    icon: Icons.close_rounded,
-                    onPressed: () => Navigator.pop(ctx),
-                    color: AdminPalette.textMuted,
-                    outlined: true,
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: AppTypography.product(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: AdminPalette.textPrimary,
+                    ),
                   ),
-                  _buildDocumentButton(
-                    label: confirmLabel,
-                    icon: icon,
-                    onPressed: () async {
-                      Navigator.pop(ctx);
-                      final error = await onConfirm();
-                      if (!mounted) return;
-                      if (error != null && context.mounted) {
-                        context.showAppSnackBar(
-                          error,
-                          title: AppLocalizations.of(
-                            context,
-                          )!.updateUnavailableTitle,
-                          type: AppFeedbackType.error,
-                        );
-                        return;
-                      }
-                      if (context.mounted) {
-                        context.showAppSnackBar(
-                          successMessage,
-                          title: successTitle,
-                          type: successType,
-                          icon: successIcon,
-                        );
-                      }
-                    },
-                    color: accentColor,
+                  const SizedBox(height: 8),
+                  Text(
+                    message,
+                    style: AppTypography.product(
+                      fontSize: 13,
+                      height: 1.5,
+                      color: AdminPalette.textSecondary,
+                    ),
                   ),
-                ]),
-              ],
+                  const SizedBox(height: 14),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AdminPalette.surfaceMuted,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: AdminPalette.border.withValues(alpha: 0.92),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: accentColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(icon, color: accentColor, size: 18),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                targetHint,
+                                style: AppTypography.product(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: AdminPalette.textMuted,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                targetLabel,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.product(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AdminPalette.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  _buildAdaptiveActionGroup([
+                    _buildDocumentButton(
+                      label: AppLocalizations.of(context)!.cancelLabel,
+                      icon: Icons.close_rounded,
+                      onPressed: isSubmitting ? null : () => Navigator.pop(ctx),
+                      color: AdminPalette.textMuted,
+                      outlined: true,
+                    ),
+                    _buildDocumentButton(
+                      label: isSubmitting
+                          ? AppLocalizations.of(context)!.uiWorking
+                          : confirmLabel,
+                      icon: icon,
+                      isBusy: isSubmitting,
+                      onPressed: isSubmitting
+                          ? null
+                          : () async {
+                              setDialogState(() => isSubmitting = true);
+                              final error = await onConfirm();
+                              if (!mounted || !ctx.mounted) return;
+                              if (error != null && context.mounted) {
+                                setDialogState(() => isSubmitting = false);
+                                context.showAppSnackBar(
+                                  error,
+                                  title: AppLocalizations.of(
+                                    context,
+                                  )!.updateUnavailableTitle,
+                                  type: AppFeedbackType.error,
+                                );
+                                return;
+                              }
+                              if (Navigator.of(ctx).canPop()) {
+                                Navigator.pop(ctx);
+                              }
+                              if (context.mounted) {
+                                context.showAppSnackBar(
+                                  successMessage,
+                                  title: successTitle,
+                                  type: successType,
+                                  icon: successIcon,
+                                );
+                              }
+                            },
+                      color: accentColor,
+                    ),
+                  ]),
+                ],
+              ),
             ),
           ),
         ),
@@ -1314,8 +1403,9 @@ class _UsersScreenState extends State<UsersScreen> {
     required String title,
     required String subtitle,
     required Color color,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
   }) {
+    final resolvedColor = onTap == null ? AdminPalette.textMuted : color;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1331,10 +1421,10 @@ class _UsersScreenState extends State<UsersScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
+                  color: resolvedColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, size: 22, color: color),
+                child: Icon(icon, size: 22, color: resolvedColor),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1362,7 +1452,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.chevron_right_rounded, color: color),
+              Icon(Icons.chevron_right_rounded, color: resolvedColor),
             ],
           ),
         ),
@@ -1476,18 +1566,20 @@ class _UsersScreenState extends State<UsersScreen> {
                       liveUser.email,
                       singleLineValue: true,
                     ),
-                    _buildOptionalDetailRow(
-                      Icons.phone_outlined,
-                      _l10n.uiPhone,
-                      liveUser.phone,
-                      _l10n.uiNotProvided,
-                    ),
-                    _buildOptionalDetailRow(
-                      Icons.location_on_outlined,
-                      _l10n.uiLocation,
-                      liveUser.location,
-                      _l10n.uiNotProvided,
-                    ),
+                    if (liveUser.role != 'admin') ...[
+                      _buildOptionalDetailRow(
+                        Icons.phone_outlined,
+                        _l10n.uiPhone,
+                        liveUser.phone,
+                        _l10n.uiNotProvided,
+                      ),
+                      _buildOptionalDetailRow(
+                        Icons.location_on_outlined,
+                        _l10n.uiLocation,
+                        liveUser.location,
+                        _l10n.uiNotProvided,
+                      ),
+                    ],
                     if (liveUser.role == 'student') ...[
                       _buildOptionalDetailRow(
                         Icons.school_outlined,
@@ -1710,30 +1802,43 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   Widget _buildCompanyModerationPanel(UserModel user, AdminProvider provider) {
+    final approvalBusy = _isUserModerationBusy(user.uid);
     final buttons = <Widget>[
       if (!user.isCompanyApproved)
         _buildDocumentButton(
-          label: _l10n.uiApproveCompany,
+          label: _isCompanyApprovalBusy(user.uid, 'approved')
+              ? _l10n.uiWorking
+              : _l10n.uiApproveCompany,
           icon: Icons.verified_rounded,
-          onPressed: () =>
-              _showCompanyApprovalDialog(user, provider, 'approved'),
+          isBusy: _isCompanyApprovalBusy(user.uid, 'approved'),
+          onPressed: approvalBusy
+              ? null
+              : () => _showCompanyApprovalDialog(user, provider, 'approved'),
           color: AdminPalette.success,
         ),
       if (!user.isCompanyRejected)
         _buildDocumentButton(
-          label: _l10n.uiRejectCompany,
+          label: _isCompanyApprovalBusy(user.uid, 'rejected')
+              ? _l10n.uiWorking
+              : _l10n.uiRejectCompany,
           icon: Icons.gpp_bad_outlined,
-          onPressed: () =>
-              _showCompanyApprovalDialog(user, provider, 'rejected'),
+          isBusy: _isCompanyApprovalBusy(user.uid, 'rejected'),
+          onPressed: approvalBusy
+              ? null
+              : () => _showCompanyApprovalDialog(user, provider, 'rejected'),
           color: AdminPalette.danger,
           outlined: true,
         ),
       if (!user.isCompanyPendingApproval)
         _buildDocumentButton(
-          label: _l10n.uiMarkPendingReview,
+          label: _isCompanyApprovalBusy(user.uid, 'pending')
+              ? _l10n.uiWorking
+              : _l10n.uiMarkPendingReview,
           icon: Icons.pending_actions_rounded,
-          onPressed: () =>
-              _showCompanyApprovalDialog(user, provider, 'pending'),
+          isBusy: _isCompanyApprovalBusy(user.uid, 'pending'),
+          onPressed: approvalBusy
+              ? null
+              : () => _showCompanyApprovalDialog(user, provider, 'pending'),
           color: AdminPalette.warning,
           outlined: true,
         ),
@@ -1771,11 +1876,23 @@ class _UsersScreenState extends State<UsersScreen> {
     required VoidCallback? onPressed,
     required Color color,
     bool outlined = false,
+    bool isBusy = false,
   }) {
+    final leading = isBusy
+        ? SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: outlined ? color : Colors.white,
+            ),
+          )
+        : Icon(icon, size: 18);
+
     if (outlined) {
       return OutlinedButton.icon(
         onPressed: onPressed,
-        icon: Icon(icon, size: 18),
+        icon: leading,
         label: Text(label),
         style: OutlinedButton.styleFrom(
           foregroundColor: color,
@@ -1787,7 +1904,7 @@ class _UsersScreenState extends State<UsersScreen> {
 
     return FilledButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 18),
+      icon: leading,
       label: Text(label),
       style: FilledButton.styleFrom(
         backgroundColor: color,
