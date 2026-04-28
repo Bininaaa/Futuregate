@@ -126,7 +126,7 @@ class _StudentOnboardingInfoScreenState
     final email = (user?.email ?? '').trim();
 
     return AuthFlowScaffold(
-      showBrandBadge: false,
+      showBrandBadge: true,
       trailing: IconButton(
         tooltip: l10n.uiSignOutTooltip,
         onPressed: authProvider.isLoading
@@ -138,7 +138,7 @@ class _StudentOnboardingInfoScreenState
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 620),
           child: AuthPanelCard(
-            padding: const EdgeInsets.all(28),
+            padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
             child: Form(
               key: _formKey,
               child: Column(
@@ -159,26 +159,18 @@ class _StudentOnboardingInfoScreenState
                       ),
                       AuthStickerSpec(
                         icon: Icons.check_circle_rounded,
-                        color: Color(0xFF3B22F6),
+                        color: AuthFlowPalette.link,
                       ),
+                    ],
+                    badges: <String>[
+                      l10n.uiStep2Of2,
+                      levelLabel,
+                      if (email.isNotEmpty) l10n.uiGoogle,
                     ],
                   ),
                   const SizedBox(height: 22),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: <Widget>[
-                      _SetupBadge(label: l10n.uiStep2Of2),
-                      _SetupBadge(label: levelLabel),
-                      if (email.isNotEmpty) _SetupBadge(label: l10n.uiGoogle),
-                    ],
-                  ),
-                  if (email.isNotEmpty || levelLabel.isNotEmpty) ...<Widget>[
-                    const SizedBox(height: 18),
-                    _ProfileMetaSection(email: email, levelLabel: levelLabel),
-                  ],
-                  const SizedBox(height: 18),
+                  AuthSectionLabel(l10n.uiStudentDetails),
+                  const SizedBox(height: 14),
                   AuthTextField(
                     controller: _fullNameController,
                     label: l10n.uiFullName,
@@ -187,6 +179,7 @@ class _StudentOnboardingInfoScreenState
                     validator: Validators.fullName(l10n),
                     textInputAction: TextInputAction.next,
                     autofillHints: const <String>[AutofillHints.name],
+                    companyTone: true,
                   ),
                   const SizedBox(height: 14),
                   LayoutBuilder(
@@ -284,6 +277,7 @@ class _StudentOnboardingInfoScreenState
       icon: Icons.school_outlined,
       validator: (value) => _requiredValue(value),
       textInputAction: TextInputAction.next,
+      companyTone: true,
     );
   }
 
@@ -296,6 +290,7 @@ class _StudentOnboardingInfoScreenState
       icon: Icons.auto_stories_outlined,
       validator: (value) => _requiredValue(value),
       textInputAction: TextInputAction.next,
+      companyTone: true,
     );
   }
 
@@ -309,6 +304,7 @@ class _StudentOnboardingInfoScreenState
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.next,
       autofillHints: const <String>[AutofillHints.telephoneNumber],
+      companyTone: true,
     );
   }
 
@@ -321,91 +317,7 @@ class _StudentOnboardingInfoScreenState
       icon: Icons.location_on_outlined,
       textInputAction: TextInputAction.next,
       autofillHints: const <String>[AutofillHints.addressCity],
-    );
-  }
-}
-
-class _SetupBadge extends StatelessWidget {
-  final String label;
-
-  const _SetupBadge({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      decoration: BoxDecoration(
-        color: authFlowTheme.surfaceMuted,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: authFlowTheme.border),
-      ),
-      child: Text(
-        label,
-        style: authFlowTheme.label(
-          size: 10.9,
-          color: authFlowTheme.textPrimary,
-        ),
-      ),
-    );
-  }
-}
-
-class _ProfileMetaSection extends StatelessWidget {
-  final String email;
-  final String levelLabel;
-
-  const _ProfileMetaSection({required this.email, required this.levelLabel});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final showTwoColumns = email.isNotEmpty && constraints.maxWidth >= 520;
-
-        if (showTwoColumns) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: AuthReadOnlyTile(
-                  label: l10n.uiEmail,
-                  value: email,
-                  icon: Icons.alternate_email_rounded,
-                  maxLines: 1,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: AuthReadOnlyTile(
-                  label: l10n.uiLevel,
-                  value: levelLabel,
-                  icon: Icons.school_rounded,
-                ),
-              ),
-            ],
-          );
-        }
-
-        return Column(
-          children: <Widget>[
-            if (email.isNotEmpty) ...<Widget>[
-              AuthReadOnlyTile(
-                label: l10n.uiEmail,
-                value: email,
-                icon: Icons.alternate_email_rounded,
-                maxLines: 1,
-              ),
-              const SizedBox(height: 12),
-            ],
-            AuthReadOnlyTile(
-              label: l10n.uiLevel,
-              value: levelLabel,
-              icon: Icons.school_rounded,
-            ),
-          ],
-        );
-      },
+      companyTone: true,
     );
   }
 }
@@ -464,7 +376,7 @@ class _ResearchCard extends StatelessWidget {
                   l10n.uiOptional,
                   style: authFlowTheme.label(
                     size: 10.7,
-                    color: authFlowTheme.accent,
+                    color: AuthFlowPalette.link,
                     weight: FontWeight.w800,
                   ),
                 ),
@@ -478,6 +390,7 @@ class _ResearchCard extends StatelessWidget {
             hint: l10n.uiResearchTopicHint,
             icon: Icons.topic_outlined,
             textInputAction: TextInputAction.next,
+            companyTone: true,
           ),
           const SizedBox(height: 12),
           LayoutBuilder(
@@ -495,6 +408,7 @@ class _ResearchCard extends StatelessWidget {
                         hint: l10n.uiLabName,
                         icon: Icons.biotech_outlined,
                         textInputAction: TextInputAction.next,
+                        companyTone: true,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -505,6 +419,7 @@ class _ResearchCard extends StatelessWidget {
                         hint: l10n.uiAiFinance,
                         icon: Icons.category_outlined,
                         textInputAction: TextInputAction.next,
+                        companyTone: true,
                       ),
                     ),
                   ],
@@ -519,6 +434,7 @@ class _ResearchCard extends StatelessWidget {
                     hint: l10n.uiLabName,
                     icon: Icons.biotech_outlined,
                     textInputAction: TextInputAction.next,
+                    companyTone: true,
                   ),
                   const SizedBox(height: 12),
                   AuthTextField(
@@ -527,6 +443,7 @@ class _ResearchCard extends StatelessWidget {
                     hint: l10n.uiAiFinance,
                     icon: Icons.category_outlined,
                     textInputAction: TextInputAction.next,
+                    companyTone: true,
                   ),
                 ],
               );
@@ -539,6 +456,7 @@ class _ResearchCard extends StatelessWidget {
             hint: l10n.uiSupervisorHint,
             icon: Icons.person_outline_rounded,
             textInputAction: TextInputAction.done,
+            companyTone: true,
           ),
         ],
       ),
@@ -563,21 +481,22 @@ class _AboutYouField extends StatelessWidget {
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: authFlowTheme.accentSoft,
+                color: AuthFlowPalette.linkSoft,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 Icons.notes_rounded,
                 size: 18,
-                color: authFlowTheme.accent,
+                color: AuthFlowPalette.link,
               ),
             ),
             const SizedBox(width: 10),
             Text(
               l10n.uiAboutYou,
               style: authFlowTheme.label(
-                size: 12.1,
+                size: 13,
                 color: authFlowTheme.textPrimary,
+                weight: FontWeight.w700,
               ),
             ),
           ],
@@ -608,15 +527,15 @@ class _AboutYouField extends StatelessWidget {
               vertical: 16,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: authFlowTheme.border),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: authFlowTheme.border),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: authFlowTheme.accent, width: 1.4),
             ),
           ),

@@ -167,7 +167,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       l10n.uiBackToLoginLower,
                       style: authFlowTheme.label(
                         size: 12.8,
-                        color: authFlowTheme.textSecondary,
+                        color: AuthFlowPalette.link,
                         weight: FontWeight.w700,
                       ),
                     ),

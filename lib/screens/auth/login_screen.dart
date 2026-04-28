@@ -144,9 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 18),
                     const AuthDivider(),
-                    const SizedBox(height: 18),
-                    AuthSectionLabel(l10n.uiAccountDetails),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                     AuthTextField(
                       controller: _emailController,
                       label: l10n.uiEmail,
@@ -201,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           l10n.uiForgotPassword,
                           style: authFlowTheme.label(
                             size: 12.8,
-                            color: authFlowTheme.accent,
+                            color: AuthFlowPalette.link,
                             weight: FontWeight.w700,
                           ),
                         ),
@@ -230,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               text: l10n.uiCreateAccount,
                               style: authFlowTheme.label(
                                 size: 13.1,
-                                color: authFlowTheme.accent,
+                                color: AuthFlowPalette.link,
                                 weight: FontWeight.w800,
                               ),
                               recognizer: TapGestureRecognizer()

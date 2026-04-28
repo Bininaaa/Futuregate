@@ -504,6 +504,9 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                   ),
                   TextButton(
                     onPressed: _pickCommercialRegister,
+                    style: TextButton.styleFrom(
+                      foregroundColor: AuthFlowPalette.link,
+                    ),
                     child: Text(l10n.uiReplace),
                   ),
                 ],
@@ -582,7 +585,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             TextSpan(
               text: l10n.uiLogIn,
               style: TextStyle(
-                color: colors.accent,
+                color: AuthFlowPalette.link,
                 fontWeight: FontWeight.bold,
               ),
               recognizer: TapGestureRecognizer()
@@ -610,7 +613,8 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             TextSpan(text: l10n.uiByRegisteringAgreePrefix),
             TextSpan(
               text: l10n.uiTermsOfUse,
-              style: const TextStyle(
+              style: TextStyle(
+                color: AuthFlowPalette.link,
                 decoration: TextDecoration.underline,
                 fontWeight: FontWeight.w500,
               ),
@@ -618,7 +622,8 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
             TextSpan(text: l10n.uiAndOur),
             TextSpan(
               text: l10n.uiPrivacyPolicy,
-              style: const TextStyle(
+              style: TextStyle(
+                color: AuthFlowPalette.link,
                 decoration: TextDecoration.underline,
                 fontWeight: FontWeight.w500,
               ),

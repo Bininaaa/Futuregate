@@ -33,6 +33,12 @@ class AuthFlowPalette {
   static Color get orange => AppColors.current.accent;
   static Color get orangeSoft => AppColors.current.accentSoft;
   static Color get tealSoft => AppColors.current.secondarySoft;
+  static Color get link => AppColors.current.isDarkMode
+      ? const Color(0xFF5EEAD4)
+      : const Color(0xFF0F766E);
+  static Color get linkSoft => AppColors.current.isDarkMode
+      ? const Color(0xFF0E2F34)
+      : const Color(0xFFE6FFFB);
 
   const AuthFlowPalette._();
 }

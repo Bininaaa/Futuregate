@@ -173,9 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 18),
                     const AuthDivider(),
-                    const SizedBox(height: 18),
-                    AuthSectionLabel(l10n.uiAccountDetails),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final isWide = constraints.maxWidth >= 490;
@@ -569,7 +567,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               text: l10n.uiLogIn,
               style: authFlowTheme.label(
                 size: 13.2,
-                color: authFlowTheme.accent,
+                color: AuthFlowPalette.link,
                 weight: FontWeight.w800,
               ),
               recognizer: TapGestureRecognizer()
@@ -601,7 +599,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               style: authFlowTheme
                   .label(
                     size: 11.2,
-                    color: authFlowTheme.textPrimary,
+                    color: AuthFlowPalette.link,
                     weight: FontWeight.w800,
                   )
                   .copyWith(decoration: TextDecoration.underline),
@@ -612,7 +610,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               style: authFlowTheme
                   .label(
                     size: 11.2,
-                    color: authFlowTheme.textPrimary,
+                    color: AuthFlowPalette.link,
                     weight: FontWeight.w800,
                   )
                   .copyWith(decoration: TextDecoration.underline),
