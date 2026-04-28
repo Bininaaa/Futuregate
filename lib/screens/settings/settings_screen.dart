@@ -745,12 +745,12 @@ class _PreferenceSelectorPill<T> extends StatelessWidget {
       onTap: () => _openSheet(context),
       borderRadius: SettingsFlowTheme.radius(999),
       child: Container(
-        constraints: const BoxConstraints(minWidth: 104, maxWidth: 148),
+        constraints: const BoxConstraints(minWidth: 76, maxWidth: 120),
         padding: const EdgeInsetsDirectional.only(
-          start: 12,
-          end: 8,
-          top: 8,
-          bottom: 8,
+          start: 9,
+          end: 6,
+          top: 6,
+          bottom: 6,
         ),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.12),
@@ -768,11 +768,11 @@ class _PreferenceSelectorPill<T> extends StatelessWidget {
                 style: SettingsFlowTheme.micro(color),
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 4),
             isBusy
                 ? SizedBox(
-                    width: 14,
-                    height: 14,
+                    width: 13,
+                    height: 13,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       color: color,
@@ -781,7 +781,7 @@ class _PreferenceSelectorPill<T> extends StatelessWidget {
                 : Icon(
                     Icons.keyboard_arrow_down_rounded,
                     color: color,
-                    size: 18,
+                    size: 16,
                   ),
           ],
         ),

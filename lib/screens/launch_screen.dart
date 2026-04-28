@@ -152,15 +152,20 @@ class _LaunchScreenState extends State<LaunchScreen>
       backgroundColor: AppColors.of(context).splashBackground,
       body: FadeTransition(
         opacity: ReverseAnimation(_fadeController),
-        child: _buildContent(),
+        child: _buildContent(context),
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     final controller = _videoController;
     if (!_videoReady || controller == null || !controller.value.isInitialized) {
-      return const SizedBox.expand();
+      return Stack(
+        children: [
+          const SizedBox.expand(),
+          _buildSkipButton(context),
+        ],
+      );
     }
 
     final videoSize = controller.value.size;
@@ -180,7 +185,41 @@ class _LaunchScreenState extends State<LaunchScreen>
             child: _LaunchAnimationHint(),
           ),
         ),
+        _buildSkipButton(context),
       ],
+    );
+  }
+
+  Widget _buildSkipButton(BuildContext context) {
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.topRight,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 12, right: 16),
+          child: GestureDetector(
+            onTap: () => _navigateToApp(),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.42),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.22),
+                ),
+              ),
+              child: const Text(
+                'Skip',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  height: 1.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

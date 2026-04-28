@@ -197,6 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // ── Quick links ──────────────────────────────────────
                   final linksCard = _LinksCard(
                     appliedCount: appliedCount,
+                    savedCount: savedCount,
                     unreadNotifications: unread,
                     onCv: () => _push(const CvScreen()),
                     onSaved: () => _push(const SavedScreen()),
@@ -1764,6 +1765,7 @@ class _FactRow extends StatelessWidget {
 
 class _LinksCard extends StatelessWidget {
   final int appliedCount;
+  final int savedCount;
   final int unreadNotifications;
   final VoidCallback onCv;
   final VoidCallback onSaved;
@@ -1777,6 +1779,7 @@ class _LinksCard extends StatelessWidget {
 
   const _LinksCard({
     required this.appliedCount,
+    required this.savedCount,
     required this.unreadNotifications,
     required this.onCv,
     required this.onSaved,
@@ -1822,7 +1825,11 @@ class _LinksCard extends StatelessWidget {
               );
               final savedCard = _FeaturedActionCard(
                 title: AppLocalizations.of(context)!.uiSavedCollection,
-                subtitle: AppLocalizations.of(context)!.uiJumpBackBookmarked,
+                subtitle: savedCount == 0
+                    ? 'Nothing saved yet'
+                    : savedCount == 1
+                        ? '1 saved item'
+                        : '$savedCount saved items',
                 icon: Icons.bookmark_outline_rounded,
                 color: SettingsFlowPalette.primary,
                 onTap: onSaved,

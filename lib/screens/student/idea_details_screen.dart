@@ -108,22 +108,24 @@ class IdeaDetailsScreen extends StatelessWidget {
             style: SettingsFlowTheme.appBarTitle(),
           ),
           actions: <Widget>[
-            IconButton(
-              tooltip: idea.isSavedByCurrentUser
-                  ? AppLocalizations.of(context)!.ideaUnsaveTooltip
-                  : AppLocalizations.of(context)!.ideaSaveTooltip,
-              onPressed: auth == null
-                  ? null
-                  : () => _toggleInteraction(
-                      context,
-                      idea,
-                      ProjectIdeaInteractionType.save,
-                    ),
-              icon: Icon(
-                idea.isSavedByCurrentUser
-                    ? Icons.bookmark_rounded
-                    : Icons.bookmark_outline_rounded,
-                color: SettingsFlowPalette.textPrimary,
+            Builder(
+              builder: (innerCtx) => IconButton(
+                tooltip: idea.isSavedByCurrentUser
+                    ? AppLocalizations.of(context)!.ideaUnsaveTooltip
+                    : AppLocalizations.of(context)!.ideaSaveTooltip,
+                onPressed: auth == null
+                    ? null
+                    : () => _toggleInteraction(
+                        innerCtx,
+                        idea,
+                        ProjectIdeaInteractionType.save,
+                      ),
+                icon: Icon(
+                  idea.isSavedByCurrentUser
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_outline_rounded,
+                  color: SettingsFlowPalette.textPrimary,
+                ),
               ),
             ),
             IconButton(
@@ -137,112 +139,114 @@ class IdeaDetailsScreen extends StatelessWidget {
             const SizedBox(width: 6),
           ],
         ),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: _theme.surface,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: _theme.border),
-                boxShadow: _theme.shadow(0.04),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  if (!isOwner || idea.canOwnerEdit) ...<Widget>[
-                    AppPrimaryButton(
-                      theme: _theme,
-                      label: isOwner
-                          ? AppLocalizations.of(context)!.ideaEditLabel
-                          : (idea.isJoinedByCurrentUser
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.ideaInterestedLabel
-                                : AppLocalizations.of(
-                                    context,
-                                  )!.ideaImInterestedLabel),
-                      icon: isOwner
-                          ? Icons.edit_rounded
-                          : idea.isJoinedByCurrentUser
-                          ? Icons.check_circle_rounded
-                          : Icons.people_outline_rounded,
-                      onPressed: () {
-                        if (isOwner) {
-                          _openEdit(context, idea);
-                          return;
-                        }
-                        _toggleInteraction(
-                          context,
-                          idea,
-                          ProjectIdeaInteractionType.interest,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                  Row(
-                    children: <Widget>[
-                      if (showLeadingSecondaryAction) ...<Widget>[
+        bottomNavigationBar: Builder(
+          builder: (innerCtx) => SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _theme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: _theme.border),
+                  boxShadow: _theme.shadow(0.04),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    if (!isOwner || idea.canOwnerEdit) ...<Widget>[
+                      AppPrimaryButton(
+                        theme: _theme,
+                        label: isOwner
+                            ? AppLocalizations.of(context)!.ideaEditLabel
+                            : (idea.isJoinedByCurrentUser
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.ideaInterestedLabel
+                                  : AppLocalizations.of(
+                                      context,
+                                    )!.ideaImInterestedLabel),
+                        icon: isOwner
+                            ? Icons.edit_rounded
+                            : idea.isJoinedByCurrentUser
+                            ? Icons.check_circle_rounded
+                            : Icons.people_outline_rounded,
+                        onPressed: () {
+                          if (isOwner) {
+                            _openEdit(context, idea);
+                            return;
+                          }
+                          _toggleInteraction(
+                            innerCtx,
+                            idea,
+                            ProjectIdeaInteractionType.interest,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                    Row(
+                      children: <Widget>[
+                        if (showLeadingSecondaryAction) ...<Widget>[
+                          Expanded(
+                            child: AppSecondaryButton(
+                              theme: _theme,
+                              label: isOwner
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.ideaManageTeamLabel
+                                  : AppLocalizations.of(
+                                      context,
+                                    )!.ideaContactCreator,
+                              icon: isOwner
+                                  ? Icons.groups_rounded
+                                  : Icons.person_outline_rounded,
+                              onPressed: () {
+                                if (isOwner) {
+                                  _showManageTeamSheet(context, idea);
+                                  return;
+                                }
+                                _openCreatorProfile(innerCtx, idea);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
                         Expanded(
                           child: AppSecondaryButton(
                             theme: _theme,
                             label: isOwner
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.ideaManageTeamLabel
-                                : AppLocalizations.of(
-                                    context,
-                                  )!.ideaContactCreator,
+                                ? AppLocalizations.of(context)!.ideaShareLabel
+                                : (idea.isSavedByCurrentUser
+                                      ? AppLocalizations.of(
+                                          context,
+                                        )!.ideaSavedLabel
+                                      : AppLocalizations.of(
+                                          context,
+                                        )!.ideaSaveLabel),
                             icon: isOwner
-                                ? Icons.groups_rounded
-                                : Icons.person_outline_rounded,
+                                ? Icons.ios_share_rounded
+                                : idea.isSavedByCurrentUser
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_outline_rounded,
                             onPressed: () {
                               if (isOwner) {
-                                _showManageTeamSheet(context, idea);
+                                _shareIdea(context, idea);
                                 return;
                               }
-                              _openCreatorProfile(context, idea);
+                              _toggleInteraction(
+                                innerCtx,
+                                idea,
+                                ProjectIdeaInteractionType.save,
+                              );
                             },
                           ),
                         ),
-                        const SizedBox(width: 10),
                       ],
-                      Expanded(
-                        child: AppSecondaryButton(
-                          theme: _theme,
-                          label: isOwner
-                              ? AppLocalizations.of(context)!.ideaShareLabel
-                              : (idea.isSavedByCurrentUser
-                                    ? AppLocalizations.of(
-                                        context,
-                                      )!.ideaSavedLabel
-                                    : AppLocalizations.of(
-                                        context,
-                                      )!.ideaSaveLabel),
-                          icon: isOwner
-                              ? Icons.ios_share_rounded
-                              : idea.isSavedByCurrentUser
-                              ? Icons.bookmark_rounded
-                              : Icons.bookmark_outline_rounded,
-                          onPressed: () {
-                            if (isOwner) {
-                              _shareIdea(context, idea);
-                              return;
-                            }
-                            _toggleInteraction(
-                              context,
-                              idea,
-                              ProjectIdeaInteractionType.save,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -253,7 +257,7 @@ class IdeaDetailsScreen extends StatelessWidget {
             AppDetailHeroCard(
               theme: _theme,
               icon: innovationCategoryIcon(idea.displayCategory),
-              showLeading: false,
+              showLeading: true,
               title: idea.title,
               subtitle: heroSubtitle,
               summary: heroSummary,
@@ -327,39 +331,43 @@ class IdeaDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            AppInfoTileGrid(
+            _IdeaPropertiesCard(
               theme: _theme,
-              items: <AppInfoTileData>[
-                AppInfoTileData(
+              items: <_IdeaProperty>[
+                _IdeaProperty(
                   label: AppLocalizations.of(context)!.uiStage,
                   value: innovationStageLabel(context, idea.displayStage),
                   icon: Icons.timeline_outlined,
                   color: stageColor,
                 ),
                 if (showModerationStatus)
-                  AppInfoTileData(
+                  _IdeaProperty(
                     label: AppLocalizations.of(context)!.uiStatus,
                     value: idea.statusLabel,
                     icon: Icons.flag_outlined,
                     color: statusColor,
                   ),
-                AppInfoTileData(
+                _IdeaProperty(
                   label: AppLocalizations.of(context)!.uiCategory,
-                  value: innovationCategoryLabel(context, idea.displayCategory),
+                  value: innovationCategoryLabel(
+                    context,
+                    idea.displayCategory,
+                  ),
                   icon: innovationCategoryIcon(idea.displayCategory),
                   color: categoryColor,
                 ),
-                AppInfoTileData(
-                  label: AppLocalizations.of(context)!.uiLevel,
-                  value: idea.level.trim().isNotEmpty
-                      ? academicLevelDisplayLabel(context, idea.level)
-                      : '',
-                  icon: Icons.school_outlined,
-                ),
-                AppInfoTileData(
+                if (idea.level.trim().isNotEmpty)
+                  _IdeaProperty(
+                    label: AppLocalizations.of(context)!.uiLevel,
+                    value: academicLevelDisplayLabel(context, idea.level),
+                    icon: Icons.school_outlined,
+                    color: _theme.secondary,
+                  ),
+                _IdeaProperty(
                   label: AppLocalizations.of(context)!.uiInterested,
                   value: '${idea.interestedCount}',
                   icon: Icons.groups_rounded,
+                  color: _theme.accent,
                 ),
               ],
             ),
@@ -691,6 +699,9 @@ class IdeaDetailsScreen extends StatelessWidget {
       return;
     }
 
+    final wasSaved = idea.isSavedByCurrentUser;
+    final wasInterested = idea.isJoinedByCurrentUser;
+
     final provider = context.read<ProjectIdeaProvider>();
     String? error;
     switch (type) {
@@ -702,12 +713,42 @@ class IdeaDetailsScreen extends StatelessWidget {
         break;
     }
 
-    if (error != null && context.mounted) {
+    if (!context.mounted) return;
+
+    if (error != null) {
       context.showAppSnackBar(
         error,
         title: AppLocalizations.of(context)!.uiUpdateUnavailable,
         type: AppFeedbackType.error,
       );
+      return;
+    }
+
+    switch (type) {
+      case ProjectIdeaInteractionType.save:
+        context.showAppSnackBar(
+          wasSaved
+              ? 'Idea removed from your saved collection.'
+              : 'Idea saved to your collection.',
+          title: wasSaved ? 'Idea unsaved' : 'Idea saved',
+          type: wasSaved ? AppFeedbackType.neutral : AppFeedbackType.success,
+          icon: wasSaved
+              ? Icons.bookmark_remove_outlined
+              : Icons.bookmark_added_rounded,
+        );
+        break;
+      case ProjectIdeaInteractionType.interest:
+        context.showAppSnackBar(
+          wasInterested
+              ? 'You are no longer marked as interested.'
+              : 'You are now marked as interested in this idea.',
+          title: wasInterested ? 'Interest removed' : 'Interest marked',
+          type: wasInterested ? AppFeedbackType.neutral : AppFeedbackType.success,
+          icon: wasInterested
+              ? Icons.people_outline_rounded
+              : Icons.people_alt_rounded,
+        );
+        break;
     }
   }
 
@@ -884,6 +925,127 @@ class _TagBlock extends StatelessWidget {
               .toList(growable: false),
         ),
       ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Idea properties card
+// ---------------------------------------------------------------------------
+
+class _IdeaProperty {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+
+  const _IdeaProperty({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+}
+
+class _IdeaPropertiesCard extends StatelessWidget {
+  final AppContentTheme theme;
+  final List<_IdeaProperty> items;
+
+  const _IdeaPropertiesCard({required this.theme, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    final visible = items.where((p) => p.value.trim().isNotEmpty).toList();
+    if (visible.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: theme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.border),
+        boxShadow: theme.shadow(0.03),
+      ),
+      child: Column(
+        children: <Widget>[
+          for (int i = 0; i < visible.length; i++) ...<Widget>[
+            _IdeaPropertyRow(theme: theme, property: visible[i]),
+            if (i < visible.length - 1)
+              Divider(
+                height: 1,
+                indent: 58,
+                color: theme.border.withValues(alpha: 0.6),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _IdeaPropertyRow extends StatelessWidget {
+  final AppContentTheme theme;
+  final _IdeaProperty property;
+
+  const _IdeaPropertyRow({required this.theme, required this.property});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        children: <Widget>[
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: property.color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(property.icon, size: 18, color: property.color),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  property.label,
+                  style: theme.label(
+                    size: 10.8,
+                    color: theme.textMuted,
+                    weight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  DisplayText.capitalizeDisplayValue(property.value),
+                  style: theme.label(
+                    size: 13.2,
+                    color: theme.textPrimary,
+                    weight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: property.color.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              property.value.split(' ').first,
+              style: theme.label(
+                size: 10.5,
+                color: property.color,
+                weight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

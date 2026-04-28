@@ -195,14 +195,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                   contextLabel: widget.contextLabel,
                   showRole: widget.showRole,
                 ),
-                if (snapshot.connectionState == ConnectionState.waiting) ...[
-                  const SizedBox(height: 12),
-                  _InlineNotice(
-                    icon: Icons.sync_rounded,
-                    title: 'Refreshing profile',
-                    message: 'Getting the latest public details.',
-                  ),
-                ] else if (snapshot.hasError) ...[
+                if (snapshot.hasError) ...[
                   const SizedBox(height: 12),
                   _InlineNotice(
                     icon: Icons.sync_problem_outlined,

@@ -172,8 +172,8 @@ class AppAlert extends StatelessWidget {
     final effectivePadding =
         padding ??
         EdgeInsets.symmetric(
-          horizontal: compact ? 14 : 16,
-          vertical: compact ? 12 : 14,
+          horizontal: compact ? 13 : 15,
+          vertical: compact ? 11 : 13,
         );
     final effectiveIcon = icon ?? variant.icon;
     final hasTitle = (title ?? '').trim().isNotEmpty;
@@ -183,18 +183,19 @@ class AppAlert extends StatelessWidget {
       width: double.infinity,
       padding: effectivePadding,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[variant.background, variant.surfaceHighlight],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(compact ? 18 : 22),
-        border: Border.all(color: variant.border),
+        color: variant.background,
+        borderRadius: BorderRadius.circular(compact ? 18 : 20),
+        border: Border.all(color: variant.accent.withValues(alpha: 0.22)),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: variant.shadow,
+            color: variant.accent.withValues(alpha: 0.18),
             blurRadius: compact ? 16 : 22,
-            offset: Offset(0, compact ? 8 : 10),
+            offset: Offset(0, compact ? 6 : 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -205,19 +206,19 @@ class AppAlert extends StatelessWidget {
         children: <Widget>[
           if (showIcon) ...<Widget>[
             Container(
-              width: compact ? 34 : 40,
-              height: compact ? 34 : 40,
+              width: compact ? 38 : 42,
+              height: compact ? 38 : 42,
               decoration: BoxDecoration(
-                color: variant.iconBackground,
-                borderRadius: BorderRadius.circular(compact ? 12 : 14),
+                color: variant.accent,
+                shape: BoxShape.circle,
               ),
               child: Icon(
                 effectiveIcon,
-                color: variant.accent,
+                color: Colors.white,
                 size: compact ? 18 : 20,
               ),
             ),
-            SizedBox(width: compact ? 10 : 12),
+            SizedBox(width: compact ? 11 : 13),
           ],
           Expanded(
             child: Column(
@@ -228,16 +229,16 @@ class AppAlert extends StatelessWidget {
                   Text(
                     title!,
                     style: GoogleFonts.poppins(
-                      fontSize: compact ? 12.6 : 13.4,
+                      fontSize: compact ? 12.8 : 13.6,
                       fontWeight: FontWeight.w700,
-                      color: variant.titleColor,
+                      color: variant.accent,
                     ),
                   ),
-                if (hasTitle) const SizedBox(height: 4),
+                if (hasTitle) const SizedBox(height: 3),
                 Text(
                   message,
                   style: GoogleFonts.poppins(
-                    fontSize: compact ? 12.0 : 12.6,
+                    fontSize: compact ? 11.8 : 12.4,
                     fontWeight: hasTitle ? FontWeight.w500 : FontWeight.w600,
                     height: 1.45,
                     color: hasTitle
@@ -520,7 +521,7 @@ class AppSnackbar {
     return SnackBar(
       behavior: SnackBarBehavior.floating,
       elevation: 0,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+      margin: const EdgeInsets.fromLTRB(14, 0, 14, 20),
       padding: EdgeInsets.zero,
       duration: duration,
       backgroundColor: Colors.transparent,
