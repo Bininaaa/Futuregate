@@ -97,6 +97,14 @@
       return Array.isArray(values) ? values.join(', ') : '';
     }
 
+    function normalizeExternalUrl(value) {
+      const href = String(value || '').trim();
+      if (!href) return '';
+      if (/^(https?:|mailto:|tel:)/i.test(href)) return href;
+      if (href.startsWith('//')) return `https:${href}`;
+      return `https://${href.replace(/^\/+/, '')}`;
+    }
+
     function sectionBlock(title, icon, html) {
       return `<section class="editor-section">
         <header class="editor-section__head">
@@ -145,30 +153,33 @@
           ${sectionBlock('Core Story', 'book-open', `
             <div class="form-row"><label>Idea Title *</label><input id="f-title" type="text" placeholder="e.g. Campus Innovation Partner Program" value="${esc(item?.title || '')}"></div>
             <div class="form-row"><label>Tagline</label><input id="f-tagline" type="text" placeholder="One-line hook shown in the discovery feed" value="${esc(item?.tagline || '')}"></div>
-            <div class="form-row"><label>Short Description</label><textarea id="f-shortDescription" rows="3" placeholder="A tight summary — shown in cards and previews.">${esc(item?.shortDescription || '')}</textarea></div>
-            <div class="form-row"><label>Full Description *</label><textarea id="f-description" rows="6" placeholder="Describe the idea clearly with enough context for students to understand its value.">${esc(item?.description || '')}</textarea></div>
+            <div class="form-row"><label>Idea Overview *</label><textarea id="f-description" rows="6" placeholder="Describe the concept, what it does, and how it comes to life.">${esc(item?.description || item?.shortDescription || '')}</textarea></div>
           `)}
 
           ${sectionBlock('Metadata & Discovery', 'tag', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Domain *</label><input id="f-domain" type="text" placeholder="e.g. EdTech, AI, Sustainability" value="${esc(item?.domain || '')}"></div>
+              <div class="form-row"><label>Category *</label><input id="f-category" type="text" placeholder="e.g. EdTech, AI, Sustainability" value="${esc(item?.category || item?.domain || '')}"></div>
               <div class="form-row"><label>Academic Level</label>
                 <select id="f-level">${LEVELS.map(([value, label]) => `<option value="${value}" ${level === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
               </div>
               <div class="form-row"><label>Language</label>
                 <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
               </div>
-              <div class="form-row"><label>Category</label><input id="f-category" type="text" placeholder="e.g. Innovation, Startup, Research" value="${esc(item?.category || '')}"></div>
               <div class="form-row"><label>Stage</label><input id="f-stage" type="text" placeholder="e.g. Concept, Prototype, Pilot" value="${esc(item?.stage || '')}"></div>
-              <div class="form-row"><label>Tools & Stack *</label><input id="f-tools" type="text" placeholder="e.g. Flutter, Firebase, Figma" value="${esc(item?.tools || '')}"></div>
-              <div class="form-row"><label>Tags</label><input id="f-tags" type="text" placeholder="Comma-separated tags" value="${esc(joinCsv(item?.tags))}"></div>
-              <div class="form-row"><label>Skills Needed</label><input id="f-skillsNeeded" type="text" placeholder="Comma-separated skills" value="${esc(joinCsv(item?.skillsNeeded))}"></div>
+              <div class="form-row"><label>Skills Needed</label><input id="f-skillsNeeded" type="text" placeholder="Comma-separated skills" value="${esc(joinCsv(item?.skillsNeeded?.length ? item.skillsNeeded : splitCsv(item?.tools)))}"></div>
               <div class="form-row"><label>Team Roles Needed</label><input id="f-teamNeeded" type="text" placeholder="Comma-separated roles" value="${esc(joinCsv(item?.teamNeeded))}"></div>
               <div class="form-row" style="grid-column:1/-1;"><label>Target Audience</label><textarea id="f-targetAudience" rows="3" placeholder="Who benefits most from this idea?">${esc(item?.targetAudience || '')}</textarea></div>
               <div class="form-row" style="grid-column:1/-1;"><label>Problem Statement</label><textarea id="f-problemStatement" rows="4" placeholder="What specific challenge does this idea solve?">${esc(item?.problemStatement || '')}</textarea></div>
               <div class="form-row" style="grid-column:1/-1;"><label>Proposed Solution</label><textarea id="f-solution" rows="4" placeholder="How does the idea address the problem?">${esc(item?.solution || '')}</textarea></div>
               <div class="form-row" style="grid-column:1/-1;"><label>Resources Needed</label><textarea id="f-resourcesNeeded" rows="3" placeholder="What support, partners, or assets are required?">${esc(item?.resourcesNeeded || '')}</textarea></div>
               <div class="form-row" style="grid-column:1/-1;"><label>Benefits & Impact</label><textarea id="f-benefits" rows="3" placeholder="What outcomes make this idea worth pursuing?">${esc(item?.benefits || '')}</textarea></div>
+            </div>
+          `)}
+
+          ${sectionBlock('Optional Extras', 'image', `
+            <div class="form-grid-2">
+              <div class="form-row"><label>Cover Image URL</label><input id="f-imageUrl" type="url" placeholder="https://..." value="${esc(item?.imageUrl || '')}"></div>
+              <div class="form-row"><label>Deck / Demo Link</label><input id="f-attachmentUrl" type="url" placeholder="Figma, Notion, pitch deck, landing page..." value="${esc(item?.attachmentUrl || '')}"></div>
             </div>
           `)}
         </div>
@@ -212,16 +223,12 @@
         showToast('Idea title must be at least 4 characters.', 'warning');
         return false;
       }
-      if (!payload.description || payload.description.length < 20) {
-        showToast('Full description must be at least 20 characters.', 'warning');
+      if (!payload.description || payload.description.length < 60) {
+        showToast('Please add more detail to the idea overview.', 'warning');
         return false;
       }
       if (!payload.domain) {
-        showToast('Domain is required.', 'warning');
-        return false;
-      }
-      if (!payload.tools) {
-        showToast('Tools or stack is required.', 'warning');
+        showToast('Category is required.', 'warning');
         return false;
       }
       return true;
@@ -229,25 +236,31 @@
 
     async function save() {
       const uid = String(auth.currentUser?.uid || '').trim();
+      const category = val('f-category');
+      const skillsNeeded = splitCsv(val('f-skillsNeeded'));
+      const description = val('f-description');
+      const tagline = val('f-tagline');
       const payload = {
         title: val('f-title'),
-        tagline: val('f-tagline'),
-        shortDescription: val('f-shortDescription'),
-        description: val('f-description'),
-        domain: val('f-domain'),
+        tagline,
+        shortDescription: tagline || description,
+        description,
+        domain: category,
         level: val('f-level') || 'licence',
         originalLanguage: val('f-lang') || 'fr',
-        category: val('f-category'),
+        category,
         stage: val('f-stage'),
-        tools: splitCsv(val('f-tools')),
-        tags: splitCsv(val('f-tags')),
-        skillsNeeded: splitCsv(val('f-skillsNeeded')),
+        tools: skillsNeeded.join(', '),
+        tags: skillsNeeded.slice(0, 3),
+        skillsNeeded,
         teamNeeded: splitCsv(val('f-teamNeeded')),
         targetAudience: val('f-targetAudience'),
         problemStatement: val('f-problemStatement'),
         solution: val('f-solution'),
         resourcesNeeded: val('f-resourcesNeeded'),
         benefits: val('f-benefits'),
+        imageUrl: normalizeExternalUrl(val('f-imageUrl')),
+        attachmentUrl: normalizeExternalUrl(val('f-attachmentUrl')),
         isPublic: item?.isPublic !== false,
         isHidden: document.getElementById('f-hidden').checked,
         status: ideaStatus,

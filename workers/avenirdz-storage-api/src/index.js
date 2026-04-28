@@ -10,6 +10,15 @@ const MAX_PROFILE_PHOTO_BYTES = 5 * 1024 * 1024;
 const MAX_PROJECT_IDEA_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_CHAT_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_CHAT_FILE_BYTES = 20 * 1024 * 1024;
+const DEFAULT_ALLOWED_ORIGINS = [
+  "https://futuregate.tech",
+  "https://www.futuregate.tech",
+  "https://admin.futuregate.tech",
+  "https://avenirdz-7305d.web.app",
+  "https://avenirdz-7305d.firebaseapp.com",
+  "https://avenirdz-7305d-admin.web.app",
+  "https://avenirdz-7305d-admin.firebaseapp.com",
+];
 
 let cachedJwks = null;
 let jwksCachedAt = 0;
@@ -821,7 +830,7 @@ function buildCorsHeaders(request, env) {
 }
 
 function resolveAllowedOrigin(origin, configuredOrigins) {
-  const allowedOrigins = parseAllowedOrigins(configuredOrigins);
+  const allowedOrigins = resolveAllowedOrigins(configuredOrigins);
   if (allowedOrigins.length === 0) {
     return "*";
   }
@@ -830,7 +839,9 @@ function resolveAllowedOrigin(origin, configuredOrigins) {
     return allowedOrigins[0];
   }
 
-  return allowedOrigins.includes(origin) ? origin : "null";
+  return allowedOrigins.includes(origin) || isLocalDevOrigin(origin)
+    ? origin
+    : "null";
 }
 
 function isDisallowedOrigin(request, env) {
@@ -839,12 +850,12 @@ function isDisallowedOrigin(request, env) {
     return false;
   }
 
-  const allowedOrigins = parseAllowedOrigins(env.ALLOWED_ORIGINS);
+  const allowedOrigins = resolveAllowedOrigins(env.ALLOWED_ORIGINS);
   if (allowedOrigins.length === 0) {
     return false;
   }
 
-  return !allowedOrigins.includes(origin);
+  return !allowedOrigins.includes(origin) && !isLocalDevOrigin(origin);
 }
 
 function parseAllowedOrigins(configuredOrigins) {
@@ -852,6 +863,31 @@ function parseAllowedOrigins(configuredOrigins) {
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
+}
+
+function resolveAllowedOrigins(configuredOrigins) {
+  const configured = parseAllowedOrigins(configuredOrigins);
+  if (configured.length === 0 || configured.includes("*")) {
+    return configured;
+  }
+
+  return [...new Set([...configured, ...DEFAULT_ALLOWED_ORIGINS])];
+}
+
+function isLocalDevOrigin(origin) {
+  if (!origin) {
+    return false;
+  }
+
+  try {
+    const url = new URL(origin);
+    return (
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+      (url.protocol === "http:" || url.protocol === "https:")
+    );
+  } catch (_) {
+    return false;
+  }
 }
 
 function jsonResponse(request, env, payload, status = 200) {

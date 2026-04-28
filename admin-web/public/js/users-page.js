@@ -24,7 +24,7 @@ import {
   getCompanyCommercialRegisterDocument,
   getUserCvDocument,
   loadStudentCvSummary,
-  openDocumentUrl,
+  openResolvedDocument,
 } from './document-access.js';
 import { matchesSearch } from './admin-utils.js';
 import { logAdminActivity } from './activity-service.js';
@@ -1150,14 +1150,6 @@ async function openCommercialRegister(companyId, { download = false } = {}) {
   }
 }
 
-function openResolvedDocument(document, { download = false } = {}) {
-  const url = download
-    ? firstText(document?.downloadUrl, document?.url, document?.viewUrl)
-    : firstText(document?.viewUrl, document?.url, document?.downloadUrl);
-  if (!url) throw new Error('Document unavailable');
-  openDocumentUrl(url, { download, fileName: document?.fileName || '' });
-}
-
 function companyModerationHtml(approval, isActive) {
   const buttons = [];
   if (approval !== 'approved') {
@@ -1471,7 +1463,11 @@ function hasCommercialRegister(user) {
   return Boolean(
     firstText(
       user?.commercialRegisterStoragePath,
+      user?.commercialRegisterObjectKey,
+      user?.commercialRegisterAccessPath,
       user?.commercialRegisterUrl,
+      user?.commercialRegisterAccessUrl,
+      user?.commercialRegisterSignedUrl,
     ),
   );
 }

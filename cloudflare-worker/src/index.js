@@ -20,6 +20,15 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PUBLIC_ADMIN_NAME = "FutureGate Admin";
 const DEFAULT_FIREBASE_WEB_API_KEY = "AIzaSyDcQlwKznxxnom_W5nIhC4uT1HyxSAOqHk";
 const DAY_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_ALLOWED_ORIGINS = [
+  "https://futuregate.tech",
+  "https://www.futuregate.tech",
+  "https://admin.futuregate.tech",
+  "https://avenirdz-7305d.web.app",
+  "https://avenirdz-7305d.firebaseapp.com",
+  "https://avenirdz-7305d-admin.web.app",
+  "https://avenirdz-7305d-admin.firebaseapp.com",
+];
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -229,13 +238,10 @@ function normalizeFcmPlatform(value) {
 
 function corsHeaders(request, env) {
   const origin = request.headers.get("Origin") || "";
-  const allowedOrigins = (env.ALLOWED_ORIGINS || "*")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const allowedOrigins = resolveAllowedOrigins(env.ALLOWED_ORIGINS);
   const matchedOrigin = allowedOrigins.includes("*")
     ? "*"
-    : allowedOrigins.includes(origin)
+    : allowedOrigins.includes(origin) || isLocalDevOrigin(origin)
       ? origin
       : "";
 
@@ -245,6 +251,35 @@ function corsHeaders(request, env) {
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Max-Age": "86400",
   };
+}
+
+function resolveAllowedOrigins(configuredOrigins) {
+  const configured = String(configuredOrigins || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (configured.length === 0 || configured.includes("*")) {
+    return ["*"];
+  }
+
+  return [...new Set([...configured, ...DEFAULT_ALLOWED_ORIGINS])];
+}
+
+function isLocalDevOrigin(origin) {
+  if (!origin) {
+    return false;
+  }
+
+  try {
+    const url = new URL(origin);
+    return (
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+      (url.protocol === "http:" || url.protocol === "https:")
+    );
+  } catch (_) {
+    return false;
+  }
 }
 
 function withCors(response, request, env) {

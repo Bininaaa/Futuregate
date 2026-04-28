@@ -44,12 +44,19 @@
     import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, showToast, formatTimestamp } from './js/auth.js';
     import {
       auth, db, collection, doc, getDoc, getDocs, query, orderBy, limit, where,
-      setDoc, updateDoc, deleteDoc, serverTimestamp,
+      updateDoc, deleteDoc, serverTimestamp,
     } from './js/firebase-config.js';
     import { matchesSearch, getQueryParam, timestampToDate, updateUrlParams } from './js/admin-utils.js';
     import { logAdminActivity } from './js/activity-service.js';
     import { WORKER_BASE_URL } from './js/google-books-config.js';
-    import { getApplicationCv, getApplicationCvDocument, getCompanyCommercialRegisterDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
+    import {
+      getApplicationCv,
+      getApplicationCvDocument,
+      openResolvedDocument,
+      friendlyDocumentErrorMessage,
+      resolveBuiltDocumentFields,
+      resolvePrimaryDocumentFields,
+    } from './js/document-access.js';
     import { openModal, closeModal } from './js/ui.js';
     const ADMIN_PUBLISHER_NAME = 'FutureGate Content Team';
 
@@ -197,11 +204,35 @@
     }
 
     function scholarshipLink(item) {
-      return String(item?.link || item?.applyUrl || '').trim();
+      return String(item?.link || item?.applyUrl || item?.applicationUrl || item?.url || '').trim();
     }
 
     function scholarshipLocation(item) {
-      return String(item?.location || item?.locationLabel || '').trim();
+      return String(item?.location || item?.locationLabel || item?.country || item?.destination || '').trim();
+    }
+
+    function scholarshipAmountLabel(item) {
+      const amount = cleanText(item?.amount);
+      if (!amount) return '';
+      if (/^\d+([.,]\d+)?$/.test(amount)) return `${amount} DA`;
+      return amount;
+    }
+
+    function scholarshipCategory(item) {
+      return cleanText(item?.category || item?.domain || item?.field);
+    }
+
+    function scholarshipLevel(item) {
+      return cleanText(item?.level || item?.academicLevel || item?.studyLevel);
+    }
+
+    function scholarshipEligibilityItems(item) {
+      const direct = normalizeList(item?.eligibilityItems || item?.eligibility_items);
+      return direct.length ? direct : splitLines(item?.eligibility);
+    }
+
+    function scholarshipTags(item) {
+      return normalizeList(item?.tags || item?.domains || item?.categories || item?.fields).slice(0, 6);
     }
 
     function opportunityEffectiveStatus(item) {
@@ -347,9 +378,45 @@
       return `<div class="application-summary-row">
         <span class="badge badge-info"><i data-lucide="users"></i>${Number(total || 0).toLocaleString()} Total</span>
         <span class="badge badge-warning"><i data-lucide="hourglass"></i>${Number(pending || 0).toLocaleString()} Pending</span>
-        <span class="badge badge-success"><i data-lucide="check"></i>${Number(accepted || 0).toLocaleString()} Accepted</span>
+        <span class="badge badge-success"><i data-lucide="check"></i>${Number(accepted || 0).toLocaleString()} Approved</span>
         <span class="badge badge-danger"><i data-lucide="x"></i>${Number(rejected || 0).toLocaleString()} Rejected</span>
       </div>`;
+    }
+
+    function applicationStatus(value) {
+      const normalized = cleanText(value || 'pending').toLowerCase();
+      return ['accepted', 'rejected', 'withdrawn', 'reviewed'].includes(normalized)
+        ? normalized
+        : 'pending';
+    }
+
+    function applicationStatusCounts(applications) {
+      return applications.reduce((counts, application) => {
+        const status = applicationStatus(application.status);
+        counts[status] = (counts[status] || 0) + 1;
+        return counts;
+      }, { pending: 0, accepted: 0, rejected: 0, withdrawn: 0, reviewed: 0 });
+    }
+
+    function applicationsForOpportunity(opportunityId) {
+      return state.applications
+        .filter((item) => item.opportunityId === opportunityId)
+        .sort((a, b) => {
+          const aTime = timestampToDate(a.appliedAt)?.getTime() || 0;
+          const bTime = timestampToDate(b.appliedAt)?.getTime() || 0;
+          return bTime - aTime;
+        });
+    }
+
+    function studentApplications(studentId) {
+      const id = cleanText(studentId);
+      return state.applications
+        .filter((item) => cleanText(item.studentId) === id)
+        .sort((a, b) => {
+          const aTime = timestampToDate(a.appliedAt)?.getTime() || 0;
+          const bTime = timestampToDate(b.appliedAt)?.getTime() || 0;
+          return bTime - aTime;
+        });
     }
 
     function bindCardOpens(handler) {
@@ -387,7 +454,6 @@
         const user = { id: snap.id, ...snap.data(), uid: cleanText(snap.data().uid || snap.id) };
         document.getElementById('editor-title').textContent = displayNameForPublisher(user);
         document.getElementById('editor-body').innerHTML = publisherProfileHtml(user);
-        bindPublisherProfileActions(user.id);
         if (window.lucide) window.lucide.createIcons();
       } catch (error) {
         console.error('Publisher profile failed:', error);
@@ -400,22 +466,24 @@
       const role = cleanText(user.role || 'user').toLowerCase();
       const name = displayNameForPublisher(user);
       const initials = (name[0] || '?').toUpperCase();
-      const approval = cleanText(user.approvalStatus || (role === 'company' ? 'approved' : 'active')).toLowerCase();
-      const isActive = user.isActive !== false;
-      const stats = publisherContentCounts(user);
       const logoUrl = cleanText(user.logo || user.companyLogo || user.logoUrl || user.companyLogoUrl || user.photoURL || user.photoUrl || user.profileImage);
-      const contactHtml = `
-        <div class="profile-grid">
-          ${profileBlockHtml('Email', cleanText(user.email) || 'Not provided', { muted: !cleanText(user.email) })}
-          ${profileBlockHtml('Phone', cleanText(user.phone) || 'Not provided', { muted: !cleanText(user.phone) })}
-          ${profileBlockHtml('Location', cleanText(user.location || user.address) || 'Not provided', { muted: !cleanText(user.location || user.address) })}
-          ${profileBlockHtml('Joined', formatTimestamp(user.createdAt) || 'Not provided', { muted: !formatTimestamp(user.createdAt) })}
-          ${profileBlockHtml('Provider', displayLabel(user.provider || 'email'))}
-          ${profileBlockHtml('Status', badge(isActive ? 'Active' : 'Blocked', isActive ? 'badge-success' : 'badge-danger', isActive ? 'check' : 'ban'), { html: true })}
-        </div>`;
-      const roleSection = publisherRoleSection(user, role, approval);
-      const skills = normalizeList(user.skills);
-      const bioText = cleanText(user.bio || user.description);
+      const roleSection = publisherRoleSection(user, role);
+      const bioText = role === 'company'
+        ? cleanText(user.description || user.bio)
+        : cleanText(user.bio || user.description);
+      const detailRows = [
+        profileBlockHtml('Role', displayLabel(role) || 'User'),
+      ];
+      if (role !== 'admin') {
+        if (cleanText(user.email)) detailRows.push(profileBlockHtml('Email', cleanText(user.email), { preserveCase: true }));
+        if (cleanText(user.phone)) detailRows.push(profileBlockHtml('Phone', cleanText(user.phone), { preserveCase: true }));
+      }
+      if (cleanText(user.location || user.address)) {
+        detailRows.push(profileBlockHtml('Location', cleanText(user.location || user.address)));
+      }
+      if (cleanText(user.website)) {
+        detailRows.push(profileBlockHtml('Website', externalLinkHtml(user.website), { html: true }));
+      }
       return `
         <div class="details-profile-hero">
           <div class="details-profile-avatar" style="background:${roleColor(role)}1a;color:${roleColor(role)}">
@@ -423,69 +491,45 @@
           </div>
           <div>
             <div class="details-profile-name">${esc(name)}</div>
-            <div class="row-sub">${esc(cleanText(user.sector || user.location || user.email) || displayLabel(role))}</div>
+            <div class="row-sub">${esc(cleanText(user.sector || user.fieldOfStudy || user.university || user.location) || displayLabel(role))}</div>
             <div class="details-profile-badges">
               ${badge(role, role === 'company' ? 'badge-success' : role === 'admin' ? 'badge-warning' : 'badge-info', role === 'company' ? 'building-2' : role === 'admin' ? 'shield' : 'user')}
-              ${role === 'company' ? badge(approval, `badge-${statusBadgeClass(approval)}`, approval === 'pending' ? 'clock' : approval === 'rejected' ? 'x-circle' : 'badge-check') : ''}
-              ${badge(isActive ? 'Active' : 'Blocked', isActive ? 'badge-success' : 'badge-danger', isActive ? 'check' : 'ban')}
             </div>
           </div>
         </div>
-        ${section('Contact', 'contact', contactHtml)}
-        ${roleSection}
-        ${section('Published content', 'bar-chart-3', `
-          <div class="details-content-metrics">
-            ${detailsContentMetric('Jobs', stats.jobs, 'briefcase')}
-            ${detailsContentMetric('Internships', stats.internships, 'badge-check')}
-            ${detailsContentMetric('Sponsored', stats.sponsored, 'badge-dollar-sign')}
-            ${detailsContentMetric('Scholarships', stats.scholarships, 'graduation-cap')}
-          </div>
-        `)}
         ${bioText ? section(role === 'company' ? 'About' : 'Bio', 'align-left', `<p style="white-space:pre-wrap;margin:0;">${esc(bioText)}</p>`) : ''}
-        ${role === 'company' ? publisherCommercialRegisterSection(user) : ''}
-        ${skills.length ? section('Skills', 'sparkles', `<div class="tag-list">${skills.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${section('Details', 'badge', `<div class="profile-grid">${detailRows.join('')}</div>`)}
+        ${roleSection}
       `;
     }
 
-    function publisherRoleSection(user, role, approval) {
+    function publisherRoleSection(user, role) {
       if (role === 'student') {
         const academicLevel = cleanText(user.academicLevel);
-        const rows = [
-          profileBlockHtml('Academic level', academicLevel ? capitalizeLabel(academicLevel) : 'Not provided', { muted: !academicLevel }),
-          profileBlockHtml('University', cleanText(user.university) || 'Not provided', { muted: !cleanText(user.university) }),
-          profileBlockHtml('Field of study', cleanText(user.fieldOfStudy) || 'Not provided', { muted: !cleanText(user.fieldOfStudy) }),
-        ];
+        const rows = [];
+        if (academicLevel) rows.push(profileBlockHtml('Academic level', capitalizeLabel(academicLevel)));
+        if (cleanText(user.university)) rows.push(profileBlockHtml('University', cleanText(user.university)));
+        if (cleanText(user.fieldOfStudy)) rows.push(profileBlockHtml('Field of study', cleanText(user.fieldOfStudy)));
         const isDoctorate = academicLevel.toLowerCase() === 'doctorat' || academicLevel.toLowerCase().includes('doctor');
         if (isDoctorate) {
-          rows.push(
-            profileBlockHtml('Research topic', cleanText(user.researchTopic) || 'Not provided', { muted: !cleanText(user.researchTopic) }),
-            profileBlockHtml('Laboratory', cleanText(user.laboratory) || 'Not provided', { muted: !cleanText(user.laboratory) }),
-            profileBlockHtml('Supervisor', cleanText(user.supervisor) || 'Not provided', { muted: !cleanText(user.supervisor) }),
-            profileBlockHtml('Research domain', cleanText(user.researchDomain) || 'Not provided', { muted: !cleanText(user.researchDomain) }),
-          );
+          if (cleanText(user.researchTopic)) rows.push(profileBlockHtml('Research topic', cleanText(user.researchTopic)));
+          if (cleanText(user.laboratory)) rows.push(profileBlockHtml('Laboratory', cleanText(user.laboratory)));
+          if (cleanText(user.supervisor)) rows.push(profileBlockHtml('Supervisor', cleanText(user.supervisor)));
+          if (cleanText(user.researchDomain)) rows.push(profileBlockHtml('Research domain', cleanText(user.researchDomain)));
         }
-        return section('Academic', 'graduation-cap', `<div class="profile-grid">${rows.join('')}</div>`);
+        return rows.length ? section('Academic', 'graduation-cap', `<div class="profile-grid">${rows.join('')}</div>`) : '';
       }
 
       if (role === 'company') {
-        const website = cleanText(user.website);
         const rows = [
           profileBlockHtml('Company name', cleanText(user.companyName) || cleanText(user.fullName) || 'Not provided', { muted: !cleanText(user.companyName || user.fullName) }),
-          profileBlockHtml('Approval status', badge(approval || 'approved', `badge-${statusBadgeClass(approval || 'approved')}`, approval === 'pending' ? 'clock' : approval === 'rejected' ? 'x-circle' : 'badge-check'), { html: true }),
           profileBlockHtml('Sector', cleanText(user.sector || user.industry) || 'Not provided', { muted: !cleanText(user.sector || user.industry) }),
-          profileBlockHtml('Website', website ? externalLinkHtml(website) : 'Not provided', { html: Boolean(website), muted: !website }),
         ];
-        if (cleanText(user.companySize)) rows.push(profileBlockHtml('Company size', user.companySize));
-        if (cleanText(user.registrationNumber)) rows.push(profileBlockHtml('Registration #', user.registrationNumber));
         return section('Company', 'building-2', `<div class="profile-grid">${rows.join('')}</div>`);
       }
 
       if (role === 'admin') {
-        const rows = [
-          profileBlockHtml('Admin level', cleanText(user.adminLevel) || 'Not provided', { muted: !cleanText(user.adminLevel) }),
-          profileBlockHtml('Posting language', cleanText(user.preferredPostingLanguage) || 'Not provided', { muted: !cleanText(user.preferredPostingLanguage) }),
-        ];
-        return section('Admin', 'shield', `<div class="profile-grid">${rows.join('')}</div>`);
+        return '';
       }
 
       return '';
@@ -498,74 +542,6 @@
     function externalLinkHtml(value) {
       const label = cleanText(value);
       return label ? `<a href="${esc(normalizeExternalUrl(label))}" target="_blank" rel="noopener">${esc(label)}</a>` : '';
-    }
-
-    function publisherCommercialRegisterSection(user) {
-      const hasRegister = hasCommercialRegister(user);
-      const uploaded = formatTimestamp(user.commercialRegisterUploadedAt) || 'Not provided';
-      const fileName = cleanText(user.commercialRegisterFileName) || 'Commercial register';
-      return section('Commercial register', 'file-check-2', `
-        <div class="profile-block">
-          ${hasRegister
-            ? `
-              <div class="profile-block-label">${esc(fileName)}</div>
-              <div class="profile-block-value" style="margin-bottom:12px;color:var(--c-text-faint);font-size:12px;">Uploaded ${esc(uploaded)}</div>
-              <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                <button class="btn btn-sm" data-publisher-register="view"><i data-lucide="eye"></i>View register</button>
-                <button class="btn btn-sm" data-publisher-register="download"><i data-lucide="download"></i>Download register</button>
-              </div>`
-            : '<div class="profile-block-value" style="color:var(--c-danger);">Commercial register missing.</div>'
-          }
-        </div>`);
-    }
-
-    function hasCommercialRegister(user) {
-      return Boolean(cleanText(
-        user?.commercialRegisterStoragePath ||
-        user?.commercialRegisterObjectKey ||
-        user?.commercialRegisterAccessPath ||
-        user?.commercialRegisterUrl ||
-        user?.commercialRegisterAccessUrl ||
-        user?.commercialRegisterSignedUrl,
-      ));
-    }
-
-    function bindPublisherProfileActions(userId) {
-      document.querySelectorAll('[data-publisher-register]').forEach((button) => {
-        button.addEventListener('click', () => {
-          openCommercialRegister(userId, button.getAttribute('data-publisher-register') === 'download');
-        });
-      });
-    }
-
-    function publisherContentCounts(user) {
-      const ids = new Set([cleanText(user.id), cleanText(user.uid)].filter(Boolean));
-      const name = displayNameForPublisher(user).toLowerCase();
-      const opportunities = state.opportunities.filter((item) =>
-        ids.has(cleanText(item.companyId)) ||
-        (name && cleanText(item.companyName).toLowerCase() === name)
-      );
-      const scholarships = state.scholarships.filter((item) =>
-        ids.has(cleanText(item.createdBy)) ||
-        ids.has(cleanText(item.providerId)) ||
-        (name && cleanText(item.provider || item.organization).toLowerCase() === name)
-      );
-      return {
-        jobs: opportunities.filter((item) => normalizedOpportunityType(item) === 'job').length,
-        internships: opportunities.filter((item) => normalizedOpportunityType(item) === 'internship').length,
-        sponsored: opportunities.filter((item) => normalizedOpportunityType(item) === 'sponsoring').length,
-        scholarships: scholarships.length,
-      };
-    }
-
-    function detailsContentMetric(label, value, icon) {
-      return `<div class="details-content-metric">
-        <div class="details-content-metric__icon"><i data-lucide="${icon}"></i></div>
-        <div>
-          <div class="details-content-metric__value">${Number(value || 0).toLocaleString()}</div>
-          <div class="details-content-metric__label">${esc(label)}</div>
-        </div>
-      </div>`;
     }
 
     function displayNameForPublisher(user) {
@@ -839,12 +815,18 @@
     }
 
     // ---------- Shared bits ----------
-    function chipFilterBar(tab) {
+    function chipFilterBar(tab, counts = {}) {
       const chips = FILTERS[tab] || [];
       return `
         <div class="chip-row">
           <div class="chip-group">
-            ${chips.map((c) => `<button class="chip${state.filter===c.v?' active':''}" data-filter-value="${c.v}">${c.i?`<i data-lucide="${c.i}"></i>`:''}${esc(c.l)}</button>`).join('')}
+            ${chips.map((c) => {
+              const count = counts[c.v];
+              const countHtml = Number.isFinite(Number(count))
+                ? `<span class="badge" style="margin-left:2px;">${Number(count).toLocaleString()}</span>`
+                : '';
+              return `<button class="chip${state.filter===c.v?' active':''}" data-filter-value="${c.v}">${c.i?`<i data-lucide="${c.i}"></i>`:''}${esc(c.l)}${countHtml}</button>`;
+            }).join('')}
           </div>
         </div>`;
     }
@@ -889,17 +871,53 @@
     }
 
     // =============== IDEAS ===============
+    function normalizedIdeaStatus(status) {
+      const normalized = cleanText(status || 'pending').toLowerCase();
+      return ['pending', 'approved', 'rejected'].includes(normalized) ? normalized : 'pending';
+    }
+
+    function ideaStatusRank(status) {
+      const normalized = normalizedIdeaStatus(status);
+      if (normalized === 'pending') return 0;
+      if (normalized === 'approved') return 1;
+      if (normalized === 'rejected') return 2;
+      return 3;
+    }
+
+    function compareIdeasForAdmin(a, b) {
+      const statusDelta = ideaStatusRank(a.status) - ideaStatusRank(b.status);
+      if (statusDelta) return statusDelta;
+      const hiddenDelta = (a.isHidden ? 1 : 0) - (b.isHidden ? 1 : 0);
+      if (hiddenDelta) return hiddenDelta;
+      const aTime = timestampToDate(a.updatedAt || a.createdAt)?.getTime() || 0;
+      const bTime = timestampToDate(b.updatedAt || b.createdAt)?.getTime() || 0;
+      return bTime - aTime;
+    }
+
     function renderIdeasTab(panel) {
-      let items = state.ideas.slice();
+      const searchItems = state.ideas
+        .slice()
+        .sort(compareIdeasForAdmin)
+        .filter((x) => matchesQuery(x, [x.title, x.tagline, x.shortDescription, x.description, x.domain, x.category, x.level, x.tools, x.status, x.submittedBy, x.submittedByName]));
+      const counts = {
+        all: searchItems.length,
+        admin: searchItems.filter((x) => isOwnAdminIdea(x)).length,
+        pending: searchItems.filter((x) => normalizedIdeaStatus(x.status) === 'pending').length,
+        approved: searchItems.filter((x) => normalizedIdeaStatus(x.status) === 'approved').length,
+        rejected: searchItems.filter((x) => normalizedIdeaStatus(x.status) === 'rejected').length,
+        hidden: searchItems.filter((x) => x.isHidden === true).length,
+      };
+      const totalPending = state.ideas.filter((x) => normalizedIdeaStatus(x.status) === 'pending').length;
+      let items = searchItems;
       if (state.filter === 'admin')    items = items.filter((x) => isOwnAdminIdea(x));
-      if (state.filter === 'pending')  items = items.filter((x) => (x.status || 'pending') === 'pending');
-      if (state.filter === 'approved') items = items.filter((x) => x.status === 'approved');
-      if (state.filter === 'rejected') items = items.filter((x) => x.status === 'rejected');
+      if (state.filter === 'pending')  items = items.filter((x) => normalizedIdeaStatus(x.status) === 'pending');
+      if (state.filter === 'approved') items = items.filter((x) => normalizedIdeaStatus(x.status) === 'approved');
+      if (state.filter === 'rejected') items = items.filter((x) => normalizedIdeaStatus(x.status) === 'rejected');
       if (state.filter === 'hidden')   items = items.filter((x) => x.isHidden === true);
-      items = items.filter((x) => matchesQuery(x, [x.title, x.tagline, x.shortDescription, x.description, x.domain, x.submittedByName]));
 
       panel.innerHTML = `
-        ${chipFilterBar('ideas')}
+        ${totalPending ? feedbackCardHtml('Pending ideas need approve or reject decisions before they count as reviewed content.', { type: 'warning', title: `${totalPending} pending idea${totalPending === 1 ? '' : 's'}` }) : ''}
+        ${chipFilterBar('ideas', counts)}
         ${searchBar('Search ideas...')}
         <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
           <button class="btn btn-primary" id="new-idea"><i data-lucide="plus"></i>New idea</button>
@@ -914,7 +932,7 @@
     }
 
     function renderIdeaRow(it) {
-      const status = it.status || 'pending';
+      const status = normalizedIdeaStatus(it.status);
       const canEdit = isOwnAdminIdea(it);
       return contentCard({
         id: it.id,
@@ -931,7 +949,7 @@
         ],
         meta: formatTimestamp(it.createdAt) || '',
         actions: [
-          status !== 'approved' ? iconAction(it.id, 'approve', 'check', 'Approve', 'btn-success') : '',
+          status === 'pending' ? iconAction(it.id, 'approve', 'check', 'Approve', 'btn-success') : '',
           status === 'pending' ? iconAction(it.id, 'reject', 'x', 'Reject', 'btn-danger') : '',
           iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show idea' : 'Hide idea'),
           canEdit ? iconAction(it.id, 'edit', 'pencil', 'Edit idea') : '',
@@ -1033,10 +1051,15 @@
     }
 
     function openIdeaDetails(it) {
-      const toolItems = normalizeList(it.tools);
+      const displayCategory = cleanText(it.category || it.domain || 'Innovation');
+      const displayStage = cleanText(it.stage || 'Concept');
+      const overviewText = cleanText(it.description || it.shortDescription || it.tagline || it.solution || it.problemStatement);
       const tagItems = normalizeList(it.tags);
-      const skillItems = normalizeList(it.skillsNeeded);
+      const directSkillItems = normalizeList(it.skillsNeeded);
+      const skillItems = directSkillItems.length ? directSkillItems : normalizeList(it.tools);
       const roleItems = normalizeList(it.teamNeeded || it.teamRoles);
+      const isPublic = it.isPublic !== false;
+      const interestedCount = Number(it.interestedCount || 0) + Number(it.collaboratorsCount || 0);
       document.getElementById('editor-title').textContent = it.title || 'Idea details';
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', 'lightbulb', `
@@ -1045,13 +1068,14 @@
               <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
                 ${badge(it.status || 'pending', `badge-${statusBadgeClass(it.status || 'pending')}`)}
                 ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
-                ${it.domain ? badge(it.domain, '', 'tag') : ''}
+                ${displayCategory ? badge(displayCategory, '', 'tag') : ''}
                 ${it.academicLevel || it.level ? badge(it.academicLevel || it.level) : ''}
-                ${it.stage ? badge(capitalizeLabel(it.stage)) : ''}
+                ${displayStage ? badge(capitalizeLabel(displayStage)) : ''}
+                ${badge(isPublic ? 'Public idea' : 'Private idea', '', isPublic ? 'globe-2' : 'lock')}
                 ${it.submittedByName ? badge(it.submittedByName, '', 'user') : ''}
               </div>
               ${it.tagline ? `<p class="detail-hero__headline">${esc(it.tagline)}</p>` : ''}
-              <p class="detail-hero__subline">${esc(it.shortDescription || it.description || 'No additional summary provided yet.')}</p>
+              <p class="detail-hero__subline">${esc(overviewText || 'No additional summary provided yet.')}</p>
             </div>
           </div>
           <div class="details-inline-actions">
@@ -1059,124 +1083,38 @@
             ${isOwnAdminIdea(it) ? `<a class="btn btn-sm" href="idea-editor?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit Admin post</a>` : ''}
           </div>
           <div class="detail-metrics">
-            ${detailMetric('Created', formatTimestamp(it.createdAt))}
-            ${detailMetric('Category', it.category)}
-            ${detailMetric('Stage', capitalizeLabel(it.stage))}
-            ${detailMetric('Language', (it.originalLanguage || '').toUpperCase())}
+            ${detailMetric('Status', capitalizeLabel(it.status || 'pending'))}
+            ${detailMetric('Interested', interestedCount)}
+            ${detailMetric('Category', displayCategory)}
+            ${detailMetric('Stage', capitalizeLabel(displayStage))}
             ${detailMetric('Academic level', it.academicLevel || it.level)}
+            ${detailMetric('Visibility', isPublic ? 'Public idea' : 'Private idea')}
+            ${detailMetric('Submitted', formatTimestamp(it.createdAt))}
           </div>
         `)}
-        ${it.shortDescription ? section('Overview', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.shortDescription)}</p>`) : ''}
-        ${it.description ? section('Description', 'align-left', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
-        ${section('Details', 'layers', `
+        ${overviewText ? section('Overview', 'file-text', `
+          <p style="white-space:pre-wrap;margin:0;">${esc(overviewText)}</p>
+          ${it.tagline ? `<p style="white-space:pre-wrap;margin:12px 0 0;color:var(--c-primary);font-weight:700;">${esc(it.tagline)}</p>` : ''}
+        `) : ''}
+        ${section('Audience & metadata', 'layers', `
           <div class="profile-grid">
-            <div class="profile-block"><div class="profile-block-label">Domain</div><div class="profile-block-value">${esc(it.domain || '-')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Category</div><div class="profile-block-value">${esc(it.category || '-')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Stage</div><div class="profile-block-value">${esc(capitalizeLabel(it.stage || '') || '-')}</div></div>
             <div class="profile-block"><div class="profile-block-label">Academic level</div><div class="profile-block-value">${esc(it.academicLevel || it.level || '-')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Language</div><div class="profile-block-value">${esc((it.originalLanguage || '').toUpperCase() || '-')}</div></div>
-            <div class="profile-block"><div class="profile-block-label">Publisher</div><div class="profile-block-value">${esc(it.submittedByName || '-')}</div></div>
+            ${it.targetAudience ? `<div class="profile-block"><div class="profile-block-label">Target audience</div><div class="profile-block-value">${esc(it.targetAudience)}</div></div>` : ''}
+            <div class="profile-block"><div class="profile-block-label">Visibility</div><div class="profile-block-value">${esc(isPublic ? 'Public idea' : 'Private idea')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Submitted</div><div class="profile-block-value">${esc(formatTimestamp(it.createdAt) || '-')}</div></div>
           </div>
         `)}
-        ${tagItems.length ? section('Tags', 'tags', `<div class="tag-list">${tagItems.map((item) => badge(item)).join('')}</div>`) : ''}
-        ${toolItems.length ? section('Tools', 'wrench', `<div class="tag-list">${toolItems.map((item) => badge(item)).join('')}</div>`) : ''}
         ${skillItems.length ? section('Skills needed', 'sparkles', `<div class="tag-list">${skillItems.map((item) => badge(item)).join('')}</div>`) : ''}
-        ${roleItems.length ? section('Roles needed', 'users', `<div class="tag-list">${roleItems.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${roleItems.length ? section('Team needed', 'users', `<div class="tag-list">${roleItems.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${tagItems.length ? section('Tags', 'tags', `<div class="tag-list">${tagItems.map((item) => badge(item)).join('')}</div>`) : ''}
         ${it.problemStatement ? section('Problem', 'triangle-alert', `<p style="white-space:pre-wrap;margin:0;">${esc(it.problemStatement)}</p>`) : ''}
         ${it.solution ? section('Solution', 'rocket', `<p style="white-space:pre-wrap;margin:0;">${esc(it.solution)}</p>`) : ''}
-        ${it.resourcesNeeded ? section('Resources needed', 'package', `<p style="white-space:pre-wrap;margin:0;">${esc(it.resourcesNeeded)}</p>`) : ''}
         ${it.benefits ? section('Benefits', 'badge-plus', `<p style="white-space:pre-wrap;margin:0;">${esc(it.benefits)}</p>`) : ''}
       `;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
       openModal('editor-modal');
       bindPublisherActions(document.getElementById('editor-body'));
-      if (window.lucide) window.lucide.createIcons();
-    }
-
-    function openIdeaEditor(it) {
-      document.getElementById('editor-title').textContent = it ? 'Edit idea' : 'New idea';
-      document.getElementById('editor-body').innerHTML = `
-        ${section('Core story', 'book-open', `
-          <div class="form-row"><label>Title *</label><input id="f-title" type="text" value="${esc(it?.title || '')}"/></div>
-          <div class="form-row"><label>Tagline</label><input id="f-tagline" type="text" value="${esc(it?.tagline || '')}"/></div>
-          <div class="form-row"><label>Short description</label><textarea id="f-short" rows="2">${esc(it?.shortDescription || '')}</textarea></div>
-          <div class="form-row"><label>Full description</label><textarea id="f-description" rows="6">${esc(it?.description || '')}</textarea></div>
-        `)}
-        ${section('Metadata', 'tag', `
-          <div class="form-grid-2">
-            <div class="form-row"><label>Domain</label><input id="f-domain" type="text" value="${esc(it?.domain || '')}"/></div>
-            <div class="form-row"><label>Academic level</label>
-              <select id="f-level">
-                <option value="">—</option>
-                ${['Bac','Licence','Master','Doctorat'].map((lv) => `<option value="${lv}" ${it?.academicLevel===lv?'selected':''}>${lv}</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-row"><label>Category</label><input id="f-category" type="text" value="${esc(it?.category || '')}"/></div>
-            <div class="form-row"><label>Stage</label>
-              <select id="f-stage">
-                <option value="">—</option>
-                ${['Concept','Prototype','MVP','Launched'].map((lv) => `<option value="${lv}" ${it?.stage===lv?'selected':''}>${lv}</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-row"><label>Language</label>
-              <select id="f-lang">
-                ${[['fr','French'],['en','English'],['ar','Arabic']].map(([v,l]) => `<option value="${v}" ${((it?.originalLanguage||'fr')===v)?'selected':''}>${l}</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-row"><label>Status</label>
-              <select id="f-status">
-                ${['pending','approved','rejected'].map((s) => `<option value="${s}" ${(it?.status||'pending')===s?'selected':''}>${capitalizeLabel(s)}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-        `)}
-        ${section('Discovery', 'tag', `
-          <div class="form-row"><label>Tools / stack (comma separated)</label><input id="f-tools" type="text" value="${esc(joinCsv(it?.tools))}"/></div>
-          <div class="form-row"><label>Tags (comma separated)</label><input id="f-tags" type="text" value="${esc(joinCsv(it?.tags))}"/></div>
-          <div class="form-row"><label>Skills needed (comma separated)</label><input id="f-skills" type="text" value="${esc(joinCsv(it?.skillsNeeded))}"/></div>
-          <div class="form-row"><label>Team roles needed (comma separated)</label><input id="f-roles" type="text" value="${esc(joinCsv(it?.teamRoles))}"/></div>
-          <div class="form-row"><label>Target audience</label><input id="f-audience" type="text" value="${esc(it?.targetAudience || '')}"/></div>
-          <div class="form-row"><label>Problem statement</label><textarea id="f-problem" rows="3">${esc(it?.problemStatement || '')}</textarea></div>
-          <div class="form-row"><label>Solution</label><textarea id="f-solution" rows="3">${esc(it?.solution || '')}</textarea></div>
-          <div class="form-row"><label>Resources needed</label><textarea id="f-resources" rows="2">${esc(it?.resourcesNeeded || '')}</textarea></div>
-          <div class="form-row"><label>Benefits / impact</label><textarea id="f-benefits" rows="2">${esc(it?.benefits || '')}</textarea></div>
-          <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;">
-            <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${it?.isHidden?'checked':''}/> Hidden</label>
-          </div>
-        `)}
-      `;
-      openModal('editor-modal');
-      document.getElementById('editor-save').onclick = async () => {
-        const payload = {
-          title: v('f-title'), tagline: v('f-tagline'),
-          shortDescription: v('f-short'), description: v('f-description'),
-          domain: v('f-domain'), academicLevel: v('f-level'),
-          category: v('f-category'), stage: v('f-stage'),
-          originalLanguage: v('f-lang'), status: v('f-status'),
-          tools: splitCsv(v('f-tools')), tags: splitCsv(v('f-tags')),
-          skillsNeeded: splitCsv(v('f-skills')), teamRoles: splitCsv(v('f-roles')),
-          targetAudience: v('f-audience'), problemStatement: v('f-problem'),
-          solution: v('f-solution'), resourcesNeeded: v('f-resources'),
-          benefits: v('f-benefits'),
-          isHidden: document.getElementById('f-hidden').checked,
-        };
-        if (!payload.title) { showToast('Title is required.', 'warning'); return; }
-        try {
-          if (it) {
-            await updateDoc(doc(db, 'projectIdeas', it.id), payload);
-            Object.assign(it, payload);
-            showToast('Idea updated.', 'success');
-          } else {
-            const ref = doc(collection(db, 'projectIdeas'));
-            const created = { ...payload, createdAt: serverTimestamp(), submittedBy: auth.currentUser?.uid || '', submittedByName: ADMIN_PUBLISHER_NAME };
-            await setDoc(ref, created);
-            state.ideas.unshift({ id: ref.id, ...created, createdAt: { toDate: () => new Date() } });
-            showToast('Idea created.', 'success');
-          }
-          closeModal('editor-modal'); renderStats(); renderTab();
-        } catch (e) { console.error(e); showToast('Save failed.', 'error'); }
-      };
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -1187,11 +1125,11 @@
       return (Date.now() - d.getTime()) < 30 * 24 * 3600 * 1000;
     }
     function oppPendingAppsCount(oppId) {
-      return state.applications.filter((a) => a.opportunityId === oppId && (a.status || 'pending') === 'pending').length;
+      return state.applications.filter((a) => a.opportunityId === oppId && applicationStatus(a.status) === 'pending').length;
     }
 
     function renderOppsTab(panel) {
-      let items = state.opportunities
+      const allItems = state.opportunities
         .slice()
         .sort((a, b) => {
           const aTime = timestampToDate(a.updatedAt || a.createdAt)?.getTime() || 0;
@@ -1200,24 +1138,53 @@
             return bTime - aTime;
           }
           return String(a.title || '').localeCompare(String(b.title || ''), undefined, { sensitivity: 'base' });
-        });
+        })
+        .filter((x) => matchesQuery(x, [x.title, x.companyName, x.location, x.type, x.status, x.description, opportunityAmountLabel(x), x.workMode, x.employmentType]));
+      const pendingManageableApps = state.applications.filter((application) => {
+        const opportunity = state.opportunities.find((item) => item.id === application.opportunityId);
+        return opportunity && canEditOpportunity(opportunity) && applicationStatus(application.status) === 'pending';
+      }).length;
+      const counts = {
+        all: allItems.length,
+        admin: allItems.filter((x) => isAdminOpportunity(x)).length,
+        pendingApps: allItems.filter((x) => canEditOpportunity(x) && oppPendingAppsCount(x.id) > 0).length,
+        featured: allItems.filter((x) => x.isFeatured === true).length,
+        closed: allItems.filter((x) => opportunityEffectiveStatus(x) === 'closed').length,
+        hidden: allItems.filter((x) => x.isHidden === true).length,
+      };
+      let items = allItems;
       if (state.filter === 'admin')      items = items.filter((x) => isAdminOpportunity(x));
       if (state.filter === 'pendingApps')items = items.filter((x) => canEditOpportunity(x) && oppPendingAppsCount(x.id) > 0);
       if (state.filter === 'featured')   items = items.filter((x) => x.isFeatured === true);
       if (state.filter === 'closed')     items = items.filter((x) => opportunityEffectiveStatus(x) === 'closed');
       if (state.filter === 'hidden')     items = items.filter((x) => x.isHidden === true);
       if (state.oppType && state.oppType !== 'all') {
-        items = items.filter((x) => (x.type || x.opportunityType) === state.oppType);
+        items = items.filter((x) => normalizedOpportunityType(x) === state.oppType);
       }
-      items = items.filter((x) => matchesQuery(x, [x.title, x.companyName, x.location, x.type, x.description]));
 
       const typeChips = FILTERS.opportunityTypes || [];
+      const typeBase = allItems
+        .filter((x) => {
+          if (state.filter === 'admin') return isAdminOpportunity(x);
+          if (state.filter === 'pendingApps') return canEditOpportunity(x) && oppPendingAppsCount(x.id) > 0;
+          if (state.filter === 'featured') return x.isFeatured === true;
+          if (state.filter === 'closed') return opportunityEffectiveStatus(x) === 'closed';
+          if (state.filter === 'hidden') return x.isHidden === true;
+          return true;
+        });
+      const typeCounts = {
+        all: typeBase.length,
+        job: typeBase.filter((x) => normalizedOpportunityType(x) === 'job').length,
+        internship: typeBase.filter((x) => normalizedOpportunityType(x) === 'internship').length,
+        sponsoring: typeBase.filter((x) => normalizedOpportunityType(x) === 'sponsoring').length,
+      };
 
       panel.innerHTML = `
-        ${chipFilterBar('opportunities')}
+        ${pendingManageableApps ? feedbackCardHtml('Review applicants, CVs, and pending decisions for opportunities you posted as admin.', { type: 'warning', title: `${pendingManageableApps} pending application${pendingManageableApps === 1 ? '' : 's'}` }) : ''}
+        ${chipFilterBar('opportunities', counts)}
         <div class="chip-row" style="margin-top:-4px;">
           <div class="chip-group">
-            ${typeChips.map((c) => `<button class="chip${state.oppType===c.v?' active':''}" data-opptype="${c.v}"><i data-lucide="${c.i}"></i>${esc(c.l)}</button>`).join('')}
+            ${typeChips.map((c) => `<button class="chip${state.oppType===c.v?' active':''}" data-opptype="${c.v}"><i data-lucide="${c.i}"></i>${esc(c.l)}<span class="badge" style="margin-left:2px;">${Number(typeCounts[c.v] || 0).toLocaleString()}</span></button>`).join('')}
           </div>
         </div>
         ${searchBar('Search by title, company, location...')}
@@ -1236,151 +1203,9 @@
       if (window.lucide) window.lucide.createIcons();
     }
 
-    function renderOppRow(it) {
-      {
-      const pendingCount = oppPendingAppsCount(it.id);
-      const type = it.type || it.opportunityType || '—';
-      return `<div class="item-row" data-row-id="${it.id}">
-        <div class="activity-icon" style="background:rgba(245,158,11,0.14);color:#F59E0B"><i data-lucide="briefcase"></i></div>
-        <div class="row-body">
-          <div class="row-title">${esc(it.title || 'Untitled')}</div>
-          <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')} · ${esc(type)}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-            ${it.status ? `<span class="badge">${esc(displayLabel(it.status))}</span>` : ''}
-            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-            ${pendingCount ? `<span class="badge badge-info"><i data-lucide="hourglass"></i>${pendingCount} Pending</span>` : ''}
-            <span class="badge"><i data-lucide="calendar"></i>${esc(formatTimestamp(it.createdAt) || '—')}</span>
-          </div>
-        </div>
-        <div class="row-actions">
-          <button class="btn btn-sm" data-id="${it.id}" data-action="details" title="View details & applications"><i data-lucide="eye"></i></button>
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
-          <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
-          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
-        </div>
-      </div>`;
-      }
-    }
-
-    function openOppDetails(it) {
-      document.getElementById('editor-title').textContent = it.title || 'Opportunity details';
-      const apps = state.applications.filter((a) => a.opportunityId === it.id);
-      const pending = apps.filter((a) => (a.status || 'pending') === 'pending').length;
-      const accepted = apps.filter((a) => a.status === 'accepted').length;
-      const rejected = apps.filter((a) => a.status === 'rejected').length;
-      const meta = [];
-      if (it.type) meta.push(`<span class="badge"><i data-lucide="layers"></i>${esc(it.type)}</span>`);
-      if (it.status) meta.push(`<span class="badge">${esc(displayLabel(it.status))}</span>`);
-      if (it.isHidden) meta.push('<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>');
-
-      const applyLine = (a) => {
-        const s = a.status || 'pending';
-        const sClass = s === 'accepted' ? 'success' : s === 'rejected' ? 'danger' : 'warning';
-        return `<div class="item-row">
-          <div class="activity-icon" style="background:rgba(59,34,246,0.14);color:#3B22F6"><i data-lucide="user"></i></div>
-          <div class="row-body">
-            <div class="row-title">${esc(a.studentName || a.studentId || 'Applicant')}</div>
-            <div class="row-sub">Applied ${esc(formatTimestamp(a.appliedAt) || '—')}</div>
-            <div style="margin-top:6px;"><span class="badge badge-${sClass}">${esc(displayLabel(s))}</span></div>
-          </div>
-          <div class="row-actions">
-            ${s !== 'accepted' ? `<button class="btn btn-sm btn-success" data-app="${a.id}" data-app-action="accept"><i data-lucide="check"></i>Accept</button>` : ''}
-            ${s !== 'rejected' ? `<button class="btn btn-sm btn-danger" data-app="${a.id}" data-app-action="reject"><i data-lucide="x"></i>Reject</button>` : ''}
-            ${a.cvId ? `<button class="btn btn-sm" data-app="${a.cvId}" data-app-action="cv"><i data-lucide="file-text"></i>CV</button>` : ''}
-          </div>
-        </div>`;
-      };
-
-      document.getElementById('editor-body').innerHTML = `
-        ${section('Summary', 'info', `
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">${meta.join('')}</div>
-          <div class="row-sub">${esc(it.companyName || '—')} · ${esc(it.location || '—')}</div>
-        `)}
-        ${section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description || '—')}</p>`)}
-        ${Array.isArray(it.requirements) && it.requirements.length ? section('Requirements', 'list-checks', `<ul style="margin:0;padding-left:18px;">${it.requirements.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`) : ''}
-        ${section('Applications (' + apps.length + ')', 'file-text', `${applicationSummaryHtml({ total: apps.length, pending, accepted, rejected })}${apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>'}`)}
-      `;
-      const saveBtn = document.getElementById('editor-save');
-      if (saveBtn) saveBtn.style.display = 'none';
-      openModal('editor-modal');
-
-      document.querySelectorAll('[data-app-action]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const appId = btn.getAttribute('data-app');
-          const act = btn.getAttribute('data-app-action');
-          if (act === 'cv') { navigateTo('cv-viewer?cvId=' + encodeURIComponent(appId)); return; }
-          try {
-            const nextStatus = act === 'accept' ? 'accepted' : 'rejected';
-            const application = state.applications.find((x) => x.id === appId);
-            await updateDoc(doc(db, 'applications', appId), { status: nextStatus });
-            const appObj = state.applications.find((x) => x.id === appId);
-            if (appObj) appObj.status = nextStatus;
-            await logAdminActivity({
-              type: 'application',
-              action: `application_${nextStatus}`,
-              targetCollection: 'applications',
-              targetId: appId,
-              title: it.title || 'Application decision',
-              description: `${application?.studentName || 'Student'} was ${nextStatus} for ${it.title || 'an admin opportunity'}.`,
-              subjectId: application?.studentId || '',
-              subjectName: application?.studentName || 'Student',
-              status: nextStatus,
-              metadata: { opportunityId: it.id || '', opportunityTitle: it.title || '' },
-            });
-            showToast('Application ' + (act === 'accept' ? 'Accepted' : 'Rejected') + '.', 'success');
-            openOppDetails(it);
-          } catch (e) { console.error(e); showToast('Action failed: ' + (e?.message || e), 'error'); }
-        });
-      });
-      if (window.lucide) window.lucide.createIcons();
-    }
-
-    async function handleOppAction(id, action) {
-      const ref = doc(db, 'opportunities', id);
-      const it = state.opportunities.find((x) => x.id === id);
-      try {
-        if (action === 'toggle-hide') {
-          const next = !it.isHidden;
-          await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
-          it.isHidden = next;
-          await logAdminActivity({
-            type: 'opportunity',
-            action: next ? 'opportunity_hidden' : 'opportunity_shown',
-            targetCollection: 'opportunities',
-            targetId: id,
-            title: it.title || 'Opportunity',
-            description: `Opportunity "${it.title || 'Untitled'}" was ${next ? 'hidden' : 'shown'}.`,
-            subjectId: it.companyId || '',
-            subjectName: it.companyName || '',
-            status: next ? 'hidden' : 'visible',
-          });
-          showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success');
-        }
-        else if (action === 'edit') return openOppEditor(it);
-        else if (action === 'details') return openOppDetails(it);
-        else if (action === 'delete') {
-          if (!confirm('Delete this opportunity?')) return;
-          await deleteDoc(ref);
-          state.opportunities = state.opportunities.filter((x) => x.id !== id);
-          await logAdminActivity({
-            type: 'opportunity',
-            action: 'opportunity_deleted',
-            targetCollection: 'opportunities',
-            targetId: id,
-            title: it.title || 'Opportunity deleted',
-            description: `Opportunity "${it.title || 'Untitled'}" was deleted.`,
-            subjectId: it.companyId || '',
-            subjectName: it.companyName || '',
-            status: 'deleted',
-          });
-          showToast('Opportunity deleted.', 'success');
-        }
-        renderStats(); renderTab();
-      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
-    }
-
     function renderOpportunityRow(it) {
-      const pendingCount = oppPendingAppsCount(it.id);
+      const applications = applicationsForOpportunity(it.id);
+      const pendingCount = applications.filter((item) => applicationStatus(item.status) === 'pending').length;
       const type = it.type || it.opportunityType || '';
       const effectiveStatus = opportunityEffectiveStatus(it);
       const canEdit = canEditOpportunity(it);
@@ -1406,6 +1231,7 @@
           iconAction(it.id, 'delete', 'trash-2', 'Delete opportunity', 'btn-danger'),
         ],
         footerActions: [
+          applications.length ? textAction(it.id, 'applications', 'assignment', `${applications.length} Apps`, 'btn-primary') : '',
           profileLinkAction(it.companyId, 'Publisher profile'),
           amountLabel
             ? `<span class="content-card__footer-note"><i data-lucide="${type === 'sponsoring' ? 'coins' : 'wallet'}"></i>${esc(amountLabel)}</span>`
@@ -1414,23 +1240,109 @@
       });
     }
 
+    function applicationCardHtml(application, { canManage = false, focus = false, includeOpportunity = false } = {}) {
+      const status = applicationStatus(application.status);
+      const statusClass = status === 'accepted' ? 'success' : status === 'rejected' ? 'danger' : status === 'withdrawn' ? 'danger' : 'warning';
+      const opportunity = includeOpportunity
+        ? state.opportunities.find((item) => item.id === application.opportunityId)
+        : null;
+      return `<div class="item-row${focus ? ' card-highlight' : ''}" data-app-row-id="${esc(application.id)}">
+        <div class="activity-icon" style="background:rgba(59,34,246,0.14);color:#3B22F6"><i data-lucide="user"></i></div>
+        <div class="row-body">
+          <div class="row-title">${esc(application.studentName || application.studentId || 'Applicant')}</div>
+          <div class="row-sub">${includeOpportunity ? esc(opportunity?.title || application.opportunityTitle || 'Opportunity') + ' • ' : ''}Applied ${esc(formatTimestamp(application.appliedAt) || '-')}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+            <span class="badge badge-${statusClass}">${esc(displayLabel(status))}</span>
+            ${application.coverLetter ? badge('Cover letter', '', 'message-square') : ''}
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="review"><i data-lucide="panel-top-open"></i>Review</button>
+          ${application.studentId ? `<button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="profile"><i data-lucide="user"></i>Profile</button>` : ''}
+          <button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="cv"><i data-lucide="file-text"></i>CV</button>
+          ${canManage && status === 'pending' ? `<button class="btn btn-sm btn-success" data-app="${esc(application.id)}" data-app-action="accept"><i data-lucide="check"></i>Approve</button>` : ''}
+          ${canManage && status === 'pending' ? `<button class="btn btn-sm btn-danger" data-app="${esc(application.id)}" data-app-action="reject"><i data-lucide="x"></i>Reject</button>` : ''}
+        </div>
+      </div>`;
+    }
+
+    async function updateApplicationDecision(application, opportunity, nextStatus) {
+      await updateDoc(doc(db, 'applications', application.id), { status: nextStatus });
+      const appObj = state.applications.find((item) => item.id === application.id);
+      if (appObj) appObj.status = nextStatus;
+      await logAdminActivity({
+        type: 'application',
+        action: `application_${nextStatus}`,
+        targetCollection: 'applications',
+        targetId: application.id,
+        title: opportunity?.title || application.opportunityTitle || 'Application decision',
+        description: `${application.studentName || 'Student'} was ${nextStatus} for ${opportunity?.title || application.opportunityTitle || 'an admin opportunity'}.`,
+        subjectId: application.studentId || '',
+        subjectName: application.studentName || 'Student',
+        status: nextStatus,
+        metadata: { opportunityId: opportunity?.id || application.opportunityId || '', opportunityTitle: opportunity?.title || application.opportunityTitle || '' },
+      });
+      await workerBestEffort('/api/notify/application-status-changed', { applicationId: application.id });
+    }
+
+    function bindApplicationActions(root, opportunity, refresh) {
+      root.querySelectorAll('[data-app-action]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const appId = btn.getAttribute('data-app');
+          const action = btn.getAttribute('data-app-action');
+          const application = state.applications.find((item) => item.id === appId);
+          if (!application) return;
+          const actionOpportunity = opportunity?.id === application.opportunityId
+            ? opportunity
+            : (state.opportunities.find((item) => item.id === application.opportunityId) || opportunity || {});
+          if (action === 'cv') {
+            openCvViewer(appId);
+            return;
+          }
+          if (action === 'profile') {
+            openPublisherProfile(application.studentId);
+            return;
+          }
+          if (action === 'review') {
+            openApplicantQuickActions(application, actionOpportunity);
+            return;
+          }
+          if (action === 'all-apps') {
+            openStudentApplications(application.studentId, application.studentName);
+            return;
+          }
+          if (action !== 'accept' && action !== 'reject') return;
+          if (!canEditOpportunity(actionOpportunity)) {
+            showToast('You can only update applications for opportunities you posted as admin.', 'warning');
+            return;
+          }
+          try {
+            const nextStatus = action === 'accept' ? 'accepted' : 'rejected';
+            await updateApplicationDecision(application, actionOpportunity, nextStatus);
+            showToast('Application ' + displayLabel(nextStatus) + '.', 'success');
+            if (typeof refresh === 'function') refresh(appId);
+          } catch (e) {
+            console.error(e);
+            showToast('Action failed: ' + (e?.message || e), 'error');
+          }
+        });
+      });
+    }
+
     function openOpportunityDetails(it, focusApplicationId = '') {
       document.getElementById('editor-title').textContent = it.title || 'Opportunity details';
-      const apps = state.applications
-        .filter((item) => item.opportunityId === it.id)
-        .sort((a, b) => {
-          const aTime = timestampToDate(a.appliedAt)?.getTime() || 0;
-          const bTime = timestampToDate(b.appliedAt)?.getTime() || 0;
-          return bTime - aTime;
-        });
-      const pending = apps.filter((item) => (item.status || 'pending') === 'pending').length;
-      const accepted = apps.filter((item) => item.status === 'accepted').length;
-      const rejected = apps.filter((item) => item.status === 'rejected').length;
+      const apps = applicationsForOpportunity(it.id);
+      const appCounts = applicationStatusCounts(apps);
+      const pending = appCounts.pending || 0;
+      const accepted = appCounts.accepted || 0;
+      const rejected = appCounts.rejected || 0;
       const canManageApplications = canEditOpportunity(it);
       const amountLabel = opportunityAmountLabel(it);
       const requirementItems = Array.isArray(it.requirementItems) && it.requirementItems.length
         ? it.requirementItems
         : splitLines(it.requirements);
+      const benefitItems = normalizeList(it.benefits);
+      const tagItems = normalizeList(it.tags);
       const meta = [
         badge(capitalizeLabel(it.type || 'opportunity'), '', 'layers'),
         badge(opportunityEffectiveStatus(it), `badge-${statusBadgeClass(opportunityEffectiveStatus(it))}`),
@@ -1438,25 +1350,6 @@
         it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
         it.workMode ? badge(capitalizeLabel(it.workMode), '', 'map-pinned') : '',
       ].filter(Boolean).join('');
-
-      const applyLine = (application) => {
-        const status = application.status || 'pending';
-        const statusClass = status === 'accepted' ? 'success' : status === 'rejected' ? 'danger' : 'warning';
-        const isFocused = focusApplicationId && application.id === focusApplicationId;
-        return `<div class="item-row${isFocused ? ' card-highlight' : ''}" data-app-row-id="${application.id}">
-          <div class="activity-icon" style="background:rgba(59,34,246,0.14);color:#3B22F6"><i data-lucide="user"></i></div>
-          <div class="row-body">
-            <div class="row-title">${esc(application.studentName || application.studentId || 'Applicant')}</div>
-            <div class="row-sub">Applied ${esc(formatTimestamp(application.appliedAt) || '-')}</div>
-            <div style="margin-top:6px;"><span class="badge badge-${statusClass}">${esc(displayLabel(status))}</span></div>
-          </div>
-          <div class="row-actions">
-            <button class="btn btn-sm" data-app="${application.id}" data-app-action="cv"><i data-lucide="file-text"></i>CV</button>
-            ${canManageApplications && status === 'pending' ? `<button class="btn btn-sm btn-success" data-app="${application.id}" data-app-action="accept"><i data-lucide="check"></i>Approve</button>` : ''}
-            ${canManageApplications && status === 'pending' ? `<button class="btn btn-sm btn-danger" data-app="${application.id}" data-app-action="reject"><i data-lucide="x"></i>Reject</button>` : ''}
-          </div>
-        </div>`;
-      };
 
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', 'info', `
@@ -1469,7 +1362,7 @@
           </div>
           <div class="details-inline-actions">
             ${profileLinkAction(it.companyId, 'Publisher profile')}
-            ${it.createdByRole === 'company' ? '<button class="btn btn-sm" id="view-register-btn"><i data-lucide="file-check-2"></i>View register</button><button class="btn btn-sm" id="download-register-btn"><i data-lucide="download"></i>Download register</button>' : ''}
+            ${apps.length ? `<button class="btn btn-sm" id="view-opportunity-applications"><i data-lucide="assignment"></i>View applications (${apps.length})</button>` : ''}
             ${canEditOpportunity(it) ? `<a class="btn btn-sm" href="opp-editor?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit Admin post</a>` : ''}
           </div>
           <div class="detail-metrics">
@@ -1484,54 +1377,126 @@
         `)}
         ${section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description || '-')}</p>`)}
         ${requirementItems.length ? section('Requirements', 'list-checks', `<ul style="margin:0;padding-left:18px;">${requirementItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
-        ${section('Applications (' + apps.length + ')', 'file-text', `${applicationSummaryHtml({ total: apps.length, pending, accepted, rejected })}${apps.length ? `<div class="list-grid">${apps.map(applyLine).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>'}`)}
+        ${benefitItems.length ? section('Benefits', 'star', `<ul style="margin:0;padding-left:18px;">${benefitItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
+        ${tagItems.length ? section('Tags', 'tags', `<div class="tag-list">${tagItems.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${section('Applications (' + apps.length + ')', 'file-text', `${applicationSummaryHtml({ total: apps.length, pending, accepted, rejected })}${apps.length ? `<div class="list-grid">${apps.map((application) => applicationCardHtml(application, { canManage: canManageApplications, focus: focusApplicationId && application.id === focusApplicationId })).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>'}`)}
       `;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
       openModal('editor-modal');
 
-      document.querySelectorAll('[data-app-action]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const appId = btn.getAttribute('data-app');
-          const action = btn.getAttribute('data-app-action');
-          if (action === 'cv') {
-            closeModal('editor-modal');
-            openCvViewer(appId);
-            return;
-          }
-          if (!canManageApplications) {
-            showToast('You can only update applications for opportunities you posted as admin.', 'warning');
-            return;
-          }
-          try {
-            const nextStatus = action === 'accept' ? 'accepted' : 'rejected';
-            await updateDoc(doc(db, 'applications', appId), { status: nextStatus });
-            const appObj = state.applications.find((item) => item.id === appId);
-            if (appObj) appObj.status = nextStatus;
-            await logAdminActivity({
-              type: 'application',
-              action: `application_${nextStatus}`,
-              targetCollection: 'applications',
-              targetId: appId,
-              title: it.title || 'Application decision',
-              description: `${application.studentName || 'Student'} was ${nextStatus} for ${it.title || 'an admin opportunity'}.`,
-              subjectId: application.studentId || '',
-              subjectName: application.studentName || 'Student',
-              status: nextStatus,
-              metadata: { opportunityId: it.id || '', opportunityTitle: it.title || '' },
-            });
-            await workerBestEffort('/api/notify/application-status-changed', { applicationId: appId });
-            showToast('Application ' + displayLabel(nextStatus) + '.', 'success');
-            openOpportunityDetails(it, appId);
-          } catch (e) {
-            console.error(e);
-            showToast('Action failed: ' + (e?.message || e), 'error');
-          }
-        });
-      });
-      document.getElementById('view-register-btn')?.addEventListener('click', () => openCommercialRegister(it.companyId, false));
-      document.getElementById('download-register-btn')?.addEventListener('click', () => openCommercialRegister(it.companyId, true));
+      document.getElementById('view-opportunity-applications')?.addEventListener('click', () => openOpportunityApplications(it));
+      bindApplicationActions(document.getElementById('editor-body'), it, (appId) => openOpportunityDetails(it, appId));
       bindPublisherActions(document.getElementById('editor-body'));
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function openOpportunityApplications(opportunity, focusApplicationId = '') {
+      const apps = applicationsForOpportunity(opportunity.id);
+      const counts = applicationStatusCounts(apps);
+      const canManageApplications = canEditOpportunity(opportunity);
+      document.getElementById('editor-title').textContent = `Applications: ${opportunity.title || 'Opportunity'}`;
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Application review', 'assignment', `
+          <div class="detail-hero">
+            <div class="detail-hero__copy">
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                ${badge(`${apps.length} applications`, 'badge-info', 'users')}
+                ${badge(`${counts.pending || 0} pending`, 'badge-warning', 'hourglass')}
+                ${badge(`${counts.accepted || 0} accepted`, 'badge-success', 'check')}
+                ${badge(`${counts.rejected || 0} rejected`, 'badge-danger', 'x')}
+              </div>
+              <p class="detail-hero__headline">${esc(opportunity.title || 'Opportunity')}</p>
+              <p class="detail-hero__subline">${esc(canManageApplications ? 'Review applicants, CVs, and pending decisions in one place.' : 'Applications are visible here. Only the posting admin can approve or reject them.')}</p>
+            </div>
+          </div>
+          <div class="details-inline-actions">
+            <button class="btn btn-sm" id="back-to-opportunity"><i data-lucide="arrow-left"></i>Back to opportunity</button>
+          </div>
+          ${applicationSummaryHtml({ total: apps.length, pending: counts.pending || 0, accepted: counts.accepted || 0, rejected: counts.rejected || 0 })}
+        `)}
+        ${apps.length ? `<div class="list-grid">${apps.map((application) => applicationCardHtml(application, { canManage: canManageApplications, focus: focusApplicationId && application.id === focusApplicationId })).join('')}</div>` : emptyStateHtml('There are no submitted applications for this opportunity right now.', { title: 'No applications', icon: 'assignment' })}
+      `;
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      openModal('editor-modal');
+      document.getElementById('back-to-opportunity')?.addEventListener('click', () => openOpportunityDetails(opportunity, focusApplicationId));
+      bindApplicationActions(document.getElementById('editor-body'), opportunity, (appId) => openOpportunityApplications(opportunity, appId));
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function openApplicantQuickActions(application, opportunity) {
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      document.getElementById('editor-title').textContent = application.studentName || 'Applicant';
+      document.getElementById('editor-body').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      openModal('editor-modal');
+      let user = null;
+      if (application.studentId) {
+        try {
+          const snap = await getDoc(doc(db, 'users', application.studentId));
+          if (snap.exists()) user = { id: snap.id, ...snap.data() };
+        } catch (error) {
+          console.warn('Applicant profile lookup failed:', error);
+        }
+      }
+      const status = applicationStatus(application.status);
+      const statusClass = status === 'accepted' ? 'success' : status === 'rejected' ? 'danger' : 'warning';
+      const canManage = canEditOpportunity(opportunity) && status === 'pending';
+      const academicLevel = cleanText(user?.academicLevel);
+      const subtitle = [cleanText(user?.university), cleanText(user?.location)].filter(Boolean).join(' • ');
+      document.getElementById('editor-body').innerHTML = `
+        ${section('Applicant', 'user', `
+          <div class="details-profile-hero">
+            <div class="details-profile-avatar" style="background:#2563EB1a;color:#2563EB">${esc((application.studentName || 'A')[0].toUpperCase())}</div>
+            <div>
+              <div class="details-profile-name">${esc(application.studentName || application.studentId || 'Applicant')}</div>
+              <div class="row-sub">${esc(subtitle || 'Student applicant')}</div>
+              <div class="details-profile-badges">
+                ${badge('Student', 'badge-info', 'graduation-cap')}
+                ${badge(status, `badge-${statusClass}`, status === 'pending' ? 'hourglass' : status === 'accepted' ? 'check' : 'x')}
+                ${academicLevel ? badge(academicLevel, '', 'school') : ''}
+              </div>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="profile-block"><div class="profile-block-label">Opportunity</div><div class="profile-block-value">${esc(opportunity?.title || application.opportunityTitle || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Applied</div><div class="profile-block-value">${esc(formatTimestamp(application.appliedAt) || '-')}</div></div>
+            ${academicLevel ? `<div class="profile-block"><div class="profile-block-label">Academic level</div><div class="profile-block-value">${esc(capitalizeLabel(academicLevel))}</div></div>` : ''}
+            ${cleanText(user?.fieldOfStudy) ? `<div class="profile-block"><div class="profile-block-label">Field of study</div><div class="profile-block-value">${esc(user.fieldOfStudy)}</div></div>` : ''}
+          </div>
+        `)}
+        <div class="details-inline-actions">
+          <button class="btn btn-sm" id="back-to-applications"><i data-lucide="arrow-left"></i>Back to applications</button>
+          ${application.studentId ? `<button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="profile"><i data-lucide="user"></i>View profile</button>` : ''}
+          <button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="cv"><i data-lucide="file-text"></i>View CV</button>
+          ${application.studentId ? `<button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="all-apps"><i data-lucide="assignment"></i>View all apps</button>` : ''}
+          ${canManage ? `<button class="btn btn-sm btn-success" data-app="${esc(application.id)}" data-app-action="accept"><i data-lucide="check"></i>Approve</button>` : ''}
+          ${canManage ? `<button class="btn btn-sm btn-danger" data-app="${esc(application.id)}" data-app-action="reject"><i data-lucide="x"></i>Reject</button>` : ''}
+        </div>
+        ${!canEditOpportunity(opportunity) ? feedbackCardHtml('This application is read-only for your admin account.', { type: 'warning', title: 'Read-only application' }) : ''}
+      `;
+      document.getElementById('back-to-applications')?.addEventListener('click', () => openOpportunityApplications(opportunity, application.id));
+      bindApplicationActions(document.getElementById('editor-body'), opportunity, (appId) => openApplicantQuickActions(state.applications.find((item) => item.id === appId) || application, opportunity));
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function openStudentApplications(studentId, studentName = 'Student') {
+      const apps = studentApplications(studentId);
+      document.getElementById('editor-title').textContent = `${studentName || 'Student'} applications`;
+      document.getElementById('editor-body').innerHTML = `
+        ${section('All applications', 'assignment', applicationSummaryHtml({
+          total: apps.length,
+          pending: applicationStatusCounts(apps).pending || 0,
+          accepted: applicationStatusCounts(apps).accepted || 0,
+          rejected: applicationStatusCounts(apps).rejected || 0,
+        }))}
+        ${apps.length ? `<div class="list-grid">${apps.map((application) => applicationCardHtml(application, { includeOpportunity: true })).join('')}</div>` : emptyStateHtml('No applications found for this student.', { title: 'No applications', icon: 'assignment' })}
+      `;
+      const saveBtn = document.getElementById('editor-save');
+      if (saveBtn) saveBtn.style.display = 'none';
+      openModal('editor-modal');
+      bindApplicationActions(document.getElementById('editor-body'), state.opportunities.find((item) => item.id === apps[0]?.opportunityId) || {}, () => openStudentApplications(studentId, studentName));
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -1564,6 +1529,8 @@
           return openOppEditor(item);
         } else if (action === 'details') {
           return openOpportunityDetails(item);
+        } else if (action === 'applications') {
+          return openOpportunityApplications(item);
         } else if (action === 'delete') {
           if (!confirm('Delete this opportunity?')) return;
           await deleteDoc(ref);
@@ -1592,182 +1559,9 @@
     function openOppEditor(it) {
       navigateTo('opp-editor' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : ''));
     }
-    function _legacyOppEditor_unused(it) {
-      document.getElementById('editor-title').textContent = it ? 'Edit opportunity' : 'New opportunity';
-      const saveBtn0 = document.getElementById('editor-save');
-      if (saveBtn0) saveBtn0.style.display = '';
-      const deadline = toDateInput(it?.applicationDeadline || it?.deadline);
-      const opType = it?.type || it?.opportunityType || 'job';
-
-      document.getElementById('editor-body').innerHTML = `
-        ${section('Basic information', 'info', `
-          <div class="form-grid-2">
-            <div class="form-row"><label>Title *</label><input id="f-title" type="text" value="${esc(it?.title || '')}"/></div>
-            <div class="form-row"><label>Publisher / company *</label><input id="f-company" type="text" value="${esc(it?.companyName || '')}"/></div>
-            <div class="form-row"><label>Location *</label><input id="f-location" type="text" value="${esc(it?.location || '')}"/></div>
-            <div class="form-row"><label>Type</label>
-              <select id="f-type">
-                ${[['job','Job'],['internship','Internship'],['sponsoring','Sponsoring / Funding']].map(([v,l]) => `<option value="${v}" ${opType===v?'selected':''}>${l}</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-row"><label>Language</label>
-              <select id="f-lang">
-                ${[['fr','French'],['en','English'],['ar','Arabic']].map(([v,l]) => `<option value="${v}" ${((it?.originalLanguage||'fr')===v)?'selected':''}>${l}</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-row"><label>Status</label>
-              <select id="f-status">
-                <option value="open"   ${(it?.status||'open')==='open'?'selected':''}>Open</option>
-                <option value="closed" ${it?.status==='closed'?'selected':''}>Closed</option>
-              </select>
-            </div>
-          </div>
-        `)}
-        ${section('Description', 'file-text', `
-          <div class="form-row"><label>Description *</label><textarea id="f-description" rows="6">${esc(it?.description || '')}</textarea></div>
-          <div class="form-row"><label>Requirements / eligibility (one per line)</label><textarea id="f-requirements" rows="4">${esc(joinLines(it?.requirements || it?.eligibilityItems))}</textarea></div>
-        `)}
-        ${section('Logistics', 'calendar', `
-          <div class="form-grid-2">
-            <div class="form-row"><label>Application deadline</label><input id="f-deadline" type="date" value="${esc(deadline)}"/></div>
-          </div>
-          <div id="opp-type-fields"></div>
-        `)}
-        ${section('Visibility', 'eye', `
-          <div style="display:flex;gap:18px;flex-wrap:wrap;">
-            <label style="display:flex;align-items:center;gap:8px;"><input id="f-featured" type="checkbox" ${it?.isFeatured?'checked':''}/> Featured</label>
-            <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${it?.isHidden?'checked':''}/> Hidden</label>
-          </div>
-        `)}
-      `;
-
-      function renderOppTypeFields() {
-        const t = document.getElementById('f-type').value;
-        const el = document.getElementById('opp-type-fields');
-        const currency = it?.salaryCurrency || it?.fundingCurrency || 'DZD';
-        const salaryPeriod = normalizeSalaryPeriod(it?.salaryPeriod) || 'month';
-        if (t === 'job' || t === 'contract' || t === 'freelance') {
-          el.innerHTML = `
-            <div class="form-grid-2" style="margin-top:12px;">
-              <div class="form-row"><label>Salary min</label><input id="f-salaryMin" type="number" value="${esc(it?.salaryMin ?? '')}"/></div>
-              <div class="form-row"><label>Salary max</label><input id="f-salaryMax" type="number" value="${esc(it?.salaryMax ?? '')}"/></div>
-              <div class="form-row"><label>Currency</label>
-                <select id="f-currency">
-                  ${['DZD','EUR','USD'].map((c) => `<option value="${c}" ${currency===c?'selected':''}>${c}</option>`).join('')}
-                </select>
-              </div>
-              <div class="form-row"><label>Salary period</label>
-                <select id="f-salaryPeriod">
-                  ${[['month','Monthly'],['year','Yearly'],['week','Weekly'],['day','Daily'],['hour','Hourly']].map(([v,l]) => `<option value="${v}" ${salaryPeriod===v?'selected':''}>${l}</option>`).join('')}
-                </select>
-              </div>
-              <div class="form-row"><label>Employment type</label>
-                <select id="f-employment">
-                  ${[['full_time','Full-time'],['part_time','Part-time'],['contract','Contract'],['internship','Internship']].map(([v,l]) => `<option value="${v}" ${(it?.employmentType||'full_time')===v?'selected':''}>${l}</option>`).join('')}
-                </select>
-              </div>
-              <div class="form-row"><label>Work mode</label>
-                <select id="f-workmode">
-                  ${[['onsite','On-site'],['remote','Remote'],['hybrid','Hybrid']].map(([v,l]) => `<option value="${v}" ${(it?.workMode||'onsite')===v?'selected':''}>${l}</option>`).join('')}
-                </select>
-              </div>
-            </div>`;
-        } else if (t === 'internship') {
-          el.innerHTML = `
-            <div class="form-grid-2" style="margin-top:12px;">
-              <div class="form-row"><label>Duration (e.g. 3 months)</label><input id="f-duration" type="text" value="${esc(it?.duration || '')}"/></div>
-              <div class="form-row"><label>Work mode</label>
-                <select id="f-workmode">
-                  ${[['onsite','On-site'],['remote','Remote'],['hybrid','Hybrid']].map(([v,l]) => `<option value="${v}" ${(it?.workMode||'onsite')===v?'selected':''}>${l}</option>`).join('')}
-                </select>
-              </div>
-              <div class="form-row"><label>Paid?</label>
-                <select id="f-paid"><option value="true" ${it?.isPaid?'selected':''}>Paid</option><option value="false" ${it?.isPaid===false?'selected':''}>Unpaid</option></select>
-              </div>
-              <div class="form-row"><label>Compensation note</label><input id="f-compNote" type="text" value="${esc(it?.compensationNote || '')}"/></div>
-            </div>`;
-        } else if (t === 'sponsoring') {
-          el.innerHTML = `
-            <div class="form-grid-2" style="margin-top:12px;">
-              <div class="form-row"><label>Funding amount</label><input id="f-fundAmount" type="number" value="${esc(it?.fundingAmount ?? '')}"/></div>
-              <div class="form-row"><label>Currency</label>
-                <select id="f-currency">
-                  ${['DZD','EUR','USD'].map((c) => `<option value="${c}" ${currency===c?'selected':''}>${c}</option>`).join('')}
-                </select>
-              </div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Funding note</label><input id="f-fundNote" type="text" value="${esc(it?.fundingNote || '')}"/></div>
-            </div>`;
-        } else {
-          el.innerHTML = '';
-        }
-        if (window.lucide) window.lucide.createIcons();
-      }
-      document.getElementById('f-type').addEventListener('change', renderOppTypeFields);
-      renderOppTypeFields();
-
-      openModal('editor-modal');
-      document.getElementById('editor-save').onclick = async () => {
-        const t = v('f-type');
-        const dl = v('f-deadline');
-        const payload = {
-          title: v('f-title'), companyName: v('f-company'), location: v('f-location'),
-          type: t, originalLanguage: v('f-lang'), status: v('f-status'),
-          description: v('f-description'),
-          requirements: splitLines(v('f-requirements')),
-          applicationDeadline: dl ? new Date(dl + 'T00:00:00') : null,
-          isFeatured: document.getElementById('f-featured').checked,
-          isHidden: document.getElementById('f-hidden').checked,
-          updatedAt: serverTimestamp(),
-        };
-        if (t === 'job') {
-          Object.assign(payload, {
-            salaryMin: numOrNull('f-salaryMin'), salaryMax: numOrNull('f-salaryMax'),
-            salaryCurrency: v('f-currency'), salaryPeriod: normalizeSalaryPeriod(v('f-salaryPeriod')) || 'month',
-            employmentType: v('f-employment'), workMode: v('f-workmode'),
-          });
-        } else if (t === 'internship') {
-          Object.assign(payload, {
-            duration: v('f-duration'), workMode: v('f-workmode'),
-            isPaid: v('f-paid') === 'true', compensationText: v('f-compNote'),
-          });
-        } else if (t === 'sponsoring') {
-          Object.assign(payload, {
-            fundingAmount: numOrNull('f-fundAmount'),
-            fundingCurrency: v('f-currency'), fundingNote: v('f-fundNote'),
-          });
-        }
-        if (!payload.title || !payload.companyName || !payload.location || !payload.description) {
-          showToast('Title, company, location and description are required.', 'warning'); return;
-        }
-        try {
-          if (it) {
-            await updateDoc(doc(db, 'opportunities', it.id), payload);
-            Object.assign(it, payload);
-            showToast('Opportunity updated.', 'success');
-          } else {
-            const ref = doc(collection(db, 'opportunities'));
-            const uid = auth.currentUser?.uid || '';
-            const created = {
-              ...payload,
-              id: ref.id,
-              companyId: uid,
-              createdBy: uid,
-              createdByRole: 'admin',
-              createdAt: serverTimestamp(),
-            };
-            await setDoc(ref, created);
-            state.opportunities.unshift({ ...created, createdAt: { toDate: () => new Date() } });
-            showToast('Opportunity created.', 'success');
-          }
-          closeModal('editor-modal'); renderStats(); renderTab();
-        } catch (e) { console.error(e); showToast('Save failed: ' + (e?.message || e), 'error'); }
-      };
-      if (window.lucide) window.lucide.createIcons();
-    }
-
     // =============== SCHOLARSHIPS ===============
     function renderScholarsTab(panel) {
-      let items = state.scholarships
+      const searchItems = state.scholarships
         .slice()
         .sort((a, b) => {
           const aHidden = a.isHidden === true ? 1 : 0;
@@ -1788,13 +1582,19 @@
           const aTime = timestampToDate(a.createdAt)?.getTime() || 0;
           const bTime = timestampToDate(b.createdAt)?.getTime() || 0;
           return bTime - aTime;
-        });
+        })
+        .filter((x) => matchesQuery(x, [x.title, x.provider, x.country, x.city, scholarshipLocation(x), x.description, x.eligibility, x.category, x.domain, x.level]));
+      const counts = {
+        all: searchItems.length,
+        featured: searchItems.filter((x) => scholarshipFeatured(x)).length,
+        hidden: searchItems.filter((x) => x.isHidden === true).length,
+      };
+      let items = searchItems;
       if (state.filter === 'featured') items = items.filter((x) => scholarshipFeatured(x));
       if (state.filter === 'hidden')   items = items.filter((x) => x.isHidden === true);
-      items = items.filter((x) => matchesQuery(x, [x.title, x.provider, x.country, x.city, scholarshipLocation(x), x.description, x.category]));
 
       panel.innerHTML = `
-        ${chipFilterBar('scholarships')}
+        ${chipFilterBar('scholarships', counts)}
         ${searchBar('Search scholarships...')}
         <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
           <button class="btn btn-primary" id="new-scholar"><i data-lucide="plus"></i>New scholarship</button>
@@ -1808,79 +1608,11 @@
       if (window.lucide) window.lucide.createIcons();
     }
 
-    function renderScholarRow(it) {
-      const thumb = it.image || it.coverImage || '';
-      return `<div class="item-row" data-row-id="${it.id}">
-        <div class="user-avatar" style="border-radius:10px;width:56px;height:56px;background:#FFFFFF;border:1px solid var(--c-border);${thumb ? `background-image:url(${esc(thumb)});background-size:contain;background-repeat:no-repeat;background-position:center;` : ''}">
-          ${!thumb ? '<i data-lucide="graduation-cap" style="color:#E24A4A"></i>' : ''}
-        </div>
-        <div class="row-body">
-          <div class="row-title">${esc(it.title || 'Untitled')}</div>
-          <div class="row-sub">${esc(it.provider || '—')}${it.country ? ' · ' + esc(it.country) : ''}${it.deadline ? ' · Deadline ' + esc(formatTimestamp(it.deadline)) : ''}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-            ${it.fundingType ? `<span class="badge"><i data-lucide="wallet"></i>${esc(it.fundingType)}</span>` : ''}
-            ${it.amount ? `<span class="badge"><i data-lucide="coins"></i>${esc(it.amount)}</span>` : ''}
-            ${it.level ? `<span class="badge">${esc(it.level)}</span>` : ''}
-            ${it.isFeatured ? '<span class="badge badge-warning"><i data-lucide="star"></i>Featured</span>' : ''}
-            ${it.isHidden ? '<span class="badge badge-danger"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-          </div>
-        </div>
-        <div class="row-actions">
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-feature" title="${it.isFeatured ? 'Unfeature' : 'Feature'}"><i data-lucide="star"></i></button>
-          <button class="btn btn-sm" data-id="${it.id}" data-action="toggle-hide" title="${it.isHidden ? 'Unhide' : 'Hide'}"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i></button>
-          <button class="btn btn-sm" data-id="${it.id}" data-action="edit" title="Edit"><i data-lucide="pencil"></i></button>
-          <button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="delete" title="Delete"><i data-lucide="trash-2"></i></button>
-        </div>
-      </div>`;
-    }
-
-    async function handleScholarAction(id, action) {
-      const ref = doc(db, 'scholarships', id);
-      const it = state.scholarships.find((x) => x.id === id);
-      try {
-        if (action === 'toggle-feature') { const next = !it.isFeatured; await updateDoc(ref, { isFeatured: next }); it.isFeatured = next; showToast(next ? 'Featured.' : 'Unfeatured.', 'success'); }
-        else if (action === 'toggle-hide') {
-          const next = !it.isHidden;
-          await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
-          it.isHidden = next;
-          await logAdminActivity({
-            type: 'scholarship',
-            action: next ? 'scholarship_hidden' : 'scholarship_shown',
-            targetCollection: 'scholarships',
-            targetId: id,
-            title: it.title || 'Scholarship',
-            description: `Scholarship "${it.title || 'Untitled'}" was ${next ? 'hidden' : 'shown'}.`,
-            subjectId: it.createdBy || '',
-            subjectName: it.provider || '',
-            status: next ? 'hidden' : 'visible',
-          });
-          showToast(next ? 'Hidden.' : 'Visible.', 'success');
-        }
-        else if (action === 'edit') return openScholarEditor(it);
-        else if (action === 'delete') {
-          if (!confirm('Delete this scholarship?')) return;
-          await deleteDoc(ref);
-          state.scholarships = state.scholarships.filter((x) => x.id !== id);
-          await logAdminActivity({
-            type: 'scholarship',
-            action: 'scholarship_deleted',
-            targetCollection: 'scholarships',
-            targetId: id,
-            title: it.title || 'Scholarship deleted',
-            description: `Scholarship "${it.title || 'Untitled'}" was deleted.`,
-            subjectId: it.createdBy || '',
-            subjectName: it.provider || '',
-            status: 'deleted',
-          });
-          showToast('Scholarship deleted.', 'success');
-        }
-        renderStats(); renderTab();
-      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
-    }
-
     function renderScholarshipRow(it) {
       const thumb = scholarshipThumb(it);
       const location = scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(' • ');
+      const amountLabel = scholarshipAmountLabel(it);
+      const levelLabel = scholarshipLevel(it);
       return contentCard({
         id: it.id,
         tone: 'scholarship',
@@ -1890,8 +1622,8 @@
         description: it.description || '',
         badges: [
           it.fundingType ? badge(capitalizeLabel(it.fundingType), '', 'wallet') : '',
-          it.amount ? badge(it.amount, '', 'coins') : '',
-          it.level ? badge(it.level) : '',
+          amountLabel ? badge(amountLabel, '', 'coins') : '',
+          levelLabel ? badge(levelLabel) : '',
           scholarshipFeatured(it) ? badge('Featured', 'badge-warning', 'star') : '',
           it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
         ],
@@ -1957,22 +1689,16 @@
       }
     }
 
-    async function openCommercialRegister(companyId, download = false) {
-      try {
-        const document = await getCompanyCommercialRegisterDocument(companyId);
-        const url = download
-          ? cleanText(document?.downloadUrl || document?.url || document?.viewUrl)
-          : cleanText(document?.viewUrl || document?.url || document?.downloadUrl);
-        if (!url) throw new Error('Document unavailable');
-        openDocumentUrl(url, { download, fileName: document?.fileName || '' });
-      } catch (error) {
-        showToast(friendlyDocumentErrorMessage(error), 'error');
-      }
-    }
-
     function openScholarshipDetails(it) {
       document.getElementById('editor-title').textContent = it.title || 'Scholarship details';
       const imageUrl = scholarshipThumb(it);
+      const amountLabel = scholarshipAmountLabel(it);
+      const categoryLabel = scholarshipCategory(it);
+      const levelLabel = scholarshipLevel(it);
+      const locationLabel = scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(', ');
+      const link = scholarshipLink(it);
+      const eligibilityItems = scholarshipEligibilityItems(it);
+      const tagItems = scholarshipTags(it);
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', 'graduation-cap', `
           <div class="detail-hero ${imageUrl ? 'detail-hero--with-media' : ''}">
@@ -1980,8 +1706,9 @@
             <div class="detail-hero__copy">
               <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
                 ${it.fundingType ? badge(capitalizeLabel(it.fundingType), '', 'wallet') : ''}
-                ${it.amount ? badge(it.amount, '', 'coins') : ''}
-                ${it.level ? badge(it.level) : ''}
+                ${amountLabel ? badge(amountLabel, '', 'coins') : ''}
+                ${levelLabel ? badge(levelLabel) : ''}
+                ${link ? badge('External link', '', 'external-link') : badge('Link not added', '', 'link-off')}
                 ${scholarshipFeatured(it) ? badge('Featured', 'badge-warning', 'star') : ''}
                 ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
               </div>
@@ -1990,22 +1717,24 @@
             </div>
           </div>
           <div class="details-inline-actions">
-            ${scholarshipLink(it) ? `<a class="btn btn-sm" href="${esc(normalizeExternalUrl(scholarshipLink(it)))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open application link</a>` : ''}
+            ${link ? `<a class="btn btn-sm" href="${esc(normalizeExternalUrl(link))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open application link</a>` : ''}
             <a class="btn btn-sm" href="scholarship-editor?id=${encodeURIComponent(it.id)}"><i data-lucide="pencil"></i>Edit post</a>
           </div>
           <div class="detail-metrics">
             ${detailMetric('Provider', it.provider)}
-            ${detailMetric('Location', scholarshipLocation(it) || [it.city, it.country].filter(Boolean).join(', '))}
-            ${detailMetric('Amount', it.amount)}
+            ${detailMetric('Location', locationLabel)}
+            ${detailMetric('Amount', amountLabel)}
             ${detailMetric('Deadline', formatTimestamp(it.deadline))}
             ${detailMetric('Funding', capitalizeLabel(it.fundingType))}
-            ${detailMetric('Level', it.level)}
+            ${detailMetric('Category', categoryLabel)}
+            ${detailMetric('Level', levelLabel)}
+            ${detailMetric('Access', link ? 'External link available' : 'Link unavailable')}
             ${detailMetric('Created', formatTimestamp(it.createdAt))}
           </div>
         `)}
         ${it.description ? section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
-        ${Array.isArray(it.eligibilityItems) && it.eligibilityItems.length ? section('Eligibility', 'list-checks', `<ul style="margin:0;padding-left:18px;">${it.eligibilityItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
-        ${Array.isArray(it.tags) && it.tags.length ? section('Tags', 'tags', `<div class="tag-list">${it.tags.map((item) => badge(item)).join('')}</div>`) : ''}
+        ${eligibilityItems.length ? section('Eligibility', 'list-checks', `<ul style="margin:0;padding-left:18px;">${eligibilityItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
+        ${tagItems.length ? section('Scholarship tags', 'tags', `<div class="tag-list">${tagItems.map((item) => badge(item)).join('')}</div>`) : ''}
       `;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
@@ -2016,105 +1745,15 @@
     function openScholarEditor(it) {
       navigateTo('scholarship-editor' + (it?.id ? ('?id=' + encodeURIComponent(it.id)) : ''));
     }
-    function _legacyScholarEditor_unused(it) {
-      document.getElementById('editor-title').textContent = it ? 'Edit scholarship' : 'New scholarship';
-      const deadline = toDateInput(it?.deadline);
-      // Flutter supports multiple legacy eligibility keys
-      const eligibility = it?.eligibilityItems || it?.eligibility_items || it?.eligibility || [];
-
-      document.getElementById('editor-body').innerHTML = `
-        ${section('Basic info', 'info', `
-          <div class="form-grid-2">
-            <div class="form-row"><label>Title *</label><input id="f-title" type="text" value="${esc(it?.title || '')}"/></div>
-            <div class="form-row"><label>Provider</label><input id="f-provider" type="text" value="${esc(it?.provider || '')}"/></div>
-            <div class="form-row"><label>Language</label>
-              <select id="f-lang">
-                ${[['fr','French'],['en','English'],['ar','Arabic']].map(([v,l]) => `<option value="${v}" ${((it?.originalLanguage||'fr')===v)?'selected':''}>${l}</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-row"><label>Category</label><input id="f-category" type="text" value="${esc(it?.category || '')}"/></div>
-            <div class="form-row"><label>Level</label>
-              <select id="f-level">
-                <option value="">—</option>
-                ${['Bac','Licence','Master','Doctorat'].map((l) => `<option value="${l}" ${it?.level===l?'selected':''}>${l}</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-row"><label>Funding type</label>
-              <select id="f-fundingType">
-                <option value="">—</option>
-                ${[['fully_funded','Fully funded'],['partial','Partial'],['merit','Merit-based'],['needs','Needs-based']].map(([v,l]) => `<option value="${v}" ${it?.fundingType===v?'selected':''}>${l}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-        `)}
-        ${section('Description', 'file-text', `
-          <div class="form-row"><label>Description</label><textarea id="f-description" rows="5">${esc(it?.description || '')}</textarea></div>
-          <div class="form-row"><label>Eligibility items (one per line)</label><textarea id="f-eligibility" rows="4">${esc(joinLines(eligibility))}</textarea></div>
-        `)}
-        ${section('Logistics', 'map-pin', `
-          <div class="form-grid-2">
-            <div class="form-row"><label>Amount</label><input id="f-amount" type="text" value="${esc(it?.amount ?? '')}"/></div>
-            <div class="form-row"><label>Deadline</label><input id="f-deadline" type="date" value="${esc(deadline)}"/></div>
-            <div class="form-row"><label>Country</label><input id="f-country" type="text" value="${esc(it?.country || '')}"/></div>
-            <div class="form-row"><label>City</label><input id="f-city" type="text" value="${esc(it?.city || '')}"/></div>
-            <div class="form-row"><label>Location label</label><input id="f-loclabel" type="text" value="${esc(it?.locationLabel || '')}"/></div>
-            <div class="form-row"><label>Application link</label><input id="f-applyUrl" type="url" value="${esc(it?.applyUrl || '')}"/></div>
-          </div>
-        `)}
-        ${section('Media & tags', 'image', `
-          <div class="form-row"><label>Image URL</label><input id="f-image" type="url" value="${esc(it?.image || '')}"/></div>
-          <div class="form-row"><label>Tags (comma separated)</label><input id="f-tags" type="text" value="${esc(joinCsv(it?.tags))}"/></div>
-          <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;">
-            <label style="display:flex;align-items:center;gap:8px;"><input id="f-featured" type="checkbox" ${it?.isFeatured?'checked':''}/> Feature this scholarship</label>
-            <label style="display:flex;align-items:center;gap:8px;"><input id="f-hidden" type="checkbox" ${it?.isHidden?'checked':''}/> Hidden</label>
-          </div>
-        `)}
-      `;
-      openModal('editor-modal');
-      document.getElementById('editor-save').onclick = async () => {
-        const dl = v('f-deadline');
-        const payload = {
-          title: v('f-title'), provider: v('f-provider'),
-          originalLanguage: v('f-lang'), category: v('f-category'),
-          level: v('f-level'), fundingType: v('f-fundingType'),
-          description: v('f-description'),
-          eligibilityItems: splitLines(v('f-eligibility')),
-          amount: v('f-amount'),
-          deadline: dl ? new Date(dl + 'T00:00:00') : null,
-          country: v('f-country'), city: v('f-city'),
-          locationLabel: v('f-loclabel'), applyUrl: v('f-applyUrl'),
-          image: v('f-image'), tags: splitCsv(v('f-tags')),
-          isFeatured: document.getElementById('f-featured').checked,
-          isHidden: document.getElementById('f-hidden').checked,
-        };
-        if (!payload.title) { showToast('Title is required.', 'warning'); return; }
-        try {
-          if (it) {
-            await updateDoc(doc(db, 'scholarships', it.id), payload);
-            Object.assign(it, payload);
-            showToast('Scholarship updated.', 'success');
-          } else {
-            const ref = doc(collection(db, 'scholarships'));
-            const created = { ...payload, createdAt: serverTimestamp(), createdBy: auth.currentUser?.uid || '' };
-            await setDoc(ref, created);
-            state.scholarships.unshift({ id: ref.id, ...created, createdAt: { toDate: () => new Date() } });
-            showToast('Scholarship created.', 'success');
-          }
-          closeModal('editor-modal'); renderStats(); renderTab();
-        } catch (e) { console.error(e); showToast('Save failed.', 'error'); }
-      };
-      if (window.lucide) window.lucide.createIcons();
-    }
 
     // =============== TRAININGS / LIBRARY ===============
     function trainingSort(a, b) {
-      // Hidden last, approved middle, featured top, then date desc
       const hiddenDelta = (a.isHidden ? 1 : 0) - (b.isHidden ? 1 : 0);
       if (hiddenDelta) return hiddenDelta;
+      const approvalDelta = (a.isApproved === false ? 0 : 1) - (b.isApproved === false ? 0 : 1);
+      if (approvalDelta) return approvalDelta;
       const featuredDelta = (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
       if (featuredDelta) return featuredDelta;
-      const approvedDelta = ((b.isApproved !== false) ? 1 : 0) - ((a.isApproved !== false) ? 1 : 0);
-      if (approvedDelta) return approvedDelta;
       const da = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
       const db_ = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
       return db_ - da;
@@ -2148,15 +1787,25 @@
 
     function renderLibraryOverview() {
       const container = document.getElementById('lib-panel');
-      let items = state.trainings.slice().sort(trainingSort);
+      const searchItems = state.trainings
+        .slice()
+        .sort(trainingSort)
+        .filter((x) => matchesQuery(x, [x.title, x.provider, x.source, x.description, x.domain, x.level, x.language, x.type, ...(normalizeList(x.authors))]));
+      const counts = {
+        all: searchItems.length,
+        featured: searchItems.filter((x) => x.isFeatured === true).length,
+        hidden: searchItems.filter((x) => x.isHidden === true).length,
+        books: searchItems.filter((x) => trainingSourceKind(x) === 'books').length,
+        videos: searchItems.filter((x) => trainingSourceKind(x) === 'youtube').length,
+      };
+      let items = searchItems;
       if (state.filter === 'featured') items = items.filter((x) => x.isFeatured === true);
       if (state.filter === 'hidden') items = items.filter((x) => x.isHidden === true);
       if (state.filter === 'books') items = items.filter((x) => trainingSourceKind(x) === 'books');
       if (state.filter === 'videos') items = items.filter((x) => trainingSourceKind(x) === 'youtube');
-      items = items.filter((x) => matchesQuery(x, [x.title, x.provider, x.source, x.description, x.domain]));
 
       container.innerHTML = `
-        ${chipFilterBar('trainings')}
+        ${chipFilterBar('trainings', counts)}
         ${searchBar('Search library...')}
         <div class="list-grid" id="list">${items.length ? items.map(renderTrainingOverviewRow).join('') : emptyStateHtml('Use Google Books or YouTube to import resources.', { title: 'Library is empty', icon: 'book-open' })}</div>
       `;
@@ -2184,6 +1833,7 @@
         ],
         meta: formatTimestamp(it.createdAt) || '',
         actions: [
+          iconAction(it.id, 'details', 'panel-top-open', 'Details'),
           trainingDisplayLink(it) ? externalLinkAction(trainingDisplayLink(it), 'external-link', 'Open source') : '',
           iconAction(it.id, 'toggle-hide', it.isHidden ? 'eye' : 'eye-off', it.isHidden ? 'Show resource' : 'Hide resource'),
         ],
@@ -2193,6 +1843,18 @@
     function openTrainingDetails(it) {
       document.getElementById('editor-title').textContent = it.title || 'Resource details';
       const imageUrl = trainingThumbnail(it);
+      const learnerLabel = cleanText(it.learnerCountLabel) || (it.learnerCount != null ? String(it.learnerCount) : '');
+      const ratingValue = Number(it.rating);
+      const ratingLabel = Number.isFinite(ratingValue) ? ratingValue.toFixed(1) : '';
+      const accessLabel = it.isFree === true ? 'Free' : it.isFree === false ? 'Paid' : '';
+      const certificateLabel = it.hasCertificate === true
+        ? 'Certificate available'
+        : it.hasCertificate === false
+          ? 'Certificate not included'
+          : '';
+      const statusLabel = it.isApproved === false ? 'Pending review' : 'Approved';
+      const authors = normalizeList(it.authors);
+      const link = trainingDisplayLink(it);
       document.getElementById('editor-body').innerHTML = `
         ${section('Summary', trainingSourceKind(it) === 'youtube' ? 'video' : 'book-open', `
           <div class="detail-hero ${imageUrl ? 'detail-hero--with-media' : ''}">
@@ -2202,6 +1864,7 @@
                 ${badge(trainingSourceLabel(it), '', trainingSourceKind(it) === 'youtube' ? 'video' : 'book-open')}
                 ${it.level ? badge(it.level) : ''}
                 ${it.language ? badge(String(it.language).toUpperCase(), '', 'languages') : ''}
+                ${badge(statusLabel, `badge-${statusBadgeClass(statusLabel)}`, it.isApproved === false ? 'hourglass' : 'check')}
                 ${it.isFeatured ? badge('Featured', 'badge-warning', 'star') : ''}
                 ${it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : ''}
               </div>
@@ -2210,7 +1873,8 @@
             </div>
           </div>
           <div class="details-inline-actions">
-            ${trainingDisplayLink(it) ? `<a class="btn btn-sm" href="${esc(trainingDisplayLink(it))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open source</a>` : ''}
+            <button class="btn btn-sm" id="training-toggle-visibility"><i data-lucide="${it.isHidden ? 'eye' : 'eye-off'}"></i>${it.isHidden ? 'Unhide' : 'Hide'}</button>
+            ${link ? `<a class="btn btn-sm" href="${esc(normalizeExternalUrl(link))}" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open source</a>` : ''}
           </div>
           <div class="detail-metrics">
             ${detailMetric('Provider', it.provider)}
@@ -2218,14 +1882,31 @@
             ${detailMetric('Level', it.level)}
             ${detailMetric('Language', String(it.language || '').toUpperCase())}
             ${detailMetric('Source', trainingSourceLabel(it))}
+            ${detailMetric('Duration', it.duration)}
+            ${detailMetric('Learners', learnerLabel)}
+            ${detailMetric('Rating', ratingLabel)}
+            ${detailMetric('Status', statusLabel)}
             ${detailMetric('Created', formatTimestamp(it.createdAt))}
           </div>
         `)}
         ${it.description ? section('Description', 'file-text', `<p style="white-space:pre-wrap;margin:0;">${esc(it.description)}</p>`) : ''}
+        ${section('Delivery & access', 'cloud', `
+          <div class="profile-grid">
+            <div class="profile-block"><div class="profile-block-label">Source</div><div class="profile-block-value">${esc(trainingSourceLabel(it) || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Language</div><div class="profile-block-value">${esc(String(it.language || '').toUpperCase() || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Access</div><div class="profile-block-value">${esc(accessLabel || '-')}</div></div>
+            <div class="profile-block"><div class="profile-block-label">Certificate</div><div class="profile-block-value">${esc(certificateLabel || '-')}</div></div>
+          </div>
+        `)}
+        ${authors.length ? section('Authors', 'users', `<div class="tag-list">${authors.map((item) => badge(item)).join('')}</div>`) : ''}
       `;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
       openModal('editor-modal');
+      document.getElementById('training-toggle-visibility')?.addEventListener('click', async () => {
+        await handleTrainingAction(it.id, 'toggle-hide');
+        openTrainingDetails(it);
+      });
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -2510,62 +2191,7 @@
       }
     }
 
-    // =============== APPLICATIONS ===============
-    function renderApplicationsTab(panel) {
-      let items = state.applications.slice();
-      if (state.filter !== 'all') items = items.filter((x) => (x.status || 'pending') === state.filter);
-      const oppMap = new Map(state.opportunities.map((o) => [o.id, o]));
-      items = items.filter((x) => {
-        const o = oppMap.get(x.opportunityId);
-        return matchesQuery(x, [x.studentName, o?.title, o?.companyName]);
-      });
-      panel.innerHTML = `
-        ${chipFilterBar('applications')}
-        ${searchBar('Search applications...')}
-        <div class="list-grid" id="list">${items.length ? items.map((it) => renderAppRow(it, oppMap.get(it.opportunityId))).join('') : emptyStateHtml('No applications match.', { title: 'No applications', icon: 'file-text' })}</div>
-      `;
-      bindCommon();
-      document.getElementById('list').querySelectorAll('[data-action]').forEach((btn) => {
-        btn.addEventListener('click', () => handleAppAction(btn.getAttribute('data-id'), btn.getAttribute('data-action')));
-      });
-      if (window.lucide) window.lucide.createIcons();
-    }
-
-    function renderAppRow(it, opp) {
-      const status = it.status || 'pending';
-      const badgeClass = status === 'accepted' ? 'success' : status === 'rejected' ? 'danger' : status === 'reviewed' ? 'info' : 'warning';
-      return `<div class="item-row" data-row-id="${it.id}">
-        <div class="activity-icon" style="background:rgba(124,58,237,0.14);color:#7C3AED"><i data-lucide="file-text"></i></div>
-        <div class="row-body">
-          <div class="row-title">${esc(it.studentName || 'Student')} → ${esc(opp?.title || 'Opportunity')}</div>
-          <div class="row-sub">${esc(opp?.companyName || '—')} · ${esc(formatTimestamp(it.appliedAt) || '')}</div>
-          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-            <span class="badge badge-${badgeClass}">${esc(displayLabel(status))}</span>
-            ${it.coverLetter ? '<span class="badge"><i data-lucide="message-square"></i>Cover letter</span>' : ''}
-          </div>
-        </div>
-        <div class="row-actions">
-          <button class="btn btn-sm" data-id="${it.id}" data-action="cv"><i data-lucide="file"></i>CV</button>
-          ${status !== 'accepted' ? `<button class="btn btn-sm btn-success" data-id="${it.id}" data-action="accept"><i data-lucide="check"></i></button>` : ''}
-          ${status !== 'rejected' ? `<button class="btn btn-sm btn-danger" data-id="${it.id}" data-action="reject"><i data-lucide="x"></i></button>` : ''}
-          ${status === 'pending' ? `<button class="btn btn-sm" data-id="${it.id}" data-action="reviewed"><i data-lucide="eye"></i></button>` : ''}
-        </div>
-      </div>`;
-    }
-
-    async function handleAppAction(id, action) {
-      const ref = doc(db, 'applications', id);
-      const it = state.applications.find((x) => x.id === id);
-      try {
-        if (action === 'cv') return openCvViewer(id);
-        const map = { accept: 'accepted', reject: 'rejected', reviewed: 'reviewed' };
-        const next = map[action]; if (!next) return;
-        await updateDoc(ref, { status: next }); it.status = next;
-        showToast(`Application ${displayLabel(next)}.`, 'success');
-        renderStats(); renderTab();
-      } catch (e) { console.error(e); showToast('Action failed.', 'error'); }
-    }
-
+    // =============== APPLICATION CV ===============
     async function openCvViewer(applicationId) {
       openModal('cv-modal');
       const body = document.getElementById('cv-body');
@@ -2573,13 +2199,23 @@
       try {
         const cv = await getApplicationCv(applicationId);
         if (!cv) { body.innerHTML = emptyStateHtml('No CV is attached to this application.', { title: 'No CV', icon: 'file-x' }); if (window.lucide) window.lucide.createIcons(); return; }
+        const primaryDocument = resolvePrimaryDocumentFields(cv);
+        const builtDocument = resolveBuiltDocumentFields(cv);
+        const cvActions = [];
+        if (primaryDocument.isAvailable) {
+          cvActions.push(
+            `<button class="btn" id="open-uploaded" ${primaryDocument.isPdf === false ? 'disabled title="Preview requires a PDF file"' : ''}><i data-lucide="file"></i>Open uploaded CV</button>`,
+          );
+          cvActions.push('<button class="btn" id="download-uploaded"><i data-lucide="download"></i>Download uploaded CV</button>');
+        }
+        if (builtDocument.isAvailable) {
+          cvActions.push('<button class="btn" id="open-built"><i data-lucide="file-text"></i>Open built CV</button>');
+          cvActions.push('<button class="btn" id="download-built"><i data-lucide="download"></i>Download built CV</button>');
+        }
         body.innerHTML = `
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-            <button class="btn" id="open-uploaded"><i data-lucide="file"></i>Open uploaded CV</button>
-            <button class="btn" id="download-uploaded"><i data-lucide="download"></i>Download uploaded CV</button>
-            <button class="btn" id="open-built"><i data-lucide="file-text"></i>Open built CV</button>
-            <button class="btn" id="download-built"><i data-lucide="download"></i>Download built CV</button>
-          </div>
+          ${cvActions.length
+            ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">${cvActions.join('')}</div>`
+            : `<div class="profile-block" style="margin-bottom:14px;"><div class="profile-block-value" style="color:var(--c-text-faint);">No CV document file is available yet.</div></div>`}
           <div class="profile-grid">
             <div class="profile-block"><div class="profile-block-label">Full name</div><div class="profile-block-value">${esc(cv.fullName || '—')}</div></div>
             <div class="profile-block"><div class="profile-block-label">Email</div><div class="profile-block-value">${esc(cv.email || '—')}</div></div>
@@ -2603,11 +2239,7 @@
     async function fetchAndOpenCv(applicationId, variant, download = false) {
       try {
         const docResp = await getApplicationCvDocument(applicationId, { variant });
-        const url = download
-          ? cleanText(docResp?.downloadUrl || docResp?.url || docResp?.viewUrl)
-          : cleanText(docResp?.viewUrl || docResp?.url || docResp?.downloadUrl);
-        if (!url) throw new Error('Document unavailable');
-        openDocumentUrl(url, { download, fileName: docResp.fileName });
+        openResolvedDocument(docResp, { download });
       } catch (e) { showToast(friendlyDocumentErrorMessage(e), 'error'); }
     }
 

@@ -5,7 +5,7 @@ import { typeColor, typeIcon, activityTypeLabel, formatFullTimestamp } from './a
 import {
   friendlyDocumentErrorMessage,
   getCompanyCommercialRegisterDocument,
-  openDocumentUrl,
+  openResolvedDocument,
 } from './document-access.js';
 
 const MODAL_ID = 'details-modal';
@@ -540,11 +540,7 @@ function bindCommercialRegisterButtons(companyId) {
 async function openCommercialRegister(companyId, { download = false } = {}) {
   try {
     const document = await getCompanyCommercialRegisterDocument(companyId);
-    const url = download
-      ? document?.downloadUrl || document?.url || document?.viewUrl
-      : document?.viewUrl || document?.url || document?.downloadUrl;
-    if (!url) throw new Error('Document unavailable');
-    openDocumentUrl(url, { download, fileName: document?.fileName || '' });
+    openResolvedDocument(document, { download });
   } catch (error) {
     showToast(friendlyDocumentErrorMessage(error), 'error');
   }

@@ -12,6 +12,219 @@ function trim(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function isPlainObject(value) {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
+function firstText(...values) {
+  for (const value of values) {
+    const text = trim(value);
+    if (text) {
+      return text;
+    }
+  }
+
+  return '';
+}
+
+function firstFieldText(sources, fields) {
+  for (const source of sources) {
+    if (!isPlainObject(source)) {
+      continue;
+    }
+
+    for (const field of fields) {
+      const text = trim(source[field]);
+      if (text) {
+        return text;
+      }
+    }
+  }
+
+  return '';
+}
+
+function normalizeOpenableDocumentUrl(value) {
+  const rawValue = trim(value);
+  if (!rawValue) {
+    return '';
+  }
+
+  if (rawValue.startsWith('//')) {
+    return `https:${rawValue}`;
+  }
+
+  if (/^(https?:|blob:|data:)/i.test(rawValue)) {
+    return rawValue;
+  }
+
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(?::\d+)?(?:\/|$)/i.test(rawValue)) {
+    return `https://${rawValue}`;
+  }
+
+  return '';
+}
+
+const VIEW_URL_FIELDS = [
+  'viewUrl',
+  'viewURL',
+  'view_url',
+  'previewUrl',
+  'previewURL',
+  'preview_url',
+  'accessUrl',
+  'accessURL',
+  'access_url',
+  'signedUrl',
+  'signedURL',
+  'signed_url',
+  'publicUrl',
+  'publicURL',
+  'public_url',
+  'fileUrl',
+  'fileURL',
+  'file_url',
+  'url',
+  'href',
+  'link',
+];
+
+const DOWNLOAD_URL_FIELDS = [
+  'downloadUrl',
+  'downloadURL',
+  'download_url',
+  'signedDownloadUrl',
+  'signedDownloadURL',
+  'signed_download_url',
+  'downloadSignedUrl',
+  'downloadSignedURL',
+  'download_signed_url',
+  'downloadAccessUrl',
+  'downloadAccessURL',
+  'download_access_url',
+  ...VIEW_URL_FIELDS,
+];
+
+const STORAGE_PATH_FIELDS = [
+  'storagePath',
+  'objectKey',
+  'path',
+  'accessPath',
+  'uploadedCvPath',
+  'uploadedCvObjectKey',
+  'uploadedCvStoragePath',
+  'uploadedCvAccessPath',
+  'uploadedCvUrl',
+  'uploadedCvAccessUrl',
+  'uploadedCvSignedUrl',
+  'exportedPdfPath',
+  'exportedPdfObjectKey',
+  'exportedPdfStoragePath',
+  'exportedPdfAccessPath',
+  'exportedPdfUrl',
+  'exportedPdfAccessUrl',
+  'exportedPdfSignedUrl',
+  'commercialRegisterStoragePath',
+  'commercialRegisterObjectKey',
+  'commercialRegisterAccessPath',
+  'commercialRegisterUrl',
+  'commercialRegisterAccessUrl',
+  'commercialRegisterSignedUrl',
+];
+
+const FILE_NAME_FIELDS = [
+  'fileName',
+  'filename',
+  'name',
+  'uploadedFileName',
+  'exportedPdfFileName',
+  'commercialRegisterFileName',
+];
+
+const MIME_TYPE_FIELDS = [
+  'mimeType',
+  'contentType',
+  'type',
+  'uploadedCvMimeType',
+  'exportedPdfMimeType',
+  'commercialRegisterMimeType',
+];
+
+function normalizeDocumentRecord(record, extraSources = []) {
+  if (!isPlainObject(record)) {
+    return null;
+  }
+
+  const sources = [record, ...extraSources].filter(isPlainObject);
+  const viewUrl = firstFieldText(sources, VIEW_URL_FIELDS);
+  const downloadUrl = firstFieldText(sources, DOWNLOAD_URL_FIELDS);
+  const fileName = firstFieldText(sources, FILE_NAME_FIELDS);
+  const mimeType = firstFieldText(sources, MIME_TYPE_FIELDS);
+  const storagePath = firstFieldText(sources, STORAGE_PATH_FIELDS);
+
+  return {
+    ...record,
+    storagePath: firstText(record.storagePath, storagePath),
+    fileName: firstText(record.fileName, fileName),
+    mimeType: firstText(record.mimeType, mimeType),
+    viewUrl: firstText(record.viewUrl, viewUrl),
+    downloadUrl: firstText(record.downloadUrl, downloadUrl),
+    url: firstText(record.url, viewUrl, downloadUrl),
+  };
+}
+
+function documentFromPayload(payload, preferredKeys = []) {
+  if (!isPlainObject(payload)) {
+    return null;
+  }
+
+  const nestedData = isPlainObject(payload.data) ? payload.data : null;
+  const candidates = [
+    payload.document,
+    ...preferredKeys.map((key) => payload[key]),
+    payload.file,
+    payload.attachment,
+    nestedData?.document,
+    nestedData?.file,
+    nestedData,
+    payload,
+  ];
+  const record = candidates.find(isPlainObject);
+  if (!record) {
+    return null;
+  }
+
+  return normalizeDocumentRecord(record, [payload, nestedData].filter(Boolean));
+}
+
+function resolveDocumentUrl(document, { download = false } = {}) {
+  const normalizedDocument = normalizeDocumentRecord(document);
+  if (!normalizedDocument) {
+    return '';
+  }
+
+  const candidates = download
+    ? [
+        normalizedDocument.downloadUrl,
+        normalizedDocument.url,
+        normalizedDocument.viewUrl,
+      ]
+    : [
+        normalizedDocument.viewUrl,
+        normalizedDocument.url,
+        normalizedDocument.downloadUrl,
+      ];
+
+  for (const candidate of candidates) {
+    const safeUrl = normalizeOpenableDocumentUrl(candidate);
+    if (safeUrl) {
+      return safeUrl;
+    }
+  }
+
+  return '';
+}
+
 function parseTimestampMs(value) {
   if (!value) {
     return 0;
@@ -64,11 +277,17 @@ function hasBuilderContent(cv) {
 }
 
 function resolvePrimaryDocumentFields(cv) {
-  const storagePath =
-    trim(cv?.uploadedCvPath) ||
-    trim(cv?.uploadedCvUrl);
-  const fileName = trim(cv?.uploadedFileName) || 'primary_cv.pdf';
-  const mimeType = trim(cv?.uploadedCvMimeType);
+  const storagePath = firstText(
+    cv?.uploadedCvPath,
+    cv?.uploadedCvObjectKey,
+    cv?.uploadedCvStoragePath,
+    cv?.uploadedCvAccessPath,
+    cv?.uploadedCvUrl,
+    cv?.uploadedCvAccessUrl,
+    cv?.uploadedCvSignedUrl,
+  );
+  const fileName = firstText(cv?.uploadedFileName, cv?.fileName) || 'primary_cv.pdf';
+  const mimeType = firstText(cv?.uploadedCvMimeType, cv?.mimeType);
 
   return {
     storagePath,
@@ -82,11 +301,17 @@ function resolvePrimaryDocumentFields(cv) {
 
 function resolveBuiltDocumentFields(cv) {
   const templateId = trim(cv?.templateId) || 'builder';
-  const fileName = trim(cv?.exportedPdfFileName) || `cv_${templateId}.pdf`;
-  const storagePath =
-    trim(cv?.exportedPdfPath) ||
-    trim(cv?.exportedPdfUrl);
-  const mimeType = trim(cv?.exportedPdfMimeType) || 'application/pdf';
+  const fileName = firstText(cv?.exportedPdfFileName, cv?.fileName) || `cv_${templateId}.pdf`;
+  const storagePath = firstText(
+    cv?.exportedPdfPath,
+    cv?.exportedPdfObjectKey,
+    cv?.exportedPdfStoragePath,
+    cv?.exportedPdfAccessPath,
+    cv?.exportedPdfUrl,
+    cv?.exportedPdfAccessUrl,
+    cv?.exportedPdfSignedUrl,
+  );
+  const mimeType = firstText(cv?.exportedPdfMimeType, cv?.mimeType) || 'application/pdf';
 
   return {
     storagePath,
@@ -215,9 +440,7 @@ async function getApplicationCvDocument(applicationId, { variant = 'primary' } =
     `/api/applications/${encodeURIComponent(applicationId)}/cv/access?variant=${encodeURIComponent(variant)}`,
   );
 
-  return payload.document && typeof payload.document === 'object'
-    ? payload.document
-    : null;
+  return documentFromPayload(payload, ['cvDocument', 'cv']);
 }
 
 async function getUserCvDocument(userId, { variant = 'primary' } = {}) {
@@ -225,9 +448,7 @@ async function getUserCvDocument(userId, { variant = 'primary' } = {}) {
     `/api/users/${encodeURIComponent(userId)}/cv/access?variant=${encodeURIComponent(variant)}`,
   );
 
-  return payload.document && typeof payload.document === 'object'
-    ? payload.document
-    : null;
+  return documentFromPayload(payload, ['cvDocument', 'cv']);
 }
 
 async function getCompanyCommercialRegisterDocument(companyId) {
@@ -235,9 +456,7 @@ async function getCompanyCommercialRegisterDocument(companyId) {
     `/api/companies/${encodeURIComponent(companyId)}/commercial-register/access`,
   );
 
-  return payload.document && typeof payload.document === 'object'
-    ? payload.document
-    : null;
+  return documentFromPayload(payload, ['commercialRegister', 'register']);
 }
 
 async function loadStudentCvSummary(userId) {
@@ -283,13 +502,17 @@ function friendlyDocumentErrorMessage(
     return 'This document link is invalid or unavailable.';
   }
 
+  if (message.includes('secure document access is not configured')) {
+    return 'Secure document access is not configured for this environment.';
+  }
+
   return fallback;
 }
 
 function openDocumentUrl(url, { download = false, fileName = '' } = {}) {
-  const safeUrl = trim(url);
+  const safeUrl = normalizeOpenableDocumentUrl(url);
   if (!safeUrl) {
-    throw new Error('File unavailable.');
+    throw new Error('Document unavailable.');
   }
 
   const link = document.createElement('a');
@@ -308,6 +531,19 @@ function openDocumentUrl(url, { download = false, fileName = '' } = {}) {
   link.remove();
 }
 
+function openResolvedDocument(document, { download = false } = {}) {
+  const normalizedDocument = normalizeDocumentRecord(document);
+  const safeUrl = resolveDocumentUrl(normalizedDocument, { download });
+  if (!safeUrl) {
+    throw new Error('Document unavailable.');
+  }
+
+  openDocumentUrl(safeUrl, {
+    download,
+    fileName: normalizedDocument?.fileName || '',
+  });
+}
+
 export {
   buildCvSummary,
   friendlyDocumentErrorMessage,
@@ -319,8 +555,10 @@ export {
   isPdfDocument,
   loadStudentCvSummary,
   openDocumentUrl,
+  openResolvedDocument,
   parseTimestampMs,
   resolveBuiltDocumentFields,
+  resolveDocumentUrl,
   resolvePrimaryDocumentFields,
   selectBestCvCandidate,
   trim,
