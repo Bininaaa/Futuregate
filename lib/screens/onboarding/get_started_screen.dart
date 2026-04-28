@@ -1208,6 +1208,9 @@ class _BottomSheetStage extends StatelessWidget {
             ? scaled(14.2, min: 11.7)
             : scaled(15, min: 12.1);
         final descriptionHeight = isLastSlide ? 1.5 : 1.58;
+        final signInColor = colors.isDarkMode
+            ? const Color(0xFF5EEAD4)
+            : const Color(0xFF0F766E);
 
         return Container(
           height: constraints.maxHeight,
@@ -1314,7 +1317,7 @@ class _BottomSheetStage extends StatelessWidget {
                           key: const ValueKey<String>('onboarding_login_link'),
                           onPressed: onLogin,
                           style: TextButton.styleFrom(
-                            foregroundColor: colors.primary,
+                            foregroundColor: signInColor,
                             padding: EdgeInsets.symmetric(
                               horizontal: scaled(6, min: 4),
                               vertical: 0,
@@ -1327,7 +1330,7 @@ class _BottomSheetStage extends StatelessWidget {
                             style: AppTypography.product(
                               fontSize: scaled(12.8, min: 10.6),
                               fontWeight: FontWeight.w800,
-                              color: colors.primary,
+                              color: signInColor,
                             ),
                           ),
                         ),
