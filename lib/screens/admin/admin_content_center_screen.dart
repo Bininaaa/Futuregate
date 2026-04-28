@@ -271,6 +271,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                               ),
                             ],
                           ),
+                          if (pendingIdeas > 0 || pendingApplications > 0) ...[
+                            const SizedBox(height: 12),
+                            _buildContentPendingWarning(
+                              pendingIdeas: pendingIdeas,
+                              pendingApplications: pendingApplications,
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -619,6 +626,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
           final isPending =
               _normalizedIdeaStatus(idea.status) == _ideaFilterPending;
+          final pendingIdeaWarning = isPending
+              ? _buildInlinePendingWarning(
+                  'Pending idea. Approve or reject it before it appears as reviewed content.',
+                )
+              : null;
           final ideaFooterButtons = <Widget>[
             if (isPending)
               FilledButton.icon(
@@ -692,6 +704,19 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                       ),
               ),
           ];
+          final ideaFooter =
+              pendingIdeaWarning != null || ideaFooterButtons.isNotEmpty
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ?pendingIdeaWarning,
+                    if (pendingIdeaWarning != null &&
+                        ideaFooterButtons.isNotEmpty)
+                      const SizedBox(height: 8),
+                    _buildResponsiveActionGroup(ideaFooterButtons),
+                  ],
+                )
+              : null;
 
           return _buildContentCard(
             id: idea.id,
@@ -770,7 +795,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
               ),
             ]),
-            footer: _buildResponsiveActionGroup(ideaFooterButtons),
+            footer: ideaFooter,
           );
         },
       ),
@@ -781,8 +806,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return AdminSurface(
       radius: 20,
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-      color: AdminPalette.secondarySoft,
-      border: Border.all(color: _ideaAccentColor.withValues(alpha: 0.22)),
+      color: AdminPalette.warning.withValues(alpha: 0.1),
+      border: Border.all(color: AdminPalette.warning.withValues(alpha: 0.22)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -790,12 +815,12 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: _ideaAccentColor.withValues(alpha: 0.12),
+              color: AdminPalette.warning.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              Icons.hourglass_top_rounded,
-              color: _ideaAccentColor,
+              Icons.warning_amber_rounded,
+              color: AdminPalette.warning,
               size: 20,
             ),
           ),
@@ -838,6 +863,24 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
+  Widget _buildContentPendingWarning({
+    required int pendingIdeas,
+    required int pendingApplications,
+  }) {
+    final pendingParts = <String>[
+      if (pendingIdeas > 0)
+        '$pendingIdeas pending idea${pendingIdeas == 1 ? '' : 's'}',
+      if (pendingApplications > 0)
+        '$pendingApplications pending application${pendingApplications == 1 ? '' : 's'}',
+    ];
+
+    return _buildInlinePendingWarning(
+      '${pendingParts.join(' and ')} need a decision in Content.',
+      title: 'Pending review',
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+    );
+  }
+
   Widget _buildIdeaLeading(ProjectIdeaModel idea) {
     return Container(
       width: 38,
@@ -870,9 +913,21 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
 
   Widget _buildPendingApplicationsWarning(int count) {
     final l10n = AppLocalizations.of(context)!;
+    return _buildInlinePendingWarning(
+      '$count pending application${count == 1 ? '' : 's'} need your review.',
+      trailingLabel: l10n.uiPending,
+    );
+  }
+
+  Widget _buildInlinePendingWarning(
+    String message, {
+    String title = '',
+    String trailingLabel = '',
+    EdgeInsetsGeometry padding = const EdgeInsets.fromLTRB(12, 10, 12, 10),
+  }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      padding: padding,
       decoration: BoxDecoration(
         color: AdminPalette.warning.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -887,24 +942,44 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              '$count pending application${count == 1 ? '' : 's'} need your review.',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (title.trim().isNotEmpty) ...[
+                  Text(
+                    title,
+                    style: AppTypography.product(
+                      fontSize: 12.2,
+                      fontWeight: FontWeight.w800,
+                      color: AdminPalette.textPrimary,
+                      height: 1.25,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                ],
+                Text(
+                  message,
+                  style: AppTypography.product(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AdminPalette.textPrimary,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (trailingLabel.trim().isNotEmpty) ...[
+            const SizedBox(width: 8),
+            Text(
+              trailingLabel,
               style: AppTypography.product(
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: AdminPalette.textPrimary,
-                height: 1.35,
+                color: AdminPalette.warning,
               ),
             ),
-          ),
-          Text(
-            l10n.uiPending,
-            style: AppTypography.product(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AdminPalette.warning,
-            ),
-          ),
+          ],
         ],
       ),
     );
@@ -933,15 +1008,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   ) {
     return item.canBeManagedByAdmin(adminId) &&
         ApplicationStatus.parse(item.status) == ApplicationStatus.pending;
-  }
-
-  int _pendingApplicationsForCurrentAdmin(
-    List<AdminApplicationItemModel> applications,
-    String adminId,
-  ) {
-    return applications
-        .where((item) => _canManageAdminApplication(item, adminId))
-        .length;
   }
 
   Map<String, int> _applicationStatusCounts(
@@ -995,13 +1061,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           final pendingCount = counts[ApplicationStatus.pending] ?? 0;
           final approvedCount = counts[ApplicationStatus.accepted] ?? 0;
           final rejectedCount = counts[ApplicationStatus.rejected] ?? 0;
-          final manageablePendingCount = _pendingApplicationsForCurrentAdmin(
-            liveApplications,
-            adminId,
-          );
-
           return DraggableScrollableSheet(
-            initialChildSize: 0.78,
+            initialChildSize: 0.72,
             minChildSize: 0.4,
             maxChildSize: 0.94,
             expand: false,
@@ -1012,8 +1073,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 _buildSheetHandle(),
                 const SizedBox(height: 12),
                 AdminSurface(
-                  radius: 24,
-                  padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                  radius: 20,
+                  padding: const EdgeInsets.all(16),
                   gradient: AdminPalette.heroGradient(AdminPalette.activity),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.12),
@@ -1050,7 +1111,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                     opportunityTitle,
                                   ),
                                   style: AppTypography.product(
-                                    fontSize: 18,
+                                    fontSize: 17,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white,
                                     height: 1.22,
@@ -1059,7 +1120,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                 const SizedBox(height: 5),
                                 Text(
                                   canManageApplications
-                                      ? '$manageablePendingCount pending application${manageablePendingCount == 1 ? '' : 's'} need your decision.'
+                                      ? 'Review applicants, CVs, and pending decisions in one place.'
                                       : 'Applications are visible here. Only the posting admin can approve or reject them.',
                                   style: AppTypography.product(
                                     fontSize: 12.5,
@@ -1123,17 +1184,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     final isBusy = provider.busyContentKeys.contains(
                       'application:${item.id}',
                     );
-                    final appliedLabel = item.appliedAt == null
-                        ? l10n.uiUnknownTime
-                        : DateFormat(
-                            'MMM d, yyyy',
-                          ).format(item.appliedAt!.toDate());
-                    final subtitle = _joinCardSubtitleParts([
-                      if (item.opportunityTitle.trim().isNotEmpty)
-                        item.opportunityTitle.trim(),
-                      if (item.companyName.trim().isNotEmpty)
-                        item.companyName.trim(),
-                    ]);
+                    final appliedLabel = _formatTimestamp(item.appliedAt);
+                    final subtitle = item.companyName.trim().isNotEmpty
+                        ? item.companyName.trim()
+                        : l10n.uiApplication;
 
                     return _buildContentCard(
                       id: item.id,
@@ -1152,12 +1206,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           ApplicationStatus.label(item.status, l10n),
                           statusColor,
                         ),
-                        _BadgeData(appliedLabel, AdminPalette.info),
-                        if (canReview)
-                          _BadgeData('Needs decision', AdminPalette.warning),
                       ],
                       accentColor: statusColor,
-                      metaText: _formatTimestamp(item.appliedAt),
+                      metaText: appliedLabel,
                       footer: canReview
                           ? _buildResponsiveActionGroup(
                               _buildAdminApplicationDecisionButtons(
@@ -1217,13 +1268,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               (second['id'] ?? '').toString(),
             );
           });
+    final pendingApplicationsCount = provider.allApplications
+        .where((item) => _canManageAdminApplication(item, adminId))
+        .length;
     final adminCount = allOpportunities
-        .where((item) => OpportunityModel.fromMap(item).isAdminPosted)
+        .where(
+          (item) => _isCurrentAdminOpportunity(
+            OpportunityModel.fromMap(item),
+            adminId,
+          ),
+        )
         .length;
     final pendingAppsCount = allOpportunities.where((item) {
       final m = OpportunityModel.fromMap(item);
-      if (!m.isAdminPosted || adminId.isEmpty) return false;
-      if (m.companyId.trim() != adminId) return false;
+      if (!_isCurrentAdminOpportunity(m, adminId)) return false;
       return _applicationsForOpportunity(provider, m.id).any(
         (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
       );
@@ -1301,160 +1359,178 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           if (index == 0) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: _buildCollectionWorkspaceHeader(
-                title:
-                    '${_opportunityWorkspaceTitle(_opportunityFilter, _opportunityTypeFilter, l10n)} (${opportunities.length})',
-                subtitle: searchQuery.isEmpty
-                    ? l10n.uiReviewJobsDescription
-                    : l10n.uiShowingFilteredResultsForSearchQuery(searchQuery),
-                primaryFilters: [
-                  _CollectionHeaderFilter(
-                    label: l10n.uiAll,
-                    selected: _opportunityFilter == _opportunityFilterAll,
-                    icon: Icons.grid_view_rounded,
-                    badgeCount: allOpportunities.length,
-                    onTap: () => setState(
-                      () => _opportunityFilter = _opportunityFilterAll,
+              child: Column(
+                children: [
+                  if (pendingApplicationsCount > 0) ...[
+                    _buildPendingApplicationsWarning(pendingApplicationsCount),
+                    const SizedBox(height: 12),
+                  ],
+                  _buildCollectionWorkspaceHeader(
+                    title:
+                        '${_opportunityWorkspaceTitle(_opportunityFilter, _opportunityTypeFilter, l10n)} (${opportunities.length})',
+                    subtitle: searchQuery.isEmpty
+                        ? l10n.uiReviewJobsDescription
+                        : l10n.uiShowingFilteredResultsForSearchQuery(
+                            searchQuery,
+                          ),
+                    primaryFilters: [
+                      _CollectionHeaderFilter(
+                        label: l10n.uiAll,
+                        selected: _opportunityFilter == _opportunityFilterAll,
+                        icon: Icons.grid_view_rounded,
+                        badgeCount: allOpportunities.length,
+                        onTap: () => setState(
+                          () => _opportunityFilter = _opportunityFilterAll,
+                        ),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: l10n.uiAdminPosts,
+                        selected: _opportunityFilter == _opportunityFilterAdmin,
+                        icon: Icons.admin_panel_settings_outlined,
+                        badgeCount: adminCount,
+                        onTap: () => setState(() {
+                          _opportunityFilter = _toggleFilterValue(
+                            _opportunityFilter,
+                            _opportunityFilterAdmin,
+                            allValue: _opportunityFilterAll,
+                          );
+                        }),
+                      ),
+                    ],
+                    secondaryFilters: [
+                      _CollectionHeaderFilter(
+                        label: l10n.uiPendingApps,
+                        selected:
+                            _opportunityFilter == _opportunityFilterPendingApps,
+                        icon: Icons.hourglass_top_rounded,
+                        badgeCount: pendingAppsCount,
+                        onTap: () => setState(() {
+                          _opportunityFilter = _toggleFilterValue(
+                            _opportunityFilter,
+                            _opportunityFilterPendingApps,
+                            allValue: _opportunityFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: l10n.uiFeatured,
+                        selected:
+                            _opportunityFilter == _opportunityFilterFeatured,
+                        icon: Icons.workspace_premium_outlined,
+                        badgeCount: featuredCount,
+                        onTap: () => setState(() {
+                          _opportunityFilter = _toggleFilterValue(
+                            _opportunityFilter,
+                            _opportunityFilterFeatured,
+                            allValue: _opportunityFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: l10n.uiClosed,
+                        selected:
+                            _opportunityFilter == _opportunityFilterClosed,
+                        icon: Icons.pause_circle_outline_rounded,
+                        badgeCount: closedCount,
+                        onTap: () => setState(() {
+                          _opportunityFilter = _toggleFilterValue(
+                            _opportunityFilter,
+                            _opportunityFilterClosed,
+                            allValue: _opportunityFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: l10n.uiHiddenLabel,
+                        selected:
+                            _opportunityFilter == _opportunityFilterHidden,
+                        icon: Icons.visibility_off_outlined,
+                        badgeCount: hiddenCount,
+                        onTap: () => setState(() {
+                          _opportunityFilter = _toggleFilterValue(
+                            _opportunityFilter,
+                            _opportunityFilterHidden,
+                            allValue: _opportunityFilterAll,
+                          );
+                        }),
+                      ),
+                    ],
+                    tertiaryFilters: [
+                      _CollectionHeaderFilter(
+                        label: l10n.uiAllTypes,
+                        selected:
+                            _opportunityTypeFilter == _opportunityTypeFilterAll,
+                        icon: Icons.category_outlined,
+                        badgeCount: opportunitiesForSelectedFilter.length,
+                        onTap: () => setState(
+                          () => _opportunityTypeFilter =
+                              _opportunityTypeFilterAll,
+                        ),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: OpportunityType.label(OpportunityType.job, l10n),
+                        selected: _opportunityTypeFilter == OpportunityType.job,
+                        icon: OpportunityType.icon(OpportunityType.job),
+                        badgeCount: jobCount,
+                        onTap: () => setState(() {
+                          _opportunityTypeFilter = _toggleFilterValue(
+                            _opportunityTypeFilter,
+                            OpportunityType.job,
+                            allValue: _opportunityTypeFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: OpportunityType.label(
+                          OpportunityType.internship,
+                          l10n,
+                        ),
+                        selected:
+                            _opportunityTypeFilter ==
+                            OpportunityType.internship,
+                        icon: OpportunityType.icon(OpportunityType.internship),
+                        badgeCount: internshipCount,
+                        onTap: () => setState(() {
+                          _opportunityTypeFilter = _toggleFilterValue(
+                            _opportunityTypeFilter,
+                            OpportunityType.internship,
+                            allValue: _opportunityTypeFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: OpportunityType.label(
+                          OpportunityType.sponsoring,
+                          l10n,
+                        ),
+                        selected:
+                            _opportunityTypeFilter ==
+                            OpportunityType.sponsoring,
+                        icon: OpportunityType.icon(OpportunityType.sponsoring),
+                        badgeCount: sponsoringCount,
+                        onTap: () => setState(() {
+                          _opportunityTypeFilter = _toggleFilterValue(
+                            _opportunityTypeFilter,
+                            OpportunityType.sponsoring,
+                            allValue: _opportunityTypeFilterAll,
+                          );
+                        }),
+                      ),
+                    ],
+                    action: FilledButton.icon(
+                      onPressed: () => _openOpportunityEditor(),
+                      icon: const Icon(Icons.add_rounded, size: 18),
+                      label: Text(
+                        AppLocalizations.of(context)!.uiPostOpportunity,
+                      ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AdminPalette.primary,
+                        foregroundColor: Colors.white,
+                      ),
                     ),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: l10n.uiAdminPosts,
-                    selected: _opportunityFilter == _opportunityFilterAdmin,
-                    icon: Icons.admin_panel_settings_outlined,
-                    badgeCount: adminCount,
-                    onTap: () => setState(() {
-                      _opportunityFilter = _toggleFilterValue(
-                        _opportunityFilter,
-                        _opportunityFilterAdmin,
-                        allValue: _opportunityFilterAll,
-                      );
-                    }),
+                    searchQuery: searchQuery,
                   ),
                 ],
-                secondaryFilters: [
-                  _CollectionHeaderFilter(
-                    label: l10n.uiPendingApps,
-                    selected:
-                        _opportunityFilter == _opportunityFilterPendingApps,
-                    icon: Icons.hourglass_top_rounded,
-                    badgeCount: pendingAppsCount,
-                    onTap: () => setState(() {
-                      _opportunityFilter = _toggleFilterValue(
-                        _opportunityFilter,
-                        _opportunityFilterPendingApps,
-                        allValue: _opportunityFilterAll,
-                      );
-                    }),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: l10n.uiFeatured,
-                    selected: _opportunityFilter == _opportunityFilterFeatured,
-                    icon: Icons.workspace_premium_outlined,
-                    badgeCount: featuredCount,
-                    onTap: () => setState(() {
-                      _opportunityFilter = _toggleFilterValue(
-                        _opportunityFilter,
-                        _opportunityFilterFeatured,
-                        allValue: _opportunityFilterAll,
-                      );
-                    }),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: l10n.uiClosed,
-                    selected: _opportunityFilter == _opportunityFilterClosed,
-                    icon: Icons.pause_circle_outline_rounded,
-                    badgeCount: closedCount,
-                    onTap: () => setState(() {
-                      _opportunityFilter = _toggleFilterValue(
-                        _opportunityFilter,
-                        _opportunityFilterClosed,
-                        allValue: _opportunityFilterAll,
-                      );
-                    }),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: l10n.uiHiddenLabel,
-                    selected: _opportunityFilter == _opportunityFilterHidden,
-                    icon: Icons.visibility_off_outlined,
-                    badgeCount: hiddenCount,
-                    onTap: () => setState(() {
-                      _opportunityFilter = _toggleFilterValue(
-                        _opportunityFilter,
-                        _opportunityFilterHidden,
-                        allValue: _opportunityFilterAll,
-                      );
-                    }),
-                  ),
-                ],
-                tertiaryFilters: [
-                  _CollectionHeaderFilter(
-                    label: l10n.uiAllTypes,
-                    selected:
-                        _opportunityTypeFilter == _opportunityTypeFilterAll,
-                    icon: Icons.category_outlined,
-                    badgeCount: opportunitiesForSelectedFilter.length,
-                    onTap: () => setState(
-                      () => _opportunityTypeFilter = _opportunityTypeFilterAll,
-                    ),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: OpportunityType.label(OpportunityType.job, l10n),
-                    selected: _opportunityTypeFilter == OpportunityType.job,
-                    icon: OpportunityType.icon(OpportunityType.job),
-                    badgeCount: jobCount,
-                    onTap: () => setState(() {
-                      _opportunityTypeFilter = _toggleFilterValue(
-                        _opportunityTypeFilter,
-                        OpportunityType.job,
-                        allValue: _opportunityTypeFilterAll,
-                      );
-                    }),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: OpportunityType.label(
-                      OpportunityType.internship,
-                      l10n,
-                    ),
-                    selected:
-                        _opportunityTypeFilter == OpportunityType.internship,
-                    icon: OpportunityType.icon(OpportunityType.internship),
-                    badgeCount: internshipCount,
-                    onTap: () => setState(() {
-                      _opportunityTypeFilter = _toggleFilterValue(
-                        _opportunityTypeFilter,
-                        OpportunityType.internship,
-                        allValue: _opportunityTypeFilterAll,
-                      );
-                    }),
-                  ),
-                  _CollectionHeaderFilter(
-                    label: OpportunityType.label(
-                      OpportunityType.sponsoring,
-                      l10n,
-                    ),
-                    selected:
-                        _opportunityTypeFilter == OpportunityType.sponsoring,
-                    icon: OpportunityType.icon(OpportunityType.sponsoring),
-                    badgeCount: sponsoringCount,
-                    onTap: () => setState(() {
-                      _opportunityTypeFilter = _toggleFilterValue(
-                        _opportunityTypeFilter,
-                        OpportunityType.sponsoring,
-                        allValue: _opportunityTypeFilterAll,
-                      );
-                    }),
-                  ),
-                ],
-                action: FilledButton.icon(
-                  onPressed: () => _openOpportunityEditor(),
-                  icon: const Icon(Icons.add_rounded, size: 18),
-                  label: Text(AppLocalizations.of(context)!.uiPostOpportunity),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AdminPalette.primary,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-                searchQuery: searchQuery,
               ),
             );
           }
@@ -1494,9 +1570,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             opportunityModel,
             adminId,
           );
-          final isOwnedByCurrentAdmin =
-              opportunityModel.isAdminPosted &&
-              opportunityModel.companyId.trim() == adminId;
+          final isOwnedByCurrentAdmin = _isCurrentAdminOpportunity(
+            opportunityModel,
+            adminId,
+          );
           final ownerPendingAppCount = isOwnedByCurrentAdmin
               ? pendingAppCount
               : 0;
@@ -2222,11 +2299,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     final opportunityModel = OpportunityModel.fromMap(opportunity);
     switch (filter) {
       case _opportunityFilterAdmin:
-        return opportunityModel.isAdminPosted;
+        return _isCurrentAdminOpportunity(opportunityModel, adminId);
       case _opportunityFilterPendingApps:
-        if (!opportunityModel.isAdminPosted) return false;
-        if (adminId.isEmpty) return false;
-        if (opportunityModel.companyId.trim() != adminId) return false;
+        if (!_isCurrentAdminOpportunity(opportunityModel, adminId)) {
+          return false;
+        }
         final apps = _applicationsForOpportunity(provider, opportunityModel.id);
         return apps.any(
           (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
@@ -2582,6 +2659,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     return opportunity.companyId.trim() == normalizedAdminId;
   }
 
+  bool _isCurrentAdminOpportunity(
+    OpportunityModel opportunity,
+    String adminId,
+  ) {
+    final normalizedAdminId = adminId.trim();
+    return normalizedAdminId.isNotEmpty &&
+        opportunity.isAdminPosted &&
+        opportunity.companyId.trim() == normalizedAdminId;
+  }
+
   Widget _buildCardActionRow(List<Widget> actions) {
     if (actions.isEmpty) {
       return const SizedBox.shrink();
@@ -2825,17 +2912,36 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return SizedBox(width: double.infinity, child: buttons.first);
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var index = 0; index < buttons.length; index++) ...[
-            buttons[index],
-            if (index < buttons.length - 1) const SizedBox(width: 8),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width - 40;
+        final columns = buttons.length == 2 || availableWidth < 520
+            ? 2
+            : buttons.length > 3
+            ? 3
+            : buttons.length;
+        const gap = 8.0;
+        final itemWidth = (availableWidth - (gap * (columns - 1))) / columns;
+
+        return Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          children: [
+            for (var index = 0; index < buttons.length; index++)
+              SizedBox(
+                width:
+                    buttons.length.isOdd &&
+                        index == buttons.length - 1 &&
+                        availableWidth < 420
+                    ? availableWidth
+                    : itemWidth,
+                child: buttons[index],
+              ),
           ],
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -3981,11 +4087,13 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             final university = (applicant?.university ?? '').trim();
             final academicLevel = (applicant?.academicLevel ?? '').trim();
             final location = (applicant?.location ?? '').trim();
-            final subtitle = university.isNotEmpty
-                ? university
-                : location.isNotEmpty
-                ? location
-                : l10n.uiStudentProfileDocumentsSubtitle;
+            final studentSubtitle = _joinCardSubtitleParts([
+              if (university.isNotEmpty) university,
+              if (location.isNotEmpty) location,
+            ]);
+            final applicationTitle = liveItem.opportunityTitle.trim().isNotEmpty
+                ? liveItem.opportunityTitle.trim()
+                : l10n.uiApplication;
 
             return DraggableScrollableSheet(
               initialChildSize: 0.58,
@@ -4003,148 +4111,28 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                     padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
                     children: [
                       _buildSheetHandle(),
-                      const SizedBox(height: 16),
-                      AdminSurface(
-                        radius: 24,
-                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-                        gradient: AdminPalette.heroGradient(AdminPalette.info),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.12),
+                      const SizedBox(height: 14),
+                      _buildApplicantReviewSummary(
+                        applicant: applicant,
+                        applicantId: liveItem.application.studentId,
+                        studentName: liveItem.studentName,
+                        subtitle: studentSubtitle.isNotEmpty
+                            ? studentSubtitle
+                            : l10n.uiStudentProfileDocumentsSubtitle,
+                        academicLevel: academicLevel,
+                        isBlocked: (applicant?.isActive ?? true) == false,
+                        statusLabel: ApplicationStatus.label(
+                          liveItem.status,
+                          l10n,
                         ),
-                        child: Column(
-                          children: [
-                            ProfileAvatar(
-                              user: applicant,
-                              userId: item.application.studentId,
-                              fallbackName: item.studentName,
-                              role: 'student',
-                              radius: 34,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              item.studentName,
-                              textAlign: TextAlign.center,
-                              style: AppTypography.product(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              subtitle,
-                              textAlign: TextAlign.center,
-                              style: AppTypography.product(
-                                fontSize: 12.5,
-                                color: Colors.white70,
-                                height: 1.45,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                AdminPill(
-                                  label: l10n.uiStudent,
-                                  color: Colors.white,
-                                  icon: Icons.school_outlined,
-                                ),
-                                if (academicLevel.isNotEmpty)
-                                  AdminPill(
-                                    label: DisplayText.capitalizeLeadingLabel(
-                                      academicLevel,
-                                    ),
-                                    color: Colors.white,
-                                    icon: Icons.workspace_premium_outlined,
-                                  ),
-                                if ((applicant?.isActive ?? true) == false)
-                                  AdminPill(
-                                    label: l10n.uiBlocked,
-                                    color: Colors.white,
-                                    icon: Icons.block_outlined,
-                                  ),
-                              ],
-                            ),
-                          ],
+                        statusColor: statusColor,
+                        statusIcon: _ideaStatusIcon(
+                          ApplicationStatus.parse(liveItem.status),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      AdminSurface(
-                        radius: 18,
-                        padding: const EdgeInsets.all(14),
-                        border: Border.all(
-                          color: statusColor.withValues(alpha: 0.14),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 42,
-                              height: 42,
-                              decoration: BoxDecoration(
-                                color: statusColor.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Icon(
-                                _ideaStatusIcon(
-                                  ApplicationStatus.parse(liveItem.status),
-                                ),
-                                color: statusColor,
-                                size: 21,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    ApplicationStatus.label(
-                                      liveItem.status,
-                                      l10n,
-                                    ),
-                                    style: AppTypography.product(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: AdminPalette.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    _joinCardSubtitleParts([
-                                      liveItem.opportunityTitle
-                                              .trim()
-                                              .isNotEmpty
-                                          ? liveItem.opportunityTitle.trim()
-                                          : l10n.uiApplication,
-                                      if (liveItem.appliedAt != null)
-                                        _formatTimestamp(liveItem.appliedAt),
-                                    ]),
-                                    style: AppTypography.product(
-                                      fontSize: 12,
-                                      height: 1.45,
-                                      color: AdminPalette.textMuted,
-                                    ),
-                                  ),
-                                  if (!liveItem.canBeManagedByAdmin(
-                                    adminId,
-                                  )) ...[
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Only the admin who posted this opportunity can approve or reject this application.',
-                                      style: AppTypography.product(
-                                        fontSize: 11.5,
-                                        height: 1.4,
-                                        color: AdminPalette.textMuted,
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ],
+                        applicationTitle: applicationTitle,
+                        appliedLabel: _formatTimestamp(liveItem.appliedAt),
+                        canManageApplication: liveItem.canBeManagedByAdmin(
+                          adminId,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -4257,6 +4245,188 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           },
         );
       },
+    );
+  }
+
+  Widget _buildApplicantReviewSummary({
+    required UserModel? applicant,
+    required String applicantId,
+    required String studentName,
+    required String subtitle,
+    required String academicLevel,
+    required bool isBlocked,
+    required String statusLabel,
+    required Color statusColor,
+    required IconData statusIcon,
+    required String applicationTitle,
+    required String appliedLabel,
+    required bool canManageApplication,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return AdminSurface(
+      radius: 20,
+      padding: const EdgeInsets.all(16),
+      border: Border.all(color: statusColor.withValues(alpha: 0.16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ProfileAvatar(
+                user: applicant,
+                userId: applicantId,
+                fallbackName: studentName,
+                role: 'student',
+                radius: 26,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      studentName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.product(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AdminPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.product(
+                        fontSize: 12.2,
+                        height: 1.35,
+                        color: AdminPalette.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              _statusBadge(statusLabel, statusColor),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: [
+              AdminPill(
+                label: l10n.uiStudent,
+                color: AdminPalette.primary,
+                icon: Icons.school_outlined,
+              ),
+              if (academicLevel.isNotEmpty)
+                AdminPill(
+                  label: DisplayText.capitalizeLeadingLabel(academicLevel),
+                  color: AdminPalette.activity,
+                  icon: Icons.workspace_premium_outlined,
+                ),
+              if (isBlocked)
+                AdminPill(
+                  label: l10n.uiBlocked,
+                  color: AdminPalette.danger,
+                  icon: Icons.block_outlined,
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Divider(height: 1, color: AdminPalette.border.withValues(alpha: 0.8)),
+          const SizedBox(height: 12),
+          _buildApplicantSummaryLine(
+            icon: Icons.work_outline_rounded,
+            label: l10n.uiOpportunity,
+            value: applicationTitle,
+            color: AdminPalette.activity,
+          ),
+          const SizedBox(height: 9),
+          _buildApplicantSummaryLine(
+            icon: statusIcon,
+            label: l10n.uiApplied,
+            value: appliedLabel,
+            color: statusColor,
+          ),
+          if (!canManageApplication) ...[
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: AdminPalette.warning.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: AdminPalette.warning.withValues(alpha: 0.18),
+                ),
+              ),
+              child: Text(
+                'This application is read-only for your admin account.',
+                style: AppTypography.product(
+                  fontSize: 11.6,
+                  height: 1.35,
+                  fontWeight: FontWeight.w600,
+                  color: AdminPalette.textSecondary,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplicantSummaryLine({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: color, size: 17),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: AppTypography.product(
+                  fontSize: 10.6,
+                  fontWeight: FontWeight.w700,
+                  color: AdminPalette.textMuted,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: AppTypography.product(
+                  fontSize: 12.5,
+                  height: 1.35,
+                  fontWeight: FontWeight.w700,
+                  color: AdminPalette.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
