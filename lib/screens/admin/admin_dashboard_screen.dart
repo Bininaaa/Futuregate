@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/admin_activity_model.dart';
+import '../../models/admin_application_item_model.dart';
 import '../../models/opportunity_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
@@ -13,8 +14,10 @@ import '../../providers/notification_provider.dart';
 import '../../services/document_access_service.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
+import '../../utils/application_status.dart';
 import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
+import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_activity_preview_sheet.dart';
 import '../../widgets/admin/admin_ui.dart';
@@ -482,47 +485,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               initialRoleFilter: roleFilter,
               initialCompanyApprovalFilter: companyApprovalFilter,
               initialTargetId: user.uid,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _openCompanyManagementProfile({
-    required String companyId,
-    String approvalFilter = 'all',
-  }) {
-    final normalizedCompanyId = companyId.trim();
-    if (normalizedCompanyId.isEmpty) {
-      return;
-    }
-
-    if (widget.onOpenUsers != null) {
-      AdminHomeNavigation.switchToUsers(
-        context,
-        targetId: normalizedCompanyId,
-        roleFilter: 'company',
-        companyApprovalFilter: approvalFilter,
-      );
-      return;
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          backgroundColor: AdminPalette.background,
-          appBar: AppBar(
-            title: Text(AppLocalizations.of(context)!.uiUserManagement),
-            backgroundColor: AdminPalette.surface,
-            foregroundColor: AdminPalette.textPrimary,
-          ),
-          body: SafeArea(
-            child: UsersScreen(
-              initialRoleFilter: 'company',
-              initialCompanyApprovalFilter: approvalFilter,
-              initialTargetId: normalizedCompanyId,
             ),
           ),
         ),
@@ -1600,163 +1562,721 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _openRecentOpportunity(Map<String, dynamic> opportunity) {
-    final l10n = AppLocalizations.of(context)!;
-    final model = OpportunityModel.fromMap(opportunity);
-    final typeColor = OpportunityType.color(model.type);
-    final companyId = model.companyId.trim();
-    final canOpenCompanyProfile = companyId.isNotEmpty && !model.isAdminPosted;
-    final canEdit =
-        companyId == (context.read<AuthProvider>().userModel?.uid.trim() ?? '');
+    final provider = context.read<AdminProvider>();
+    if (!provider.moderationInitialized && !provider.moderationLoading) {
+      Future<void>.microtask(provider.loadModerationData);
+    }
 
     showModalBottomSheet<void>(
       context: context,
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (sheetContext) => DraggableScrollableSheet(
-        initialChildSize: 0.58,
-        minChildSize: 0.36,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) => ListView(
-          controller: scrollController,
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
-          children: [
-            const _SheetHandle(),
-            const SizedBox(height: 16),
-            AdminSurface(
-              radius: 24,
-              gradient: AdminPalette.heroGradient(typeColor),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(OpportunityType.icon(model.type), color: Colors.white),
-                  const SizedBox(height: 12),
-                  Text(
-                    model.title.trim().isEmpty
-                        ? l10n.uiUntitledOpportunity
-                        : model.title,
-                    style: AppTypography.product(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    model.companyName.trim().isEmpty
-                        ? l10n.uiUnknownCompany
-                        : model.companyName,
-                    style: AppTypography.product(
-                      fontSize: 12.5,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
+      builder: (sheetContext) => Consumer<AdminProvider>(
+        builder: (context, liveProvider, _) {
+          final l10n = AppLocalizations.of(context)!;
+          final liveOpportunity = _dashboardOpportunityFor(
+            liveProvider,
+            opportunity,
+          );
+          final model = OpportunityModel.fromMap(liveOpportunity);
+          final applications = _dashboardApplicationsForOpportunity(
+            liveProvider,
+            model.id,
+          );
+          final isLoadingApplications =
+              liveProvider.moderationLoading && applications.isEmpty;
+          final adminUser = context.read<AuthProvider>().userModel;
+          final adminId = adminUser?.uid.trim() ?? '';
+          final canEdit =
+              adminUser?.isAdmin == true && model.companyId.trim() == adminId;
+          final typeColor = OpportunityType.color(model.type);
+          final typeLabel = OpportunityType.label(model.type, l10n);
+          final workModeLabel =
+              OpportunityMetadata.formatWorkMode(model.workMode) ?? '';
+          final employmentLabel =
+              OpportunityMetadata.formatEmploymentType(model.employmentType) ??
+              '';
+          final paidLabel =
+              OpportunityMetadata.formatPaidLabel(model.isPaid) ?? '';
+          final compensationLabel =
+              OpportunityType.parse(model.type) == OpportunityType.sponsoring
+              ? model.fundingLabel(preferFundingNote: true)
+              : OpportunityMetadata.buildCompensationLabel(
+                  salaryMin: model.salaryMin,
+                  salaryMax: model.salaryMax,
+                  salaryCurrency: model.salaryCurrency,
+                  salaryPeriod: model.salaryPeriod,
+                  compensationText: model.compensationText,
+                  isPaid: model.isPaid,
+                  preferCompensationText: true,
+                );
+          final statusLabel = DisplayText.capitalizeLeadingLabel(
+            model.effectiveStatus(),
+          );
+          final description = DisplayText.capitalizeLeadingLabel(
+            model.description,
+          );
+          final requirements =
+              (model.requirementItems.isNotEmpty
+                      ? model.requirementItems
+                      : <String>[model.requirements])
+                  .map(DisplayText.capitalizeLeadingLabel)
+                  .where((item) => item.trim().isNotEmpty)
+                  .toList(growable: false);
+          final benefits = model.benefits
+              .map(DisplayText.capitalizeLeadingLabel)
+              .where((item) => item.trim().isNotEmpty)
+              .toList(growable: false);
+          final tags = model.tags
+              .map(DisplayText.capitalizeWords)
+              .where((item) => item.trim().isNotEmpty)
+              .toList(growable: false);
+
+          return DraggableScrollableSheet(
+            initialChildSize: 0.82,
+            minChildSize: 0.5,
+            maxChildSize: 0.96,
+            expand: false,
+            builder: (context, scrollController) => ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
               ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                AdminPill(
-                  label: OpportunityType.label(model.type, l10n),
-                  color: typeColor,
-                  icon: OpportunityType.icon(model.type),
-                ),
-                AdminPill(
-                  label: DisplayText.capitalizeLeadingLabel(
-                    model.effectiveStatus(),
-                  ),
-                  color: model.effectiveStatus() == 'closed'
-                      ? AdminPalette.warning
-                      : AdminPalette.success,
-                  icon: model.effectiveStatus() == 'closed'
-                      ? Icons.pause_circle_outline_rounded
-                      : Icons.check_circle_outline_rounded,
-                ),
-                if (model.deadlineLabel.trim().isNotEmpty)
-                  AdminPill(
-                    label: model.deadlineLabel,
-                    color: AdminPalette.info,
-                    icon: Icons.event_outlined,
-                  ),
-              ],
-            ),
-            if (model.description.trim().isNotEmpty) ...[
-              const SizedBox(height: 12),
-              AdminSurface(
-                radius: 18,
-                padding: const EdgeInsets.all(14),
-                child: Text(
-                  DisplayText.capitalizeLeadingLabel(model.description),
-                  style: AppTypography.product(
-                    fontSize: 13,
-                    height: 1.55,
-                    color: AdminPalette.textSecondary,
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 14),
-            if (canOpenCompanyProfile) ...[
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    if (widget.onOpenUsers != null) {
-                      Navigator.pop(sheetContext);
-                    }
-                    _openCompanyManagementProfile(companyId: companyId);
-                  },
-                  icon: const Icon(Icons.business_outlined, size: 18),
-                  label: Text(l10n.uiCompanyProfile),
-                ),
-              ),
-              const SizedBox(height: 10),
-            ],
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      if (widget.onOpenContent != null) {
-                        Navigator.pop(sheetContext);
-                      }
-                      _openContent(
-                        AdminContentCenterScreen.opportunitiesTab,
-                        targetId: model.id,
-                      );
-                    },
-                    icon: const Icon(Icons.open_in_new_rounded, size: 18),
-                    label: Text(l10n.uiManageOpportunity),
-                  ),
-                ),
-                if (canEdit) ...[
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => AdminOpportunityEditorScreen(
-                              initialOpportunity: opportunity,
+              child: Material(
+                color: AdminPalette.background,
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                  children: [
+                    const _SheetHandle(),
+                    const SizedBox(height: 16),
+                    AdminSurface(
+                      radius: 24,
+                      gradient: AdminPalette.heroGradient(typeColor),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            OpportunityType.icon(model.type),
+                            color: Colors.white,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            model.title.trim().isEmpty
+                                ? l10n.uiUntitledOpportunity
+                                : model.title,
+                            style: AppTypography.product(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              height: 1.2,
                             ),
                           ),
-                        );
-                      },
-                      icon: const Icon(Icons.edit_outlined, size: 18),
-                      label: Text(l10n.uiEdit),
+                          const SizedBox(height: 6),
+                          Text(
+                            model.companyName.trim().isEmpty
+                                ? l10n.uiUnknownCompany
+                                : model.companyName,
+                            style: AppTypography.product(
+                              fontSize: 12.5,
+                              color: Colors.white70,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              AdminActionChip(
+                                label: typeLabel,
+                                icon: OpportunityType.icon(model.type),
+                              ),
+                              AdminActionChip(
+                                label: statusLabel,
+                                icon: model.effectiveStatus() == 'closed'
+                                    ? Icons.pause_circle_outline_rounded
+                                    : Icons.check_circle_outline_rounded,
+                              ),
+                              if (workModeLabel.isNotEmpty)
+                                AdminActionChip(
+                                  label: workModeLabel,
+                                  icon: Icons.lan_outlined,
+                                ),
+                              if (model.isFeatured)
+                                AdminActionChip(
+                                  label: l10n.uiFeatured,
+                                  icon: Icons.workspace_premium_outlined,
+                                ),
+                              if (model.isHidden)
+                                AdminActionChip(
+                                  label: l10n.uiHidden,
+                                  icon: Icons.visibility_off_outlined,
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildRecentOpportunityHighlights(
+                      l10n: l10n,
+                      applicationsCount: applications.length,
+                      deadlineLabel: model.deadlineLabel,
+                      compensationLabel: compensationLabel,
+                      workSetupLabel: workModeLabel.isNotEmpty
+                          ? workModeLabel
+                          : employmentLabel.isNotEmpty
+                          ? employmentLabel
+                          : typeLabel,
+                      typeColor: typeColor,
+                    ),
+                    if (description.trim().isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      _buildRecentOpportunityTextCard(
+                        title: l10n.uiRoleOverview,
+                        value: description,
+                        icon: Icons.description_outlined,
+                        color: typeColor,
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    AdminSectionHeader(title: l10n.uiLocationLogistics),
+                    const SizedBox(height: 10),
+                    _buildDashboardOptionalDetailRow(
+                      Icons.business_outlined,
+                      l10n.uiCompany,
+                      model.companyName,
+                      l10n.uiUnknownCompany,
+                    ),
+                    _buildDashboardOptionalDetailRow(
+                      Icons.location_on_outlined,
+                      l10n.uiLocation,
+                      model.location,
+                      l10n.uiLocationNotSpecified,
+                    ),
+                    if (employmentLabel.isNotEmpty)
+                      _buildDashboardDetailRow(
+                        Icons.badge_outlined,
+                        l10n.uiEmployment,
+                        employmentLabel,
+                      ),
+                    if (paidLabel.isNotEmpty)
+                      _buildDashboardDetailRow(
+                        Icons.account_balance_wallet_outlined,
+                        l10n.uiPaidStatus,
+                        paidLabel,
+                      ),
+                    if ((model.duration ?? '').trim().isNotEmpty)
+                      _buildDashboardDetailRow(
+                        Icons.schedule_outlined,
+                        l10n.uiDuration,
+                        model.duration!.trim(),
+                      ),
+                    if (requirements.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      _buildRecentOpportunityListCard(
+                        title: l10n.requirementsLabel,
+                        items: requirements,
+                        icon: Icons.checklist_rounded,
+                        color: typeColor,
+                      ),
+                    ],
+                    if (benefits.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      _buildRecentOpportunityListCard(
+                        title: l10n.uiBenefits,
+                        items: benefits,
+                        icon: Icons.star_outline_rounded,
+                        color: AdminPalette.success,
+                      ),
+                    ],
+                    if (tags.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      _buildRecentOpportunityTagsCard(
+                        l10n.uiOpportunityTags,
+                        tags,
+                        typeColor,
+                      ),
+                    ],
+                    const SizedBox(height: 10),
+                    _buildRecentOpportunityApplicationsCard(
+                      l10n: l10n,
+                      applications: applications,
+                      isLoading: isLoadingApplications,
+                      color: typeColor,
+                    ),
+                    if (canEdit) ...[
+                      const SizedBox(height: 10),
+                      FilledButton.icon(
+                        onPressed: () {
+                          Navigator.pop(sheetContext);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => AdminOpportunityEditorScreen(
+                                initialOpportunity: liveOpportunity,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.edit_outlined),
+                        label: Text(l10n.uiEditOpportunity),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AdminPalette.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Map<String, dynamic> _dashboardOpportunityFor(
+    AdminProvider provider,
+    Map<String, dynamic> fallback,
+  ) {
+    final id = (fallback['id'] ?? '').toString().trim();
+    if (id.isNotEmpty) {
+      for (final item in provider.allOpportunities) {
+        if ((item['id'] ?? '').toString().trim() == id) {
+          return {...item, 'id': id};
+        }
+      }
+    }
+
+    return {...fallback, if (id.isNotEmpty) 'id': id};
+  }
+
+  List<AdminApplicationItemModel> _dashboardApplicationsForOpportunity(
+    AdminProvider provider,
+    String opportunityId,
+  ) {
+    final id = opportunityId.trim();
+    if (id.isEmpty) return const <AdminApplicationItemModel>[];
+
+    final matches = provider.allApplications
+        .where((application) => application.opportunityId == id)
+        .toList();
+    matches.sort((a, b) {
+      final aTime = a.appliedAt?.millisecondsSinceEpoch ?? 0;
+      final bTime = b.appliedAt?.millisecondsSinceEpoch ?? 0;
+      return bTime.compareTo(aTime);
+    });
+    return matches;
+  }
+
+  Widget _buildRecentOpportunityHighlights({
+    required AppLocalizations l10n,
+    required int applicationsCount,
+    required String deadlineLabel,
+    required String? compensationLabel,
+    required String workSetupLabel,
+    required Color typeColor,
+  }) {
+    final items = <_RecentOpportunityHighlight>[
+      _RecentOpportunityHighlight(
+        icon: Icons.assignment_outlined,
+        label: l10n.uiApplications,
+        value: '$applicationsCount',
+        color: AdminPalette.activity,
+      ),
+      if (deadlineLabel.trim().isNotEmpty)
+        _RecentOpportunityHighlight(
+          icon: Icons.event_outlined,
+          label: l10n.uiDeadline,
+          value: deadlineLabel,
+          color: AdminPalette.primary,
+        ),
+      if ((compensationLabel ?? '').trim().isNotEmpty)
+        _RecentOpportunityHighlight(
+          icon: Icons.payments_outlined,
+          label: l10n.uiCompensation,
+          value: compensationLabel!.trim(),
+          color: AdminPalette.success,
+        ),
+      _RecentOpportunityHighlight(
+        icon: Icons.badge_outlined,
+        label: l10n.uiWorkSetup,
+        value: workSetupLabel.trim().isNotEmpty
+            ? workSetupLabel
+            : l10n.uiNotProvided,
+        color: typeColor,
+      ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = (constraints.maxWidth - 10) / 2;
+        return Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: items
+              .map(
+                (item) => SizedBox(
+                  width: constraints.maxWidth < 420
+                      ? constraints.maxWidth
+                      : width,
+                  child: AdminSurface(
+                    radius: 16,
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: item.color.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(item.icon, color: item.color, size: 18),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.product(
+                                  fontSize: 10.8,
+                                  fontWeight: FontWeight.w700,
+                                  color: AdminPalette.textMuted,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                item.value,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.product(
+                                  fontSize: 13.2,
+                                  fontWeight: FontWeight.w800,
+                                  color: AdminPalette.textPrimary,
+                                  height: 1.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildRecentOpportunityTextCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+  }) {
+    return AdminSurface(
+      radius: 18,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTypography.product(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: AdminPalette.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: AppTypography.product(
+              fontSize: 13,
+              height: 1.55,
+              color: AdminPalette.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentOpportunityListCard({
+    required String title,
+    required List<String> items,
+    required IconData icon,
+    required Color color,
+  }) {
+    return AdminSurface(
+      radius: 18,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTypography.product(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: AdminPalette.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 7,
+                    height: 7,
+                    margin: const EdgeInsets.only(top: 7),
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      item,
+                      style: AppTypography.product(
+                        fontSize: 13,
+                        height: 1.45,
+                        color: AdminPalette.textSecondary,
+                      ),
                     ),
                   ),
                 ],
-              ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentOpportunityTagsCard(
+    String title,
+    List<String> tags,
+    Color color,
+  ) {
+    return AdminSurface(
+      radius: 18,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTypography.product(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: AdminPalette.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: tags
+                .map(
+                  (tag) => AdminPill(
+                    label: tag,
+                    color: color,
+                    icon: Icons.sell_outlined,
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentOpportunityApplicationsCard({
+    required AppLocalizations l10n,
+    required List<AdminApplicationItemModel> applications,
+    required bool isLoading,
+    required Color color,
+  }) {
+    final preview = applications.take(5).toList();
+
+    return AdminSurface(
+      radius: 18,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.assignment_outlined, color: color, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.uiApplications,
+                  style: AppTypography.product(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: AdminPalette.textPrimary,
+                  ),
+                ),
+              ),
+              if (applications.isNotEmpty)
+                AdminPill(
+                  label: '${applications.length}',
+                  color: AdminPalette.activity,
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (isLoading)
+            Row(
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  l10n.uiLoadingVisibleOpportunityApplications,
+                  style: AppTypography.product(
+                    fontSize: 12.5,
+                    color: AdminPalette.textMuted,
+                  ),
+                ),
+              ],
+            )
+          else if (applications.isEmpty)
+            Text(
+              l10n.uiNoApplicationsYet,
+              style: AppTypography.product(
+                fontSize: 12.5,
+                color: AdminPalette.textMuted,
+              ),
+            )
+          else
+            ...preview.map((application) {
+              final status = ApplicationStatus.parse(application.status);
+              final statusColor = ApplicationStatus.color(status);
+              final appliedAt = application.appliedAt == null
+                  ? l10n.uiUnknownTime
+                  : DateFormat.yMMMd(
+                      l10n.localeName,
+                    ).format(application.appliedAt!.toDate());
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(11),
+                decoration: BoxDecoration(
+                  color: AdminPalette.surfaceElevated,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: AdminPalette.border.withValues(alpha: 0.72),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.person_outline_rounded,
+                        size: 17,
+                        color: statusColor,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            application.studentName.trim().isEmpty
+                                ? l10n.uiApplicant
+                                : application.studentName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.product(
+                              fontSize: 12.8,
+                              fontWeight: FontWeight.w800,
+                              color: AdminPalette.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            appliedAt,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.product(
+                              fontSize: 11.5,
+                              color: AdminPalette.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    AdminPill(
+                      label: ApplicationStatus.label(status, l10n),
+                      color: statusColor,
+                    ),
+                  ],
+                ),
+              );
+            }),
+          if (applications.length > preview.length)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                '+${l10n.uiValueApplicants(applications.length - preview.length)}',
+                style: AppTypography.product(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: AdminPalette.textMuted,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -2689,6 +3209,20 @@ class _RecentActivityCard extends StatelessWidget {
 
     return DateFormat.yMMMd(l10n.localeName).format(timestamp.toDate());
   }
+}
+
+class _RecentOpportunityHighlight {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  const _RecentOpportunityHighlight({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 }
 
 class _ActivityMetaChip extends StatelessWidget {
