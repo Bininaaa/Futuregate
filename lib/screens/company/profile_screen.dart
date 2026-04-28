@@ -1,6 +1,5 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
 import '../../services/document_access_service.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../widgets/app_shell_background.dart';
@@ -95,7 +95,7 @@ class CompanyProfileScreen extends StatelessWidget {
                         children: [
                           Text(
                             description,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 14,
                               height: 1.7,
                               fontWeight: FontWeight.w500,
@@ -342,7 +342,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                 companyName,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: compact ? 19 : 21,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -362,7 +362,7 @@ class CompanyProfileScreen extends StatelessWidget {
                             (user.sector ?? '').trim(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w600,
                               color: Colors.white.withValues(alpha: 0.82),
@@ -520,7 +520,7 @@ class CompanyProfileScreen extends StatelessWidget {
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 15.5,
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -531,7 +531,7 @@ class CompanyProfileScreen extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 10,
               fontWeight: FontWeight.w600,
               color: Colors.white.withValues(alpha: 0.8),
@@ -1018,7 +1018,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                   : const Icon(Icons.check_rounded),
               label: Text(
                 _saving ? 'Saving changes...' : 'Save Changes',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1262,7 +1262,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
           keyboardType: keyboardType,
           maxLines: maxLines,
           validator: validator,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: CompanyDashboardPalette.textPrimary,
@@ -1351,7 +1351,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                         : hasLogo
                         ? 'Replace Logo'
                         : 'Upload Logo',
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1371,7 +1371,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                     icon: const Icon(Icons.delete_outline_rounded, size: 18),
                     label: Text(
                       'Remove Logo',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1448,7 +1448,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
             const SizedBox(height: 12),
             Text(
               _commercialRegisterError!,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: SettingsFlowPalette.error,
@@ -1863,7 +1863,7 @@ class _HeroActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = GoogleFonts.poppins(
+    final style = AppTypography.product(
       fontSize: 13,
       fontWeight: FontWeight.w600,
     );
@@ -1983,7 +1983,7 @@ class _CompanyMissingChip extends StatelessWidget {
           const SizedBox(width: 7),
           Text(
             item.label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: item.color,
@@ -2023,7 +2023,7 @@ class _StatusBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               color: foregroundColor,

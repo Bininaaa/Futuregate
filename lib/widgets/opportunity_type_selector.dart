@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 import '../utils/opportunity_type.dart';
 
 /// Safe card-based selector for choosing an opportunity type.
@@ -171,7 +171,7 @@ class OpportunityTypeSelector extends StatelessWidget {
       children: [
         Text(
           OpportunityType.label(type, l10n),
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 12.6,
             fontWeight: FontWeight.w700,
             color: isSelected ? typeColor : colors.textSecondary,
@@ -183,7 +183,7 @@ class OpportunityTypeSelector extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           OpportunityType.subtitle(type, l10n),
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 10.4,
             height: 1.35,
             color: isSelected

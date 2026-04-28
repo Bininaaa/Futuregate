@@ -570,7 +570,7 @@
   "uiFeaturedInternships": "تدريبات مميزة",
   "uiFeaturedJobs": "وظائف مميزة",
   "uiFeaturedListUpdated": "تم تحديث القائمة المميزة",
-  "uiFeaturedScholarship": "منحة دراسية<br>مميزة",
+  "uiFeaturedScholarship": "منحة دراسية مميزة",
   "uiFeaturedcountFeaturedResources": "{featuredCount} موارد مميزة",
   "uiFeed": "الخلاصة",
   "uiFieldOfStudy": "مجال الدراسة",
@@ -2339,5 +2339,37 @@
   "uiDaysAgoShort": "قبل {count} ي",
   "uiAppsPerOpportunity": "{rate} طلب لكل فرصة",
   "uiCvCompletionRateValue": "{percent}% ({totalCvs} من {students} طالب)",
-  "uiPendingApprovedIdeasValue": "{pending} معلّقة و{approved} مقبولة"
+  "uiPendingApprovedIdeasValue": "{pending} معلّقة و{approved} مقبولة",
+
+  "dashSectionRecommendedSubtitle": "مختارة بناءً على ملفك الشخصي وتوقيتك وزخمك.",
+  "dashSectionQuickAccessSubtitle": "أسرع طريق للعودة إلى الوظائف والتمويل والأدوات والمحفوظات.",
+  "dashSectionLatestActivitySubtitle": "طلباتك الأخيرة والمحفوظات وتحديثات السيرة الذاتية.",
+  "dashSectionClosingSoonSubtitle": "مواعيد تستحق التحرك الفوري هذا الأسبوع.",
+  "dashSectionDefaultSubtitle": "كل ما يهمك في متناول لمسة واحدة.",
+
+  "dashFocusCvSubtitle": "السيرة الذاتية الجاهزة تُسرّع تقديمك على الوظائف والتدريبات والمنح.",
+  "dashFocusCvInsight": "ابدأ بسيرتك الذاتية، ثم أكمل تفاصيل الملف الشخصي لتحسين نتائج المطابقة.",
+  "dashFocusProfileSubtitle": "{count} تفصيل لا يزال ناقصاً لمطابقة أفضل.",
+  "dashFocusInsightApprovedMomentum": "هذه لحظة مثالية لمواصلة الاستكشاف بينما يلقى ملفك الشخصي استحسانًا.",
+  "dashFocusSubtitleInReview": "تابع عدة خيارات قوية بينما تنتظر الردود.",
+  "dashFocusInsightInReview": "المتابعة الآن تُبقي مساراتك في حالة أفضل لاحقًا.",
+  "dashFocusInsightSavedReady": "قائمتك المحفوظة جاهزة لمراجعة ثانية قبل اقتراب المواعيد.",
+  "dashFocusSubtitleDiscover": "استكشف وظائف وتدريبات ومصادر تمويل واختيارات تعليمية مصممة للطلاب الطموحين.",
+  "dashFocusInsightDiscover": "استخدم الوصول السريع للانتقال إلى الوظائف أو التدريبات أو المنح أو قائمتك المحفوظة.",
+  "dashFocusClosingSoonSubtitle": "تُغلق {count} فرصة خلال الأسبوعين القادمين.",
+  "dashFocusClosingSoonInsight": "{company} هي الأولى، وتُغلق {deadline}.",
+  "dashSavedBannerEmpty": "احتفظ بأفضل وظائفك والتمويل والاختيارات التعليمية في متناول يدك.",
+  "dashSavedBannerCount": "{count} عنصر محفوظ جاهز لمراجعة ثانية.",
+
+  "dashDeadlineSoon": "الموعد النهائي قريباً",
+  "dashLastDay": "اليوم الأخير",
+  "dashDayLeft": "يوم واحد متبقٍ",
+  "dashDaysLeft": "متبقٍ {count} أيام",
+
+  "discoverResultsTitle": "النتائج",
+  "discoverResultsSubtitle": "القوائم المطابقة لبحثك والفلاتر الحالية",
+  "discoverNoResultsHint": "حاول تعديل بحثك أو الفلاتر لاكتشاف مزيد من النتائج.",
+  "discoverTrendingSubtitle": "اختيارات مميزة وحديثة من بيانات فعلية",
+  "discoverTrendingEmptyHint": "تُبرز التوصيات الجديدة كلما أُضيفت قوائم حديثة.",
+  "discoverLatestSubtitle": "أحدث {count} وظائف وتدريبات ومسارات ممولة"
 }

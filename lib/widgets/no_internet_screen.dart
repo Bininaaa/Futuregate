@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 import 'app_shell_background.dart';
 
 class NoInternetScreen extends StatelessWidget {
@@ -59,7 +59,7 @@ class NoInternetScreen extends StatelessWidget {
                       const SizedBox(height: 22),
                       Text(
                         'Connection paused',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
                           color: colors.textPrimary,
@@ -70,7 +70,7 @@ class NoInternetScreen extends StatelessWidget {
                       const SizedBox(height: 10),
                       Text(
                         'FutureGate needs a network connection to refresh your workspace. Check Wi-Fi or mobile data, then try again.',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 13.2,
                           height: 1.55,
                           fontWeight: FontWeight.w500,
@@ -87,7 +87,7 @@ class NoInternetScreen extends StatelessWidget {
                           icon: const Icon(Icons.refresh_rounded, size: 20),
                           label: Text(
                             'Retry connection',
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                             ),

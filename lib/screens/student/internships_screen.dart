@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
@@ -9,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
@@ -925,7 +925,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                       const SizedBox(height: 8),
                       Text(
                         'Loading live internships...',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: _InternshipVisualPalette.textSecondary,
@@ -954,7 +954,7 @@ class _InternshipsIntro extends StatelessWidget {
         children: [
           TextSpan(
             text: 'Find your next\n',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 30,
               fontWeight: FontWeight.w700,
               height: 1.08,
@@ -963,7 +963,7 @@ class _InternshipsIntro extends StatelessWidget {
           ),
           TextSpan(
             text: 'placement',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 30,
               fontWeight: FontWeight.w700,
               height: 1.08,
@@ -1041,7 +1041,7 @@ class _InternshipFilterChipRow extends StatelessWidget {
               child: Center(
                 child: Text(
                   filter.label,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: isActive
@@ -1082,7 +1082,7 @@ class _InternshipSectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: OpportunityDashboardPalette.textPrimary,
@@ -1103,7 +1103,7 @@ class _InternshipSectionHeader extends StatelessWidget {
                   ),
                   child: Text(
                     countLabel!,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: OpportunityDashboardPalette.textSecondary,
@@ -1572,7 +1572,7 @@ class _InternshipFeaturedCard extends StatelessWidget {
                       compensationLabel,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: compensationFontSize,
                         fontWeight: FontWeight.w700,
                         color: Colors.white.withValues(alpha: 0.96),
@@ -1742,7 +1742,7 @@ class _InternshipFeaturedCard extends StatelessWidget {
                                   ),
                                   child: Text(
                                     topTag,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: denseLayout
                                           ? (isTight ? 8.4 : 9.2)
                                           : (isTight ? 9 : 10),
@@ -1788,7 +1788,7 @@ class _InternshipFeaturedCard extends StatelessWidget {
                             item.title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: titleFontSize,
                               fontWeight: FontWeight.w700,
                               height: denseLayout ? 1.04 : 1.10,
@@ -1804,7 +1804,7 @@ class _InternshipFeaturedCard extends StatelessWidget {
                             supportingLine,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: supportingFontSize,
                               fontWeight: FontWeight.w500,
                               color: Colors.white.withValues(alpha: 0.88),
@@ -1821,7 +1821,7 @@ class _InternshipFeaturedCard extends StatelessWidget {
                               metadataLine,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: metadataFontSize,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white.withValues(alpha: 0.80),
@@ -1926,7 +1926,7 @@ class _InternshipFeaturedCtaButton extends StatelessWidget {
                   ],
                   Text(
                     label,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: compact ? 10.2 : 11.2,
                       fontWeight: FontWeight.w800,
                       color: resolvedTextColor,
@@ -2370,7 +2370,7 @@ class _AvailableInternshipCard extends StatelessWidget {
                                       topBadge,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.poppins(
+                                      style: AppTypography.product(
                                         fontSize: chipSize,
                                         fontWeight: FontWeight.w700,
                                         color: palette.accentColor,
@@ -2404,7 +2404,7 @@ class _AvailableInternshipCard extends StatelessWidget {
                             item.title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: titleSize,
                               fontWeight: FontWeight.w700,
                               height: 1.12,
@@ -2416,7 +2416,7 @@ class _AvailableInternshipCard extends StatelessWidget {
                             item.companyName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: subtitleSize,
                               fontWeight: FontWeight.w600,
                               color: OpportunityDashboardPalette.textSecondary,
@@ -2495,7 +2495,7 @@ class _AvailableInternshipCard extends StatelessWidget {
                                             item.duration!.trim(),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.poppins(
+                                            style: AppTypography.product(
                                               fontSize: chipSize,
                                               fontWeight: FontWeight.w700,
                                               color: palette.accentColor,
@@ -2727,7 +2727,7 @@ class _AvailableInternshipListTile extends StatelessWidget {
                                     item.title,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: compact ? 13.6 : 14.6,
                                       fontWeight: FontWeight.w700,
                                       height: 1.08,
@@ -2742,7 +2742,7 @@ class _AvailableInternshipListTile extends StatelessWidget {
                                     topBadge,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: compact ? 9.0 : 9.6,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 0.24,
@@ -2759,7 +2759,7 @@ class _AvailableInternshipListTile extends StatelessWidget {
                               supportingLine,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: compact ? 10.6 : 11.2,
                                 fontWeight: FontWeight.w600,
                                 color:
@@ -2866,7 +2866,7 @@ class _AvailableInternshipListMetaItem extends StatelessWidget {
           text,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: compact ? 9.8 : 10.4,
             fontWeight: emphasize ? FontWeight.w700 : FontWeight.w600,
             color: color,
@@ -3009,7 +3009,7 @@ class _InternshipMetaLine extends StatelessWidget {
             text,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: fontSize,
               fontWeight: FontWeight.w500,
               color: textColor,
@@ -3168,7 +3168,7 @@ class _CompanyLogoTile extends StatelessWidget {
           logoInitial,
           textAlign: TextAlign.center,
           maxLines: 1,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: size * 0.42,
             height: 1,
             fontWeight: FontWeight.w700,
@@ -3239,7 +3239,7 @@ class _InternshipsEmptyState extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 13.4,
                     fontWeight: FontWeight.w700,
                     color: _InternshipVisualPalette.textPrimary,
@@ -3248,7 +3248,7 @@ class _InternshipsEmptyState extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11.2,
                     height: 1.4,
                     color: _InternshipVisualPalette.textSecondary,
@@ -3450,7 +3450,7 @@ class _InternshipStatusChip extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: compact ? 8.8 : 9.4,
               fontWeight: FontWeight.w700,
               color: color,

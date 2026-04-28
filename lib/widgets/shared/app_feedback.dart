@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
+import '../../theme/app_typography.dart';
 
 enum AppFeedbackType { error, warning, success, info, neutral, removed }
 
@@ -275,7 +276,7 @@ class AppAlert extends StatelessWidget {
                 if (hasTitle)
                   Text(
                     title!,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: compact ? 12.8 : 13.6,
                       fontWeight: FontWeight.w700,
                       color:
@@ -288,7 +289,7 @@ class AppAlert extends StatelessWidget {
                 if (hasTitle) const SizedBox(height: 3),
                 Text(
                   message,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: compact ? 11.8 : 12.4,
                     fontWeight: hasTitle ? FontWeight.w500 : FontWeight.w600,
                     height: 1.45,
@@ -418,7 +419,7 @@ class AppEmptyStateNotice extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 15.8,
               fontWeight: FontWeight.w700,
               color: variant.titleColor,
@@ -428,7 +429,7 @@ class AppEmptyStateNotice extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12.6,
               fontWeight: FontWeight.w500,
               height: 1.55,
@@ -475,7 +476,7 @@ class AppFieldErrorText extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11.6,
                 fontWeight: FontWeight.w600,
                 height: 1.35,
@@ -527,7 +528,7 @@ class AppFeedbackButton extends StatelessWidget {
         icon: icon == null ? const SizedBox.shrink() : Icon(icon, size: 16),
         label: Text(
           label,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 12.2,
             fontWeight: FontWeight.w700,
             color: variant.actionColor,
@@ -547,7 +548,7 @@ class AppFeedbackButton extends StatelessWidget {
       icon: icon == null ? const SizedBox.shrink() : Icon(icon, size: 16),
       label: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 12.2,
           fontWeight: FontWeight.w700,
           color: Colors.white,

@@ -487,7 +487,7 @@ class OpportunityCategoryCard extends StatelessWidget {
                   SizedBox(
                     height: 24,
                     child: Align(
-                      alignment: Alignment.topLeft,
+                      alignment: AlignmentDirectional.topStart,
                       child: Text(
                         subtitle,
                         style: AppTypography.product(

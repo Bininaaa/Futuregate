@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/message_model.dart';
+import '../theme/app_typography.dart';
 
 class MessageBubble extends StatelessWidget {
   final MessageModel message;
@@ -55,11 +55,10 @@ class MessageBubble extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 'This message was deleted',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 13,
-                  fontStyle: FontStyle.italic,
                   color: isMe ? Colors.white70 : Colors.grey,
-                ),
+                ).copyWith(fontStyle: FontStyle.italic),
               ),
             ],
           ),
@@ -100,7 +99,7 @@ class MessageBubble extends StatelessWidget {
             children: [
               Text(
                 message.text,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 14,
                   color: isMe ? Colors.white : Colors.black87,
                 ),
@@ -112,19 +111,18 @@ class MessageBubble extends StatelessWidget {
                   if (message.isEdited) ...[
                     Text(
                       'edited',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 10,
-                        fontStyle: FontStyle.italic,
                         color: isMe
                             ? Colors.white.withValues(alpha: 0.6)
                             : Colors.grey.shade500,
-                      ),
+                      ).copyWith(fontStyle: FontStyle.italic),
                     ),
                     const SizedBox(width: 4),
                   ],
                   Text(
                     time,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 11,
                       color: isMe
                           ? Colors.white.withValues(alpha: 0.7)
@@ -162,7 +160,7 @@ class MessageBubble extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.edit, color: Color(0xFF004E98)),
-              title: Text(AppLocalizations.of(context)!.editMessageLabel, style: GoogleFonts.poppins()),
+              title: Text(AppLocalizations.of(context)!.editMessageLabel, style: AppTypography.product()),
               onTap: () {
                 Navigator.pop(ctx);
                 onEdit?.call();
@@ -172,7 +170,7 @@ class MessageBubble extends StatelessWidget {
               leading: const Icon(Icons.delete_outline, color: Colors.red),
               title: Text(
                 'Delete for everyone',
-                style: GoogleFonts.poppins(color: Colors.red),
+                style: AppTypography.product(color: Colors.red),
               ),
               onTap: () {
                 Navigator.pop(ctx);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +17,7 @@ import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../services/opportunity_service.dart';
 import '../../services/scholarship_service.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -609,7 +609,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                           children: [
                                             Text(
                                               l10n.opportunityTypeLabel,
-                                              style: GoogleFonts.poppins(
+                                              style: AppTypography.product(
                                                 fontSize: 11.2,
                                                 fontWeight: FontWeight.w600,
                                                 color:
@@ -703,7 +703,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                     : totalSaved == 1
                                     ? '1 saved item'
                                     : '$totalSaved saved items',
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
                                   color: StudentOpportunityHubPalette
@@ -895,7 +895,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   children: [
                     Text(
                       'Your shortlist',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: StudentOpportunityHubPalette.textPrimary,
@@ -904,7 +904,7 @@ class _SavedCompactSummary extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'Quick access to roles, funding, learning, and ideas worth revisiting.',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11,
                         color: StudentOpportunityHubPalette.textSecondary,
                       ),
@@ -1031,7 +1031,7 @@ class _SavedMiniStat extends StatelessWidget {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: StudentOpportunityHubPalette.textSecondary,
@@ -1041,7 +1041,7 @@ class _SavedMiniStat extends StatelessWidget {
                 const SizedBox(width: 10),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: StudentOpportunityHubPalette.textPrimary,
@@ -1062,7 +1062,7 @@ class _SavedMiniStat extends StatelessWidget {
                         label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: StudentOpportunityHubPalette.textSecondary,
@@ -1074,7 +1074,7 @@ class _SavedMiniStat extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: StudentOpportunityHubPalette.textPrimary,
@@ -1445,7 +1445,7 @@ class _SavedListCard extends StatelessWidget {
                       if (normalizedSubtitle.isNotEmpty)
                         TextSpan(
                           text: '  \u2022  ',
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 11.2,
                             fontWeight: FontWeight.w600,
                             color: StudentOpportunityHubPalette.textMuted,
@@ -1453,7 +1453,7 @@ class _SavedListCard extends StatelessWidget {
                         ),
                       TextSpan(
                         text: normalizedTypeLabel,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.2,
                           fontWeight: FontWeight.w700,
                           color: accent,
@@ -1470,7 +1470,7 @@ class _SavedListCard extends StatelessWidget {
                     normalizedSummary,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 11.1,
                       fontWeight: FontWeight.w600,
                       color: StudentOpportunityHubPalette.textSecondary,
@@ -1561,7 +1561,7 @@ class _SavedRemoveMetaChip extends StatelessWidget {
               const SizedBox(width: 5),
               Text(
                 isRemoving ? 'Removing' : 'Remove',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 10.6,
                   fontWeight: FontWeight.w600,
                   color: tone.withValues(alpha: isDisabled ? 0.55 : 1),
@@ -1669,7 +1669,7 @@ class _SavedLabelChip extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 10.4,
                 fontWeight: FontWeight.w600,
                 color: filled
@@ -1725,7 +1725,7 @@ class _SavedMetaChip extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 10.6,
                   fontWeight: FontWeight.w600,
                   color: tone == null
@@ -1785,7 +1785,7 @@ class _InlineBanner extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: StudentOpportunityHubPalette.textPrimary,
@@ -1794,7 +1794,7 @@ class _InlineBanner extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12,
                     height: 1.5,
                     color: StudentOpportunityHubPalette.textSecondary,
@@ -1810,14 +1810,14 @@ class _InlineBanner extends StatelessWidget {
 }
 
 abstract final class _SavedCardText {
-  static TextStyle get title => GoogleFonts.poppins(
+  static TextStyle get title => AppTypography.product(
     fontSize: 16,
     height: 1.18,
     fontWeight: FontWeight.w700,
     color: StudentOpportunityHubPalette.textPrimary,
   );
 
-  static TextStyle get subtitle => GoogleFonts.poppins(
+  static TextStyle get subtitle => AppTypography.product(
     fontSize: 12.4,
     fontWeight: FontWeight.w600,
     color: StudentOpportunityHubPalette.textSecondary,

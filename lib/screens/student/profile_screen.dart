@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/cv_model.dart';
@@ -24,6 +23,7 @@ import '../../screens/settings/security_privacy_screen.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_screen.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/display_text.dart';
 import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
@@ -96,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: Center(
           child: Text(
             'Not signed in',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 15,
               fontWeight: FontWeight.w600,
               color: SettingsFlowPalette.textSecondary,
@@ -522,7 +522,7 @@ class _ProfileHeader extends StatelessWidget {
                       Text(
                         name,
                         textAlign: wide ? TextAlign.start : TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: wide ? 26 : 24,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -533,7 +533,7 @@ class _ProfileHeader extends StatelessWidget {
                       Text(
                         headline,
                         textAlign: wide ? TextAlign.start : TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 12.4,
                           fontWeight: FontWeight.w500,
                           color: Colors.white.withValues(alpha: 0.82),
@@ -592,7 +592,7 @@ class _ProfileHeader extends StatelessWidget {
                                 Flexible(
                                   child: Text(
                                     bio == null ? 'Profile tip' : 'About you',
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: 11.5,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white,
@@ -610,7 +610,7 @@ class _ProfileHeader extends StatelessWidget {
                                   : TextAlign.center,
                               maxLines: bio == null ? 3 : 4,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: 11.8,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.white.withValues(
@@ -712,7 +712,7 @@ class _ProfileHeader extends StatelessWidget {
         const Spacer(),
         Text(
           'Profile',
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 17,
             fontWeight: FontWeight.w600,
             color: Colors.white.withValues(alpha: 0.9),
@@ -910,7 +910,7 @@ class _HeaderButton extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: foreground,
@@ -955,7 +955,7 @@ class _HeroBadge extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
@@ -1057,7 +1057,7 @@ class _HeroStatusCard extends StatelessWidget {
                 ),
                 child: Text(
                   '$percent%',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     color: SettingsFlowPalette.primary,
@@ -1069,7 +1069,7 @@ class _HeroStatusCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             completionTitle,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: SettingsFlowPalette.textPrimary,
@@ -1081,7 +1081,7 @@ class _HeroStatusCard extends StatelessWidget {
             completionMessage,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.8,
               fontWeight: FontWeight.w500,
               color: SettingsFlowPalette.textSecondary,
@@ -1217,7 +1217,7 @@ class _HeroMetricTile extends StatelessWidget {
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 10.8,
                         fontWeight: FontWeight.w600,
                         color: SettingsFlowPalette.textSecondary,
@@ -1231,7 +1231,7 @@ class _HeroMetricTile extends StatelessWidget {
                 value,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: compactValue ? 11.5 : 16,
                   fontWeight: FontWeight.w700,
                   color: SettingsFlowPalette.textPrimary,
@@ -1285,7 +1285,7 @@ class _ActivityStrip extends StatelessWidget {
             children: [
               Text(
                 'Profile completion',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: SettingsFlowPalette.textSecondary,
@@ -1303,7 +1303,7 @@ class _ActivityStrip extends StatelessWidget {
                 ),
                 child: Text(
                   '$pct%',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     color: SettingsFlowPalette.primary,
@@ -1315,7 +1315,7 @@ class _ActivityStrip extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             completionTitle,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: SettingsFlowPalette.textPrimary,
@@ -1327,7 +1327,7 @@ class _ActivityStrip extends StatelessWidget {
             completionMessage,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.8,
               fontWeight: FontWeight.w500,
               color: SettingsFlowPalette.textSecondary,
@@ -1360,7 +1360,7 @@ class _ActivityStrip extends StatelessWidget {
                       completed
                           ? 'Everything important is filled in'
                           : '${missingItems.length} detail${missingItems.length == 1 ? '' : 's'} left',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: SettingsFlowPalette.textPrimary,
@@ -1369,7 +1369,7 @@ class _ActivityStrip extends StatelessWidget {
                     const Spacer(),
                     Text(
                       completed ? 'Complete' : 'In progress',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
                         color: completed
@@ -1414,7 +1414,7 @@ class _ActivityStrip extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'The profile already looks polished. A quick refresh from time to time is enough.',
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: SettingsFlowPalette.textPrimary,
@@ -1478,7 +1478,7 @@ class _ActivityStrip extends StatelessWidget {
                         focusItem == null
                             ? 'You are in a strong place'
                             : 'Best next update: $focusItem',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: SettingsFlowPalette.textPrimary,
@@ -1489,7 +1489,7 @@ class _ActivityStrip extends StatelessWidget {
                         focusItem == null
                             ? 'Keep the profile current as your student journey changes.'
                             : focusMessage,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 12.2,
                           fontWeight: FontWeight.w500,
                           color: SettingsFlowPalette.textSecondary,
@@ -1581,7 +1581,7 @@ class _DetailsCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'The essentials recruiters and programs often scan first.',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.6,
               fontWeight: FontWeight.w500,
               color: SettingsFlowPalette.textSecondary,
@@ -1631,7 +1631,7 @@ class _DetailsCard extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(
                       bio == null ? 'Bio still missing' : 'About you',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 12.8,
                         fontWeight: FontWeight.w700,
                         color: SettingsFlowPalette.textPrimary,
@@ -1643,7 +1643,7 @@ class _DetailsCard extends StatelessWidget {
                 Text(
                   bio ??
                       'A short bio helps your profile feel intentional and gives people a quick sense of your direction.',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11.8,
                     fontWeight: FontWeight.w500,
                     color: bio == null
@@ -1725,7 +1725,7 @@ class _FactRow extends StatelessWidget {
               children: [
                 Text(
                   data.label,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w600,
                     color: SettingsFlowPalette.textSecondary,
@@ -1738,13 +1738,14 @@ class _FactRow extends StatelessWidget {
                       : 'Not added yet',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12.2,
                     fontWeight: FontWeight.w600,
                     color: filled
                         ? SettingsFlowPalette.textPrimary
                         : SettingsFlowPalette.textSecondary,
                     height: 1.35,
+                  ).copyWith(
                     fontStyle: filled ? FontStyle.normal : FontStyle.italic,
                   ),
                 ),
@@ -1806,7 +1807,7 @@ class _LinksCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'Everything around your profile, documents, notifications, and account settings.',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12.8,
               fontWeight: FontWeight.w500,
               color: SettingsFlowPalette.textSecondary,
@@ -1992,7 +1993,7 @@ class _FeaturedActionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 13.2,
                         fontWeight: FontWeight.w700,
                         color: SettingsFlowPalette.textPrimary,
@@ -2003,7 +2004,7 @@ class _FeaturedActionCard extends StatelessWidget {
                       subtitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11.8,
                         fontWeight: FontWeight.w500,
                         color: SettingsFlowPalette.textSecondary,
@@ -2077,7 +2078,7 @@ class _LinkRow extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: destructive ? 12.9 : 13.2,
                         fontWeight: FontWeight.w700,
                         color: destructive
@@ -2089,7 +2090,7 @@ class _LinkRow extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         subtitle!,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.8,
                           fontWeight: FontWeight.w500,
                           color: destructive
@@ -2118,7 +2119,7 @@ class _LinkRow extends StatelessWidget {
                   ),
                   child: Text(
                     badge!,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -2251,7 +2252,7 @@ class _SectionChip extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               color: color,
@@ -2288,7 +2289,7 @@ class _MissingChip extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
               color: SettingsFlowPalette.textPrimary,
@@ -2343,7 +2344,7 @@ class _SurfaceActionButton extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: foregroundColor,
@@ -2390,7 +2391,7 @@ class _PillActionButton extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
                   color: color,

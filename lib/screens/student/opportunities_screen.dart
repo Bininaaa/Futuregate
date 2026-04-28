@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +10,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/training_provider.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
@@ -415,7 +415,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                 selectedColor: OpportunityDashboardPalette.primary.withValues(
                   alpha: 0.14,
                 ),
-                labelStyle: GoogleFonts.poppins(
+                labelStyle: AppTypography.product(
                   fontWeight: FontWeight.w600,
                   color: selected
                       ? OpportunityDashboardPalette.primary
@@ -442,7 +442,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     children: [
                       Text(
                         'Browse categories',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: OpportunityDashboardPalette.textPrimary,
@@ -451,7 +451,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       const SizedBox(height: 6),
                       Text(
                         'Keep the existing data source, but tailor what you see.',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 13,
                           color: OpportunityDashboardPalette.textSecondary,
                         ),
@@ -479,7 +479,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       const SizedBox(height: 20),
                       Text(
                         'Employment type',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: OpportunityDashboardPalette.textPrimary,
@@ -520,7 +520,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       const SizedBox(height: 20),
                       Text(
                         'Work mode',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: OpportunityDashboardPalette.textPrimary,
@@ -559,7 +559,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       const SizedBox(height: 20),
                       Text(
                         'Quick filters',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: OpportunityDashboardPalette.textPrimary,
@@ -1367,7 +1367,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       children: [
         Text(
           l10n.uiFindYourNextMove,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 27,
             fontWeight: FontWeight.w700,
             color: OpportunityDashboardPalette.textPrimary,
@@ -1377,7 +1377,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         const SizedBox(height: 6),
         Text(
           l10n.uiBrowseJobsInternshipsSponsoredTracksAndTrainingPicksDesignedFor,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 12,
             height: 1.35,
             color: OpportunityDashboardPalette.textSecondary,
@@ -1442,7 +1442,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       const SizedBox(width: 6),
                       Text(
                         filter.label,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: isActive
@@ -1465,7 +1465,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
             key: ValueKey(
               'summary-$visibleCount-$totalCount-$_activeFilter-$_searchQuery',
             ),
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w500,
               color: OpportunityDashboardPalette.textSecondary,
@@ -1600,9 +1600,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       sliver: SliverToBoxAdapter(
                         key: _latestSectionKey,
                         child: OpportunitySectionHeader(
-                          title: 'Results',
-                          subtitle:
-                              'Listings that match your current search and filters',
+                          title: AppLocalizations.of(context)!.discoverResultsTitle,
+                          subtitle: AppLocalizations.of(context)!.discoverResultsSubtitle,
                           accentColor: OpportunityDashboardPalette.primary,
                         ),
                       ),
@@ -1616,8 +1615,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                             title: AppLocalizations.of(
                               context,
                             )!.uiNoOpportunitiesMatchView,
-                            subtitle:
-                                'Try adjusting your search or filters to uncover more matches.',
+                            subtitle: AppLocalizations.of(context)!.discoverNoResultsHint,
                             color: OpportunityDashboardPalette.primary,
                           ),
                         ),
@@ -1786,9 +1784,8 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           title: AppLocalizations.of(
                             context,
                           )!.uiTrendingOpportunities,
-                          subtitle:
-                              'Featured, fresh, and high-signal picks from live data',
-                          actionLabel: 'View All',
+                          subtitle: AppLocalizations.of(context)!.discoverTrendingSubtitle,
+                          actionLabel: AppLocalizations.of(context)!.uiViewAll,
                           onAction: () async {
                             _setFilter(_OpportunityDashboardFilter.all);
                             await _scrollToKey(_latestSectionKey);
@@ -1807,8 +1804,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                   title: AppLocalizations.of(
                                     context,
                                   )!.uiNoTrendingOpportunities,
-                                  subtitle:
-                                      'Fresh recommendations are highlighted as new listings go live.',
+                                  subtitle: AppLocalizations.of(context)!.discoverTrendingEmptyHint,
                                   color: OpportunityDashboardPalette.primary,
                                 ),
                               )
@@ -1867,8 +1863,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           title: AppLocalizations.of(
                             context,
                           )!.uiLatestOpportunities,
-                          subtitle:
-                              'The $_latestItemsLimit newest roles, internships, and sponsored tracks',
+                          subtitle: AppLocalizations.of(context)!.discoverLatestSubtitle(_latestItemsLimit),
                           accentColor: OpportunityDashboardPalette.success,
                         ),
                       ),
@@ -1882,8 +1877,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                             title: AppLocalizations.of(
                               context,
                             )!.uiNoOpportunitiesMatchView,
-                            subtitle:
-                                'Try adjusting your search or filters to uncover more matches.',
+                            subtitle: AppLocalizations.of(context)!.discoverNoResultsHint,
                             color: OpportunityDashboardPalette.success,
                           ),
                         ),

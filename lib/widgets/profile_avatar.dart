@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../config/avatar_config.dart';
+import '../theme/app_typography.dart';
 import '../models/user_model.dart';
 import '../services/public_profile_service.dart';
 
@@ -273,7 +273,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
             child: Text(
               _fallbackInitials(name, role),
               maxLines: 1,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: widget.radius * 0.9,
                 height: 1,
                 fontWeight: FontWeight.w700,
@@ -304,7 +304,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
             initial,
             textAlign: TextAlign.center,
             maxLines: 1,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: widget.radius,
               height: 1,
               fontWeight: FontWeight.w700,

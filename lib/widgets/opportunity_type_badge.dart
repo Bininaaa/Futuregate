@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../theme/app_typography.dart';
 import '../utils/opportunity_type.dart';
 
 /// A compact, pill-shaped badge that displays an opportunity type
@@ -45,7 +45,7 @@ class OpportunityTypeBadge extends StatelessWidget {
           ],
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: fontSize,
               fontWeight: FontWeight.w600,
               color: badgeColor,

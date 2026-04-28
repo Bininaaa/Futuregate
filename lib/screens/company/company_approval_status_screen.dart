@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../theme/app_typography.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
@@ -135,7 +135,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                                     badgeLabel,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 0.5,
@@ -161,7 +161,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                           const SizedBox(height: 18),
                           Text(
                             title,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
                               color: _ink,
@@ -171,7 +171,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                           const SizedBox(height: 10),
                           Text(
                             subtitle,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 13.5,
                               height: 1.7,
                               color: _muted,
@@ -217,7 +217,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                         children: [
                           Text(
                             helperTitle,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: _ink,
@@ -239,7 +239,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                         children: [
                           Text(
                             'Need to review your profile?',
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: _ink,
@@ -248,7 +248,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           Text(
                             'You can open the company profile right now to improve the company story, website, phone number, logo, or commercial register while the account is waiting for review.',
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 13,
                               height: 1.65,
                               color: _muted,
@@ -361,7 +361,7 @@ class _InfoStat extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: color,
@@ -372,7 +372,7 @@ class _InfoStat extends StatelessWidget {
             value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 13,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF112243),
@@ -409,7 +409,7 @@ class _HelperRow extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 13,
               height: 1.6,
               color: const Color(0xFF5F6F89),

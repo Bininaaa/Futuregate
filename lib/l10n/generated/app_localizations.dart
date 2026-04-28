@@ -13962,6 +13962,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{pending} pending and {approved} approved'**
   String uiPendingApprovedIdeasValue(Object pending, Object approved);
+
+  /// No description provided for @dashSectionRecommendedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chosen around your profile, timing, and momentum.'**
+  String get dashSectionRecommendedSubtitle;
+
+  /// No description provided for @dashSectionQuickAccessSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your fastest path back into jobs, funding, tools, and saves.'**
+  String get dashSectionQuickAccessSubtitle;
+
+  /// No description provided for @dashSectionLatestActivitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recent applications, saves, and CV updates.'**
+  String get dashSectionLatestActivitySubtitle;
+
+  /// No description provided for @dashSectionClosingSoonSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadlines worth acting on this week.'**
+  String get dashSectionClosingSoonSubtitle;
+
+  /// No description provided for @dashSectionDefaultSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything important stays one tap away.'**
+  String get dashSectionDefaultSubtitle;
+
+  /// No description provided for @dashFocusCvSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A ready CV makes jobs, internships, and scholarships much quicker to apply for.'**
+  String get dashFocusCvSubtitle;
+
+  /// No description provided for @dashFocusCvInsight.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with your CV, then tighten the profile details that make matching feel smarter.'**
+  String get dashFocusCvInsight;
+
+  /// No description provided for @dashFocusProfileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} detail(s) still missing for better matching.'**
+  String dashFocusProfileSubtitle(Object count);
+
+  /// No description provided for @dashFocusInsightApprovedMomentum.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a strong moment to keep exploring while your profile is landing well.'**
+  String get dashFocusInsightApprovedMomentum;
+
+  /// No description provided for @dashFocusSubtitleInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a few strong options moving while you wait for responses.'**
+  String get dashFocusSubtitleInReview;
+
+  /// No description provided for @dashFocusInsightInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'A little follow-through now keeps your pipeline healthier later.'**
+  String get dashFocusInsightInReview;
+
+  /// No description provided for @dashFocusInsightSavedReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved list is ready for a second pass before deadlines tighten.'**
+  String get dashFocusInsightSavedReady;
+
+  /// No description provided for @dashFocusSubtitleDiscover.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore open roles, internships, funding, and learning picks designed for students building momentum.'**
+  String get dashFocusSubtitleDiscover;
+
+  /// No description provided for @dashFocusInsightDiscover.
+  ///
+  /// In en, this message translates to:
+  /// **'Use quick access below to jump into jobs, internships, scholarships, learning, or your saved shortlist.'**
+  String get dashFocusInsightDiscover;
+
+  /// No description provided for @dashFocusClosingSoonSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} opportunities close within the next two weeks.'**
+  String dashFocusClosingSoonSubtitle(Object count);
+
+  /// No description provided for @dashFocusClosingSoonInsight.
+  ///
+  /// In en, this message translates to:
+  /// **'{company} is first up, and it closes {deadline}.'**
+  String dashFocusClosingSoonInsight(Object company, Object deadline);
+
+  /// No description provided for @dashSavedBannerEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your strongest roles, funding, and learning picks one tap away.'**
+  String get dashSavedBannerEmpty;
+
+  /// No description provided for @dashSavedBannerCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} saved item(s) ready for a second look.'**
+  String dashSavedBannerCount(Object count);
+
+  /// No description provided for @dashDeadlineSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'deadline soon'**
+  String get dashDeadlineSoon;
+
+  /// No description provided for @dashLastDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Last day'**
+  String get dashLastDay;
+
+  /// No description provided for @dashDayLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'1 day left'**
+  String get dashDayLeft;
+
+  /// No description provided for @dashDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days left'**
+  String dashDaysLeft(Object count);
+
+  /// No description provided for @discoverResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get discoverResultsTitle;
+
+  /// No description provided for @discoverResultsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings that match your current search and filters'**
+  String get discoverResultsSubtitle;
+
+  /// No description provided for @discoverNoResultsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your search or filters to uncover more matches.'**
+  String get discoverNoResultsHint;
+
+  /// No description provided for @discoverTrendingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured, fresh, and high-signal picks from live data'**
+  String get discoverTrendingSubtitle;
+
+  /// No description provided for @discoverTrendingEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh recommendations are highlighted as new listings go live.'**
+  String get discoverTrendingEmptyHint;
+
+  /// No description provided for @discoverLatestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The {count} newest roles, internships, and sponsored tracks'**
+  String discoverLatestSubtitle(Object count);
 }
 
 class _AppLocalizationsDelegate

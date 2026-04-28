@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
@@ -11,6 +10,7 @@ import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
@@ -968,7 +968,7 @@ class _SponsoredOpportunitiesScreenState
                                 children: [
                                   TextSpan(
                                     text: 'Find your next\n',
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: headlineFontSize,
                                       fontWeight: FontWeight.w700,
                                       height: 1.08,
@@ -977,7 +977,7 @@ class _SponsoredOpportunitiesScreenState
                                   ),
                                   TextSpan(
                                     text: 'funded path',
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: headlineFontSize,
                                       fontWeight: FontWeight.w700,
                                       height: 1.08,
@@ -1322,7 +1322,7 @@ class _SponsoredFilterChip extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 10.6,
               fontWeight: FontWeight.w600,
               color: isActive ? Colors.white : _SponsoredPalette.textPrimary,
@@ -1357,7 +1357,7 @@ class _SponsoredSectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: compact ? 16 : 18,
                   fontWeight: FontWeight.w700,
                   color: _SponsoredPalette.textPrimary,
@@ -1368,7 +1368,7 @@ class _SponsoredSectionHeader extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 2),
                   child: Text(
                     countLabel!,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
                       color: _SponsoredPalette.textSecondary,
@@ -1560,7 +1560,7 @@ class _FeaturedSponsoredCard extends StatelessWidget {
                                   item.title,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: compact ? 13.5 : 14.5,
                                     fontWeight: FontWeight.w700,
                                     height: 1.18,
@@ -1572,7 +1572,7 @@ class _FeaturedSponsoredCard extends StatelessWidget {
                                   item.companyName,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                     color: _SponsoredPalette.textSecondary,
@@ -1606,7 +1606,7 @@ class _FeaturedSponsoredCard extends StatelessWidget {
                                     item.compensation!,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                       color: _SponsoredPalette.accentDark,
@@ -1630,7 +1630,7 @@ class _FeaturedSponsoredCard extends StatelessWidget {
                               if (item.duration != null)
                                 Text(
                                   item.duration!,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                     color: _SponsoredPalette.textSecondary,
@@ -1652,7 +1652,7 @@ class _FeaturedSponsoredCard extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 item.urgencyText!,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w600,
                                   color: item.urgencyColor,
@@ -1876,7 +1876,7 @@ class _SponsoredGridCard extends StatelessWidget {
                                     item.title,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: compact ? 16 : 18,
                                       fontWeight: FontWeight.w700,
                                       height: 1.18,
@@ -1889,7 +1889,7 @@ class _SponsoredGridCard extends StatelessWidget {
                                       item.companyName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.poppins(
+                                      style: AppTypography.product(
                                         fontSize: 11.5,
                                         fontWeight: FontWeight.w500,
                                         color: Colors.white.withValues(
@@ -1923,7 +1923,7 @@ class _SponsoredGridCard extends StatelessWidget {
                         item.description,
                         maxLines: compact ? 2 : 3,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: compact ? 11.5 : 12.5,
                           height: 1.55,
                           color: _SponsoredPalette.textSecondary,
@@ -1984,7 +1984,7 @@ class _SponsoredGridCard extends StatelessWidget {
                         const Spacer(),
                         Text(
                           'Tap card for details',
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w500,
                             color: _SponsoredPalette.textSecondary,
@@ -2104,7 +2104,7 @@ class _SponsoredListTile extends StatelessWidget {
                                   item.title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                     color: _SponsoredPalette.textPrimary,
@@ -2134,7 +2134,7 @@ class _SponsoredListTile extends StatelessWidget {
                               item.companyName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w500,
                                 color: _SponsoredPalette.textSecondary,
@@ -2156,7 +2156,7 @@ class _SponsoredListTile extends StatelessWidget {
                                     item.compensation!,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: 10.5,
                                       fontWeight: FontWeight.w600,
                                       color: _SponsoredPalette.accentDark,
@@ -2170,7 +2170,7 @@ class _SponsoredListTile extends StatelessWidget {
                                     item.urgencyText!,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: 10.2,
                                       fontWeight: FontWeight.w500,
                                       color:
@@ -2232,7 +2232,7 @@ class _SponsoredMetaChip extends StatelessWidget {
           label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 10.5,
             fontWeight: FontWeight.w600,
             color: foregroundColor,
@@ -2320,7 +2320,7 @@ class _BadgePill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 9,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
@@ -2389,7 +2389,7 @@ class _ApplyButton extends StatelessWidget {
                           ],
                           Text(
                             label,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: textColor,
@@ -2501,7 +2501,7 @@ class _SponsoredEmptyState extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: _SponsoredPalette.textPrimary,
@@ -2511,7 +2511,7 @@ class _SponsoredEmptyState extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               height: 1.45,
               color: _SponsoredPalette.textSecondary,

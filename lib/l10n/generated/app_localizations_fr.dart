@@ -8046,4 +8046,118 @@ class AppLocalizationsFr extends AppLocalizations {
   String uiPendingApprovedIdeasValue(Object pending, Object approved) {
     return '$pending en attente et $approved approuvées';
   }
+
+  @override
+  String get dashSectionRecommendedSubtitle =>
+      'Chosen around your profile, timing, and momentum.';
+
+  @override
+  String get dashSectionQuickAccessSubtitle =>
+      'Your fastest path back into jobs, funding, tools, and saves.';
+
+  @override
+  String get dashSectionLatestActivitySubtitle =>
+      'Your recent applications, saves, and CV updates.';
+
+  @override
+  String get dashSectionClosingSoonSubtitle =>
+      'Deadlines worth acting on this week.';
+
+  @override
+  String get dashSectionDefaultSubtitle =>
+      'Everything important stays one tap away.';
+
+  @override
+  String get dashFocusCvSubtitle =>
+      'A ready CV makes jobs, internships, and scholarships much quicker to apply for.';
+
+  @override
+  String get dashFocusCvInsight =>
+      'Start with your CV, then tighten the profile details that make matching feel smarter.';
+
+  @override
+  String dashFocusProfileSubtitle(Object count) {
+    return '$count detail(s) still missing for better matching.';
+  }
+
+  @override
+  String get dashFocusInsightApprovedMomentum =>
+      'This is a strong moment to keep exploring while your profile is landing well.';
+
+  @override
+  String get dashFocusSubtitleInReview =>
+      'Keep a few strong options moving while you wait for responses.';
+
+  @override
+  String get dashFocusInsightInReview =>
+      'A little follow-through now keeps your pipeline healthier later.';
+
+  @override
+  String get dashFocusInsightSavedReady =>
+      'Your saved list is ready for a second pass before deadlines tighten.';
+
+  @override
+  String get dashFocusSubtitleDiscover =>
+      'Explore open roles, internships, funding, and learning picks designed for students building momentum.';
+
+  @override
+  String get dashFocusInsightDiscover =>
+      'Use quick access below to jump into jobs, internships, scholarships, learning, or your saved shortlist.';
+
+  @override
+  String dashFocusClosingSoonSubtitle(Object count) {
+    return '$count opportunities close within the next two weeks.';
+  }
+
+  @override
+  String dashFocusClosingSoonInsight(Object company, Object deadline) {
+    return '$company is first up, and it closes $deadline.';
+  }
+
+  @override
+  String get dashSavedBannerEmpty =>
+      'Keep your strongest roles, funding, and learning picks one tap away.';
+
+  @override
+  String dashSavedBannerCount(Object count) {
+    return '$count saved item(s) ready for a second look.';
+  }
+
+  @override
+  String get dashDeadlineSoon => 'deadline soon';
+
+  @override
+  String get dashLastDay => 'Last day';
+
+  @override
+  String get dashDayLeft => '1 day left';
+
+  @override
+  String dashDaysLeft(Object count) {
+    return '$count days left';
+  }
+
+  @override
+  String get discoverResultsTitle => 'Results';
+
+  @override
+  String get discoverResultsSubtitle =>
+      'Listings that match your current search and filters';
+
+  @override
+  String get discoverNoResultsHint =>
+      'Try adjusting your search or filters to uncover more matches.';
+
+  @override
+  String get discoverTrendingSubtitle =>
+      'Featured, fresh, and high-signal picks from live data';
+
+  @override
+  String get discoverTrendingEmptyHint =>
+      'Fresh recommendations are highlighted as new listings go live.';
+
+  @override
+  String discoverLatestSubtitle(Object count) {
+    return 'The $count newest roles, internships, and sponsored tracks';
+  }
 }

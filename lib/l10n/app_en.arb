@@ -4157,5 +4157,68 @@
       "pending": {},
       "approved": {}
     }
+  },
+
+  "dashSectionRecommendedSubtitle": "Chosen around your profile, timing, and momentum.",
+  "dashSectionQuickAccessSubtitle": "Your fastest path back into jobs, funding, tools, and saves.",
+  "dashSectionLatestActivitySubtitle": "Your recent applications, saves, and CV updates.",
+  "dashSectionClosingSoonSubtitle": "Deadlines worth acting on this week.",
+  "dashSectionDefaultSubtitle": "Everything important stays one tap away.",
+
+  "dashFocusCvSubtitle": "A ready CV makes jobs, internships, and scholarships much quicker to apply for.",
+  "dashFocusCvInsight": "Start with your CV, then tighten the profile details that make matching feel smarter.",
+  "dashFocusProfileSubtitle": "{count} detail(s) still missing for better matching.",
+  "@dashFocusProfileSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashFocusInsightApprovedMomentum": "This is a strong moment to keep exploring while your profile is landing well.",
+  "dashFocusSubtitleInReview": "Keep a few strong options moving while you wait for responses.",
+  "dashFocusInsightInReview": "A little follow-through now keeps your pipeline healthier later.",
+  "dashFocusInsightSavedReady": "Your saved list is ready for a second pass before deadlines tighten.",
+  "dashFocusSubtitleDiscover": "Explore open roles, internships, funding, and learning picks designed for students building momentum.",
+  "dashFocusInsightDiscover": "Use quick access below to jump into jobs, internships, scholarships, learning, or your saved shortlist.",
+  "dashFocusClosingSoonSubtitle": "{count} opportunities close within the next two weeks.",
+  "@dashFocusClosingSoonSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashFocusClosingSoonInsight": "{company} is first up, and it closes {deadline}.",
+  "@dashFocusClosingSoonInsight": {
+    "placeholders": {
+      "company": {},
+      "deadline": {}
+    }
+  },
+  "dashSavedBannerEmpty": "Keep your strongest roles, funding, and learning picks one tap away.",
+  "dashSavedBannerCount": "{count} saved item(s) ready for a second look.",
+  "@dashSavedBannerCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+
+  "dashDeadlineSoon": "deadline soon",
+  "dashLastDay": "Last day",
+  "dashDayLeft": "1 day left",
+  "dashDaysLeft": "{count} days left",
+  "@dashDaysLeft": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+
+  "discoverResultsTitle": "Results",
+  "discoverResultsSubtitle": "Listings that match your current search and filters",
+  "discoverNoResultsHint": "Try adjusting your search or filters to uncover more matches.",
+  "discoverTrendingSubtitle": "Featured, fresh, and high-signal picks from live data",
+  "discoverTrendingEmptyHint": "Fresh recommendations are highlighted as new listings go live.",
+  "discoverLatestSubtitle": "The {count} newest roles, internships, and sponsored tracks",
+  "@discoverLatestSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
   }
 }

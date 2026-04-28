@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
@@ -9,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
@@ -1028,7 +1028,7 @@ class _JobsScreenState extends State<JobsScreen> {
                       children: [
                         TextSpan(
                           text: 'Find your next\n',
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: headlineFontSize,
                             fontWeight: FontWeight.w700,
                             height: 1.08,
@@ -1037,7 +1037,7 @@ class _JobsScreenState extends State<JobsScreen> {
                         ),
                         TextSpan(
                           text: 'breakthrough',
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: headlineFontSize,
                             fontWeight: FontWeight.w700,
                             height: 1.08,
@@ -1128,7 +1128,7 @@ class _JobsScreenState extends State<JobsScreen> {
                 sliver: SliverToBoxAdapter(
                   child: Text(
                     'Featured Jobs',
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: isCompact ? 16 : 19,
                       fontWeight: FontWeight.w700,
                       color: OpportunityDashboardPalette.textPrimary,
@@ -1523,7 +1523,7 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                                     job.title,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: compact ? 13.6 : 14.6,
                                       fontWeight: FontWeight.w700,
                                       height: 1.08,
@@ -1538,7 +1538,7 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                                     'FULL-TIME',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: compact ? 9.0 : 9.6,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 0.24,
@@ -1555,7 +1555,7 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                               supportingLine,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
+                              style: AppTypography.product(
                                 fontSize: compact ? 10.6 : 11.2,
                                 fontWeight: FontWeight.w600,
                                 color:
@@ -1665,7 +1665,7 @@ class _AvailableRoleListMetaItem extends StatelessWidget {
           text,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: compact ? 9.8 : 10.4,
             fontWeight: emphasize ? FontWeight.w700 : FontWeight.w600,
             color: color,
@@ -1828,7 +1828,7 @@ class _SectionHeader extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: compact ? 16 : 19,
                     fontWeight: FontWeight.w700,
                     color: OpportunityDashboardPalette.textPrimary,
@@ -1853,7 +1853,7 @@ class _SectionHeader extends StatelessWidget {
                   ),
                   child: Text(
                     countLabel!,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: compact ? 10 : 11,
                       fontWeight: FontWeight.w600,
                       color: OpportunityDashboardPalette.textSecondary,
@@ -1934,7 +1934,7 @@ class _JobCategoryChip extends StatelessWidget {
                 category.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: compact ? 10 : 12,
                   fontWeight: FontWeight.w600,
                   color: OpportunityDashboardPalette.textPrimary,
@@ -2311,7 +2311,7 @@ class FeaturedJobCard extends StatelessWidget {
                       footerSalary,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: salaryFontSize,
                         fontWeight: FontWeight.w700,
                         color: Colors.white.withValues(alpha: 0.96),
@@ -2486,7 +2486,7 @@ class FeaturedJobCard extends StatelessWidget {
                                   ),
                                   child: Text(
                                     job.badge,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: denseLayout
                                           ? (isTight ? 8.4 : 9.2)
                                           : (isTight ? 9 : 10),
@@ -2508,7 +2508,7 @@ class FeaturedJobCard extends StatelessWidget {
                                   job.title,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: titleFontSize,
                                     fontWeight: FontWeight.w700,
                                     height: denseLayout ? 1.04 : 1.1,
@@ -2524,7 +2524,7 @@ class FeaturedJobCard extends StatelessWidget {
                                   locationText,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTypography.product(
                                     fontSize: locationFontSize,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.white.withValues(alpha: 0.88),
@@ -2541,7 +2541,7 @@ class FeaturedJobCard extends StatelessWidget {
                                     displayMetadataLine,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTypography.product(
                                       fontSize: metadataFontSize,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.white.withValues(
@@ -2647,7 +2647,7 @@ class _ApplyNowButton extends StatelessWidget {
                   ],
                   Text(
                     label,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: compact ? 10.2 : 11.2,
                       fontWeight: FontWeight.w800,
                       color: resolvedTextColor,
@@ -2789,7 +2789,7 @@ class _JobStatusChip extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: compact ? 8.8 : 9.4,
               fontWeight: FontWeight.w700,
               color: color,
@@ -3295,7 +3295,7 @@ class _AvailableRoleCard extends StatelessWidget {
                                       job.typeBadge!,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.poppins(
+                                      style: AppTypography.product(
                                         fontSize: chipSize,
                                         fontWeight: FontWeight.w700,
                                         color: palette.chipTextColor,
@@ -3330,7 +3330,7 @@ class _AvailableRoleCard extends StatelessWidget {
                             job.title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: titleSize,
                               fontWeight: FontWeight.w700,
                               height: 1.12,
@@ -3342,7 +3342,7 @@ class _AvailableRoleCard extends StatelessWidget {
                             job.subtitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: subtitleSize,
                               fontWeight: FontWeight.w600,
                               color: OpportunityDashboardPalette.textSecondary,
@@ -3413,7 +3413,7 @@ class _AvailableRoleCard extends StatelessWidget {
                                             job.levelTag!,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.poppins(
+                                            style: AppTypography.product(
                                               fontSize: chipSize,
                                               fontWeight: FontWeight.w700,
                                               color: palette.chipTextColor,
@@ -3490,7 +3490,7 @@ class _AvailableRoleMetaLine extends StatelessWidget {
             text,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: fontSize,
               fontWeight: FontWeight.w500,
               color: textColor,
@@ -3557,7 +3557,7 @@ class _AvailableRoleListCard extends StatelessWidget {
                       job.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: compact ? 13 : 14,
                         fontWeight: FontWeight.w700,
                         color: OpportunityDashboardPalette.textPrimary,
@@ -3570,7 +3570,7 @@ class _AvailableRoleListCard extends StatelessWidget {
                           : '${job.company} • ${job.location}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: compact ? 11 : 12,
                         fontWeight: FontWeight.w500,
                         color: OpportunityDashboardPalette.textSecondary,
@@ -3592,7 +3592,7 @@ class _AvailableRoleListCard extends StatelessWidget {
                         maxLines: 1,
                         textAlign: TextAlign.right,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: compact ? 11 : 12,
                           fontWeight: FontWeight.w700,
                           color: OpportunityDashboardPalette.primary,
@@ -3735,7 +3735,7 @@ class _CompanyLogoTile extends StatelessWidget {
           initial,
           textAlign: TextAlign.center,
           maxLines: 1,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: size * 0.42,
             height: 1,
             fontWeight: FontWeight.w700,
@@ -3820,7 +3820,7 @@ class _JobsEmptyStateCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: compact ? 13 : 14,
                     fontWeight: FontWeight.w700,
                     color: OpportunityDashboardPalette.textPrimary,
@@ -3829,7 +3829,7 @@ class _JobsEmptyStateCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: compact ? 11 : 12,
                     height: 1.35,
                     color: OpportunityDashboardPalette.textSecondary,

@@ -1,1 +1,32 @@
-{}
+{
+  "fr": [
+    "dashSectionRecommendedSubtitle",
+    "dashSectionQuickAccessSubtitle",
+    "dashSectionLatestActivitySubtitle",
+    "dashSectionClosingSoonSubtitle",
+    "dashSectionDefaultSubtitle",
+    "dashFocusCvSubtitle",
+    "dashFocusCvInsight",
+    "dashFocusProfileSubtitle",
+    "dashFocusInsightApprovedMomentum",
+    "dashFocusSubtitleInReview",
+    "dashFocusInsightInReview",
+    "dashFocusInsightSavedReady",
+    "dashFocusSubtitleDiscover",
+    "dashFocusInsightDiscover",
+    "dashFocusClosingSoonSubtitle",
+    "dashFocusClosingSoonInsight",
+    "dashSavedBannerEmpty",
+    "dashSavedBannerCount",
+    "dashDeadlineSoon",
+    "dashLastDay",
+    "dashDayLeft",
+    "dashDaysLeft",
+    "discoverResultsTitle",
+    "discoverResultsSubtitle",
+    "discoverNoResultsHint",
+    "discoverTrendingSubtitle",
+    "discoverTrendingEmptyHint",
+    "discoverLatestSubtitle"
+  ]
+}

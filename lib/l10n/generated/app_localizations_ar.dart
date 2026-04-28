@@ -1856,7 +1856,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiFeaturedListUpdated => 'تم تحديث القائمة المميزة';
 
   @override
-  String get uiFeaturedScholarship => 'منحة دراسية<br>مميزة';
+  String get uiFeaturedScholarship => 'منحة دراسية مميزة';
 
   @override
   String uiFeaturedcountFeaturedResources(Object featuredCount) {
@@ -7846,5 +7846,118 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String uiPendingApprovedIdeasValue(Object pending, Object approved) {
     return '$pending معلّقة و$approved مقبولة';
+  }
+
+  @override
+  String get dashSectionRecommendedSubtitle =>
+      'مختارة بناءً على ملفك الشخصي وتوقيتك وزخمك.';
+
+  @override
+  String get dashSectionQuickAccessSubtitle =>
+      'أسرع طريق للعودة إلى الوظائف والتمويل والأدوات والمحفوظات.';
+
+  @override
+  String get dashSectionLatestActivitySubtitle =>
+      'طلباتك الأخيرة والمحفوظات وتحديثات السيرة الذاتية.';
+
+  @override
+  String get dashSectionClosingSoonSubtitle =>
+      'مواعيد تستحق التحرك الفوري هذا الأسبوع.';
+
+  @override
+  String get dashSectionDefaultSubtitle => 'كل ما يهمك في متناول لمسة واحدة.';
+
+  @override
+  String get dashFocusCvSubtitle =>
+      'السيرة الذاتية الجاهزة تُسرّع تقديمك على الوظائف والتدريبات والمنح.';
+
+  @override
+  String get dashFocusCvInsight =>
+      'ابدأ بسيرتك الذاتية، ثم أكمل تفاصيل الملف الشخصي لتحسين نتائج المطابقة.';
+
+  @override
+  String dashFocusProfileSubtitle(Object count) {
+    return '$count تفصيل لا يزال ناقصاً لمطابقة أفضل.';
+  }
+
+  @override
+  String get dashFocusInsightApprovedMomentum =>
+      'هذه لحظة مثالية لمواصلة الاستكشاف بينما يلقى ملفك الشخصي استحسانًا.';
+
+  @override
+  String get dashFocusSubtitleInReview =>
+      'تابع عدة خيارات قوية بينما تنتظر الردود.';
+
+  @override
+  String get dashFocusInsightInReview =>
+      'المتابعة الآن تُبقي مساراتك في حالة أفضل لاحقًا.';
+
+  @override
+  String get dashFocusInsightSavedReady =>
+      'قائمتك المحفوظة جاهزة لمراجعة ثانية قبل اقتراب المواعيد.';
+
+  @override
+  String get dashFocusSubtitleDiscover =>
+      'استكشف وظائف وتدريبات ومصادر تمويل واختيارات تعليمية مصممة للطلاب الطموحين.';
+
+  @override
+  String get dashFocusInsightDiscover =>
+      'استخدم الوصول السريع للانتقال إلى الوظائف أو التدريبات أو المنح أو قائمتك المحفوظة.';
+
+  @override
+  String dashFocusClosingSoonSubtitle(Object count) {
+    return 'تُغلق $count فرصة خلال الأسبوعين القادمين.';
+  }
+
+  @override
+  String dashFocusClosingSoonInsight(Object company, Object deadline) {
+    return '$company هي الأولى، وتُغلق $deadline.';
+  }
+
+  @override
+  String get dashSavedBannerEmpty =>
+      'احتفظ بأفضل وظائفك والتمويل والاختيارات التعليمية في متناول يدك.';
+
+  @override
+  String dashSavedBannerCount(Object count) {
+    return '$count عنصر محفوظ جاهز لمراجعة ثانية.';
+  }
+
+  @override
+  String get dashDeadlineSoon => 'الموعد النهائي قريباً';
+
+  @override
+  String get dashLastDay => 'اليوم الأخير';
+
+  @override
+  String get dashDayLeft => 'يوم واحد متبقٍ';
+
+  @override
+  String dashDaysLeft(Object count) {
+    return 'متبقٍ $count أيام';
+  }
+
+  @override
+  String get discoverResultsTitle => 'النتائج';
+
+  @override
+  String get discoverResultsSubtitle =>
+      'القوائم المطابقة لبحثك والفلاتر الحالية';
+
+  @override
+  String get discoverNoResultsHint =>
+      'حاول تعديل بحثك أو الفلاتر لاكتشاف مزيد من النتائج.';
+
+  @override
+  String get discoverTrendingSubtitle =>
+      'اختيارات مميزة وحديثة من بيانات فعلية';
+
+  @override
+  String get discoverTrendingEmptyHint =>
+      'تُبرز التوصيات الجديدة كلما أُضيفت قوائم حديثة.';
+
+  @override
+  String discoverLatestSubtitle(Object count) {
+    return 'أحدث $count وظائف وتدريبات ومسارات ممولة';
   }
 }

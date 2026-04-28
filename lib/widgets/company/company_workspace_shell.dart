@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../profile_avatar.dart';
 import '../shared/app_nav_scroll_switcher.dart';
@@ -108,7 +108,7 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
                   children: [
                     Text(
                       destination.label,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: compact ? 18 : 20,
                         fontWeight: FontWeight.w700,
                         color: CompanyDashboardPalette.textPrimary,
@@ -120,7 +120,7 @@ class CompanyWorkspaceHeaderCard extends StatelessWidget {
                       destination.subtitle,
                       maxLines: compact ? 2 : 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: CompanyDashboardPalette.textMuted,
@@ -241,7 +241,7 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
                       destination.label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: compact ? 16 : 17,
                         fontWeight: FontWeight.w700,
                         color: CompanyDashboardPalette.textPrimary,
@@ -254,7 +254,7 @@ class CompanyWorkspaceTopBar extends StatelessWidget {
                         destination.subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w500,
                           color: CompanyDashboardPalette.textMuted,
@@ -394,7 +394,7 @@ class CompanyWorkspaceTabBar extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           destination.label,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 12.2,
                             fontWeight: FontWeight.w600,
                             color: selected
@@ -555,7 +555,7 @@ class CompanyWorkspaceActionButton extends StatelessWidget {
                       child: Text(
                         badgeCount > 9 ? '9+' : '$badgeCount',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -657,7 +657,7 @@ class _CompanyPillNavItem extends StatelessWidget {
                             destination.label,
                             maxLines: 1,
                             softWrap: false,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: compact ? 8.6 : 9.8,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -752,7 +752,7 @@ class _WorkspaceMetaPill extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
               color: CompanyDashboardPalette.textPrimary,

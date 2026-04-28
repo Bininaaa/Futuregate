@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import '../../theme/app_typography.dart';
 import '../../utils/opportunity_type.dart';
 
 class OpportunityVisualTheme {
@@ -228,7 +228,7 @@ class OpportunityHeader extends StatelessWidget {
                     ),
                     child: Text(
                       highlightBadge!,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 9.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.2,
@@ -242,7 +242,7 @@ class OpportunityHeader extends StatelessWidget {
           SizedBox(height: tags.isEmpty && highlightBadge == null ? 4 : 16),
           Text(
             title,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: theme.type == OpportunityType.sponsoring ? 25 : 23,
               fontWeight: FontWeight.w700,
               height: 1.14,
@@ -265,7 +265,7 @@ class OpportunityHeader extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   companyInitial,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -276,7 +276,7 @@ class OpportunityHeader extends StatelessWidget {
               Expanded(
                 child: Text(
                   company,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
                     color: Colors.white.withValues(alpha: 0.92),
@@ -308,7 +308,7 @@ class OpportunityTag extends StatelessWidget {
       ),
       child: Text(
         label.toUpperCase(),
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 9.25,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.2,
@@ -384,7 +384,7 @@ class InfoCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w500,
                     color: theme.secondaryTextColor,
@@ -393,7 +393,7 @@ class InfoCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
                     height: 1.18,
@@ -437,7 +437,7 @@ class SectionTitle extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 15.5,
               fontWeight: FontWeight.w700,
               color: theme.primaryTextColor,
@@ -447,7 +447,7 @@ class SectionTitle extends StatelessWidget {
         if (trailingLabel != null && trailingLabel!.trim().isNotEmpty)
           Text(
             trailingLabel!,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 10.5,
               fontWeight: FontWeight.w600,
               color: theme.secondaryTextColor,
@@ -496,7 +496,7 @@ class RequirementItem extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 12.5,
                 height: 1.4,
                 color: theme.primaryTextColor,
@@ -538,7 +538,7 @@ class BenefitItem extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12.5,
               height: 1.4,
               color: theme.primaryTextColor,
@@ -651,7 +651,7 @@ class ApplyBar extends StatelessWidget {
                           )
                         : Text(
                             applyLabel,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,

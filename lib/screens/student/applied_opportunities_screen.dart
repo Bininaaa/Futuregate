@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/student_application_item_model.dart';
 import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_type.dart';
@@ -323,7 +323,7 @@ class _AppliedOpportunitiesScreenState
                                     : totalCount == 1
                                     ? '1 applied opportunity'
                                     : '$totalCount applied opportunities',
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
                                   color: StudentOpportunityHubPalette
@@ -459,7 +459,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                   children: [
                     Text(
                       'Application pipeline',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: StudentOpportunityHubPalette.textPrimary,
@@ -468,7 +468,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'Track each submission and see what deserves your next move.',
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 11,
                         color: StudentOpportunityHubPalette.textSecondary,
                       ),
@@ -603,7 +603,7 @@ class _AppliedMiniStat extends StatelessWidget {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: StudentOpportunityHubPalette.textSecondary,
@@ -613,7 +613,7 @@ class _AppliedMiniStat extends StatelessWidget {
                 const SizedBox(width: 10),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: StudentOpportunityHubPalette.textPrimary,
@@ -642,7 +642,7 @@ class _AppliedMiniStat extends StatelessWidget {
                         label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: StudentOpportunityHubPalette.textSecondary,
@@ -654,7 +654,7 @@ class _AppliedMiniStat extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: StudentOpportunityHubPalette.textPrimary,
@@ -741,7 +741,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                       ),
                       TextSpan(
                         text: '  •  ',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.2,
                           fontWeight: FontWeight.w600,
                           color: StudentOpportunityHubPalette.textMuted,
@@ -754,7 +754,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                                 AppLocalizations.of(context)!,
                               )
                             : 'Archived',
-                        style: GoogleFonts.poppins(
+                        style: AppTypography.product(
                           fontSize: 11.2,
                           fontWeight: FontWeight.w700,
                           color: accent,
@@ -771,7 +771,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                     summary,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 11.1,
                       fontWeight: FontWeight.w600,
                       color: statusTone,
@@ -922,7 +922,7 @@ class _AppliedLabelChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 10.4,
               fontWeight: FontWeight.w600,
               color: filled
@@ -969,7 +969,7 @@ class _AppliedMetaChip extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 10.6,
               fontWeight: FontWeight.w600,
               color: tone == null
@@ -1027,7 +1027,7 @@ class _InlineBanner extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: StudentOpportunityHubPalette.textPrimary,
@@ -1036,7 +1036,7 @@ class _InlineBanner extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   message,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12,
                     height: 1.5,
                     color: StudentOpportunityHubPalette.textSecondary,
@@ -1052,14 +1052,14 @@ class _InlineBanner extends StatelessWidget {
 }
 
 abstract final class _AppliedCardText {
-  static TextStyle get title => GoogleFonts.poppins(
+  static TextStyle get title => AppTypography.product(
     fontSize: 14.6,
     height: 1.18,
     fontWeight: FontWeight.w700,
     color: StudentOpportunityHubPalette.textPrimary,
   );
 
-  static TextStyle get subtitle => GoogleFonts.poppins(
+  static TextStyle get subtitle => AppTypography.product(
     fontSize: 11.4,
     fontWeight: FontWeight.w600,
     color: StudentOpportunityHubPalette.textSecondary,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/admin_provider.dart';
@@ -17,6 +16,7 @@ import '../providers/student_provider.dart';
 import '../providers/training_provider.dart';
 import '../services/notification_service.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 import '../widgets/no_internet_screen.dart';
 import '../widgets/shared/app_loading.dart';
 import 'auth/login_screen.dart';
@@ -209,7 +209,7 @@ class _BlockedScreen extends StatelessWidget {
               const SizedBox(height: 32),
               Text(
                 'Account Blocked',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: colors.textPrimary,
@@ -221,7 +221,7 @@ class _BlockedScreen extends StatelessWidget {
                 'Your account has been blocked by an administrator. '
                 'You can no longer access the platform. '
                 'If you believe this is a mistake, please contact support.',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 14,
                   color: colors.textSecondary,
                 ),
@@ -236,7 +236,7 @@ class _BlockedScreen extends StatelessWidget {
                   icon: const Icon(Icons.logout, size: 20),
                   label: Text(
                     'Back to sign in',
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),

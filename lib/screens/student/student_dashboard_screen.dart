@@ -247,7 +247,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader(l10n.dashSectionClosingSoon),
+                child: _buildSectionHeader(l10n.dashSectionClosingSoon, subtitle: l10n.dashSectionClosingSoonSubtitle, accentColor: accentGold),
               ),
             ),
             SliverPadding(
@@ -261,6 +261,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               sliver: SliverToBoxAdapter(
                 child: _buildSectionHeader(
                   l10n.dashSectionRecommended,
+                  subtitle: l10n.dashSectionRecommendedSubtitle,
                   onSeeAll: () => _openDiscover(context),
                 ),
               ),
@@ -278,7 +279,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader(l10n.dashSectionQuickAccess),
+                child: _buildSectionHeader(l10n.dashSectionQuickAccess, subtitle: l10n.dashSectionQuickAccessSubtitle),
               ),
             ),
             SliverPadding(
@@ -290,7 +291,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader(l10n.dashSectionLatestActivity),
+                child: _buildSectionHeader(l10n.dashSectionLatestActivity, subtitle: l10n.dashSectionLatestActivitySubtitle),
               ),
             ),
             SliverPadding(
@@ -810,10 +811,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       return _DashboardFocus(
         badgeLabel: AppLocalizations.of(context)!.uiBadgeNextStep,
         title: AppLocalizations.of(context)!.uiBuildCvFirst,
-        subtitle:
-            'A ready CV makes jobs, internships, and scholarships much quicker to apply for.',
-        insight:
-            'Start with your CV, then tighten the profile details that make matching feel smarter.',
+        subtitle: AppLocalizations.of(context)!.dashFocusCvSubtitle,
+        insight: AppLocalizations.of(context)!.dashFocusCvInsight,
         accent: accentGold,
         insightIcon: Icons.description_outlined,
         primaryActionLabel: AppLocalizations.of(context)!.uiActionBuildCv,
@@ -833,8 +832,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           context,
         )!.uiBadgeProfileReady(profileCompletion),
         title: AppLocalizations.of(context)!.uiCompleteProfile,
-        subtitle:
-            '$missingCount ${_pluralizedWord(missingCount, "detail is", "details are")} still missing for better matching.',
+        subtitle: AppLocalizations.of(context)!.dashFocusProfileSubtitle(missingCount),
         insight: _profileHint(user, cv),
         accent: accentGold,
         insightIcon: Icons.verified_user_outlined,
@@ -852,17 +850,16 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (snapshot.approvedApplicationsCount > 0) {
       final approved = snapshot.approvedApplicationsCount;
       final pending = snapshot.pendingApplicationsCount;
+      final l10n = AppLocalizations.of(context)!;
       return _DashboardFocus(
-        badgeLabel: AppLocalizations.of(context)!.uiBadgeMomentum,
-        title:
-            '$approved ${_pluralizedWord(approved, "application", "applications")} approved.',
-        subtitle:
-            'Keep applying while teams are already engaging with your profile.',
+        badgeLabel: l10n.uiBadgeMomentum,
+        title: l10n.uiApprovedValue1Approved(approved, l10n.applicationStatusApprovedSentence),
+        subtitle: l10n.uiKeepApplyingWhileTeamsAreAlreadyEngagingWithYourProfile,
         insight: pending > 0
-            ? '$pending ${_pluralizedWord(pending, "application is", "applications are")} still in review.'
+            ? l10n.dashFocusClosingSoonSubtitle(pending)
             : firstUrgent != null && firstUrgentDeadline != null
-            ? '${firstUrgent.title} closes ${_deadlineCountdown(firstUrgentDeadline).toLowerCase()}.'
-            : 'This is a strong moment to keep exploring while your profile is landing well.',
+            ? l10n.dashFocusClosingSoonInsight(firstUrgent.title, _deadlineCountdown(firstUrgentDeadline))
+            : l10n.dashFocusInsightApprovedMomentum,
         accent: const Color(0xFF86EFAC),
         insightIcon: Icons.verified_rounded,
         primaryActionLabel: AppLocalizations.of(context)!.uiActionViewStatus,
@@ -876,15 +873,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (snapshot.pendingApplicationsCount > 0) {
       final pending = snapshot.pendingApplicationsCount;
+      final l10n = AppLocalizations.of(context)!;
       return _DashboardFocus(
-        badgeLabel: AppLocalizations.of(context)!.uiBadgeInReview,
-        title:
-            '$pending ${_pluralizedWord(pending, "application", "applications")} in review.',
-        subtitle:
-            'Keep a few strong options moving while you wait for responses.',
+        badgeLabel: l10n.uiBadgeInReview,
+        title: l10n.uiApprovedValue1Approved(pending, l10n.uiBadgeInReview.toLowerCase()),
+        subtitle: l10n.dashFocusSubtitleInReview,
         insight: firstUrgent != null && firstUrgentDeadline != null
-            ? '${firstUrgent.title} at ${firstUrgent.companyName} closes ${_deadlineCountdown(firstUrgentDeadline).toLowerCase()}.'
-            : 'A little follow-through now keeps your pipeline healthier later.',
+            ? l10n.dashFocusClosingSoonInsight(
+                '${firstUrgent.title} (${firstUrgent.companyName})',
+                _deadlineCountdown(firstUrgentDeadline),
+              )
+            : l10n.dashFocusInsightInReview,
         accent: accentTeal,
         insightIcon: Icons.hourglass_top_rounded,
         primaryActionLabel: AppLocalizations.of(context)!.uiActionTrackStatus,
@@ -897,17 +896,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     if (snapshot.closingSoonCount > 0 && firstUrgent != null) {
+      final l10n = AppLocalizations.of(context)!;
       final deadlineLabel = firstUrgentDeadline == null
-          ? 'deadline soon'
-          : _deadlineCountdown(firstUrgentDeadline).toLowerCase();
+          ? l10n.dashDeadlineSoon
+          : _deadlineCountdown(firstUrgentDeadline);
       return _DashboardFocus(
-        badgeLabel:
-            '${snapshot.closingSoonCount} ${snapshot.closingSoonCount == 1 ? "DEADLINE" : "DEADLINES"} SOON',
-        title: AppLocalizations.of(context)!.uiActBeforeDeadlines,
-        subtitle:
-            '${snapshot.closingSoonCount} opportunities close within the next two weeks.',
-        insight:
-            '${firstUrgent.companyName} is first up, and it closes $deadlineLabel.',
+        badgeLabel: l10n.dashSectionClosingSoon,
+        title: l10n.uiActBeforeDeadlines,
+        subtitle: l10n.dashFocusClosingSoonSubtitle(snapshot.closingSoonCount),
+        insight: l10n.dashFocusClosingSoonInsight(firstUrgent.companyName, deadlineLabel),
         accent: accentGold,
         insightIcon: Icons.schedule_outlined,
         primaryActionLabel: AppLocalizations.of(context)!.uiActionSeeOpenRoles,
@@ -928,8 +925,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         badgeLabel: AppLocalizations.of(context)!.uiBadgeSavedPicks,
         title: AppLocalizations.of(context)!.uiShortlistReady,
         subtitle: AppLocalizations.of(context)!.uiRevisitSavedPicks,
-        insight:
-            'Your saved list is ready for a second pass before deadlines tighten.',
+        insight: AppLocalizations.of(context)!.dashFocusInsightSavedReady,
         accent: primaryPurple,
         insightIcon: Icons.bookmark_added_outlined,
         primaryActionLabel: AppLocalizations.of(context)!.uiActionOpenSaved,
@@ -944,10 +940,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return _DashboardFocus(
       badgeLabel: AppLocalizations.of(context)!.uiBadgeDiscover,
       title: AppLocalizations.of(context)!.uiFindNextOpportunity,
-      subtitle:
-          'Explore open roles, internships, funding, and learning picks designed for students building momentum.',
-      insight:
-          'Use quick access below to jump into jobs, internships, scholarships, learning, or your saved shortlist.',
+      subtitle: AppLocalizations.of(context)!.dashFocusSubtitleDiscover,
+      insight: AppLocalizations.of(context)!.dashFocusInsightDiscover,
       accent: primaryPurple,
       insightIcon: Icons.auto_awesome_rounded,
       primaryActionLabel: AppLocalizations.of(context)!.uiDiscover,
@@ -1034,24 +1028,25 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     BuildContext context,
     _DashboardSnapshot snapshot,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final totalSaved = snapshot.savedCount;
     final summary = totalSaved == 0
-        ? 'Keep your strongest roles, funding, and learning picks one tap away.'
-        : '$totalSaved ${_pluralizedWord(totalSaved, "saved item", "saved items")} ready for a second look.';
+        ? l10n.dashSavedBannerEmpty
+        : l10n.dashSavedBannerCount(totalSaved);
     final chips = <Widget>[
       if (snapshot.savedOpportunityCount > 0)
         _buildSavedShortcutChip(
-          '${snapshot.savedOpportunityCount} ${_pluralizedWord(snapshot.savedOpportunityCount, "role", "roles")}',
+          '${snapshot.savedOpportunityCount} ${l10n.uiRoles}',
         ),
       if (snapshot.savedScholarshipCount > 0)
         _buildSavedShortcutChip(
-          '${snapshot.savedScholarshipCount} ${_pluralizedWord(snapshot.savedScholarshipCount, "scholarship", "scholarships")}',
+          '${snapshot.savedScholarshipCount} ${l10n.uiScholarships}',
         ),
       if (snapshot.savedTrainingCount > 0)
-        _buildSavedShortcutChip('${snapshot.savedTrainingCount} learning'),
+        _buildSavedShortcutChip('${snapshot.savedTrainingCount} ${l10n.uiTraining}'),
       if (snapshot.savedIdeaCount > 0)
         _buildSavedShortcutChip(
-          '${snapshot.savedIdeaCount} ${_pluralizedWord(snapshot.savedIdeaCount, "idea", "ideas")}',
+          '${snapshot.savedIdeaCount} ${l10n.uiIdeas}',
         ),
     ];
 
@@ -3530,58 +3525,37 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   String _deadlineCountdown(DateTime deadline) {
+    final l10n = AppLocalizations.of(context)!;
     final today = DateTime.now();
     final startOfToday = DateTime(today.year, today.month, today.day);
     final normalized = DateTime(deadline.year, deadline.month, deadline.day);
     final difference = normalized.difference(startOfToday).inDays;
 
     if (difference <= 0) {
-      return 'Last day';
+      return l10n.dashLastDay;
     }
     if (difference == 1) {
-      return '1 day left';
+      return l10n.dashDayLeft;
     }
-    return '$difference days left';
+    return l10n.dashDaysLeft(difference);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SHARED HELPERS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll}) {
-    String subtitle;
-    Color accentColor;
-
-    switch (title) {
-      case 'Closing Soon':
-        subtitle = 'Deadlines worth acting on this week.';
-        accentColor = accentGold;
-        break;
-      case 'Recommended':
-        subtitle = 'Chosen around your profile, timing, and momentum.';
-        accentColor = accentTeal;
-        break;
-      case 'Quick Access':
-        subtitle =
-            'Your fastest path back into jobs, funding, tools, and saves.';
-        accentColor = accentTeal;
-        break;
-      case 'Latest Activities':
-        subtitle = 'Your recent applications, saves, and CV updates.';
-        accentColor = accentTeal;
-        break;
-      default:
-        subtitle = 'Everything important stays one tap away.';
-        accentColor = accentTeal;
-        break;
-    }
-
+  Widget _buildSectionHeader(
+    String title, {
+    required String subtitle,
+    Color? accentColor,
+    VoidCallback? onSeeAll,
+  }) {
     return OpportunitySectionHeader(
       title: title,
       subtitle: subtitle,
-      actionLabel: onSeeAll != null ? 'See all' : null,
+      actionLabel: onSeeAll != null ? AppLocalizations.of(context)!.uiViewAll : null,
       onAction: onSeeAll,
-      accentColor: accentColor,
+      accentColor: accentColor ?? accentTeal,
     );
   }
 

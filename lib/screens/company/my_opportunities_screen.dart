@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +13,7 @@ import '../../providers/company_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../services/document_access_service.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_launch_helper.dart';
@@ -548,7 +548,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                     padding: const EdgeInsets.all(24),
                     child: Text(
                       _l10n.uiCouldNotOpenTheDocumentRightNow,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         color: _OpportunityPalette.textSecondary,
                       ),
                       textAlign: TextAlign.center,
@@ -597,7 +597,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                           _l10n.uiNoCvAvailableForValue(
                             application.studentName,
                           ),
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             color: _OpportunityPalette.textSecondary,
                           ),
                         ),
@@ -833,7 +833,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
           ),
           title: Text(
             _l10n.uiDeleteOpportunity,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: _OpportunityPalette.textPrimary,
@@ -841,7 +841,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
           ),
           content: Text(
             'Delete "${opportunity.title}"? If it has pending applications, it will be closed instead so students can still be reviewed.',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 13,
               color: _OpportunityPalette.textSecondary,
             ),
@@ -851,7 +851,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
               onPressed: () => Navigator.pop(dialogContext, false),
               child: Text(
                 _l10n.cancelLabel,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontWeight: FontWeight.w600,
                   color: _OpportunityPalette.textSecondary,
                 ),
@@ -861,7 +861,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(
                 _l10n.uiDelete,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontWeight: FontWeight.w700,
                   color: _OpportunityPalette.error,
                 ),
@@ -991,7 +991,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                             children: [
                               Text(
                                 opportunity.title,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w700,
                                   color: _OpportunityPalette.textPrimary,
@@ -1012,7 +1012,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                                       opportunity.location.trim().isEmpty
                                           ? 'Location not specified'
                                           : opportunity.location.trim(),
-                                      style: GoogleFonts.poppins(
+                                      style: AppTypography.product(
                                         fontSize: 12,
                                         color:
                                             _OpportunityPalette.textSecondary,
@@ -1162,7 +1162,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                       opportunity.description.trim().isEmpty
                           ? 'No description provided.'
                           : opportunity.description.trim(),
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 12.5,
                         height: 1.6,
                         color: _OpportunityPalette.textSecondary,
@@ -1210,7 +1210,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         ),
                         label: Text(
                           'Delete opportunity',
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                           ),
@@ -1245,7 +1245,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       return [
         Text(
           'No requirements provided.',
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 12.5,
             color: _OpportunityPalette.textMuted,
           ),
@@ -1272,7 +1272,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                 Expanded(
                   child: Text(
                     item.trim(),
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 12.5,
                       height: 1.55,
                       color: _OpportunityPalette.textSecondary,
@@ -1306,7 +1306,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
           icon: const Icon(Icons.add_rounded, size: 20),
           label: Text(
             'New',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 13,
               fontWeight: FontWeight.w700,
             ),
@@ -1492,7 +1492,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             children: [
               Text(
                 'Opportunities',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: _OpportunityPalette.textPrimary,
@@ -1504,7 +1504,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
               const SizedBox(height: 2),
               Text(
                 'Manage your listings',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11,
                   color: _OpportunityPalette.textMuted,
                 ),
@@ -1600,7 +1600,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       child: TextField(
         controller: _searchController,
         textInputAction: TextInputAction.search,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 13,
           color: _OpportunityPalette.textPrimary,
         ),
@@ -1638,7 +1638,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             minHeight: 20,
           ),
           hintText: 'Search title, location, or keyword',
-          hintStyle: GoogleFonts.poppins(
+          hintStyle: AppTypography.product(
             fontSize: 12,
             color: _OpportunityPalette.textMuted,
           ),
@@ -1677,7 +1677,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         Expanded(
           child: Text(
             '$shown of $total',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: _OpportunityPalette.textMuted,
@@ -1691,7 +1691,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 'Clear',
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: _OpportunityPalette.primary,
@@ -1793,7 +1793,7 @@ class _NotificationIconButton extends StatelessWidget {
               child: Center(
                 child: Text(
                   unreadCount > 9 ? '9+' : '$unreadCount',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 8.5,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -1834,7 +1834,7 @@ class _KpiCell extends StatelessWidget {
               const SizedBox(width: 5),
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w600,
                   color: _OpportunityPalette.textMuted,
@@ -1846,7 +1846,7 @@ class _KpiCell extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: _OpportunityPalette.textPrimary,
@@ -1942,7 +1942,7 @@ class _SegmentButton extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               color: selected
@@ -1994,7 +1994,7 @@ class _SortButton extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               'Top',
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: selected
@@ -2100,7 +2100,7 @@ class _TypeFilterChip extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: selected
@@ -2221,7 +2221,7 @@ class _InlineBanner extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: _OpportunityPalette.textPrimary,
@@ -2230,7 +2230,7 @@ class _InlineBanner extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   message,
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 11,
                     color: _OpportunityPalette.textSecondary,
                   ),
@@ -2325,7 +2325,7 @@ class _ApplicantsSheet extends StatelessWidget {
                           '${applications.length} ${applications.length == 1 ? 'applicant' : 'applicants'}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: _OpportunityPalette.textPrimary,
@@ -2337,7 +2337,7 @@ class _ApplicantsSheet extends StatelessWidget {
                           opportunity.title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 12,
                             height: 1.35,
                             color: _OpportunityPalette.textSecondary,
@@ -2543,7 +2543,7 @@ class _NoApplicantsState extends StatelessWidget {
           Text(
             'No students yet',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: _OpportunityPalette.textPrimary,
@@ -2553,7 +2553,7 @@ class _NoApplicantsState extends StatelessWidget {
           Text(
             'Students who apply to this opportunity will appear here.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12,
               height: 1.45,
               color: _OpportunityPalette.textSecondary,
@@ -2619,7 +2619,7 @@ class _ApplicantListTile extends StatelessWidget {
                           studentName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: _OpportunityPalette.textPrimary,
@@ -2639,7 +2639,7 @@ class _ApplicantListTile extends StatelessWidget {
                                 appliedDateLabel,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
+                                style: AppTypography.product(
                                   fontSize: 11,
                                   color: _OpportunityPalette.textMuted,
                                 ),
@@ -2739,7 +2739,7 @@ class _OpportunityGridCard extends StatelessWidget {
                   opportunity.type,
                   AppLocalizations.of(context)!,
                 ).toUpperCase(),
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.6,
@@ -2751,7 +2751,7 @@ class _OpportunityGridCard extends StatelessWidget {
                 opportunity.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
                   color: _OpportunityPalette.textPrimary,
@@ -2774,7 +2774,7 @@ class _OpportunityGridCard extends StatelessWidget {
                           : opportunity.location.trim(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 10.5,
                         color: _OpportunityPalette.textMuted,
                       ),
@@ -2795,7 +2795,7 @@ class _OpportunityGridCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '$applicantCount',
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: _OpportunityPalette.textPrimary,
@@ -2813,7 +2813,7 @@ class _OpportunityGridCard extends StatelessWidget {
                       timeLeftLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
                         color: _OpportunityPalette.textSecondary,
@@ -2893,7 +2893,7 @@ class _OpportunityListRow extends StatelessWidget {
                             opportunity.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w700,
                               color: _OpportunityPalette.textPrimary,
@@ -2913,7 +2913,7 @@ class _OpportunityListRow extends StatelessWidget {
                             opportunity.type,
                             AppLocalizations.of(context)!,
                           ),
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w600,
                             color: tone.foreground,
@@ -2933,7 +2933,7 @@ class _OpportunityListRow extends StatelessWidget {
                                 : opportunity.location.trim(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 10.5,
                               color: _OpportunityPalette.textMuted,
                             ),
@@ -2952,7 +2952,7 @@ class _OpportunityListRow extends StatelessWidget {
                         const SizedBox(width: 3),
                         Text(
                           '$applicantCount applicants',
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w600,
                             color: _OpportunityPalette.textSecondary,
@@ -2970,7 +2970,7 @@ class _OpportunityListRow extends StatelessWidget {
                             timeLeftLabel,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 10.5,
                               color: _OpportunityPalette.textMuted,
                             ),
@@ -2982,7 +2982,7 @@ class _OpportunityListRow extends StatelessWidget {
                             postedLabel,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTypography.product(
                               fontSize: 10.5,
                               color: _OpportunityPalette.textMuted,
                             ),
@@ -3035,7 +3035,7 @@ class _StatusDot extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 9.5,
               fontWeight: FontWeight.w700,
               color: tone.foreground,
@@ -3083,7 +3083,7 @@ class _SoftPill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 10,
           fontWeight: FontWeight.w700,
           color: foreground,
@@ -3109,7 +3109,7 @@ class _MetaChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: AppTypography.product(
           fontSize: 10.5,
           fontWeight: FontWeight.w600,
           color: _OpportunityPalette.textSecondary,
@@ -3128,7 +3128,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.poppins(
+      style: AppTypography.product(
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.6,
@@ -3161,7 +3161,7 @@ class _DetailStat extends StatelessWidget {
           value,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 13,
             fontWeight: FontWeight.w700,
             color: _OpportunityPalette.textPrimary,
@@ -3171,7 +3171,7 @@ class _DetailStat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 9.5,
             color: _OpportunityPalette.textMuted,
           ),
@@ -3212,7 +3212,7 @@ class _DetailRow extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 11.5,
                 color: _OpportunityPalette.textMuted,
               ),
@@ -3223,7 +3223,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: _OpportunityPalette.textPrimary,
@@ -3256,7 +3256,7 @@ class _PrimaryActionButton extends StatelessWidget {
         icon: Icon(icon, size: 16),
         label: Text(
           label,
-          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700),
+          style: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w700),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: _OpportunityPalette.primary,
@@ -3293,7 +3293,7 @@ class _GhostActionButton extends StatelessWidget {
         icon: Icon(icon, size: 16),
         label: Text(
           label,
-          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700),
+          style: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w700),
         ),
         style: OutlinedButton.styleFrom(
           foregroundColor: foreground,
@@ -3327,7 +3327,7 @@ class _LoadingState extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             'Loading opportunities...',
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
               color: _OpportunityPalette.textSecondary,
@@ -3377,7 +3377,7 @@ class _EmptyState extends StatelessWidget {
                   ? 'No matches found'
                   : 'No opportunities yet',
               textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: _OpportunityPalette.textPrimary,
@@ -3389,7 +3389,7 @@ class _EmptyState extends StatelessWidget {
                   ? 'Try clearing the filters or adjusting your search.'
                   : 'Publish your first role to start hiring.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 12,
                 height: 1.5,
                 color: _OpportunityPalette.textSecondary,
@@ -3412,7 +3412,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 child: Text(
                   'Clear filters',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                   ),
@@ -3424,7 +3424,7 @@ class _EmptyState extends StatelessWidget {
                 icon: const Icon(Icons.add_rounded, size: 16),
                 label: Text(
                   'Create opportunity',
-                  style: GoogleFonts.poppins(
+                  style: AppTypography.product(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                   ),
@@ -3504,7 +3504,7 @@ class _AppSheetHeaderBar extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           title,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 20,
             fontWeight: FontWeight.w800,
             color: _OpportunityPalette.textPrimary,
@@ -3514,7 +3514,7 @@ class _AppSheetHeaderBar extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 12.5,
             height: 1.45,
             color: _OpportunityPalette.textSecondary,
@@ -3608,7 +3608,7 @@ class _AppDetailHeroCard extends StatelessWidget {
                           studentName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 19,
                             fontWeight: FontWeight.w800,
                             color: _OpportunityPalette.textPrimary,
@@ -3620,7 +3620,7 @@ class _AppDetailHeroCard extends StatelessWidget {
                           opportunityTitle,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 12.5,
                             height: 1.35,
                             color: _OpportunityPalette.textSecondary,
@@ -3694,7 +3694,7 @@ class _AppWideActionButton extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
+                style: AppTypography.product(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
                   color: foreground,
@@ -3785,7 +3785,7 @@ class _AppDecisionPanel extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: _OpportunityPalette.textPrimary,
@@ -3794,7 +3794,7 @@ class _AppDecisionPanel extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       message,
-                      style: GoogleFonts.poppins(
+                      style: AppTypography.product(
                         fontSize: 12,
                         height: 1.45,
                         color: _OpportunityPalette.textSecondary,
@@ -3858,7 +3858,7 @@ class _AppDecisionButton extends StatelessWidget {
         label: Text(
           label,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w800),
+          style: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w800),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: background,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import 'shared/app_feedback.dart';
 import 'student/student_search_field.dart';
@@ -121,7 +121,7 @@ class StudentOpportunityHubHero extends StatelessWidget {
                   ),
                   child: Text(
                     eyebrow!,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.product(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.35,
@@ -150,7 +150,7 @@ class StudentOpportunityHubHero extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 22,
                             height: 1.1,
                             fontWeight: FontWeight.w700,
@@ -160,7 +160,7 @@ class StudentOpportunityHubHero extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           subtitle,
-                          style: GoogleFonts.poppins(
+                          style: AppTypography.product(
                             fontSize: 12.5,
                             height: 1.5,
                             color: Colors.white.withValues(alpha: 0.86),
@@ -225,7 +225,7 @@ class _HeroStatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             stat.value,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -234,7 +234,7 @@ class _HeroStatCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             stat.label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               color: Colors.white.withValues(alpha: 0.82),
             ),
@@ -303,7 +303,7 @@ class StudentOpportunityFilterChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: GoogleFonts.poppins(
+          style: AppTypography.product(
             fontSize: 11.5,
             fontWeight: FontWeight.w600,
             color: selected
@@ -350,7 +350,7 @@ class StudentOpportunityMetaPill extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: tone == null
@@ -406,7 +406,7 @@ class StudentOpportunityLoadingState extends StatelessWidget {
             const SizedBox(height: 18),
             Text(
               title,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: StudentOpportunityHubPalette.textPrimary,
@@ -416,7 +416,7 @@ class StudentOpportunityLoadingState extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               message,
-              style: GoogleFonts.poppins(
+              style: AppTypography.product(
                 fontSize: 12.5,
                 height: 1.5,
                 color: StudentOpportunityHubPalette.textSecondary,
