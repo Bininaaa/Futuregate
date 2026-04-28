@@ -159,8 +159,8 @@ function renderSummaryPills() {
     <span class="summary-pill"><i data-lucide="users"></i><strong>${stats.total}</strong> Total</span>
     <span class="summary-pill is-success"><i data-lucide="check-circle"></i><strong>${stats.active}</strong> Active</span>
     <span class="summary-pill is-danger"><i data-lucide="ban"></i><strong>${stats.blocked}</strong> Blocked</span>
-    <span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${stats.pending}</strong> Pending review</span>
-    <span class="summary-pill is-info"><i data-lucide="shield"></i><strong>${stats.admins}</strong> Admins</span>`;
+    <span class="summary-pill is-info"><i data-lucide="shield"></i><strong>${stats.admins}</strong> Admins</span>
+    <span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${stats.pending}</strong> Pending review</span>`;
 }
 
 function renderShell() {
@@ -169,12 +169,25 @@ function renderShell() {
     <section class="surface-panel">
       <div class="summary-pills">${renderSummaryPills()}</div>
 
+      <div class="filter-bar">
+        <div class="search-bar" style="flex:1;">
+          <i data-lucide="search"></i>
+          <input id="user-search" type="search" value="${esc(state.search)}" placeholder="Search by name, email, or company..."/>
+        </div>
+      </div>
+
       <div class="chip-row">
         <div class="chip-group" role="tablist" aria-label="Role filter">
           <button type="button" class="chip" data-filter="role" data-value="all"><i data-lucide="users"></i>All</button>
           <button type="button" class="chip" data-filter="role" data-value="student"><i data-lucide="graduation-cap"></i>Students</button>
           <button type="button" class="chip" data-filter="role" data-value="company"><i data-lucide="building-2"></i>Companies</button>
           <button type="button" class="chip" data-filter="role" data-value="admin"><i data-lucide="shield"></i>Admins</button>
+        </div>
+        <div class="chip-group" id="status-chips" role="tablist" aria-label="Account status">
+          <span class="chip-group__label">Account state</span>
+          <button type="button" class="chip" data-filter="status" data-value="all">All</button>
+          <button type="button" class="chip" data-filter="status" data-value="active"><i data-lucide="check"></i>Active</button>
+          <button type="button" class="chip" data-filter="status" data-value="blocked"><i data-lucide="ban"></i>Blocked</button>
         </div>
         <div class="chip-group" id="level-chips" role="tablist" aria-label="Academic level">
           <span class="chip-group__label">Level</span>
@@ -184,25 +197,13 @@ function renderShell() {
           <button type="button" class="chip" data-filter="level" data-value="master">Master</button>
           <button type="button" class="chip" data-filter="level" data-value="doctorat">Doctorat</button>
         </div>
-        <div class="chip-group" id="status-chips" role="tablist" aria-label="Account status">
-          <span class="chip-group__label">Status</span>
-          <button type="button" class="chip" data-filter="status" data-value="all">All</button>
-          <button type="button" class="chip" data-filter="status" data-value="active"><i data-lucide="check"></i>Active</button>
-          <button type="button" class="chip" data-filter="status" data-value="blocked"><i data-lucide="ban"></i>Blocked</button>
-        </div>
         <div class="chip-group" id="approval-chips" role="tablist" aria-label="Company review">
           <span class="chip-group__label">Company review</span>
+          <span class="chip-group__label" id="approval-disabled-note" hidden>Disabled while level filter is active</span>
           <button type="button" class="chip" data-filter="approval" data-value="all">All</button>
           <button type="button" class="chip" data-filter="approval" data-value="pending"><i data-lucide="clock"></i>Pending</button>
           <button type="button" class="chip" data-filter="approval" data-value="approved"><i data-lucide="check"></i>Approved</button>
           <button type="button" class="chip" data-filter="approval" data-value="rejected"><i data-lucide="x-circle"></i>Rejected</button>
-        </div>
-      </div>
-
-      <div class="filter-bar">
-        <div class="search-bar" style="flex:1;">
-          <i data-lucide="search"></i>
-          <input id="user-search" type="search" value="${esc(state.search)}" placeholder="Search by name, email, or company..."/>
         </div>
       </div>
 
@@ -257,6 +258,8 @@ function syncChips() {
     state.role === 'company' || state.role === 'all' ? '' : 'none';
 
   const levelActive = state.level !== 'all';
+  const approvalDisabledNote = document.getElementById('approval-disabled-note');
+  if (approvalDisabledNote) approvalDisabledNote.hidden = !levelActive;
   approvalChips.querySelectorAll('.chip').forEach((chip) => {
     chip.style.opacity = levelActive ? '0.45' : '';
     chip.style.pointerEvents = levelActive ? 'none' : '';
@@ -405,13 +408,11 @@ function userRow(user) {
       );
     }
   }
-  if (role !== 'admin') {
-    actions.push(
-      isActive
-        ? `<button class="btn btn-sm btn-danger" data-action="block" data-id="${esc(uidForUser(user))}"><i data-lucide="ban"></i>Block</button>`
-        : `<button class="btn btn-sm btn-success" data-action="unblock" data-id="${esc(uidForUser(user))}"><i data-lucide="check"></i>Unblock</button>`,
-    );
-  }
+  actions.push(
+    isActive
+      ? `<button class="btn btn-sm btn-danger" data-action="block" data-id="${esc(uidForUser(user))}"><i data-lucide="ban"></i>Block</button>`
+      : `<button class="btn btn-sm btn-success" data-action="unblock" data-id="${esc(uidForUser(user))}"><i data-lucide="check"></i>Unblock</button>`,
+  );
   actions.push(
     `<button class="btn btn-sm" data-action="view" data-id="${esc(uidForUser(user))}"><i data-lucide="eye"></i>View</button>`,
   );
@@ -572,13 +573,13 @@ async function viewUser(id) {
         </div>
       </div>`;
 
-    const contactHtml = profileSection(
-      'contact',
-      'Contact',
-      [
-        profileBlock('Email', cleanText(user.email) || 'Not provided', {
-          muted: !cleanText(user.email),
-        }),
+    const contactRows = [
+      profileBlock('Email', cleanText(user.email) || 'Not provided', {
+        muted: !cleanText(user.email),
+      }),
+    ];
+    if (role !== 'admin') {
+      contactRows.push(
         profileBlock(
           'Phone',
           cleanText(user.phone)
@@ -586,15 +587,12 @@ async function viewUser(id) {
             : 'Not provided',
           { html: Boolean(cleanText(user.phone)), muted: !cleanText(user.phone) },
         ),
-        profileBlock('Location', cleanText(user.location || user.address) || 'Not provided', {
-          muted: !cleanText(user.location || user.address),
+        profileBlock('Location', cleanText(user.location) || 'Not provided', {
+          muted: !cleanText(user.location),
         }),
-        profileBlock('Joined', formatTimestamp(user.createdAt) || 'Not provided', {
-          muted: !formatTimestamp(user.createdAt),
-        }),
-        profileBlock('Provider', capitalizeLabel(cleanText(user.provider) || 'email')),
-      ].join(''),
-    );
+      );
+    }
+    const contactHtml = profileSection('contact', 'Contact', contactRows.join(''));
 
     let roleSection = '';
     if (role === 'student') {
@@ -637,26 +635,30 @@ async function viewUser(id) {
           muted: !cleanText(user.companyName || user.fullName),
         }),
         profileBlock('Approval status', approvalBadgeHtml(approval), { html: true }),
-        profileBlock('Sector', cleanText(user.sector || user.industry) || 'Not provided', {
-          muted: !cleanText(user.sector || user.industry),
+        profileBlock('Sector', cleanText(user.sector) || 'Not provided', {
+          muted: !cleanText(user.sector),
         }),
         profileBlock('Website', website ? externalLinkHtml(website) : 'Not provided', {
           html: Boolean(website),
           muted: !website,
         }),
       ];
-      if (cleanText(user.companySize)) rows.push(profileBlock('Company size', user.companySize));
-      if (cleanText(user.registrationNumber)) {
-        rows.push(profileBlock('Registration #', user.registrationNumber));
-      }
       roleSection = profileSection('building-2', 'Company', rows.join(''));
     }
 
-    const bioText = cleanText(user.bio || user.description);
+    const companyDescription = role === 'company' ? cleanText(user.description) : '';
+    const companyDescriptionSection = companyDescription
+      ? `
+        <div class="profile-section">
+          <div class="profile-section__title"><i data-lucide="text"></i>Description</div>
+          <div class="profile-block"><div class="profile-block-value" style="white-space:pre-wrap;">${esc(companyDescription)}</div></div>
+        </div>`
+      : '';
+    const bioText = cleanText(user.bio);
     const bioSection = bioText
       ? `
         <div class="profile-section">
-          <div class="profile-section__title"><i data-lucide="text"></i>${role === 'company' ? 'About' : 'Bio'}</div>
+          <div class="profile-section__title"><i data-lucide="text"></i>Bio</div>
           <div class="profile-block"><div class="profile-block-value" style="white-space:pre-wrap;">${esc(bioText)}</div></div>
         </div>`
       : '';
@@ -680,12 +682,13 @@ async function viewUser(id) {
           companyOpportunitiesHtml() +
           commercialRegisterHtml(user)
         : '';
-    const moderationHtml = role !== 'admin' ? accountModerationHtml(isActive) : '';
+    const moderationHtml = accountModerationHtml(isActive);
 
     body.innerHTML =
       hero +
       contactHtml +
       roleSection +
+      companyDescriptionSection +
       bioSection +
       studentExtras +
       companyExtras +
@@ -815,8 +818,11 @@ async function loadStudentAppsBlock(id) {
       .slice()
       .sort((left, right) => timestampMs(right.data().appliedAt) - timestampMs(left.data().appliedAt));
     if (docs.length === 0) {
-      block.innerHTML =
-        '<div class="profile-block-value" style="color:var(--c-text-faint);">No applications yet.</div>';
+      block.innerHTML = `
+        <div class="profile-block-value" style="color:var(--c-text-faint);margin-bottom:12px;">No applications yet.</div>
+        <button class="btn btn-sm" id="view-apps-btn"><i data-lucide="list"></i>View all</button>`;
+      document.getElementById('view-apps-btn').addEventListener('click', () => openAppsList(docs));
+      if (window.lucide) window.lucide.createIcons();
       return;
     }
     block.innerHTML = `
@@ -858,32 +864,7 @@ async function openAppsList(docs) {
       }),
     );
 
-    if (!appData.length) {
-      body.innerHTML = emptyStateHtml('This student has not applied anywhere yet.', {
-        title: 'No applications',
-        icon: 'inbox',
-      });
-    } else {
-      body.innerHTML = `<div class="list-grid">${appData
-        .map((application) => {
-          const opportunity = oppsMap.get(cleanText(application.opportunityId));
-          const title = opportunity?.title || application.opportunityTitle || 'Opportunity removed';
-          const company = opportunity?.companyName || application.companyName || '';
-          const applied = formatTimestamp(application.appliedAt);
-          const status = cleanText(application.status || 'submitted').toLowerCase();
-          return `<div class="item-row">
-            <div class="row-body">
-              <div class="row-title">${esc(title)}</div>
-              <div class="row-sub">${esc(company)}${applied ? ` - ${esc(applied)}` : ''}</div>
-            </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-              <span class="badge ${applicationStatusClass(status)}">${esc(capitalizeLabel(status || 'submitted'))}</span>
-              ${opportunityStateBadge(opportunity)}
-            </div>
-          </div>`;
-        })
-        .join('')}</div>`;
-    }
+    renderAppsList(appData, oppsMap);
     if (window.lucide) window.lucide.createIcons();
   } catch (error) {
     console.error(error);
@@ -892,41 +873,142 @@ async function openAppsList(docs) {
   }
 }
 
+function renderAppsList(appData, oppsMap) {
+  document.getElementById('apps-title').textContent = 'Applications';
+  const body = document.getElementById('apps-body');
+  if (!appData.length) {
+    body.innerHTML = emptyStateHtml('This student has not applied anywhere yet.', {
+      title: 'No applications',
+      icon: 'inbox',
+    });
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  body.innerHTML = `<div class="list-grid">${appData
+    .map((application, index) => {
+      const opportunity = oppsMap.get(cleanText(application.opportunityId));
+      const title = cleanText(opportunity?.title || application.opportunityTitle) || 'Opportunity unavailable';
+      const company = cleanText(opportunity?.companyName || application.companyName) || 'Company unavailable';
+      const applied = formatTimestamp(application.appliedAt);
+      const status = parseApplicationStatus(application.status);
+      const location = cleanText(opportunity?.location) || 'Location not specified';
+      return `<div class="item-row" data-application-index="${index}" role="button" tabindex="0" style="cursor:pointer;">
+        <div class="activity-icon" style="background:rgba(99,102,241,0.12);color:#6366F1"><i data-lucide="send"></i></div>
+        <div class="row-body">
+          <div class="row-title">${esc(title)}</div>
+          <div class="row-sub">${esc(company)}${applied ? ` - ${esc(applied)}` : ''}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+            <span class="badge ${applicationStatusClass(status)}"><i data-lucide="flag"></i>${esc(applicationStatusLabel(status))}</span>
+            <span class="badge badge-info"><i data-lucide="map-pin"></i>${esc(location)}</span>
+            ${opportunityStateBadge(opportunity)}
+          </div>
+        </div>
+        <i data-lucide="chevron-right" style="color:var(--c-text-faint);"></i>
+      </div>`;
+    })
+    .join('')}</div>`;
+
+  body.querySelectorAll('[data-application-index]').forEach((row) => {
+    const open = () => {
+      const index = Number(row.getAttribute('data-application-index'));
+      const application = appData[index];
+      const opportunity = oppsMap.get(cleanText(application?.opportunityId));
+      openApplicationDetail(application, opportunity, () => renderAppsList(appData, oppsMap));
+    };
+    row.addEventListener('click', open);
+    row.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        open();
+      }
+    });
+  });
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function openApplicationDetail(application, opportunity, onBack) {
+  document.getElementById('apps-title').textContent = 'Application details';
+  const body = document.getElementById('apps-body');
+  const status = parseApplicationStatus(application?.status);
+  const title = cleanText(opportunity?.title || application?.opportunityTitle) || 'Opportunity unavailable';
+  const company = cleanText(opportunity?.companyName || application?.companyName) || 'Company unavailable';
+  const location = cleanText(opportunity?.location) || 'Location not specified';
+  const applied = formatTimestamp(application?.appliedAt) || 'Applied date unavailable';
+  const compensation = opportunityAmountLabel(opportunity);
+  const description = cleanText(opportunity?.description);
+  const requirements = detailListValues(
+    opportunity?.requirementItems?.length ? opportunity.requirementItems : opportunity?.requirements,
+  );
+  const benefits = detailListValues(opportunity?.benefits);
+  const opportunityState = opportunityStateLabel(opportunity);
+
+  body.innerHTML = `
+    <button class="btn btn-sm" id="apps-back-btn" style="margin-bottom:12px;"><i data-lucide="arrow-left"></i>Back</button>
+    <div class="profile-hero">
+      <div class="activity-icon" style="background:rgba(99,102,241,0.12);color:#6366F1"><i data-lucide="send"></i></div>
+      <div>
+        <div class="profile-hero__name">${esc(title)}</div>
+        <div class="row-sub" style="margin-bottom:8px;">${esc(company)}</div>
+        <div class="profile-hero__badges">
+          <span class="badge ${applicationStatusClass(status)}"><i data-lucide="flag"></i>${esc(applicationStatusLabel(status))}</span>
+          <span class="badge badge-info"><i data-lucide="map-pin"></i>${esc(location)}</span>
+          <span class="badge"><i data-lucide="calendar-check"></i>${esc(applied)}</span>
+        </div>
+      </div>
+    </div>
+    ${profileSection(
+      'flag',
+      'Application details',
+      [
+        profileBlock('Status', applicationStatusLabel(status)),
+        profileBlock('Applied', applied),
+      ].join(''),
+    )}
+    ${profileSection(
+      'briefcase',
+      'Opportunity details',
+      [
+        profileBlock('Type', opportunity ? formatChoiceLabel(normalizedOpportunityType(opportunity) || 'job') : 'Not provided', {
+          muted: !opportunity,
+        }),
+        profileBlock('Company', company),
+        profileBlock('Location', location),
+        profileBlock('Deadline', deadlineLabel(opportunity)),
+        compensation ? profileBlock('Compensation', compensation) : '',
+        opportunityState ? profileBlock('Status', opportunityState) : '',
+      ].join(''),
+    )}
+    ${description ? longTextSection('Description', description, 'file-text') : ''}
+    ${detailListSection('Requirements', requirements, 'list-checks')}
+    ${detailListSection('Benefits', benefits, 'sparkles')}`;
+
+  document.getElementById('apps-back-btn').addEventListener('click', onBack);
+  if (window.lucide) window.lucide.createIcons();
+}
+
 async function loadCompanyOpportunitiesBlock(companyId, companyName) {
   const block = document.getElementById('company-opportunities-block');
   if (!block) return;
   block.dataset.companyId = companyId;
   try {
-    const [opportunities, scholarships] = await Promise.all([
-      loadCompanyOpportunities(companyId),
-      loadCompanyScholarships(companyId, companyName),
-    ]);
+    const opportunities = await loadCompanyOpportunities(companyId);
     if (block.dataset.companyId !== companyId) return;
-    const counts = companyContentCounts(opportunities, scholarships);
     const countLabel =
-      opportunities.length === 1
-        ? '1 posted opportunity'
-        : `${opportunities.length} posted opportunities`;
+      opportunities.length === 0
+        ? 'No opportunities posted yet.'
+        : opportunities.length === 1
+          ? '1 posted opportunity'
+          : `${opportunities.length} posted opportunities`;
     block.innerHTML = `
-      <div class="profile-content-metrics">
-        ${profileContentMetric('Jobs', counts.jobs, 'briefcase')}
-        ${profileContentMetric('Internships', counts.internships, 'badge-check')}
-        ${profileContentMetric('Sponsored', counts.sponsored, 'badge-dollar-sign')}
-        ${profileContentMetric('Scholarships', counts.scholarships, 'graduation-cap')}
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;">
-        <div class="profile-block-value">${opportunities.length || scholarships.length ? `${esc(countLabel)}${scholarships.length ? ` · ${scholarships.length} scholarship${scholarships.length === 1 ? '' : 's'}` : ''}` : 'No published content yet.'}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-sm" id="view-company-opps-btn"><i data-lucide="briefcase"></i>View opportunities</button>
-          ${scholarships.length ? '<button class="btn btn-sm" id="view-company-scholarships-btn"><i data-lucide="graduation-cap"></i>View scholarships</button>' : ''}
-        </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div class="profile-block-value">${esc(countLabel)}</div>
+        <button class="btn btn-sm" id="view-company-opps-btn"><i data-lucide="briefcase"></i>View opportunities</button>
       </div>`;
     document
       .getElementById('view-company-opps-btn')
       .addEventListener('click', () => openCompanyOpportunitiesList(companyName, opportunities));
-    document
-      .getElementById('view-company-scholarships-btn')
-      ?.addEventListener('click', () => openCompanyScholarshipsList(companyName, scholarships));
     if (window.lucide) window.lucide.createIcons();
   } catch (error) {
     console.warn('Company opportunities failed:', error);
@@ -942,56 +1024,12 @@ async function loadCompanyOpportunities(companyId) {
     .sort((left, right) => timestampMs(right.createdAt) - timestampMs(left.createdAt));
 }
 
-async function loadCompanyScholarships(companyId, companyName) {
-  const matches = new Map();
-  try {
-    const snap = await getDocs(query(collection(db, 'scholarships'), where('createdBy', '==', companyId)));
-    snap.docs.forEach((item) => matches.set(item.id, { id: item.id, ...item.data() }));
-  } catch (error) {
-    console.warn('Scholarships by owner failed:', error);
-  }
-
-  const providerName = cleanText(companyName).toLowerCase();
-  if (providerName) {
-    try {
-      const snap = await getDocs(collection(db, 'scholarships'));
-      snap.docs.forEach((item) => {
-        const data = item.data();
-        const provider = cleanText(data.provider || data.organization).toLowerCase();
-        if (provider && provider === providerName) {
-          matches.set(item.id, { id: item.id, ...data });
-        }
-      });
-    } catch (error) {
-      console.warn('Scholarships by provider failed:', error);
-    }
-  }
-
-  return Array.from(matches.values())
-    .sort((left, right) => timestampMs(right.createdAt) - timestampMs(left.createdAt));
-}
-
-function companyContentCounts(opportunities, scholarships) {
-  return {
-    jobs: opportunities.filter((item) => normalizedOpportunityType(item) === 'job').length,
-    internships: opportunities.filter((item) => normalizedOpportunityType(item) === 'internship').length,
-    sponsored: opportunities.filter((item) => normalizedOpportunityType(item) === 'sponsoring').length,
-    scholarships: scholarships.length,
-  };
-}
-
-function profileContentMetric(label, value, icon) {
-  return `<div class="profile-content-metric">
-    <div class="profile-content-metric__icon"><i data-lucide="${icon}"></i></div>
-    <div>
-      <div class="profile-content-metric__value">${Number(value || 0).toLocaleString()}</div>
-      <div class="profile-content-metric__label">${esc(label)}</div>
-    </div>
-  </div>`;
-}
-
 function openCompanyOpportunitiesList(companyName, opportunities) {
   openModal('apps-modal');
+  renderCompanyOpportunitiesList(companyName, opportunities);
+}
+
+function renderCompanyOpportunitiesList(companyName, opportunities) {
   document.getElementById('apps-title').textContent = cleanText(companyName)
     ? `${companyName} opportunities`
     : 'Company opportunities';
@@ -1003,61 +1041,103 @@ function openCompanyOpportunitiesList(companyName, opportunities) {
     });
   } else {
     body.innerHTML = `<div class="list-grid">${opportunities
-      .map((opportunity) => {
+      .map((opportunity, index) => {
         const status = effectiveOpportunityStatus(opportunity);
         const type = cleanText(opportunity.type) || 'job';
         const location = cleanText(opportunity.location);
-        const created = formatTimestamp(opportunity.createdAt);
-        return `<div class="item-row">
+        return `<div class="item-row" data-opportunity-index="${index}" role="button" tabindex="0" style="cursor:pointer;">
+          <div class="activity-icon" style="background:${roleBg('company')};color:${roleColor('company')}"><i data-lucide="${opportunityTypeIcon(type)}"></i></div>
           <div class="row-body">
             <div class="row-title">${esc(cleanText(opportunity.title) || 'Untitled opportunity')}</div>
-            <div class="row-sub">${esc([location, created].filter(Boolean).join(' - '))}</div>
+            ${location ? `<div class="row-sub">${esc(location)}</div>` : ''}
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+              <span class="badge badge-info"><i data-lucide="${opportunityTypeIcon(type)}"></i>${esc(formatChoiceLabel(type))}</span>
+              <span class="badge ${status === 'open' ? 'badge-success' : 'badge-warning'}">${esc(formatChoiceLabel(status))}</span>
+              ${opportunity.isHidden === true ? '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+            </div>
           </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-            <span class="badge badge-info"><i data-lucide="${opportunityTypeIcon(type)}"></i>${esc(capitalizeLabel(type))}</span>
-            ${opportunityAmountLabel(opportunity) ? `<span class="badge"><i data-lucide="coins"></i>${esc(opportunityAmountLabel(opportunity))}</span>` : ''}
-            <span class="badge ${status === 'open' ? 'badge-success' : 'badge-warning'}">${esc(capitalizeLabel(status))}</span>
-            ${opportunity.isHidden === true ? '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-          </div>
+          <i data-lucide="chevron-right" style="color:var(--c-text-faint);"></i>
         </div>`;
       })
       .join('')}</div>`;
   }
+  body.querySelectorAll('[data-opportunity-index]').forEach((row) => {
+    const open = () => {
+      const index = Number(row.getAttribute('data-opportunity-index'));
+      openCompanyOpportunityDetail(
+        companyName,
+        opportunities[index],
+        () => renderCompanyOpportunitiesList(companyName, opportunities),
+      );
+    };
+    row.addEventListener('click', open);
+    row.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        open();
+      }
+    });
+  });
   if (window.lucide) window.lucide.createIcons();
 }
 
-function openCompanyScholarshipsList(companyName, scholarships) {
-  openModal('apps-modal');
-  document.getElementById('apps-title').textContent = cleanText(companyName)
-    ? `${companyName} scholarships`
-    : 'Publisher scholarships';
+function openCompanyOpportunityDetail(companyName, opportunity, onBack) {
+  document.getElementById('apps-title').textContent = 'Opportunity details';
   const body = document.getElementById('apps-body');
-  if (!scholarships.length) {
-    body.innerHTML = emptyStateHtml('This publisher has not posted any scholarships yet.', {
-      title: 'No scholarships',
-      icon: 'graduation-cap',
-    });
-  } else {
-    body.innerHTML = `<div class="list-grid">${scholarships
-      .map((scholarship) => {
-        const location = cleanText(scholarship.location || scholarship.locationLabel) ||
-          [scholarship.city, scholarship.country].map(cleanText).filter(Boolean).join(' - ');
-        const created = formatTimestamp(scholarship.createdAt);
-        return `<div class="item-row">
-          <div class="activity-icon" style="background:rgba(226,74,74,0.12);color:#E24A4A"><i data-lucide="graduation-cap"></i></div>
-          <div class="row-body">
-            <div class="row-title">${esc(cleanText(scholarship.title) || 'Untitled scholarship')}</div>
-            <div class="row-sub">${esc([location, created].filter(Boolean).join(' - '))}</div>
-          </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-            ${scholarship.amount ? `<span class="badge"><i data-lucide="coins"></i>${esc(scholarship.amount)}</span>` : ''}
-            ${scholarship.level ? `<span class="badge">${esc(scholarship.level)}</span>` : ''}
-            ${scholarship.isHidden === true ? '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
-          </div>
-        </div>`;
-      })
-      .join('')}</div>`;
-  }
+  const type = normalizedOpportunityType(opportunity) || 'job';
+  const typeLabel = formatChoiceLabel(type);
+  const status = effectiveOpportunityStatus(opportunity);
+  const statusLabel = status === 'open' ? 'Open' : 'Closed';
+  const title = cleanText(opportunity?.title) || 'Untitled opportunity';
+  const location = cleanText(opportunity?.location);
+  const compensation = opportunityAmountLabel(opportunity);
+  const workMode = formatChoiceLabel(opportunity?.workMode);
+  const employmentType = formatChoiceLabel(opportunity?.employmentType);
+  const paidStatus = formatPaidLabel(opportunity?.isPaid);
+  const duration = cleanText(opportunity?.duration);
+  const posted = formatTimestamp(opportunity?.createdAt);
+  const description = cleanText(opportunity?.description);
+  const requirements = detailListValues(
+    opportunity?.requirementItems?.length ? opportunity.requirementItems : opportunity?.requirements,
+  );
+  const benefits = detailListValues(opportunity?.benefits);
+  const tags = detailListValues(opportunity?.tags);
+
+  body.innerHTML = `
+    <button class="btn btn-sm" id="apps-back-btn" style="margin-bottom:12px;"><i data-lucide="arrow-left"></i>Back</button>
+    <div class="profile-hero">
+      <div class="activity-icon" style="background:${roleBg('company')};color:${roleColor('company')}"><i data-lucide="${opportunityTypeIcon(type)}"></i></div>
+      <div>
+        <div class="profile-hero__name">${esc(title)}</div>
+        <div class="row-sub" style="margin-bottom:8px;">${esc(cleanText(companyName) || cleanText(opportunity?.companyName) || 'Company unavailable')}</div>
+        <div class="profile-hero__badges">
+          <span class="badge badge-info"><i data-lucide="${opportunityTypeIcon(type)}"></i>${esc(typeLabel)}</span>
+          <span class="badge ${status === 'open' ? 'badge-success' : 'badge-warning'}">${esc(statusLabel)}</span>
+          ${opportunity?.isFeatured === true ? '<span class="badge"><i data-lucide="award"></i>Featured</span>' : ''}
+          ${opportunity?.isHidden === true ? '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+        </div>
+      </div>
+    </div>
+    ${profileSection(
+      'layout-grid',
+      'Details',
+      [
+        profileBlock('Location', location || 'Location not specified', { muted: !location }),
+        profileBlock('Deadline', deadlineLabel(opportunity)),
+        compensation ? profileBlock('Compensation', compensation) : '',
+        workMode ? profileBlock('Work mode', workMode) : '',
+        employmentType ? profileBlock('Employment type', employmentType) : '',
+        paidStatus ? profileBlock('Paid status', paidStatus) : '',
+        duration ? profileBlock('Duration', duration) : '',
+        posted ? profileBlock('Posted', posted) : '',
+      ].join(''),
+    )}
+    ${description ? longTextSection('Description', description, 'file-text') : ''}
+    ${detailListSection('Requirements', requirements, 'list-checks')}
+    ${detailListSection('Benefits', benefits, 'sparkles')}
+    ${detailListSection('Tags', tags, 'tags')}`;
+
+  document.getElementById('apps-back-btn').addEventListener('click', onBack);
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -1120,7 +1200,7 @@ function accountModerationHtml(isActive) {
 function companyOpportunitiesHtml() {
   return `
     <div class="profile-section">
-      <div class="profile-section__title"><i data-lucide="briefcase"></i>Published content</div>
+      <div class="profile-section__title"><i data-lucide="briefcase"></i>Posted opportunities</div>
       <div id="company-opportunities-block" class="profile-block"><div class="loading" style="padding:10px;"><div class="spinner"></div></div></div>
     </div>`;
 }
@@ -1159,6 +1239,46 @@ function profileSection(icon, title, bodyHtml) {
 function profileBlock(label, value, { html = false, muted = false } = {}) {
   const display = html ? value : esc(value);
   return `<div class="profile-block"><div class="profile-block-label">${esc(label)}</div><div class="profile-block-value" style="${muted ? 'color:var(--c-text-faint);font-weight:500;' : ''}">${display}</div></div>`;
+}
+
+function longTextSection(title, value, icon = 'text') {
+  const text = cleanText(value);
+  if (!text) return '';
+  return `
+    <div class="profile-section">
+      <div class="profile-section__title"><i data-lucide="${esc(icon)}"></i>${esc(title)}</div>
+      <div class="profile-block"><div class="profile-block-value" style="white-space:pre-wrap;">${esc(text)}</div></div>
+    </div>`;
+}
+
+function detailListSection(title, values, icon = 'list') {
+  const items = detailListValues(values);
+  if (!items.length) return '';
+  return `
+    <div class="profile-section">
+      <div class="profile-section__title"><i data-lucide="${esc(icon)}"></i>${esc(title)}</div>
+      <div class="profile-block">
+        <ul style="margin:0;padding-left:18px;color:var(--c-text-muted);font-weight:600;line-height:1.55;">
+          ${items.map((item) => `<li>${esc(item)}</li>`).join('')}
+        </ul>
+      </div>
+    </div>`;
+}
+
+function detailListValues(value) {
+  if (Array.isArray(value)) {
+    return value
+      .flatMap((item) => detailListValues(item))
+      .map((item) => formatSentenceLabel(item))
+      .filter(Boolean);
+  }
+  if (value && typeof value === 'object') {
+    return detailListValues(Object.values(value));
+  }
+  return String(value ?? '')
+    .split(/\r?\n|\u2022|;/)
+    .map((item) => formatSentenceLabel(item))
+    .filter(Boolean);
 }
 
 function avatarShell(user, dotClass) {
@@ -1232,21 +1352,40 @@ function accountBadgeHtml(isActive) {
     : '<span class="badge badge-danger"><i data-lucide="ban"></i>Blocked</span>';
 }
 
+function parseApplicationStatus(status) {
+  const normalized = cleanText(status).toLowerCase();
+  if (normalized === 'accepted' || normalized === 'approved') return 'accepted';
+  if (normalized === 'rejected') return 'rejected';
+  if (normalized === 'withdrawn') return 'withdrawn';
+  return 'pending';
+}
+
+function applicationStatusLabel(status) {
+  const parsed = parseApplicationStatus(status);
+  if (parsed === 'accepted') return 'Approved';
+  if (parsed === 'rejected') return 'Rejected';
+  if (parsed === 'withdrawn') return 'Withdrawn';
+  return 'Pending';
+}
+
 function applicationStatusClass(status) {
-  if (status === 'accepted') return 'badge-success';
-  if (status === 'rejected' || status === 'withdrawn') return 'badge-danger';
-  if (status === 'reviewed' || status === 'reviewing') return 'badge-info';
+  const parsed = parseApplicationStatus(status);
+  if (parsed === 'accepted') return 'badge-success';
+  if (parsed === 'rejected' || parsed === 'withdrawn') return 'badge-danger';
   return 'badge-warning';
 }
 
 function opportunityStateBadge(opportunity) {
-  if (!opportunity) return '<span class="badge badge-danger">Opportunity unavailable</span>';
-  if (opportunity.isHidden === true) {
-    return '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Opportunity hidden</span>';
-  }
-  if (effectiveOpportunityStatus(opportunity) === 'closed') {
-    return '<span class="badge badge-warning">Opportunity closed</span>';
-  }
+  const label = opportunityStateLabel(opportunity);
+  if (!label) return '';
+  if (!opportunity) return `<span class="badge badge-danger">${esc(label)}</span>`;
+  return `<span class="badge badge-warning"><i data-lucide="eye-off"></i>${esc(label)}</span>`;
+}
+
+function opportunityStateLabel(opportunity) {
+  if (!opportunity) return 'Opportunity unavailable';
+  if (opportunity.isHidden === true) return 'Opportunity hidden';
+  if (effectiveOpportunityStatus(opportunity) === 'closed') return 'Opportunity closed';
   return '';
 }
 
@@ -1292,22 +1431,49 @@ function opportunityTypeIcon(type) {
   return 'briefcase';
 }
 
+function deadlineLabel(opportunity) {
+  if (!opportunity) return 'Not specified';
+  const raw = opportunity.applicationDeadline || opportunity.deadline || opportunity.deadlineLabel;
+  const date = dateFromValue(raw);
+  if (date) {
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(date);
+  }
+  return cleanText(opportunity.deadlineLabel || opportunity.deadline) || 'Not specified';
+}
+
+function formatPaidLabel(value) {
+  if (value === true) return 'Paid';
+  if (value === false) return 'Unpaid';
+  return '';
+}
+
+function formatChoiceLabel(value) {
+  const text = cleanText(value);
+  if (!text) return '';
+  return text
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatSentenceLabel(value) {
+  const text = cleanText(value).replace(/\s+/g, ' ');
+  if (!text) return '';
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function hasCommercialRegister(user) {
   return Boolean(
     firstText(
       user?.commercialRegisterStoragePath,
-      user?.commercialRegisterObjectKey,
-      user?.commercialRegisterAccessPath,
       user?.commercialRegisterUrl,
-      user?.commercialRegisterAccessUrl,
-      user?.commercialRegisterSignedUrl,
     ),
   );
-}
-
-function lastSeenLabel(value) {
-  const formatted = formatTimestamp(value);
-  return formatted ? `Last seen ${formatted}` : 'Offline';
 }
 
 function externalLinkHtml(value) {

@@ -66,11 +66,6 @@ function hasBuilderContent(cv) {
 function resolvePrimaryDocumentFields(cv) {
   const storagePath =
     trim(cv?.uploadedCvPath) ||
-    trim(cv?.uploadedCvObjectKey) ||
-    trim(cv?.uploadedCvStoragePath) ||
-    trim(cv?.uploadedCvAccessPath) ||
-    trim(cv?.uploadedCvSignedUrl) ||
-    trim(cv?.uploadedCvAccessUrl) ||
     trim(cv?.uploadedCvUrl);
   const fileName = trim(cv?.uploadedFileName) || 'primary_cv.pdf';
   const mimeType = trim(cv?.uploadedCvMimeType);
@@ -79,7 +74,7 @@ function resolvePrimaryDocumentFields(cv) {
     storagePath,
     fileName,
     mimeType,
-    uploadedAt: cv?.uploadedCvUploadedAt || cv?.uploadedCvCreatedAt || null,
+    uploadedAt: cv?.uploadedCvCreatedAt || null,
     isAvailable: Boolean(storagePath),
     isPdf: isPdfDocument(fileName, mimeType),
   };
@@ -90,11 +85,6 @@ function resolveBuiltDocumentFields(cv) {
   const fileName = trim(cv?.exportedPdfFileName) || `cv_${templateId}.pdf`;
   const storagePath =
     trim(cv?.exportedPdfPath) ||
-    trim(cv?.exportedPdfObjectKey) ||
-    trim(cv?.exportedPdfStoragePath) ||
-    trim(cv?.exportedPdfAccessPath) ||
-    trim(cv?.exportedPdfSignedUrl) ||
-    trim(cv?.exportedPdfAccessUrl) ||
     trim(cv?.exportedPdfUrl);
   const mimeType = trim(cv?.exportedPdfMimeType) || 'application/pdf';
 

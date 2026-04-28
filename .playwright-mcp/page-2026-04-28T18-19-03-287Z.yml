@@ -1,0 +1,482 @@
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - complementary [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - img [ref=e124]
+          - generic [ref=e13]:
+            - heading "FutureGate" [level=2] [ref=e14]
+            - paragraph [ref=e15]: Admin workspace
+        - button "Collapse sidebar" [ref=e16] [cursor=pointer]:
+          - img [ref=e127]
+      - generic [ref=e20]: Workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e130]
+          - generic [ref=e29]: Dashboard
+        - link "Users" [ref=e30] [cursor=pointer]:
+          - /url: users
+          - img [ref=e135]
+          - generic [ref=e37]: Users
+        - link "Content" [ref=e38] [cursor=pointer]:
+          - /url: moderation
+          - img [ref=e140]
+          - generic [ref=e44]: Content
+        - link "Activity" [ref=e45] [cursor=pointer]:
+          - /url: activity
+          - img [ref=e144]
+          - generic [ref=e49]: Activity
+        - link "Notifications 1" [ref=e146] [cursor=pointer]:
+          - /url: notifications
+          - img [ref=e147]
+          - generic [ref=e55]: Notifications
+          - generic [ref=e150]: "1"
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]: F
+          - generic [ref=e59]:
+            - generic [ref=e60]: FutureGate Admin
+            - generic [ref=e111]: futuregatee13@gmail.com
+        - button "Sign out" [ref=e61] [cursor=pointer]:
+          - img [ref=e151]
+          - generic [ref=e65]: Sign out
+    - generic [ref=e66]:
+      - banner [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]: Accounts
+          - heading "Users" [level=1] [ref=e70]
+        - generic [ref=e71]:
+          - button "Toggle theme" [ref=e72] [cursor=pointer]:
+            - img [ref=e154]
+          - link "Notifications" [ref=e79] [cursor=pointer]:
+            - /url: notifications
+            - img [ref=e160]
+            - generic [ref=e163]: "1"
+      - main [ref=e83]:
+        - generic [ref=e165]:
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - img [ref=e168]
+              - strong [ref=e173]: "17"
+              - text: Total
+            - generic [ref=e174]:
+              - img [ref=e175]
+              - strong [ref=e178]: "17"
+              - text: Active
+            - generic [ref=e179]:
+              - img [ref=e180]
+              - strong [ref=e183]: "0"
+              - text: Blocked
+            - generic [ref=e184]:
+              - img [ref=e185]
+              - strong [ref=e187]: "4"
+              - text: Admins
+            - generic [ref=e188]:
+              - img [ref=e189]
+              - strong [ref=e192]: "0"
+              - text: Pending review
+          - generic [ref=e194]:
+            - img
+            - searchbox "Search by name, email, or company..." [ref=e195]
+          - generic [ref=e196]:
+            - tablist "Role filter" [ref=e197]:
+              - button "All" [ref=e198] [cursor=pointer]:
+                - img [ref=e199]
+                - text: All
+              - button "Students" [ref=e204] [cursor=pointer]:
+                - img [ref=e205]
+                - text: Students
+              - button "Companies" [ref=e208] [cursor=pointer]:
+                - img [ref=e209]
+                - text: Companies
+              - button "Admins" [ref=e213] [cursor=pointer]:
+                - img [ref=e214]
+                - text: Admins
+            - tablist "Account status" [ref=e216]:
+              - generic [ref=e217]: Account state
+              - button "All" [ref=e218] [cursor=pointer]
+              - button "Active" [ref=e219] [cursor=pointer]:
+                - img [ref=e220]
+                - text: Active
+              - button "Blocked" [ref=e222] [cursor=pointer]:
+                - img [ref=e223]
+                - text: Blocked
+            - tablist "Academic level" [ref=e226]:
+              - generic [ref=e227]: Level
+              - button "All" [ref=e228] [cursor=pointer]
+              - button "Bac" [ref=e229] [cursor=pointer]
+              - button "Licence" [ref=e230] [cursor=pointer]
+              - button "Master" [ref=e231] [cursor=pointer]
+              - button "Doctorat" [ref=e232] [cursor=pointer]
+            - tablist "Company review" [ref=e233]:
+              - generic [ref=e234]: Company review
+              - button "All" [ref=e235] [cursor=pointer]
+              - button "Pending" [ref=e236] [cursor=pointer]:
+                - img [ref=e237]
+                - text: Pending
+              - button "Approved" [ref=e240] [cursor=pointer]:
+                - img [ref=e241]
+                - text: Approved
+              - button "Rejected" [ref=e243] [cursor=pointer]:
+                - img [ref=e244]
+                - text: Rejected
+          - generic [ref=e248]: 17 users shown of 17 total.
+          - generic [ref=e249]:
+            - button "Abd Mouu abdmouu@gmail.com Student Active Master Block View" [ref=e250] [cursor=pointer]:
+              - generic [ref=e254]:
+                - generic [ref=e255]: Abd Mouu
+                - generic [ref=e256]: abdmouu@gmail.com
+                - generic [ref=e257]:
+                  - generic [ref=e258]:
+                    - img [ref=e259]
+                    - text: Student
+                  - generic [ref=e262]:
+                    - img [ref=e263]
+                    - text: Active
+                  - generic [ref=e265]:
+                    - img [ref=e266]
+                    - text: Master
+              - generic [ref=e269]:
+                - button "Block" [ref=e270]:
+                  - img [ref=e271]
+                  - text: Block
+                - button "View" [ref=e274]:
+                  - img [ref=e275]
+                  - text: View
+            - button "Yassi Rou rouyassi5@gmail.com Student Active Master Block View" [ref=e278] [cursor=pointer]:
+              - generic [ref=e282]:
+                - generic [ref=e283]: Yassi Rou
+                - generic [ref=e284]: rouyassi5@gmail.com
+                - generic [ref=e285]:
+                  - generic [ref=e286]:
+                    - img [ref=e287]
+                    - text: Student
+                  - generic [ref=e290]:
+                    - img [ref=e291]
+                    - text: Active
+                  - generic [ref=e293]:
+                    - img [ref=e294]
+                    - text: Master
+              - generic [ref=e297]:
+                - button "Block" [ref=e298]:
+                  - img [ref=e299]
+                  - text: Block
+                - button "View" [ref=e302]:
+                  - img [ref=e303]
+                  - text: View
+            - button "T Tech yassbini85@gmail.com Company Approved Active Block View" [ref=e306] [cursor=pointer]:
+              - generic [ref=e308]: T
+              - generic [ref=e310]:
+                - generic [ref=e311]: Tech
+                - generic [ref=e312]: yassbini85@gmail.com
+                - generic [ref=e313]:
+                  - generic [ref=e314]:
+                    - img [ref=e315]
+                    - text: Company
+                  - generic [ref=e319]:
+                    - img [ref=e320]
+                    - text: Approved
+                  - generic [ref=e323]:
+                    - img [ref=e324]
+                    - text: Active
+              - generic [ref=e326]:
+                - button "Block" [ref=e327]:
+                  - img [ref=e328]
+                  - text: Block
+                - button "View" [ref=e331]:
+                  - img [ref=e332]
+                  - text: View
+            - button "M Mohamed yyass2922@gmail.com Student Active Master Block View" [ref=e335] [cursor=pointer]:
+              - generic [ref=e337]: M
+              - generic [ref=e339]:
+                - generic [ref=e340]: Mohamed
+                - generic [ref=e341]: yyass2922@gmail.com
+                - generic [ref=e342]:
+                  - generic [ref=e343]:
+                    - img [ref=e344]
+                    - text: Student
+                  - generic [ref=e347]:
+                    - img [ref=e348]
+                    - text: Active
+                  - generic [ref=e350]:
+                    - img [ref=e351]
+                    - text: Master
+              - generic [ref=e354]:
+                - button "Block" [ref=e355]:
+                  - img [ref=e356]
+                  - text: Block
+                - button "View" [ref=e359]:
+                  - img [ref=e360]
+                  - text: View
+            - button "Y Yasser yasssou99@gmail.com Student Active Master Block View" [ref=e363] [cursor=pointer]:
+              - generic [ref=e365]: "Y"
+              - generic [ref=e367]:
+                - generic [ref=e368]: Yasser
+                - generic [ref=e369]: yasssou99@gmail.com
+                - generic [ref=e370]:
+                  - generic [ref=e371]:
+                    - img [ref=e372]
+                    - text: Student
+                  - generic [ref=e375]:
+                    - img [ref=e376]
+                    - text: Active
+                  - generic [ref=e378]:
+                    - img [ref=e379]
+                    - text: Master
+              - generic [ref=e382]:
+                - button "Block" [ref=e383]:
+                  - img [ref=e384]
+                  - text: Block
+                - button "View" [ref=e387]:
+                  - img [ref=e388]
+                  - text: View
+            - button "Samir Hamdoun mehdisamir.hamdoun20@gmail.com Student Active Licence Block View" [active] [ref=e391] [cursor=pointer]:
+              - generic [ref=e395]:
+                - generic [ref=e396]: Samir Hamdoun
+                - generic [ref=e397]: mehdisamir.hamdoun20@gmail.com
+                - generic [ref=e398]:
+                  - generic [ref=e399]:
+                    - img [ref=e400]
+                    - text: Student
+                  - generic [ref=e403]:
+                    - img [ref=e404]
+                    - text: Active
+                  - generic [ref=e406]:
+                    - img [ref=e407]
+                    - text: Licence
+              - generic [ref=e410]:
+                - button "Block" [ref=e411]:
+                  - img [ref=e412]
+                  - text: Block
+                - button "View" [ref=e415]:
+                  - img [ref=e416]
+                  - text: View
+            - button "Abdelkrim HAMMADI habdelkrim305@gmail.com Student Active Bac Block View" [ref=e419] [cursor=pointer]:
+              - generic [ref=e423]:
+                - generic [ref=e424]: Abdelkrim HAMMADI
+                - generic [ref=e425]: habdelkrim305@gmail.com
+                - generic [ref=e426]:
+                  - generic [ref=e427]:
+                    - img [ref=e428]
+                    - text: Student
+                  - generic [ref=e431]:
+                    - img [ref=e432]
+                    - text: Active
+                  - generic [ref=e434]:
+                    - img [ref=e435]
+                    - text: Bac
+              - generic [ref=e438]:
+                - button "Block" [ref=e439]:
+                  - img [ref=e440]
+                  - text: Block
+                - button "View" [ref=e443]:
+                  - img [ref=e444]
+                  - text: View
+            - button "S Samir syou6762@gmail.com Student Active Master Block View" [ref=e447] [cursor=pointer]:
+              - generic [ref=e449]: S
+              - generic [ref=e451]:
+                - generic [ref=e452]: Samir
+                - generic [ref=e453]: syou6762@gmail.com
+                - generic [ref=e454]:
+                  - generic [ref=e455]:
+                    - img [ref=e456]
+                    - text: Student
+                  - generic [ref=e459]:
+                    - img [ref=e460]
+                    - text: Active
+                  - generic [ref=e462]:
+                    - img [ref=e463]
+                    - text: Master
+              - generic [ref=e466]:
+                - button "Block" [ref=e467]:
+                  - img [ref=e468]
+                  - text: Block
+                - button "View" [ref=e471]:
+                  - img [ref=e472]
+                  - text: View
+            - button "F FutureGate Admin futuregatee13@gmail.com Admin Active Block View" [ref=e475] [cursor=pointer]:
+              - generic [ref=e477]: F
+              - generic [ref=e479]:
+                - generic [ref=e480]: FutureGate Admin
+                - generic [ref=e481]: futuregatee13@gmail.com
+                - generic [ref=e482]:
+                  - generic [ref=e483]:
+                    - img [ref=e484]
+                    - text: Admin
+                  - generic [ref=e486]:
+                    - img [ref=e487]
+                    - text: Active
+              - generic [ref=e489]:
+                - button "Block" [ref=e490]:
+                  - img [ref=e491]
+                  - text: Block
+                - button "View" [ref=e494]:
+                  - img [ref=e495]
+                  - text: View
+            - button "Chika Tm chikatm4@gmail.com Student Active Licence Block View" [ref=e498] [cursor=pointer]:
+              - generic [ref=e502]:
+                - generic [ref=e503]: Chika Tm
+                - generic [ref=e504]: chikatm4@gmail.com
+                - generic [ref=e505]:
+                  - generic [ref=e506]:
+                    - img [ref=e507]
+                    - text: Student
+                  - generic [ref=e510]:
+                    - img [ref=e511]
+                    - text: Active
+                  - generic [ref=e513]:
+                    - img [ref=e514]
+                    - text: Licence
+              - generic [ref=e517]:
+                - button "Block" [ref=e518]:
+                  - img [ref=e519]
+                  - text: Block
+                - button "View" [ref=e522]:
+                  - img [ref=e523]
+                  - text: View
+            - button "Abdelkrim Hammadi abdelkrimhammadi9@gmail.com Student Active Licence Block View" [ref=e526] [cursor=pointer]:
+              - generic [ref=e530]:
+                - generic [ref=e531]: Abdelkrim Hammadi
+                - generic [ref=e532]: abdelkrimhammadi9@gmail.com
+                - generic [ref=e533]:
+                  - generic [ref=e534]:
+                    - img [ref=e535]
+                    - text: Student
+                  - generic [ref=e538]:
+                    - img [ref=e539]
+                    - text: Active
+                  - generic [ref=e541]:
+                    - img [ref=e542]
+                    - text: Licence
+              - generic [ref=e545]:
+                - button "Block" [ref=e546]:
+                  - img [ref=e547]
+                  - text: Block
+                - button "View" [ref=e550]:
+                  - img [ref=e551]
+                  - text: View
+            - button "TechNova yo739701@gmail.com Company Approved Active Block View" [ref=e554] [cursor=pointer]:
+              - generic [ref=e558]:
+                - generic [ref=e559]: TechNova
+                - generic [ref=e560]: yo739701@gmail.com
+                - generic [ref=e561]:
+                  - generic [ref=e562]:
+                    - img [ref=e563]
+                    - text: Company
+                  - generic [ref=e567]:
+                    - img [ref=e568]
+                    - text: Approved
+                  - generic [ref=e571]:
+                    - img [ref=e572]
+                    - text: Active
+              - generic [ref=e574]:
+                - button "Block" [ref=e575]:
+                  - img [ref=e576]
+                  - text: Block
+                - button "View" [ref=e579]:
+                  - img [ref=e580]
+                  - text: View
+            - button "Limonaderie belkaid limonaderie.belkaid13@gmail.com Company Approved Active Block View" [ref=e583] [cursor=pointer]:
+              - generic [ref=e587]:
+                - generic [ref=e588]: Limonaderie belkaid
+                - generic [ref=e589]: limonaderie.belkaid13@gmail.com
+                - generic [ref=e590]:
+                  - generic [ref=e591]:
+                    - img [ref=e592]
+                    - text: Company
+                  - generic [ref=e596]:
+                    - img [ref=e597]
+                    - text: Approved
+                  - generic [ref=e600]:
+                    - img [ref=e601]
+                    - text: Active
+              - generic [ref=e603]:
+                - button "Block" [ref=e604]:
+                  - img [ref=e605]
+                  - text: Block
+                - button "View" [ref=e608]:
+                  - img [ref=e609]
+                  - text: View
+            - button "F FutureGate Admin avenirdz13@gmail.com Admin Active Block View" [ref=e612] [cursor=pointer]:
+              - generic [ref=e614]: F
+              - generic [ref=e616]:
+                - generic [ref=e617]: FutureGate Admin
+                - generic [ref=e618]: avenirdz13@gmail.com
+                - generic [ref=e619]:
+                  - generic [ref=e620]:
+                    - img [ref=e621]
+                    - text: Admin
+                  - generic [ref=e623]:
+                    - img [ref=e624]
+                    - text: Active
+              - generic [ref=e626]:
+                - button "Block" [ref=e627]:
+                  - img [ref=e628]
+                  - text: Block
+                - button "View" [ref=e631]:
+                  - img [ref=e632]
+                  - text: View
+            - button "A Admin AvenirDZ admin@avenirdz.dz Admin Active Block View" [ref=e635] [cursor=pointer]:
+              - generic [ref=e637]: A
+              - generic [ref=e639]:
+                - generic [ref=e640]: Admin AvenirDZ
+                - generic [ref=e641]: admin@avenirdz.dz
+                - generic [ref=e642]:
+                  - generic [ref=e643]:
+                    - img [ref=e644]
+                    - text: Admin
+                  - generic [ref=e646]:
+                    - img [ref=e647]
+                    - text: Active
+              - generic [ref=e649]:
+                - button "Block" [ref=e650]:
+                  - img [ref=e651]
+                  - text: Block
+                - button "View" [ref=e654]:
+                  - img [ref=e655]
+                  - text: View
+            - button "Yasser ysrtlm12@gmail.com Student Active Licence Block View" [ref=e658] [cursor=pointer]:
+              - generic [ref=e662]:
+                - generic [ref=e663]: Yasser
+                - generic [ref=e664]: ysrtlm12@gmail.com
+                - generic [ref=e665]:
+                  - generic [ref=e666]:
+                    - img [ref=e667]
+                    - text: Student
+                  - generic [ref=e670]:
+                    - img [ref=e671]
+                    - text: Active
+                  - generic [ref=e673]:
+                    - img [ref=e674]
+                    - text: Licence
+              - generic [ref=e677]:
+                - button "Block" [ref=e678]:
+                  - img [ref=e679]
+                  - text: Block
+                - button "View" [ref=e682]:
+                  - img [ref=e683]
+                  - text: View
+            - button "A Admin AvenirDZ admin@avenirdz.dz Admin Active Block View" [ref=e686] [cursor=pointer]:
+              - generic [ref=e688]: A
+              - generic [ref=e690]:
+                - generic [ref=e691]: Admin AvenirDZ
+                - generic [ref=e692]: admin@avenirdz.dz
+                - generic [ref=e693]:
+                  - generic [ref=e694]:
+                    - img [ref=e695]
+                    - text: Admin
+                  - generic [ref=e697]:
+                    - img [ref=e698]
+                    - text: Active
+              - generic [ref=e700]:
+                - button "Block" [ref=e701]:
+                  - img [ref=e702]
+                  - text: Block
+                - button "View" [ref=e705]:
+                  - img [ref=e706]
+                  - text: View
+  - generic [ref=e711]:
+    - heading "User profile" [level=3] [ref=e712]
+    - button "Close" [ref=e713] [cursor=pointer]:
+      - img [ref=e714]
