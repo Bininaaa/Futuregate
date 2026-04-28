@@ -75,6 +75,7 @@ class AppTheme {
           warning: colors.warning,
           error: colors.danger,
           neutral: colors.textSecondary,
+          removed: const Color(0xFF7C3AED),
         ),
       ],
       appBarTheme: AppBarTheme(

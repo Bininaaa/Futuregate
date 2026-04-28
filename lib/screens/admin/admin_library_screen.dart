@@ -288,7 +288,10 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       title: training.isHidden
           ? _l10n.uiResourceVisible
           : _l10n.uiResourceHidden,
-      type: AppFeedbackType.success,
+      type: training.isHidden
+          ? AppFeedbackType.success
+          : AppFeedbackType.removed,
+      icon: training.isHidden ? null : Icons.visibility_off_outlined,
     );
   }
 
@@ -927,7 +930,10 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       visualDensity: VisualDensity.compact,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      textStyle: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w600),
+      textStyle: AppTypography.product(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
@@ -938,7 +944,10 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       visualDensity: VisualDensity.compact,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      textStyle: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w600),
+      textStyle: AppTypography.product(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 

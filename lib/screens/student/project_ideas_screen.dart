@@ -479,18 +479,34 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     final auth = context.read<AuthProvider>().userModel;
     if (auth == null) return;
 
+    final wasSaved = idea.isSavedByCurrentUser;
+
     final error = await context.read<ProjectIdeaProvider>().toggleSave(
       idea,
       auth.uid,
     );
 
-    if (error != null && mounted) {
+    if (!mounted) return;
+
+    if (error != null) {
       context.showAppSnackBar(
         error,
         title: AppLocalizations.of(context)!.uiUpdateUnavailable,
         type: AppFeedbackType.error,
       );
+      return;
     }
+
+    context.showAppSnackBar(
+      wasSaved
+          ? 'Idea removed from your saved collection.'
+          : 'Idea saved to your collection.',
+      title: wasSaved ? 'Idea unsaved' : 'Idea saved',
+      type: wasSaved ? AppFeedbackType.removed : AppFeedbackType.success,
+      icon: wasSaved
+          ? Icons.bookmark_remove_outlined
+          : Icons.bookmark_added_rounded,
+    );
   }
 
   Future<void> _openSavedIdeas() async {
@@ -619,6 +635,7 @@ class _IdeaSaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: isBusy ? null : onTap,
       child: SizedBox(
         width: 32,

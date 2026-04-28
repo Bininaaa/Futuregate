@@ -349,10 +349,7 @@ class IdeaDetailsScreen extends StatelessWidget {
                   ),
                 _IdeaProperty(
                   label: AppLocalizations.of(context)!.uiCategory,
-                  value: innovationCategoryLabel(
-                    context,
-                    idea.displayCategory,
-                  ),
+                  value: innovationCategoryLabel(context, idea.displayCategory),
                   icon: innovationCategoryIcon(idea.displayCategory),
                   color: categoryColor,
                 ),
@@ -731,7 +728,7 @@ class IdeaDetailsScreen extends StatelessWidget {
               ? 'Idea removed from your saved collection.'
               : 'Idea saved to your collection.',
           title: wasSaved ? 'Idea unsaved' : 'Idea saved',
-          type: wasSaved ? AppFeedbackType.neutral : AppFeedbackType.success,
+          type: wasSaved ? AppFeedbackType.removed : AppFeedbackType.success,
           icon: wasSaved
               ? Icons.bookmark_remove_outlined
               : Icons.bookmark_added_rounded,
@@ -743,7 +740,9 @@ class IdeaDetailsScreen extends StatelessWidget {
               ? 'You are no longer marked as interested.'
               : 'You are now marked as interested in this idea.',
           title: wasInterested ? 'Interest removed' : 'Interest marked',
-          type: wasInterested ? AppFeedbackType.neutral : AppFeedbackType.success,
+          type: wasInterested
+              ? AppFeedbackType.removed
+              : AppFeedbackType.success,
           icon: wasInterested
               ? Icons.people_outline_rounded
               : Icons.people_alt_rounded,

@@ -285,7 +285,10 @@ class _AdminGoogleBooksImportScreenState
             ? _l10n.uiResourceRemovedFromFeatured
             : _l10n.uiResourceFeatured,
         title: _l10n.uiFeaturedListUpdated,
-        type: AppFeedbackType.success,
+        type: training.isFeatured
+            ? AppFeedbackType.removed
+            : AppFeedbackType.success,
+        icon: training.isFeatured ? Icons.star_border_rounded : null,
       );
       return;
     }
@@ -345,7 +348,8 @@ class _AdminGoogleBooksImportScreenState
       context.showAppSnackBar(
         _l10n.uiValueDeleted(training.title),
         title: _l10n.uiResourceDeleted,
-        type: AppFeedbackType.success,
+        type: AppFeedbackType.removed,
+        icon: Icons.delete_outline_rounded,
       );
       return;
     }

@@ -132,8 +132,11 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
           ? l10n.trainingSavedUpdatedTitle
           : l10n.trainingUpdateUnavailableTitle,
       type: normalizedError == null || normalizedError.isEmpty
-          ? AppFeedbackType.success
+          ? (wasSaved ? AppFeedbackType.removed : AppFeedbackType.success)
           : AppFeedbackType.error,
+      icon: (normalizedError == null || normalizedError.isEmpty) && wasSaved
+          ? Icons.bookmark_remove_outlined
+          : null,
     );
   }
 

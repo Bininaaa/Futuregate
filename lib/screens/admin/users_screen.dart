@@ -1094,6 +1094,11 @@ class _UsersScreenState extends State<UsersScreen> {
       'rejected' => _l10n.uiRejectCompanyMessage,
       _ => _l10n.uiMarkPendingCompanyMessage,
     };
+    final feedbackMessage = switch (nextStatus) {
+      'approved' => '$companyLabel approved.',
+      'rejected' => '$companyLabel rejected.',
+      _ => '$companyLabel moved back to pending review.',
+    };
 
     _showConfirmationDialog(
       eyebrow: _l10n.uiCompanyModeration,
@@ -1108,6 +1113,14 @@ class _UsersScreenState extends State<UsersScreen> {
         'rejected' => _l10n.uiReject,
         _ => _l10n.uiPending,
       },
+      successTitle: actionLabel,
+      successMessage: feedbackMessage,
+      successType: switch (nextStatus) {
+        'approved' => AppFeedbackType.success,
+        'rejected' => AppFeedbackType.removed,
+        _ => AppFeedbackType.warning,
+      },
+      successIcon: actionIcon,
       onConfirm: () =>
           provider.updateCompanyApprovalStatus(user.uid, nextStatus),
     );
@@ -1123,6 +1136,10 @@ class _UsersScreenState extends State<UsersScreen> {
     required Color accentColor,
     required String confirmLabel,
     required Future<String?> Function() onConfirm,
+    required String successTitle,
+    required String successMessage,
+    required AppFeedbackType successType,
+    required IconData successIcon,
   }) {
     showDialog(
       context: context,
@@ -1270,6 +1287,15 @@ class _UsersScreenState extends State<UsersScreen> {
                           )!.updateUnavailableTitle,
                           type: AppFeedbackType.error,
                         );
+                        return;
+                      }
+                      if (context.mounted) {
+                        context.showAppSnackBar(
+                          successMessage,
+                          title: successTitle,
+                          type: successType,
+                          icon: successIcon,
+                        );
                       }
                     },
                     color: accentColor,
@@ -1345,6 +1371,7 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   void _showToggleDialog(UserModel user, AdminProvider provider) {
+    final nextActive = !user.isActive;
     _showConfirmationDialog(
       eyebrow: _l10n.uiAccountAccess,
       title: user.isActive ? _l10n.uiBlockUser : _l10n.uiUnblockUser,
@@ -1358,7 +1385,17 @@ class _UsersScreenState extends State<UsersScreen> {
           : Icons.check_circle_outline_rounded,
       accentColor: user.isActive ? AdminPalette.danger : AdminPalette.success,
       confirmLabel: user.isActive ? _l10n.uiBlockUser : _l10n.uiUnblockUser,
-      onConfirm: () => provider.toggleUserActive(user.uid, !user.isActive),
+      successTitle: user.isActive ? _l10n.uiBlockUser : _l10n.uiUnblockUser,
+      successMessage: user.isActive
+          ? '${user.fullName} blocked.'
+          : '${user.fullName} unblocked.',
+      successType: nextActive
+          ? AppFeedbackType.success
+          : AppFeedbackType.removed,
+      successIcon: nextActive
+          ? Icons.check_circle_outline_rounded
+          : Icons.block_outlined,
+      onConfirm: () => provider.toggleUserActive(user.uid, nextActive),
     );
   }
 
@@ -1689,6 +1726,15 @@ class _UsersScreenState extends State<UsersScreen> {
           onPressed: () =>
               _showCompanyApprovalDialog(user, provider, 'rejected'),
           color: AdminPalette.danger,
+          outlined: true,
+        ),
+      if (!user.isCompanyPendingApproval)
+        _buildDocumentButton(
+          label: _l10n.uiMarkPendingReview,
+          icon: Icons.pending_actions_rounded,
+          onPressed: () =>
+              _showCompanyApprovalDialog(user, provider, 'pending'),
+          color: AdminPalette.warning,
           outlined: true,
         ),
     ];

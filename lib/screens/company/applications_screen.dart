@@ -263,7 +263,12 @@ class _StandaloneApplicationDetailsSheetState
         ApplicationStatus.sentenceLabel(status, l10n),
       ),
       title: l10n.uiApplicationUpdated,
-      type: AppFeedbackType.success,
+      type: ApplicationStatus.parse(status) == ApplicationStatus.rejected
+          ? AppFeedbackType.removed
+          : AppFeedbackType.success,
+      icon: ApplicationStatus.parse(status) == ApplicationStatus.rejected
+          ? Icons.block_outlined
+          : null,
     );
   }
 
@@ -560,9 +565,7 @@ class _StandaloneApplicationDetailsSheetState
         return Container(
           decoration: BoxDecoration(
             color: _ApplicationsPalette.surface,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(26),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.12),
@@ -644,10 +647,8 @@ class _StandaloneApplicationDetailsSheetState
                   opportunity?.type ?? OpportunityType.job,
                 ),
                 tone: tone.foreground,
-                onTap: () => _openOpportunityDetailsFromSheet(
-                  context,
-                  opportunity,
-                ),
+                onTap: () =>
+                    _openOpportunityDetailsFromSheet(context, opportunity),
               ),
               const SizedBox(height: 14),
               Consumer<CompanyProvider>(
@@ -2664,7 +2665,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         ApplicationStatus.sentenceLabel(status, _l10n),
       ),
       title: _l10n.uiApplicationUpdated,
-      type: AppFeedbackType.success,
+      type: ApplicationStatus.parse(status) == ApplicationStatus.rejected
+          ? AppFeedbackType.removed
+          : AppFeedbackType.success,
+      icon: ApplicationStatus.parse(status) == ApplicationStatus.rejected
+          ? Icons.block_outlined
+          : null,
     );
   }
 

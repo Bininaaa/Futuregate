@@ -643,7 +643,10 @@ class _AdminOpportunityEditorScreenState
           ? 'Admin opportunity updated successfully.'
           : 'Admin opportunity published successfully.',
       title: _isEditing ? 'Opportunity updated' : 'Opportunity published',
-      type: AppFeedbackType.success,
+      type: _status == 'closed'
+          ? AppFeedbackType.removed
+          : AppFeedbackType.success,
+      icon: _status == 'closed' ? Icons.lock_outline_rounded : null,
     );
     Navigator.of(context).pop(true);
   }

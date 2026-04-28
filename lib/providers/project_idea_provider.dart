@@ -378,13 +378,14 @@ class ProjectIdeaProvider extends ChangeNotifier {
       return null;
     }
 
+    final nextEnabled = !isEnabled;
     _busyInteractionKeys.add(busyKey);
-    _applyInteractionLocally(ideaId: idea.id, type: type, enabled: !isEnabled);
+    _applyInteractionLocally(ideaId: idea.id, type: type, enabled: nextEnabled);
     if (type == ProjectIdeaInteractionType.save) {
       _applySavedIdeaLocally(
         idea: idea,
         userId: normalizedUserId,
-        enabled: !isEnabled,
+        enabled: nextEnabled,
       );
     }
     notifyListeners();
@@ -394,11 +395,16 @@ class ProjectIdeaProvider extends ChangeNotifier {
         ideaId: idea.id,
         userId: normalizedUserId,
         type: type,
-        enabled: !isEnabled,
+        enabled: nextEnabled,
       );
       if (type == ProjectIdeaInteractionType.save) {
         _currentUserId = normalizedUserId;
         await fetchSavedIdeas(normalizedUserId, silent: true);
+        _applySavedIdeaLocally(
+          idea: idea,
+          userId: normalizedUserId,
+          enabled: nextEnabled,
+        );
       }
       return null;
     } catch (e) {

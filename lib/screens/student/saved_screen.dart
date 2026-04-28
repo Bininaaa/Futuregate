@@ -432,7 +432,8 @@ class _SavedScreenState extends State<SavedScreen> {
           ? successMessage
           : 'We couldn\'t remove this item right now.',
       title: error == null ? 'Saved items updated' : 'Update unavailable',
-      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+      type: error == null ? AppFeedbackType.removed : AppFeedbackType.error,
+      icon: error == null ? Icons.bookmark_remove_outlined : null,
     );
   }
 

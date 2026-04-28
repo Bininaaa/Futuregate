@@ -1581,6 +1581,14 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
         return;
       }
       await authProvider.loadCurrentUser();
+      if (mounted) {
+        context.showAppSnackBar(
+          'Company logo removed.',
+          title: 'Logo removed',
+          type: AppFeedbackType.removed,
+          icon: Icons.delete_outline_rounded,
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _uploadingLogo = false);

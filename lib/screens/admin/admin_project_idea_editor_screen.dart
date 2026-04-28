@@ -412,7 +412,8 @@ class _AdminProjectIdeaEditorScreenState
           ? 'Admin idea updated successfully.'
           : 'Admin idea published successfully.',
       title: _isEditing ? 'Idea updated' : 'Idea published',
-      type: AppFeedbackType.success,
+      type: _isHidden ? AppFeedbackType.removed : AppFeedbackType.success,
+      icon: _isHidden ? Icons.visibility_off_outlined : null,
     );
     Navigator.of(context).pop(true);
   }

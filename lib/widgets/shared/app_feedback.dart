@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-enum AppFeedbackType { error, warning, success, info, neutral }
+enum AppFeedbackType { error, warning, success, info, neutral, removed }
 
 @immutable
 class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
@@ -10,6 +10,7 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
   final Color warning;
   final Color error;
   final Color neutral;
+  final Color removed;
 
   const AppFeedbackTheme({
     required this.info,
@@ -17,6 +18,7 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
     required this.warning,
     required this.error,
     required this.neutral,
+    required this.removed,
   });
 
   factory AppFeedbackTheme.fallback(ColorScheme colorScheme) {
@@ -26,6 +28,7 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
       warning: const Color(0xFFD97706),
       error: colorScheme.error,
       neutral: const Color(0xFF475569),
+      removed: const Color(0xFF7C3AED),
     );
   }
 
@@ -44,6 +47,8 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
     final scheme = theme.colorScheme;
     final surface = scheme.surface;
     final onSurface = scheme.onSurface;
+    final strong =
+        type == AppFeedbackType.success || type == AppFeedbackType.removed;
     final base =
         accentColor ??
         switch (type) {
@@ -52,17 +57,26 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
           AppFeedbackType.success => success,
           AppFeedbackType.info => info,
           AppFeedbackType.neutral => neutral,
+          AppFeedbackType.removed => removed,
         };
 
     return AppFeedbackVariant(
       accent: base,
-      background: _blend(base, surface, 0.08),
-      surfaceHighlight: _blend(base, surface, 0.03),
-      border: _blend(base, surface, 0.18),
-      shadow: base.withValues(alpha: 0.10),
-      iconBackground: _blend(base, surface, 0.13),
-      titleColor: onSurface,
-      messageColor: onSurface.withValues(alpha: 0.74),
+      background: strong ? base : _blend(base, surface, 0.08),
+      surfaceHighlight: strong
+          ? Color.alphaBlend(Colors.white.withValues(alpha: 0.12), base)
+          : _blend(base, surface, 0.03),
+      border: strong
+          ? Color.alphaBlend(Colors.white.withValues(alpha: 0.28), base)
+          : _blend(base, surface, 0.18),
+      shadow: base.withValues(alpha: strong ? 0.30 : 0.10),
+      iconBackground: strong
+          ? Colors.white.withValues(alpha: 0.20)
+          : _blend(base, surface, 0.13),
+      titleColor: strong ? Colors.white : onSurface,
+      messageColor: strong
+          ? Colors.white.withValues(alpha: 0.88)
+          : onSurface.withValues(alpha: 0.74),
       actionColor: base,
       icon: switch (type) {
         AppFeedbackType.error => Icons.error_outline_rounded,
@@ -70,6 +84,7 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
         AppFeedbackType.success => Icons.check_circle_outline_rounded,
         AppFeedbackType.info => Icons.info_outline_rounded,
         AppFeedbackType.neutral => Icons.chat_bubble_outline_rounded,
+        AppFeedbackType.removed => Icons.undo_rounded,
       },
     );
   }
@@ -85,6 +100,7 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
     Color? warning,
     Color? error,
     Color? neutral,
+    Color? removed,
   }) {
     return AppFeedbackTheme(
       info: info ?? this.info,
@@ -92,6 +108,7 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
       warning: warning ?? this.warning,
       error: error ?? this.error,
       neutral: neutral ?? this.neutral,
+      removed: removed ?? this.removed,
     );
   }
 
@@ -107,6 +124,7 @@ class AppFeedbackTheme extends ThemeExtension<AppFeedbackTheme> {
       warning: Color.lerp(warning, other.warning, t) ?? warning,
       error: Color.lerp(error, other.error, t) ?? error,
       neutral: Color.lerp(neutral, other.neutral, t) ?? neutral,
+      removed: Color.lerp(removed, other.removed, t) ?? removed,
     );
   }
 }
@@ -183,14 +201,39 @@ class AppAlert extends StatelessWidget {
       width: double.infinity,
       padding: effectivePadding,
       decoration: BoxDecoration(
-        color: variant.background,
+        gradient:
+            type == AppFeedbackType.success || type == AppFeedbackType.removed
+            ? LinearGradient(
+                colors: <Color>[variant.background, variant.surfaceHighlight],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color:
+            type == AppFeedbackType.success || type == AppFeedbackType.removed
+            ? null
+            : variant.background,
         borderRadius: BorderRadius.circular(compact ? 18 : 20),
-        border: Border.all(color: variant.accent.withValues(alpha: 0.22)),
+        border: Border.all(
+          color:
+              type == AppFeedbackType.success || type == AppFeedbackType.removed
+              ? Colors.white.withValues(alpha: 0.30)
+              : variant.accent.withValues(alpha: 0.22),
+        ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: variant.accent.withValues(alpha: 0.18),
-            blurRadius: compact ? 16 : 22,
-            offset: Offset(0, compact ? 6 : 8),
+            color: variant.shadow,
+            blurRadius:
+                type == AppFeedbackType.success ||
+                    type == AppFeedbackType.removed
+                ? (compact ? 24 : 30)
+                : (compact ? 16 : 22),
+            offset: Offset(
+              0,
+              type == AppFeedbackType.success || type == AppFeedbackType.removed
+                  ? (compact ? 9 : 12)
+                  : (compact ? 6 : 8),
+            ),
           ),
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -209,7 +252,11 @@ class AppAlert extends StatelessWidget {
               width: compact ? 38 : 42,
               height: compact ? 38 : 42,
               decoration: BoxDecoration(
-                color: variant.accent,
+                color:
+                    type == AppFeedbackType.success ||
+                        type == AppFeedbackType.removed
+                    ? variant.iconBackground
+                    : variant.accent,
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -231,7 +278,11 @@ class AppAlert extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: compact ? 12.8 : 13.6,
                       fontWeight: FontWeight.w700,
-                      color: variant.accent,
+                      color:
+                          type == AppFeedbackType.success ||
+                              type == AppFeedbackType.removed
+                          ? variant.titleColor
+                          : variant.accent,
                     ),
                   ),
                 if (hasTitle) const SizedBox(height: 3),

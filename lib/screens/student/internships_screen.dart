@@ -202,7 +202,14 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     context.showAppSnackBar(
       error ?? message,
       title: error == null ? 'Saved items updated' : 'Save unavailable',
-      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+      type: error == null
+          ? (existingSaved != null
+                ? AppFeedbackType.removed
+                : AppFeedbackType.success)
+          : AppFeedbackType.error,
+      icon: error == null && existingSaved != null
+          ? Icons.bookmark_remove_outlined
+          : null,
     );
   }
 

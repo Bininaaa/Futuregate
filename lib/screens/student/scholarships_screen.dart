@@ -254,7 +254,14 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
               ? 'This scholarship was removed from your saved list.'
               : 'This scholarship has been saved.'),
       title: error == null ? 'Saved items updated' : 'Update unavailable',
-      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+      type: error == null
+          ? (existing != null
+                ? AppFeedbackType.removed
+                : AppFeedbackType.success)
+          : AppFeedbackType.error,
+      icon: error == null && existing != null
+          ? Icons.bookmark_remove_outlined
+          : null,
     );
   }
 

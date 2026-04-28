@@ -13,6 +13,7 @@ import '../../services/opportunity_translation_service.dart';
 import '../../utils/document_launch_helper.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_feedback.dart';
 
 typedef _P = OpportunityDashboardPalette;
 
@@ -420,15 +421,20 @@ class ScholarshipDetailScreen extends StatelessWidget {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          error ??
-              (existing != null
-                  ? l10n.scholarshipRemovedSavedMessage
-                  : l10n.scholarshipSavedMessage),
-        ),
-      ),
+    context.showAppSnackBar(
+      error ??
+          (existing != null
+              ? l10n.scholarshipRemovedSavedMessage
+              : l10n.scholarshipSavedMessage),
+      title: error == null ? 'Saved items updated' : 'Update unavailable',
+      type: error == null
+          ? (existing != null
+                ? AppFeedbackType.removed
+                : AppFeedbackType.success)
+          : AppFeedbackType.error,
+      icon: error == null && existing != null
+          ? Icons.bookmark_remove_outlined
+          : null,
     );
   }
 

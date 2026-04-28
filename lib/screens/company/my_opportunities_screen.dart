@@ -609,12 +609,17 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                   );
                 }
 
-                Future<void> openDoc(String variant, {bool download = false, bool requirePdf = false}) async {
+                Future<void> openDoc(
+                  String variant, {
+                  bool download = false,
+                  bool requirePdf = false,
+                }) async {
                   try {
-                    final doc = await documentAccessService.getApplicationCvDocument(
-                      applicationId: application.id,
-                      variant: variant,
-                    );
+                    final doc = await documentAccessService
+                        .getApplicationCvDocument(
+                          applicationId: application.id,
+                          variant: variant,
+                        );
                     if (!context.mounted) return;
                     if (requirePdf && !doc.isPdf) {
                       context.showAppSnackBar(
@@ -631,7 +636,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                       requirePdf: requirePdf,
                       notPdfMessage: _l10n.uiTheRequestedFileIsNotAValidPdf,
                       notPdfTitle: _l10n.uiPreviewUnavailable,
-                      unavailableMessage: _l10n.uiCouldNotOpenTheDocumentRightNow,
+                      unavailableMessage:
+                          _l10n.uiCouldNotOpenTheDocumentRightNow,
                       unavailableTitle: _l10n.uiDocumentUnavailable,
                     );
                   } catch (e) {
@@ -761,7 +767,12 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         ApplicationStatus.sentenceLabel(status, _l10n),
       ),
       title: _l10n.uiApplicationUpdated,
-      type: AppFeedbackType.success,
+      type: ApplicationStatus.parse(status) == ApplicationStatus.rejected
+          ? AppFeedbackType.removed
+          : AppFeedbackType.success,
+      icon: ApplicationStatus.parse(status) == ApplicationStatus.rejected
+          ? Icons.block_outlined
+          : null,
     );
   }
 
@@ -804,8 +815,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       nextStatus == 'closed'
           ? 'This opportunity has been closed. Students can no longer apply, but existing applications stay available for review.'
           : 'This opportunity is open again and can receive new applications.',
-      title: nextStatus == 'closed' ? 'Opportunity closed' : 'Opportunity reopened',
-      type: AppFeedbackType.success,
+      title: nextStatus == 'closed'
+          ? 'Opportunity closed'
+          : 'Opportunity reopened',
+      type: nextStatus == 'closed'
+          ? AppFeedbackType.removed
+          : AppFeedbackType.success,
+      icon: nextStatus == 'closed' ? Icons.lock_outline_rounded : null,
     );
   }
 
@@ -891,7 +907,10 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       title: wasClosed == true
           ? _l10n.uiOpportunityClosed
           : _l10n.uiOpportunityDeleted,
-      type: AppFeedbackType.success,
+      type: AppFeedbackType.removed,
+      icon: wasClosed == true
+          ? Icons.lock_outline_rounded
+          : Icons.delete_outline_rounded,
     );
   }
 
@@ -2192,13 +2211,9 @@ class _InlineBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: accentColor.withValues(
-          alpha: AppColors.isDark ? 0.14 : 0.08,
-        ),
+        color: accentColor.withValues(alpha: AppColors.isDark ? 0.14 : 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: accentColor.withValues(alpha: 0.18),
-        ),
+        border: Border.all(color: accentColor.withValues(alpha: 0.18)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -3634,9 +3649,7 @@ class _AppDetailHeroCard extends StatelessWidget {
                     foreground: tone.foreground,
                   ),
                   if (appliedText != null)
-                    _MetaChip(
-                      label: l10n.uiAppliedAppliedtext(appliedText),
-                    ),
+                    _MetaChip(label: l10n.uiAppliedAppliedtext(appliedText)),
                 ],
               ),
             ],
@@ -3743,7 +3756,8 @@ class _AppDecisionPanel extends StatelessWidget {
         l10n.uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference,
       ApplicationStatus.withdrawn =>
         l10n.uiThisApplicationHasBeenWithdrawnByTheCandidate,
-      _ => l10n.uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight,
+      _ =>
+        l10n.uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight,
     };
 
     return Container(
@@ -3849,10 +3863,7 @@ class _AppDecisionButton extends StatelessWidget {
         label: Text(
           label,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            fontWeight: FontWeight.w800,
-          ),
+          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w800),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: background,

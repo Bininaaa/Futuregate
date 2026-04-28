@@ -338,6 +338,14 @@ class _ModerateScreenState extends State<ModerateScreen>
                                         )!.updateUnavailableTitle,
                                         type: AppFeedbackType.error,
                                       );
+                                      return;
+                                    }
+                                    if (context.mounted) {
+                                      context.showAppSnackBar(
+                                        'Project idea approved.',
+                                        title: 'Idea approved',
+                                        type: AppFeedbackType.success,
+                                      );
                                     }
                                   },
                             icon: const Icon(Icons.check, size: 18),
@@ -370,6 +378,15 @@ class _ModerateScreenState extends State<ModerateScreen>
                                           context,
                                         )!.updateUnavailableTitle,
                                         type: AppFeedbackType.error,
+                                      );
+                                      return;
+                                    }
+                                    if (context.mounted) {
+                                      context.showAppSnackBar(
+                                        'Project idea rejected.',
+                                        title: 'Idea rejected',
+                                        type: AppFeedbackType.removed,
+                                        icon: Icons.block_outlined,
                                       );
                                     }
                                   },
@@ -532,6 +549,15 @@ class _ModerateScreenState extends State<ModerateScreen>
                         )!.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
+                      return;
+                    }
+                    if (context.mounted) {
+                      context.showAppSnackBar(
+                        'Opportunity deleted.',
+                        title: 'Opportunity deleted',
+                        type: AppFeedbackType.removed,
+                        icon: Icons.delete_outline_rounded,
+                      );
                     }
                   },
                 ),
@@ -669,6 +695,15 @@ class _ModerateScreenState extends State<ModerateScreen>
                           context,
                         )!.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
+                      );
+                      return;
+                    }
+                    if (context.mounted) {
+                      context.showAppSnackBar(
+                        'Scholarship deleted.',
+                        title: 'Scholarship deleted',
+                        type: AppFeedbackType.removed,
+                        icon: Icons.delete_outline_rounded,
                       );
                     }
                   },

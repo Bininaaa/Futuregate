@@ -635,6 +635,14 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             title: l10n.updateUnavailableTitle,
                             type: AppFeedbackType.error,
                           );
+                          return;
+                        }
+                        if (context.mounted) {
+                          context.showAppSnackBar(
+                            '${idea.title} approved.',
+                            title: 'Idea approved',
+                            type: AppFeedbackType.success,
+                          );
                         }
                       },
                 icon: const Icon(Icons.check_rounded, size: 16),
@@ -655,6 +663,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             error,
                             title: l10n.updateUnavailableTitle,
                             type: AppFeedbackType.error,
+                          );
+                          return;
+                        }
+                        if (context.mounted) {
+                          context.showAppSnackBar(
+                            '${idea.title} rejected.',
+                            title: 'Idea rejected',
+                            type: AppFeedbackType.removed,
+                            icon: Icons.block_outlined,
                           );
                         }
                       },
@@ -738,6 +755,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         error,
                         title: l10n.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
+                      );
+                      return;
+                    }
+                    if (context.mounted) {
+                      context.showAppSnackBar(
+                        l10n.uiValueDeleted(idea.title),
+                        title: l10n.uiProjectIdea,
+                        type: AppFeedbackType.removed,
+                        icon: Icons.delete_outline_rounded,
                       );
                     }
                   },
@@ -1485,6 +1511,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         title: l10n.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
                       );
+                      return;
+                    }
+                    if (context.mounted) {
+                      context.showAppSnackBar(
+                        l10n.uiValueDeleted(
+                          (opportunity['title'] ?? '').toString(),
+                        ),
+                        title: l10n.uiOpportunityDeleted,
+                        type: AppFeedbackType.removed,
+                        icon: Icons.delete_outline_rounded,
+                      );
                     }
                   },
                 ),
@@ -1781,6 +1818,17 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         error,
                         title: l10n.uiDeleteUnavailable,
                         type: AppFeedbackType.error,
+                      );
+                      return;
+                    }
+                    if (context.mounted) {
+                      context.showAppSnackBar(
+                        l10n.uiValueDeleted(
+                          (scholarship['title'] ?? '').toString(),
+                        ),
+                        title: l10n.uiResourceDeleted,
+                        type: AppFeedbackType.removed,
+                        icon: Icons.delete_outline_rounded,
                       );
                     }
                   },
@@ -2440,7 +2488,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       title: nextHidden
           ? l10n.uiItemHiddenTitle(itemType)
           : l10n.uiItemVisibleTitle(itemType),
-      type: AppFeedbackType.success,
+      type: nextHidden ? AppFeedbackType.removed : AppFeedbackType.success,
+      icon: nextHidden ? Icons.visibility_off_outlined : null,
     );
   }
 
@@ -3705,7 +3754,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       title: error == null
           ? l10n.uiApplicationUpdated
           : l10n.updateUnavailableTitle,
-      type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+      type: error == null
+          ? (ApplicationStatus.parse(status) == ApplicationStatus.rejected
+                ? AppFeedbackType.removed
+                : AppFeedbackType.success)
+          : AppFeedbackType.error,
+      icon:
+          error == null &&
+              ApplicationStatus.parse(status) == ApplicationStatus.rejected
+          ? Icons.block_outlined
+          : null,
     );
   }
 

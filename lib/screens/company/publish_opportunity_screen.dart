@@ -1038,7 +1038,10 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       title: _isEditMode
           ? _l10n.opportunityUpdatedTitle
           : _l10n.opportunityPublishedTitle,
-      type: AppFeedbackType.success,
+      type: _selectedStatus == 'closed'
+          ? AppFeedbackType.removed
+          : AppFeedbackType.success,
+      icon: _selectedStatus == 'closed' ? Icons.lock_outline_rounded : null,
     );
     Navigator.pop(context);
   }
