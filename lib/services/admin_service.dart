@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/admin_chart_data.dart';
 import '../models/admin_activity_model.dart';
 import '../models/admin_activity_preview_model.dart';
@@ -21,8 +22,10 @@ class AdminService {
   static const String activitySourceScholarships = 'scholarships';
   static const String activitySourceTrainings = 'trainings';
   static const String activitySourceProjectIdeas = 'projectIdeas';
+  static const String activitySourceAdminEvents = 'adminActivityEvents';
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
   final WorkerApiService _workerApi = WorkerApiService();
@@ -470,6 +473,11 @@ class AdminService {
           limit: limit,
           startAfterDocument: startAfterDocument,
         );
+      case activitySourceAdminEvents:
+        return _getAdminActivityEventBatch(
+          limit: limit,
+          startAfterDocument: startAfterDocument,
+        );
       default:
         throw ArgumentError.value(
           source,
@@ -506,6 +514,11 @@ class AdminService {
           .orderBy('createdAt', descending: true)
           .limit(safeLimit)
           .get(),
+      _firestore
+          .collection(activitySourceAdminEvents)
+          .orderBy('createdAt', descending: true)
+          .limit(safeLimit)
+          .get(),
     ]);
 
     final applicationDocs =
@@ -517,6 +530,8 @@ class AdminService {
     final trainingSnapshot = results[3] as QuerySnapshot<Map<String, dynamic>>;
     final projectIdeaSnapshot =
         results[4] as QuerySnapshot<Map<String, dynamic>>;
+    final adminEventSnapshot =
+        results[5] as QuerySnapshot<Map<String, dynamic>>;
 
     final applicationOpportunityIds = applicationDocs
         .map((doc) => (doc.data()['opportunityId'] ?? '').toString())
@@ -622,6 +637,7 @@ class AdminService {
           createdAt: data['createdAt'] as Timestamp?,
         );
       }),
+      ...adminEventSnapshot.docs.map(AdminActivityModel.fromEventDocument),
     ];
 
     activities.sort(_compareByTimestampDesc);
@@ -710,6 +726,17 @@ class AdminService {
           collection: activitySourceTrainings,
           documentId: activity.relatedId,
           data: trainingData,
+        );
+      case 'user':
+        final userData = await _getDocumentData('users', activity.relatedId);
+        if (userData == null) {
+          return null;
+        }
+
+        return AdminActivityPreviewModel(
+          collection: 'users',
+          documentId: activity.relatedId,
+          data: userData,
         );
       case 'project_idea':
       default:
@@ -942,6 +969,28 @@ class AdminService {
     );
   }
 
+  Future<AdminActivityBatch> _getAdminActivityEventBatch({
+    required int limit,
+    DocumentSnapshot<Map<String, dynamic>>? startAfterDocument,
+  }) async {
+    final safeLimit = limit < 1 ? 1 : limit;
+    final snapshot = await _getActivitySnapshot(
+      collection: activitySourceAdminEvents,
+      orderField: 'createdAt',
+      limit: safeLimit,
+      startAfterDocument: startAfterDocument,
+    );
+    final pageDocs = _pageDocs(snapshot.docs, safeLimit);
+
+    return AdminActivityBatch(
+      activities: pageDocs
+          .map(AdminActivityModel.fromEventDocument)
+          .toList(growable: false),
+      lastDocument: pageDocs.isEmpty ? startAfterDocument : pageDocs.last,
+      hasMore: snapshot.docs.length > safeLimit,
+    );
+  }
+
   Future<List<UserModel>> getAllUsers() async {
     final snapshot = await _firestore
         .collection('users')
@@ -977,9 +1026,34 @@ class AdminService {
   }
 
   Future<void> toggleUserActive(String uid, bool isActive) async {
-    await _firestore.collection('users').doc(uid).update({
-      'isActive': isActive,
-    });
+    final docRef = _firestore.collection('users').doc(uid);
+    final snapshot = await docRef.get();
+    if (!snapshot.exists) {
+      throw Exception('User not found');
+    }
+
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final wasActive = data['isActive'] != false;
+    if (wasActive == isActive) {
+      return;
+    }
+
+    await docRef.update({'isActive': isActive});
+
+    final displayName = _userDisplayName(data);
+    await _recordAdminActivityEvent(
+      type: 'user',
+      action: isActive ? 'user_unblocked' : 'user_blocked',
+      targetCollection: 'users',
+      targetId: uid,
+      title: displayName,
+      description: isActive
+          ? '$displayName was unblocked by an admin.'
+          : '$displayName was blocked by an admin.',
+      subjectId: uid,
+      subjectName: displayName,
+      status: isActive ? 'active' : 'blocked',
+    );
   }
 
   Future<void> updateCompanyApprovalStatus(String uid, String status) async {
@@ -999,6 +1073,24 @@ class AdminService {
     }
 
     await docRef.update({'approvalStatus': normalizedStatus});
+
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final companyName = _userDisplayName(data);
+    await _recordAdminActivityEvent(
+      type: 'user',
+      action: 'company_$normalizedStatus',
+      targetCollection: 'users',
+      targetId: uid,
+      title: companyName,
+      description: switch (normalizedStatus) {
+        'approved' => '$companyName was approved as a company.',
+        'rejected' => '$companyName was rejected during company review.',
+        _ => '$companyName was moved back to pending company review.',
+      },
+      subjectId: uid,
+      subjectName: companyName,
+      status: normalizedStatus,
+    );
 
     if (normalizedStatus == 'approved' || normalizedStatus == 'rejected') {
       await _notificationWorker.notifyCompanyApprovalStatusChanged(uid);
@@ -1114,6 +1206,31 @@ class AdminService {
 
     await appRef.update({'status': nextStatus});
 
+    final opportunityTitle = (opportunityData?['title'] ?? '')
+        .toString()
+        .trim();
+    final studentName = (appData['studentName'] ?? 'Student').toString().trim();
+    final statusLabel = nextStatus;
+    await _recordAdminActivityEvent(
+      type: 'application',
+      action: 'application_$statusLabel',
+      targetCollection: 'applications',
+      targetId: appId,
+      title: opportunityTitle.isNotEmpty
+          ? opportunityTitle
+          : 'Application decision',
+      description:
+          '$studentName was $statusLabel for '
+          '${opportunityTitle.isNotEmpty ? opportunityTitle : 'an admin opportunity'}.',
+      subjectId: (appData['studentId'] ?? '').toString(),
+      subjectName: studentName,
+      status: statusLabel,
+      metadata: {
+        'opportunityId': opportunityId,
+        'opportunityTitle': opportunityTitle,
+      },
+    );
+
     if (ApplicationStatus.shouldNotifyTransition(currentStatus, nextStatus)) {
       await _notificationWorker.notifyApplicationStatusChanged(appId);
     }
@@ -1123,6 +1240,7 @@ class AdminService {
     final ideaRef = _firestore.collection('projectIdeas').doc(id);
     var didUpdate = false;
     var shouldNotify = false;
+    var eventData = const <String, dynamic>{};
 
     await _firestore.runTransaction((transaction) async {
       final ideaDoc = await transaction.get(ideaRef);
@@ -1136,6 +1254,7 @@ class AdminService {
       }
 
       transaction.update(ideaRef, {'status': status});
+      eventData = ideaDoc.data() ?? const <String, dynamic>{};
       didUpdate = true;
       shouldNotify =
           currentStatus == 'pending' &&
@@ -1144,6 +1263,29 @@ class AdminService {
 
     if (shouldNotify) {
       await _notificationWorker.notifyProjectIdeaStatusChanged(id);
+    }
+
+    if (didUpdate) {
+      final title = (eventData['title'] ?? 'Project idea').toString().trim();
+      final submitterName =
+          (eventData['submittedByName'] ??
+                  eventData['submittedBy'] ??
+                  'Student')
+              .toString()
+              .trim();
+      await _recordAdminActivityEvent(
+        type: 'project_idea',
+        action: 'project_idea_$status',
+        targetCollection: 'projectIdeas',
+        targetId: id,
+        title: title.isNotEmpty ? title : 'Project idea',
+        description:
+            'Project idea ${title.isNotEmpty ? '"$title" ' : ''}'
+            'was ${status.trim().toLowerCase()}.',
+        subjectId: (eventData['submittedBy'] ?? '').toString(),
+        subjectName: submitterName,
+        status: status,
+      );
     }
 
     return didUpdate;
@@ -1160,6 +1302,21 @@ class AdminService {
     });
 
     final snapshot = await docRef.get();
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final title = (data['title'] ?? 'Project idea').toString().trim();
+    await _recordAdminActivityEvent(
+      type: 'project_idea',
+      action: isHidden ? 'project_idea_hidden' : 'project_idea_shown',
+      targetCollection: 'projectIdeas',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Project idea',
+      description: isHidden
+          ? 'Project idea ${title.isNotEmpty ? '"$title" ' : ''}was hidden.'
+          : 'Project idea ${title.isNotEmpty ? '"$title" ' : ''}was shown.',
+      subjectId: (data['submittedBy'] ?? '').toString(),
+      subjectName: (data['submittedByName'] ?? '').toString(),
+      status: isHidden ? 'hidden' : 'visible',
+    );
     return ProjectIdeaModel.fromMap({...?snapshot.data(), 'id': docRef.id});
   }
 
@@ -1189,11 +1346,41 @@ class AdminService {
     await docRef.update(nextData);
 
     final snapshot = await docRef.get();
+    final updatedData = snapshot.data() ?? const <String, dynamic>{};
+    final title = (updatedData['title'] ?? 'Project idea').toString().trim();
+    await _recordAdminActivityEvent(
+      type: 'project_idea',
+      action: 'project_idea_updated',
+      targetCollection: 'projectIdeas',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Project idea',
+      description:
+          'Project idea ${title.isNotEmpty ? '"$title" ' : ''}was updated.',
+      subjectId: (updatedData['submittedBy'] ?? '').toString(),
+      subjectName: (updatedData['submittedByName'] ?? '').toString(),
+      status: (updatedData['status'] ?? '').toString(),
+    );
     return ProjectIdeaModel.fromMap({...?snapshot.data(), 'id': docRef.id});
   }
 
   Future<void> deleteProjectIdea(String id) async {
-    await _firestore.collection('projectIdeas').doc(id).delete();
+    final docRef = _firestore.collection('projectIdeas').doc(id);
+    final snapshot = await docRef.get();
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final title = (data['title'] ?? 'Project idea').toString().trim();
+    await docRef.delete();
+    await _recordAdminActivityEvent(
+      type: 'project_idea',
+      action: 'project_idea_deleted',
+      targetCollection: 'projectIdeas',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Project idea deleted',
+      description:
+          'Project idea ${title.isNotEmpty ? '"$title" ' : ''}was deleted.',
+      subjectId: (data['submittedBy'] ?? '').toString(),
+      subjectName: (data['submittedByName'] ?? '').toString(),
+      status: 'deleted',
+    );
   }
 
   Future<Map<String, dynamic>> createAdminOpportunity(
@@ -1249,11 +1436,41 @@ class AdminService {
     }
 
     final snapshot = await docRef.get();
+    final updatedData = snapshot.data() ?? const <String, dynamic>{};
+    final title = (updatedData['title'] ?? 'Opportunity').toString().trim();
+    await _recordAdminActivityEvent(
+      type: 'opportunity',
+      action: 'opportunity_updated',
+      targetCollection: 'opportunities',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Opportunity',
+      description:
+          'Opportunity ${title.isNotEmpty ? '"$title" ' : ''}was updated.',
+      subjectId: (updatedData['companyId'] ?? '').toString(),
+      subjectName: (updatedData['companyName'] ?? '').toString(),
+      status: (updatedData['status'] ?? '').toString(),
+    );
     return {...?snapshot.data(), 'id': docRef.id};
   }
 
   Future<void> deleteOpportunity(String id) async {
-    await _firestore.collection('opportunities').doc(id).delete();
+    final docRef = _firestore.collection('opportunities').doc(id);
+    final snapshot = await docRef.get();
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final title = (data['title'] ?? 'Opportunity').toString().trim();
+    await docRef.delete();
+    await _recordAdminActivityEvent(
+      type: 'opportunity',
+      action: 'opportunity_deleted',
+      targetCollection: 'opportunities',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Opportunity deleted',
+      description:
+          'Opportunity ${title.isNotEmpty ? '"$title" ' : ''}was deleted.',
+      subjectId: (data['companyId'] ?? '').toString(),
+      subjectName: (data['companyName'] ?? '').toString(),
+      status: 'deleted',
+    );
   }
 
   Future<Map<String, dynamic>> setOpportunityHidden(
@@ -1267,6 +1484,21 @@ class AdminService {
     });
 
     final snapshot = await docRef.get();
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final title = (data['title'] ?? 'Opportunity').toString().trim();
+    await _recordAdminActivityEvent(
+      type: 'opportunity',
+      action: isHidden ? 'opportunity_hidden' : 'opportunity_shown',
+      targetCollection: 'opportunities',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Opportunity',
+      description: isHidden
+          ? 'Opportunity ${title.isNotEmpty ? '"$title" ' : ''}was hidden.'
+          : 'Opportunity ${title.isNotEmpty ? '"$title" ' : ''}was shown.',
+      subjectId: (data['companyId'] ?? '').toString(),
+      subjectName: (data['companyName'] ?? '').toString(),
+      status: isHidden ? 'hidden' : 'visible',
+    );
     return {...?snapshot.data(), 'id': docRef.id};
   }
 
@@ -1296,11 +1528,41 @@ class AdminService {
     await docRef.update(nextData);
 
     final snapshot = await docRef.get();
+    final updatedData = snapshot.data() ?? const <String, dynamic>{};
+    final title = (updatedData['title'] ?? 'Scholarship').toString().trim();
+    await _recordAdminActivityEvent(
+      type: 'scholarship',
+      action: 'scholarship_updated',
+      targetCollection: 'scholarships',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Scholarship',
+      description:
+          'Scholarship ${title.isNotEmpty ? '"$title" ' : ''}was updated.',
+      subjectId: (updatedData['createdBy'] ?? '').toString(),
+      subjectName: (updatedData['provider'] ?? '').toString(),
+      status: (updatedData['status'] ?? '').toString(),
+    );
     return {...?snapshot.data(), 'id': docRef.id};
   }
 
   Future<void> deleteScholarship(String id) async {
-    await _firestore.collection('scholarships').doc(id).delete();
+    final docRef = _firestore.collection('scholarships').doc(id);
+    final snapshot = await docRef.get();
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final title = (data['title'] ?? 'Scholarship').toString().trim();
+    await docRef.delete();
+    await _recordAdminActivityEvent(
+      type: 'scholarship',
+      action: 'scholarship_deleted',
+      targetCollection: 'scholarships',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Scholarship deleted',
+      description:
+          'Scholarship ${title.isNotEmpty ? '"$title" ' : ''}was deleted.',
+      subjectId: (data['createdBy'] ?? '').toString(),
+      subjectName: (data['provider'] ?? '').toString(),
+      status: 'deleted',
+    );
   }
 
   Future<Map<String, dynamic>> setScholarshipHidden(
@@ -1314,6 +1576,21 @@ class AdminService {
     });
 
     final snapshot = await docRef.get();
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final title = (data['title'] ?? 'Scholarship').toString().trim();
+    await _recordAdminActivityEvent(
+      type: 'scholarship',
+      action: isHidden ? 'scholarship_hidden' : 'scholarship_shown',
+      targetCollection: 'scholarships',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Scholarship',
+      description: isHidden
+          ? 'Scholarship ${title.isNotEmpty ? '"$title" ' : ''}was hidden.'
+          : 'Scholarship ${title.isNotEmpty ? '"$title" ' : ''}was shown.',
+      subjectId: (data['createdBy'] ?? '').toString(),
+      subjectName: (data['provider'] ?? '').toString(),
+      status: isHidden ? 'hidden' : 'visible',
+    );
     return {...?snapshot.data(), 'id': docRef.id};
   }
 
@@ -1358,10 +1635,94 @@ class AdminService {
 
   Future<TrainingModel> setTrainingHidden(String id, bool isHidden) async {
     final docRef = _firestore.collection('trainings').doc(id);
-    await docRef.update({'isHidden': isHidden});
+    await docRef.update({
+      'isHidden': isHidden,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
 
     final snapshot = await docRef.get();
+    final data = snapshot.data() ?? const <String, dynamic>{};
+    final title = (data['title'] ?? 'Training resource').toString().trim();
+    await _recordAdminActivityEvent(
+      type: 'training',
+      action: isHidden ? 'training_hidden' : 'training_shown',
+      targetCollection: 'trainings',
+      targetId: id,
+      title: title.isNotEmpty ? title : 'Training resource',
+      description: isHidden
+          ? 'Training resource ${title.isNotEmpty ? '"$title" ' : ''}was hidden.'
+          : 'Training resource ${title.isNotEmpty ? '"$title" ' : ''}was shown.',
+      subjectId: (data['createdBy'] ?? '').toString(),
+      subjectName: (data['provider'] ?? '').toString(),
+      status: isHidden ? 'hidden' : 'visible',
+    );
     return TrainingModel.fromMap({...?snapshot.data(), 'id': docRef.id});
+  }
+
+  Future<void> _recordAdminActivityEvent({
+    required String type,
+    required String action,
+    required String targetCollection,
+    required String targetId,
+    required String title,
+    required String description,
+    String subjectId = '',
+    String subjectName = '',
+    String status = '',
+    Map<String, dynamic> metadata = const <String, dynamic>{},
+  }) async {
+    try {
+      final actor = await _currentAdminActor();
+      final docRef = _firestore.collection(activitySourceAdminEvents).doc();
+      await docRef.set({
+        'id': docRef.id,
+        'type': type.trim(),
+        'action': action.trim(),
+        'targetCollection': targetCollection.trim(),
+        'targetId': targetId.trim(),
+        'title': title.trim().isEmpty ? 'Admin activity' : title.trim(),
+        'description': description.trim(),
+        'actorId': actor['id'] ?? '',
+        'actorName': actor['name'] ?? 'Admin',
+        'subjectId': subjectId.trim(),
+        'subjectName': subjectName.trim(),
+        'status': status.trim(),
+        'metadata': metadata,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (_) {
+      // Activity should never block the admin action that generated it.
+    }
+  }
+
+  Future<Map<String, String>> _currentAdminActor() async {
+    final user = _auth.currentUser;
+    final uid = (user?.uid ?? '').trim();
+    var name = (user?.displayName ?? '').trim();
+
+    if (uid.isNotEmpty) {
+      final snapshot = await _firestore.collection('users').doc(uid).get();
+      final data = snapshot.data();
+      if (data != null) {
+        name = _userDisplayName(data, fallback: name);
+      }
+    }
+
+    return {'id': uid, 'name': name.trim().isNotEmpty ? name.trim() : 'Admin'};
+  }
+
+  String _userDisplayName(
+    Map<String, dynamic> data, {
+    String fallback = 'User',
+  }) {
+    for (final key in const ['companyName', 'fullName', 'email']) {
+      final value = (data[key] ?? '').toString().trim();
+      if (value.isNotEmpty) {
+        return value;
+      }
+    }
+
+    return fallback.trim().isNotEmpty ? fallback.trim() : 'User';
   }
 
   Future<Map<String, String>> _fetchUserDisplayNames(

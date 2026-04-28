@@ -47,6 +47,7 @@
       setDoc, updateDoc, deleteDoc, serverTimestamp,
     } from './js/firebase-config.js';
     import { matchesSearch, getQueryParam, timestampToDate, updateUrlParams } from './js/admin-utils.js';
+    import { logAdminActivity } from './js/activity-service.js';
     import { WORKER_BASE_URL } from './js/google-books-config.js';
     import { getApplicationCv, getApplicationCvDocument, getCompanyCommercialRegisterDocument, openDocumentUrl, friendlyDocumentErrorMessage } from './js/document-access.js';
     import { openModal, closeModal } from './js/ui.js';
@@ -954,17 +955,50 @@
         if (action === 'approve') {
           await updateDoc(ref, { status: 'approved' });
           it.status = 'approved';
+          await logAdminActivity({
+            type: 'project_idea',
+            action: 'project_idea_approved',
+            targetCollection: 'projectIdeas',
+            targetId: id,
+            title: it.title || 'Project idea',
+            description: `Project idea "${it.title || 'Untitled'}" was approved.`,
+            subjectId: it.submittedBy || '',
+            subjectName: it.submittedByName || '',
+            status: 'approved',
+          });
           await workerBestEffort('/api/notify/idea-status-changed', { ideaId: id });
           showToast('Idea Approved.', 'success');
         } else if (action === 'reject') {
           await updateDoc(ref, { status: 'rejected' });
           it.status = 'rejected';
+          await logAdminActivity({
+            type: 'project_idea',
+            action: 'project_idea_rejected',
+            targetCollection: 'projectIdeas',
+            targetId: id,
+            title: it.title || 'Project idea',
+            description: `Project idea "${it.title || 'Untitled'}" was rejected.`,
+            subjectId: it.submittedBy || '',
+            subjectName: it.submittedByName || '',
+            status: 'rejected',
+          });
           await workerBestEffort('/api/notify/idea-status-changed', { ideaId: id });
           showToast('Idea Rejected.', 'success');
         } else if (action === 'toggle-hide') {
           const next = !it.isHidden;
-          await updateDoc(ref, { isHidden: next });
+          await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
           it.isHidden = next;
+          await logAdminActivity({
+            type: 'project_idea',
+            action: next ? 'project_idea_hidden' : 'project_idea_shown',
+            targetCollection: 'projectIdeas',
+            targetId: id,
+            title: it.title || 'Project idea',
+            description: `Project idea "${it.title || 'Untitled'}" was ${next ? 'hidden' : 'shown'}.`,
+            subjectId: it.submittedBy || '',
+            subjectName: it.submittedByName || '',
+            status: next ? 'hidden' : 'visible',
+          });
           showToast(next ? 'Idea hidden.' : 'Idea visible again.', 'success');
         } else if (action === 'edit') {
           if (!isOwnAdminIdea(it)) {
@@ -977,6 +1011,17 @@
           if (!confirm('Delete this idea?')) return;
           await deleteDoc(ref);
           state.ideas = state.ideas.filter((x) => x.id !== id);
+          await logAdminActivity({
+            type: 'project_idea',
+            action: 'project_idea_deleted',
+            targetCollection: 'projectIdeas',
+            targetId: id,
+            title: it.title || 'Project idea deleted',
+            description: `Project idea "${it.title || 'Untitled'}" was deleted.`,
+            subjectId: it.submittedBy || '',
+            subjectName: it.submittedByName || '',
+            status: 'deleted',
+          });
           showToast('Idea deleted.', 'success');
         }
         renderStats();
@@ -1265,9 +1310,23 @@
           const act = btn.getAttribute('data-app-action');
           if (act === 'cv') { navigateTo('cv-viewer?cvId=' + encodeURIComponent(appId)); return; }
           try {
-            await updateDoc(doc(db, 'applications', appId), { status: act === 'accept' ? 'accepted' : 'rejected' });
+            const nextStatus = act === 'accept' ? 'accepted' : 'rejected';
+            const application = state.applications.find((x) => x.id === appId);
+            await updateDoc(doc(db, 'applications', appId), { status: nextStatus });
             const appObj = state.applications.find((x) => x.id === appId);
-            if (appObj) appObj.status = act === 'accept' ? 'accepted' : 'rejected';
+            if (appObj) appObj.status = nextStatus;
+            await logAdminActivity({
+              type: 'application',
+              action: `application_${nextStatus}`,
+              targetCollection: 'applications',
+              targetId: appId,
+              title: it.title || 'Application decision',
+              description: `${application?.studentName || 'Student'} was ${nextStatus} for ${it.title || 'an admin opportunity'}.`,
+              subjectId: application?.studentId || '',
+              subjectName: application?.studentName || 'Student',
+              status: nextStatus,
+              metadata: { opportunityId: it.id || '', opportunityTitle: it.title || '' },
+            });
             showToast('Application ' + (act === 'accept' ? 'Accepted' : 'Rejected') + '.', 'success');
             openOppDetails(it);
           } catch (e) { console.error(e); showToast('Action failed: ' + (e?.message || e), 'error'); }
@@ -1280,13 +1339,40 @@
       const ref = doc(db, 'opportunities', id);
       const it = state.opportunities.find((x) => x.id === id);
       try {
-        if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() }); it.isHidden = next; showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success'); }
+        if (action === 'toggle-hide') {
+          const next = !it.isHidden;
+          await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
+          it.isHidden = next;
+          await logAdminActivity({
+            type: 'opportunity',
+            action: next ? 'opportunity_hidden' : 'opportunity_shown',
+            targetCollection: 'opportunities',
+            targetId: id,
+            title: it.title || 'Opportunity',
+            description: `Opportunity "${it.title || 'Untitled'}" was ${next ? 'hidden' : 'shown'}.`,
+            subjectId: it.companyId || '',
+            subjectName: it.companyName || '',
+            status: next ? 'hidden' : 'visible',
+          });
+          showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success');
+        }
         else if (action === 'edit') return openOppEditor(it);
         else if (action === 'details') return openOppDetails(it);
         else if (action === 'delete') {
           if (!confirm('Delete this opportunity?')) return;
           await deleteDoc(ref);
           state.opportunities = state.opportunities.filter((x) => x.id !== id);
+          await logAdminActivity({
+            type: 'opportunity',
+            action: 'opportunity_deleted',
+            targetCollection: 'opportunities',
+            targetId: id,
+            title: it.title || 'Opportunity deleted',
+            description: `Opportunity "${it.title || 'Untitled'}" was deleted.`,
+            subjectId: it.companyId || '',
+            subjectName: it.companyName || '',
+            status: 'deleted',
+          });
           showToast('Opportunity deleted.', 'success');
         }
         renderStats(); renderTab();
@@ -1422,6 +1508,18 @@
             await updateDoc(doc(db, 'applications', appId), { status: nextStatus });
             const appObj = state.applications.find((item) => item.id === appId);
             if (appObj) appObj.status = nextStatus;
+            await logAdminActivity({
+              type: 'application',
+              action: `application_${nextStatus}`,
+              targetCollection: 'applications',
+              targetId: appId,
+              title: it.title || 'Application decision',
+              description: `${application.studentName || 'Student'} was ${nextStatus} for ${it.title || 'an admin opportunity'}.`,
+              subjectId: application.studentId || '',
+              subjectName: application.studentName || 'Student',
+              status: nextStatus,
+              metadata: { opportunityId: it.id || '', opportunityTitle: it.title || '' },
+            });
             await workerBestEffort('/api/notify/application-status-changed', { applicationId: appId });
             showToast('Application ' + displayLabel(nextStatus) + '.', 'success');
             openOpportunityDetails(it, appId);
@@ -1446,6 +1544,17 @@
           const next = !item.isHidden;
           await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
           item.isHidden = next;
+          await logAdminActivity({
+            type: 'opportunity',
+            action: next ? 'opportunity_hidden' : 'opportunity_shown',
+            targetCollection: 'opportunities',
+            targetId: id,
+            title: item.title || 'Opportunity',
+            description: `Opportunity "${item.title || 'Untitled'}" was ${next ? 'hidden' : 'shown'}.`,
+            subjectId: item.companyId || '',
+            subjectName: item.companyName || '',
+            status: next ? 'hidden' : 'visible',
+          });
           showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success');
         } else if (action === 'edit') {
           if (!canEditOpportunity(item)) {
@@ -1459,6 +1568,17 @@
           if (!confirm('Delete this opportunity?')) return;
           await deleteDoc(ref);
           state.opportunities = state.opportunities.filter((entry) => entry.id !== id);
+          await logAdminActivity({
+            type: 'opportunity',
+            action: 'opportunity_deleted',
+            targetCollection: 'opportunities',
+            targetId: id,
+            title: item.title || 'Opportunity deleted',
+            description: `Opportunity "${item.title || 'Untitled'}" was deleted.`,
+            subjectId: item.companyId || '',
+            subjectName: item.companyName || '',
+            status: 'deleted',
+          });
           showToast('Opportunity deleted.', 'success');
         }
         renderStats();
@@ -1719,12 +1839,39 @@
       const it = state.scholarships.find((x) => x.id === id);
       try {
         if (action === 'toggle-feature') { const next = !it.isFeatured; await updateDoc(ref, { isFeatured: next }); it.isFeatured = next; showToast(next ? 'Featured.' : 'Unfeatured.', 'success'); }
-        else if (action === 'toggle-hide') { const next = !it.isHidden; await updateDoc(ref, { isHidden: next }); it.isHidden = next; showToast(next ? 'Hidden.' : 'Visible.', 'success'); }
+        else if (action === 'toggle-hide') {
+          const next = !it.isHidden;
+          await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
+          it.isHidden = next;
+          await logAdminActivity({
+            type: 'scholarship',
+            action: next ? 'scholarship_hidden' : 'scholarship_shown',
+            targetCollection: 'scholarships',
+            targetId: id,
+            title: it.title || 'Scholarship',
+            description: `Scholarship "${it.title || 'Untitled'}" was ${next ? 'hidden' : 'shown'}.`,
+            subjectId: it.createdBy || '',
+            subjectName: it.provider || '',
+            status: next ? 'hidden' : 'visible',
+          });
+          showToast(next ? 'Hidden.' : 'Visible.', 'success');
+        }
         else if (action === 'edit') return openScholarEditor(it);
         else if (action === 'delete') {
           if (!confirm('Delete this scholarship?')) return;
           await deleteDoc(ref);
           state.scholarships = state.scholarships.filter((x) => x.id !== id);
+          await logAdminActivity({
+            type: 'scholarship',
+            action: 'scholarship_deleted',
+            targetCollection: 'scholarships',
+            targetId: id,
+            title: it.title || 'Scholarship deleted',
+            description: `Scholarship "${it.title || 'Untitled'}" was deleted.`,
+            subjectId: it.createdBy || '',
+            subjectName: it.provider || '',
+            status: 'deleted',
+          });
           showToast('Scholarship deleted.', 'success');
         }
         renderStats(); renderTab();
@@ -1771,6 +1918,17 @@
           const next = !item.isHidden;
           await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
           item.isHidden = next;
+          await logAdminActivity({
+            type: 'scholarship',
+            action: next ? 'scholarship_hidden' : 'scholarship_shown',
+            targetCollection: 'scholarships',
+            targetId: id,
+            title: item.title || 'Scholarship',
+            description: `Scholarship "${item.title || 'Untitled'}" was ${next ? 'hidden' : 'shown'}.`,
+            subjectId: item.createdBy || '',
+            subjectName: item.provider || '',
+            status: next ? 'hidden' : 'visible',
+          });
           showToast(next ? 'Hidden.' : 'Visible.', 'success');
         } else if (action === 'edit') {
           return openScholarEditor(item);
@@ -1778,6 +1936,17 @@
           if (!confirm('Delete this scholarship?')) return;
           await deleteDoc(ref);
           state.scholarships = state.scholarships.filter((entry) => entry.id !== id);
+          await logAdminActivity({
+            type: 'scholarship',
+            action: 'scholarship_deleted',
+            targetCollection: 'scholarships',
+            targetId: id,
+            title: item.title || 'Scholarship deleted',
+            description: `Scholarship "${item.title || 'Untitled'}" was deleted.`,
+            subjectId: item.createdBy || '',
+            subjectName: item.provider || '',
+            status: 'deleted',
+          });
           showToast('Scholarship deleted.', 'success');
         }
         renderStats();
@@ -2071,8 +2240,19 @@
         }
         if (action === 'toggle-hide') {
           const next = !it.isHidden;
-          await updateDoc(ref, { isHidden: next });
+          await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
           it.isHidden = next;
+          await logAdminActivity({
+            type: 'training',
+            action: next ? 'training_hidden' : 'training_shown',
+            targetCollection: 'trainings',
+            targetId: id,
+            title: it.title || 'Training resource',
+            description: `Training resource "${it.title || 'Untitled'}" was ${next ? 'hidden' : 'shown'}.`,
+            subjectId: it.createdBy || '',
+            subjectName: it.provider || '',
+            status: next ? 'hidden' : 'visible',
+          });
           showToast(next ? 'Hidden.' : 'Visible.', 'success');
         }
         renderStats();

@@ -1,4 +1,5 @@
 import {
+  auth,
   db,
   collection,
   doc,
@@ -7,6 +8,8 @@ import {
   limit,
   orderBy,
   query,
+  serverTimestamp,
+  setDoc,
   startAfter,
 } from './firebase-config.js';
 import {
@@ -56,6 +59,12 @@ const ACTIVITY_SOURCES = [
     key: 'trainings',
     type: 'training',
     collectionName: 'trainings',
+    orderField: 'createdAt',
+  },
+  {
+    key: 'adminActivityEvents',
+    type: 'admin_event',
+    collectionName: 'adminActivityEvents',
     orderField: 'createdAt',
   },
 ];
@@ -198,6 +207,30 @@ async function enrichTrainingActivities(docs) {
   });
 }
 
+async function enrichAdminEventActivities(docs) {
+  return docs.map((snapshot) => {
+    const data = snapshot.data() || {};
+    const type = String(data.type || data.targetType || 'activity').trim() || 'activity';
+    const title = String(data.title || 'Admin activity').trim();
+    const actorName = String(data.actorName || '').trim();
+    const subjectName = String(data.subjectName || '').trim();
+    const status = String(data.status || '').trim();
+
+    return {
+      id: snapshot.id,
+      type,
+      action: String(data.action || '').trim(),
+      typeLabel: activityTypeLabel(type),
+      targetId: String(data.targetId || data.relatedId || '').trim(),
+      timestamp: data.createdAt || null,
+      title,
+      actorName: actorName || subjectName,
+      status,
+      description: String(data.description || '').trim() || title,
+    };
+  });
+}
+
 async function mapActivityDocs(source, docs) {
   switch (source.type) {
     case 'application':
@@ -210,8 +243,62 @@ async function mapActivityDocs(source, docs) {
       return enrichScholarshipActivities(docs);
     case 'training':
       return enrichTrainingActivities(docs);
+    case 'admin_event':
+      return enrichAdminEventActivities(docs);
     default:
       return [];
+  }
+}
+
+async function currentAdminSummary() {
+  const user = auth.currentUser;
+  const uid = String(user?.uid || '').trim();
+  let name = String(user?.displayName || '').trim();
+
+  if (uid) {
+    const snapshot = await getDoc(doc(db, 'users', uid)).catch(() => null);
+    if (snapshot?.exists()) {
+      const data = snapshot.data() || {};
+      name = String(data.fullName || data.companyName || data.email || name).trim();
+    }
+  }
+
+  return { id: uid, name: name || 'Admin' };
+}
+
+async function logAdminActivity({
+  type,
+  action,
+  targetCollection,
+  targetId,
+  title,
+  description,
+  subjectId = '',
+  subjectName = '',
+  status = '',
+  metadata = {},
+}) {
+  try {
+    const actor = await currentAdminSummary();
+    const ref = doc(collection(db, 'adminActivityEvents'));
+    await setDoc(ref, {
+      id: ref.id,
+      type: String(type || '').trim(),
+      action: String(action || '').trim(),
+      targetCollection: String(targetCollection || '').trim(),
+      targetId: String(targetId || '').trim(),
+      title: String(title || 'Admin activity').trim(),
+      description: String(description || '').trim(),
+      actorId: actor.id,
+      actorName: actor.name,
+      subjectId: String(subjectId || '').trim(),
+      subjectName: String(subjectName || '').trim(),
+      status: String(status || '').trim(),
+      metadata: metadata || {},
+      createdAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.warn('Admin activity log failed:', error);
   }
 }
 
@@ -260,4 +347,4 @@ async function loadRecentActivitiesPage(state, { pageSize = 4, maxItems = 50 } =
   };
 }
 
-export { createActivityState, loadRecentActivitiesPage };
+export { createActivityState, loadRecentActivitiesPage, logAdminActivity };

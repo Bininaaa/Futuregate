@@ -294,6 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return AdminActivityCenterScreen(
           embedded: true,
           onOpenContent: _openContentTab,
+          onOpenUsers: _openUsersTarget,
         );
       default:
         return const SettingsScreen(embedded: true);

@@ -1610,6 +1610,51 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /adminActivityEvents/{eventId} {
+      allow read: if isAdmin();
+
+      allow create: if isAdmin() &&
+          request.resource.data.keys().hasOnly([
+            'id',
+            'type',
+            'action',
+            'targetCollection',
+            'targetId',
+            'title',
+            'description',
+            'actorId',
+            'actorName',
+            'subjectId',
+            'subjectName',
+            'status',
+            'metadata',
+            'createdAt'
+          ]) &&
+          request.resource.data.id == eventId &&
+          request.resource.data.type in [
+            'application',
+            'opportunity',
+            'scholarship',
+            'training',
+            'project_idea',
+            'user'
+          ] &&
+          request.resource.data.action is string &&
+          request.resource.data.targetCollection is string &&
+          request.resource.data.targetId is string &&
+          request.resource.data.title is string &&
+          request.resource.data.description is string &&
+          request.resource.data.actorId == request.auth.uid &&
+          request.resource.data.actorName is string &&
+          request.resource.data.subjectId is string &&
+          request.resource.data.subjectName is string &&
+          request.resource.data.status is string &&
+          request.resource.data.metadata is map &&
+          request.resource.data.createdAt == request.time;
+
+      allow update, delete: if false;
+    }
+
     match /notifications/{notificationId} {
       allow read: if signedIn() &&
           (isAdmin() || resource.data.userId == request.auth.uid);

@@ -23,6 +23,7 @@
       auth, db, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp,
     } from './js/firebase-config.js';
     import { getQueryParam } from './js/admin-utils.js';
+    import { logAdminActivity } from './js/activity-service.js';
     import { WORKER_BASE_URL } from './js/google-books-config.js';
 
     mountShell({ page: 'content' });
@@ -455,6 +456,17 @@
           showToast('Admin opportunity published.', 'success');
         } else {
           await updateDoc(doc(db, 'opportunities', id), payload);
+          await logAdminActivity({
+            type: 'opportunity',
+            action: 'opportunity_updated',
+            targetCollection: 'opportunities',
+            targetId: id,
+            title: payload.title || item?.title || 'Opportunity',
+            description: `Opportunity "${payload.title || item?.title || 'Untitled'}" was updated.`,
+            subjectId: payload.companyId || item?.companyId || '',
+            subjectName: payload.companyName || item?.companyName || '',
+            status: payload.status || item?.status || '',
+          });
           await workerBestEffort('/api/notify/opportunity', { opportunityId: id });
           showToast('Admin opportunity updated.', 'success');
         }

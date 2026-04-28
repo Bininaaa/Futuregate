@@ -23,6 +23,7 @@
       auth, db, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp,
     } from './js/firebase-config.js';
     import { getQueryParam } from './js/admin-utils.js';
+    import { logAdminActivity } from './js/activity-service.js';
 
     mountShell({ page: 'content' });
     checkAuth(async () => { await initPage(); });
@@ -279,6 +280,17 @@
           showToast('Admin idea published.', 'success');
         } else {
           await updateDoc(doc(db, 'projectIdeas', id), payload);
+          await logAdminActivity({
+            type: 'project_idea',
+            action: 'project_idea_updated',
+            targetCollection: 'projectIdeas',
+            targetId: id,
+            title: payload.title || item?.title || 'Project idea',
+            description: `Project idea "${payload.title || item?.title || 'Untitled'}" was updated.`,
+            subjectId: payload.submittedBy || item?.submittedBy || '',
+            subjectName: payload.submittedByName || item?.submittedByName || '',
+            status: payload.status || item?.status || '',
+          });
           showToast('Admin idea updated.', 'success');
         }
         back();

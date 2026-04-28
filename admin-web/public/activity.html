@@ -43,6 +43,7 @@
               <option value="scholarship">Scholarships</option>
               <option value="training">Trainings</option>
               <option value="project_idea">Project ideas</option>
+              <option value="user">Accounts</option>
             </select>
           </div>
           <div id="act-list" class="list-grid"></div>
@@ -99,7 +100,7 @@
       const list = document.getElementById('act-list');
       let items = state.items.slice();
       if (state.type !== 'all') items = items.filter((it) => it.type === state.type);
-      if (state.search.trim()) items = items.filter((it) => matchesSearch([it.title, it.actorName, it.status, it.typeLabel, it.subTypeLabel], state.search));
+      if (state.search.trim()) items = items.filter((it) => matchesSearch([it.title, it.actorName, it.status, it.typeLabel, it.subTypeLabel, it.action], state.search));
 
       if (!items.length) {
         list.innerHTML = emptyStateHtml('Try changing the type or clearing the search.', { title: 'No matching activity', icon: 'activity' });

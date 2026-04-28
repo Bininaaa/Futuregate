@@ -86,6 +86,7 @@ function activityTypeLabel(type) {
     scholarship: 'Scholarship',
     training: 'Training',
     project_idea: 'Project Idea',
+    user: 'Account',
   };
 
   return labels[type] || 'Activity';
@@ -109,6 +110,7 @@ function typeIcon(type, subType) {
     training: 'book-open',
     project_idea: 'lightbulb',
     idea: 'lightbulb',
+    user: 'user-cog',
   };
 
   return icons[type] || 'activity';
@@ -121,6 +123,7 @@ function typeColor(type) {
     scholarship: '#E24A4A',
     training: '#14B8A6',
     project_idea: '#2563EB',
+    user: '#0EA5E9',
   };
 
   return colors[type] || '#64748B';
@@ -150,6 +153,8 @@ function adminTargetUrl(type, targetId = '') {
       return safeTargetId
         ? `moderation?tab=ideas&ideaId=${safeTargetId}`
         : 'moderation?tab=ideas';
+    case 'user':
+      return safeTargetId ? `users?userId=${safeTargetId}` : 'users';
     default:
       return 'moderation';
   }
@@ -162,6 +167,7 @@ function targetParamName(type) {
     scholarship: 'scholarshipId',
     training: 'trainingId',
     project_idea: 'ideaId',
+    user: 'userId',
   };
 
   return mapping[type] || '';

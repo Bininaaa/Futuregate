@@ -803,6 +803,7 @@ Map<String, _AdminActivitySourceState> _createActivitySourceStates() {
     AdminService.activitySourceScholarships: _AdminActivitySourceState(),
     AdminService.activitySourceTrainings: _AdminActivitySourceState(),
     AdminService.activitySourceProjectIdeas: _AdminActivitySourceState(),
+    AdminService.activitySourceAdminEvents: _AdminActivitySourceState(),
   };
 }
 

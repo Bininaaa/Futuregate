@@ -27,6 +27,7 @@ import {
   openDocumentUrl,
 } from './document-access.js';
 import { matchesSearch } from './admin-utils.js';
+import { logAdminActivity } from './activity-service.js';
 import { openModal } from './ui.js';
 import { WORKER_BASE_URL } from './google-books-config.js';
 
@@ -464,13 +465,15 @@ async function notifyCompanyApprovalStatus(id) {
 
 async function updateUser(id, payload, successMessage) {
   try {
+    const user = state.all.find((item) => uidForUser(item) === id || item.id === id);
+    const before = user ? { ...user } : null;
     await updateDoc(doc(db, 'users', id), payload);
     if (['approved', 'rejected'].includes(cleanText(payload.approvalStatus).toLowerCase())) {
       await notifyCompanyApprovalStatus(id).catch((error) => {
         console.warn('Company approval notification failed:', error);
       });
     }
-    const user = state.all.find((item) => uidForUser(item) === id || item.id === id);
+    await logUserActivity(id, before, payload);
     if (user) Object.assign(user, payload);
     applyFilters();
     const pills = document.querySelector('.summary-pills');
@@ -482,6 +485,46 @@ async function updateUser(id, payload, successMessage) {
   } catch (error) {
     console.error(error);
     showToast('Update failed. Try again.', 'error');
+  }
+}
+
+async function logUserActivity(id, before, payload) {
+  const name = displayName(before || { uid: id }) || 'User';
+  if (Object.prototype.hasOwnProperty.call(payload, 'approvalStatus')) {
+    const status = cleanText(payload.approvalStatus).toLowerCase();
+    await logAdminActivity({
+      type: 'user',
+      action: `company_${status || 'updated'}`,
+      targetCollection: 'users',
+      targetId: id,
+      title: name,
+      description:
+        status === 'approved'
+          ? `${name} was approved as a company.`
+          : status === 'rejected'
+            ? `${name} was rejected during company review.`
+            : `${name} was moved back to pending company review.`,
+      subjectId: id,
+      subjectName: name,
+      status,
+    });
+  }
+
+  if (Object.prototype.hasOwnProperty.call(payload, 'isActive')) {
+    const isActive = payload.isActive !== false;
+    await logAdminActivity({
+      type: 'user',
+      action: isActive ? 'user_unblocked' : 'user_blocked',
+      targetCollection: 'users',
+      targetId: id,
+      title: name,
+      description: isActive
+        ? `${name} was unblocked by an admin.`
+        : `${name} was blocked by an admin.`,
+      subjectId: id,
+      subjectName: name,
+      status: isActive ? 'active' : 'blocked',
+    });
   }
 }
 

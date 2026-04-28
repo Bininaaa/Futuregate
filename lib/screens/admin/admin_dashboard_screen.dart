@@ -1762,6 +1762,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _openActivityItem(AdminActivityModel activity) {
+    if (activity.type == 'user') {
+      showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        builder: (_) => AdminActivityPreviewSheet(
+          activity: activity,
+          manageLabel: AppLocalizations.of(context)!.uiUserManagement,
+          onManage: () => _openUserActivityTarget(activity),
+        ),
+      );
+      return;
+    }
+
     final targetTab = switch (activity.type) {
       'application' => AdminContentCenterScreen.opportunitiesTab,
       'opportunity' => AdminContentCenterScreen.opportunitiesTab,
@@ -1779,6 +1795,45 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         activity: activity,
         manageLabel: _manageLabelForActivity(activity),
         onManage: () => _openContent(targetTab, targetId: activity.relatedId),
+      ),
+    );
+  }
+
+  void _openUserActivityTarget(AdminActivityModel activity) {
+    final status = activity.status.trim().toLowerCase();
+    final companyApprovalFilter =
+        status == 'pending' || status == 'approved' || status == 'rejected'
+        ? status
+        : 'all';
+
+    if (widget.onOpenUsers != null) {
+      AdminHomeNavigation.switchToUsers(
+        context,
+        targetId: activity.relatedId,
+        roleFilter: 'all',
+        companyApprovalFilter: companyApprovalFilter,
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: AdminPalette.background,
+          appBar: AppBar(
+            title: Text(AppLocalizations.of(context)!.uiUserManagement),
+            backgroundColor: AdminPalette.surface,
+            foregroundColor: AdminPalette.textPrimary,
+          ),
+          body: SafeArea(
+            child: UsersScreen(
+              initialRoleFilter: 'all',
+              initialCompanyApprovalFilter: companyApprovalFilter,
+              initialTargetId: activity.relatedId,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -3020,6 +3075,8 @@ IconData _activityIcon(String type) {
       return Icons.card_giftcard_outlined;
     case 'training':
       return Icons.cast_for_education_outlined;
+    case 'user':
+      return Icons.manage_accounts_outlined;
     default:
       return Icons.lightbulb_outline_rounded;
   }
@@ -3035,6 +3092,8 @@ Color _activityColor(String type) {
       return AdminPalette.danger;
     case 'training':
       return AdminPalette.secondary;
+    case 'user':
+      return AdminPalette.info;
     default:
       return AdminPalette.warning;
   }
@@ -3045,10 +3104,15 @@ Color _activityStatusColor(String status) {
     case 'approved':
     case 'accepted':
     case 'featured':
+    case 'active':
+    case 'visible':
       return AdminPalette.success;
     case 'pending':
       return AdminPalette.warning;
     case 'rejected':
+    case 'blocked':
+    case 'hidden':
+    case 'deleted':
       return AdminPalette.danger;
     default:
       return AdminPalette.primary;

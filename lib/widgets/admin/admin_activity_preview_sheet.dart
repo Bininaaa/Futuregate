@@ -10,6 +10,7 @@ import '../../models/application_model.dart';
 import '../../models/opportunity_model.dart';
 import '../../models/project_idea_model.dart';
 import '../../models/training_model.dart';
+import '../../models/user_model.dart';
 import '../../services/admin_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
@@ -136,10 +137,132 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         return _buildScholarshipSections(preview);
       case 'training':
         return _buildTrainingSections(preview);
+      case 'user':
+        return _buildUserSections(preview);
       case 'project_idea':
       default:
         return _buildProjectIdeaSections(preview);
     }
+  }
+
+  List<Widget> _buildUserSections(AdminActivityPreviewModel preview) {
+    final user = UserModel.fromMap({
+      ...preview.data,
+      'uid': preview.documentId,
+    });
+    final displayName = user.companyName?.trim().isNotEmpty == true
+        ? user.companyName!.trim()
+        : user.fullName.trim().isNotEmpty
+        ? user.fullName.trim()
+        : user.email.trim().isNotEmpty
+        ? user.email.trim()
+        : 'User';
+    final roleLabel = DisplayText.capitalizeLeadingLabel(user.role);
+    final approvalStatus = user.normalizedApprovalStatus;
+    final approvalLabel = DisplayText.capitalizeLeadingLabel(approvalStatus);
+
+    return [
+      _buildDetailHeroCard(
+        title: displayName,
+        subtitle: user.email.trim().isNotEmpty ? user.email : roleLabel,
+        icon: user.role == 'company'
+            ? Icons.business_outlined
+            : user.role == 'student'
+            ? Icons.school_outlined
+            : Icons.shield_outlined,
+        accentColor: AdminPalette.info,
+        chips: [
+          if (roleLabel.isNotEmpty) _buildHeroChip(roleLabel, Icons.badge),
+          _buildHeroChip(
+            user.isActive ? 'Active' : 'Blocked',
+            user.isActive
+                ? Icons.check_circle_outline_rounded
+                : Icons.block_outlined,
+          ),
+          if (user.role == 'company' && approvalLabel.isNotEmpty)
+            _buildHeroChip(approvalLabel, Icons.verified_user_outlined),
+        ],
+      ),
+      const SizedBox(height: 14),
+      _buildDetailHighlightsGrid([
+        _PreviewHighlightItem(
+          icon: Icons.person_outline_rounded,
+          label: 'Role',
+          value: roleLabel.isNotEmpty ? roleLabel : 'User',
+          color: AdminPalette.info,
+        ),
+        _PreviewHighlightItem(
+          icon: user.isActive
+              ? Icons.check_circle_outline_rounded
+              : Icons.block_outlined,
+          label: 'Account',
+          value: user.isActive ? 'Active' : 'Blocked',
+          color: user.isActive ? AdminPalette.success : AdminPalette.danger,
+        ),
+        if (user.role == 'company')
+          _PreviewHighlightItem(
+            icon: Icons.verified_user_outlined,
+            label: 'Company Review',
+            value: approvalLabel.isNotEmpty ? approvalLabel : 'Approved',
+            color: user.isCompanyRejected
+                ? AdminPalette.danger
+                : user.isCompanyPendingApproval
+                ? AdminPalette.warning
+                : AdminPalette.success,
+          ),
+        _PreviewHighlightItem(
+          icon: Icons.schedule_rounded,
+          label: 'Activity',
+          value: _formatShortDate(widget.activity.createdAt),
+          color: AdminPalette.primary,
+        ),
+      ]),
+      const SizedBox(height: 14),
+      const AdminSectionHeader(
+        eyebrow: 'Account',
+        title: 'User Metadata',
+        subtitle: 'The account record linked to this recent admin activity.',
+      ),
+      const SizedBox(height: 12),
+      _buildMetadataGrid([
+        _PreviewDetailItem(
+          'Name',
+          displayName,
+          icon: Icons.person_outline_rounded,
+          color: AdminPalette.info,
+        ),
+        _PreviewDetailItem(
+          'Email',
+          user.email,
+          icon: Icons.email_outlined,
+          color: AdminPalette.primary,
+        ),
+        _PreviewDetailItem(
+          'Phone',
+          user.phone,
+          icon: Icons.phone_outlined,
+          color: AdminPalette.secondary,
+        ),
+        _PreviewDetailItem(
+          'Location',
+          user.location,
+          icon: Icons.location_on_outlined,
+          color: AdminPalette.accent,
+        ),
+        _PreviewDetailItem(
+          'Company',
+          user.companyName ?? '',
+          icon: Icons.business_outlined,
+          color: AdminPalette.secondary,
+        ),
+        _PreviewDetailItem(
+          'Academic Level',
+          user.academicLevel ?? '',
+          icon: Icons.school_outlined,
+          color: AdminPalette.activity,
+        ),
+      ]),
+    ];
   }
 
   List<Widget> _buildApplicationSections(AdminActivityPreviewModel preview) {
@@ -1588,8 +1711,13 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       case 'approved':
       case 'accepted':
       case 'open':
+      case 'active':
+      case 'visible':
         return Colors.green;
       case 'rejected':
+      case 'blocked':
+      case 'hidden':
+      case 'deleted':
         return Colors.red;
       case 'featured':
         return AdminPalette.primary;
@@ -1638,6 +1766,8 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         return Icons.card_giftcard_rounded;
       case 'training':
         return Icons.cast_for_education_outlined;
+      case 'user':
+        return Icons.manage_accounts_outlined;
       default:
         return Icons.lightbulb_outline_rounded;
     }
@@ -1653,6 +1783,8 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         return Colors.pink;
       case 'training':
         return AdminPalette.secondary;
+      case 'user':
+        return AdminPalette.info;
       default:
         return AdminPalette.warning;
     }

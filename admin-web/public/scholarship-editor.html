@@ -23,6 +23,7 @@
       auth, db, collection, doc, getDoc, setDoc, updateDoc, serverTimestamp,
     } from './js/firebase-config.js';
     import { getQueryParam } from './js/admin-utils.js';
+    import { logAdminActivity } from './js/activity-service.js';
     import { WORKER_BASE_URL } from './js/google-books-config.js';
 
     mountShell({ page: 'content' });
@@ -350,6 +351,17 @@
           showToast('Scholarship published.', 'success');
         } else {
           await updateDoc(doc(db, 'scholarships', id), payload);
+          await logAdminActivity({
+            type: 'scholarship',
+            action: 'scholarship_updated',
+            targetCollection: 'scholarships',
+            targetId: id,
+            title: payload.title || item?.title || 'Scholarship',
+            description: `Scholarship "${payload.title || item?.title || 'Untitled'}" was updated.`,
+            subjectId: payload.createdBy || item?.createdBy || '',
+            subjectName: payload.provider || item?.provider || '',
+            status: payload.status || item?.status || '',
+          });
           showToast('Scholarship updated.', 'success');
         }
         back();

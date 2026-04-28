@@ -13,15 +13,23 @@ import '../../widgets/admin/admin_activity_preview_sheet.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/shared/app_loading.dart';
 import 'admin_content_center_screen.dart';
+import 'users_screen.dart';
 
 class AdminActivityCenterScreen extends StatefulWidget {
   final bool embedded;
   final void Function(int tab, {String targetId})? onOpenContent;
+  final void Function({
+    String targetId,
+    String roleFilter,
+    String companyApprovalFilter,
+  })?
+  onOpenUsers;
 
   const AdminActivityCenterScreen({
     super.key,
     this.embedded = false,
     this.onOpenContent,
+    this.onOpenUsers,
   });
 
   @override
@@ -242,6 +250,7 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
         return true;
       case _ActivitySectionFilter.reviews:
         return activity.type == 'application' ||
+            activity.type == 'user' ||
             activity.status.trim().toLowerCase() == 'pending';
       case _ActivitySectionFilter.content:
         return activity.type == 'opportunity' ||
@@ -249,12 +258,18 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
             activity.type == 'project_idea';
       case _ActivitySectionFilter.library:
         return activity.type == 'training';
+      case _ActivitySectionFilter.accounts:
+        return activity.type == 'user';
       case _ActivitySectionFilter.pending:
         return activity.status.trim().toLowerCase() == 'pending';
     }
   }
 
   Future<void> _openActivity(AdminActivityModel activity) {
+    if (activity.type == 'user') {
+      return _openUserActivity(activity);
+    }
+
     final target = switch (activity.type) {
       'application' => AdminContentCenterScreen.opportunitiesTab,
       'opportunity' => AdminContentCenterScreen.opportunitiesTab,
@@ -277,6 +292,25 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
     );
   }
 
+  Future<void> _openUserActivity(AdminActivityModel activity) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (_) => AdminActivityPreviewSheet(
+        activity: activity,
+        manageLabel: 'Manage User',
+        onManage: () => _openUsers(
+          targetId: activity.relatedId,
+          roleFilter: 'all',
+          companyApprovalFilter: _companyApprovalFilterFor(activity),
+        ),
+      ),
+    );
+  }
+
   void _openContent(int tab, {String targetId = ''}) {
     if (widget.onOpenContent != null) {
       widget.onOpenContent!(tab, targetId: targetId);
@@ -294,6 +328,50 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
     );
   }
 
+  void _openUsers({
+    String targetId = '',
+    String roleFilter = 'all',
+    String companyApprovalFilter = 'all',
+  }) {
+    if (widget.onOpenUsers != null) {
+      widget.onOpenUsers!(
+        targetId: targetId,
+        roleFilter: roleFilter,
+        companyApprovalFilter: companyApprovalFilter,
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: AdminPalette.background,
+          appBar: AppBar(
+            title: Text(AppLocalizations.of(context)!.uiUserManagement),
+            backgroundColor: AdminPalette.surface,
+            foregroundColor: AdminPalette.textPrimary,
+          ),
+          body: SafeArea(
+            child: UsersScreen(
+              initialRoleFilter: roleFilter,
+              initialCompanyApprovalFilter: companyApprovalFilter,
+              initialTargetId: targetId,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _companyApprovalFilterFor(AdminActivityModel activity) {
+    final status = activity.status.trim().toLowerCase();
+    if (status == 'pending' || status == 'approved' || status == 'rejected') {
+      return status;
+    }
+    return 'all';
+  }
+
   String _manageLabelForActivity(AdminActivityModel activity) {
     final l10n = AppLocalizations.of(context)!;
     return switch (activity.type) {
@@ -306,7 +384,14 @@ class _AdminActivityCenterScreenState extends State<AdminActivityCenterScreen> {
   }
 }
 
-enum _ActivitySectionFilter { all, reviews, content, library, pending }
+enum _ActivitySectionFilter {
+  all,
+  reviews,
+  content,
+  library,
+  accounts,
+  pending,
+}
 
 class _ActivitySectionChips extends StatelessWidget {
   final _ActivitySectionFilter selected;
@@ -350,6 +435,7 @@ class _ActivitySectionChips extends StatelessWidget {
           return true;
         case _ActivitySectionFilter.reviews:
           return activity.type == 'application' ||
+              activity.type == 'user' ||
               activity.status.trim().toLowerCase() == 'pending';
         case _ActivitySectionFilter.content:
           return activity.type == 'opportunity' ||
@@ -357,6 +443,8 @@ class _ActivitySectionChips extends StatelessWidget {
               activity.type == 'project_idea';
         case _ActivitySectionFilter.library:
           return activity.type == 'training';
+        case _ActivitySectionFilter.accounts:
+          return activity.type == 'user';
         case _ActivitySectionFilter.pending:
           return activity.status.trim().toLowerCase() == 'pending';
       }
@@ -369,6 +457,7 @@ class _ActivitySectionChips extends StatelessWidget {
       _ActivitySectionFilter.reviews => Icons.rate_review_outlined,
       _ActivitySectionFilter.content => Icons.auto_awesome_mosaic_outlined,
       _ActivitySectionFilter.library => Icons.menu_book_outlined,
+      _ActivitySectionFilter.accounts => Icons.manage_accounts_outlined,
       _ActivitySectionFilter.pending => Icons.pending_actions_rounded,
     };
   }
@@ -379,6 +468,7 @@ class _ActivitySectionChips extends StatelessWidget {
       _ActivitySectionFilter.reviews => 'Reviews',
       _ActivitySectionFilter.content => 'Content',
       _ActivitySectionFilter.library => 'Library',
+      _ActivitySectionFilter.accounts => 'Accounts',
       _ActivitySectionFilter.pending => 'Pending',
     };
   }
@@ -564,6 +654,8 @@ class _ActivityTile extends StatelessWidget {
         return Icons.card_giftcard_rounded;
       case 'training':
         return Icons.cast_for_education_outlined;
+      case 'user':
+        return Icons.manage_accounts_outlined;
       default:
         return Icons.lightbulb_outline_rounded;
     }
@@ -579,6 +671,8 @@ class _ActivityTile extends StatelessWidget {
         return Colors.pink;
       case 'training':
         return AdminPalette.secondary;
+      case 'user':
+        return AdminPalette.info;
       default:
         return Colors.amber.shade700;
     }
@@ -590,8 +684,13 @@ class _ActivityTile extends StatelessWidget {
       case 'accepted':
       case 'open':
       case 'featured':
+      case 'active':
+      case 'visible':
         return AdminPalette.success;
       case 'rejected':
+      case 'blocked':
+      case 'hidden':
+      case 'deleted':
         return AdminPalette.danger;
       default:
         return AdminPalette.warning;
