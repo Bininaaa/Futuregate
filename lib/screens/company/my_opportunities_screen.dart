@@ -363,15 +363,12 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
               isBusy: provider.isAppBusy(application.id),
               onClose: () => Navigator.pop(sheetContext),
               onTapProfile: () {
-                Navigator.pop(sheetContext);
                 _openStudentProfile(application);
               },
               onTapMessage: () {
-                Navigator.pop(sheetContext);
                 _openChatWithStudent(application);
               },
               onTapCv: () {
-                Navigator.pop(sheetContext);
                 _showCvSheet(context, application, provider);
               },
               onApprove: isPending
@@ -1109,7 +1106,6 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         label: _l10n.uiViewApplicationsCount(applicantCount),
                         icon: Icons.groups_rounded,
                         onTap: () {
-                          Navigator.pop(sheetContext);
                           _openApplicationsForOpportunity(opportunity);
                         },
                       ),
@@ -1123,7 +1119,6 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                             icon: Icons.edit_outlined,
                             foreground: _OpportunityPalette.primary,
                             onTap: () {
-                              Navigator.pop(sheetContext);
                               _openEdit(opportunity.id);
                             },
                           ),

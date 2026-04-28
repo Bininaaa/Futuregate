@@ -505,7 +505,7 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
             icon: Icons.person_outline_rounded,
             label: l10n.uiViewProfile,
             accentColor: ChatThemePalette.primary,
-            onTap: () => Navigator.pop(context, 'profile'),
+            onTap: () => _openConversationProfile(conversation, currentUserId),
           ),
           ChatActionSheetItem(
             icon: isMuted
@@ -534,11 +534,6 @@ class _MessagesInboxScreenState extends State<MessagesInboxScreen> {
     );
 
     if (!mounted || selected == null) {
-      return;
-    }
-
-    if (selected == 'profile') {
-      _openConversationProfile(conversation, currentUserId);
       return;
     }
 

@@ -524,10 +524,7 @@ class _StandaloneApplicationDetailsSheetState
     );
   }
 
-  void _openOpportunityDetailsFromSheet(
-    BuildContext sheetContext,
-    OpportunityModel? opportunity,
-  ) {
+  void _openOpportunityDetailsFromSheet(OpportunityModel? opportunity) {
     if (opportunity == null) {
       widget.hostContext.showAppSnackBar(
         _l10n.uiTheLinkedOpportunityIsNoLongerAvailable,
@@ -537,13 +534,7 @@ class _StandaloneApplicationDetailsSheetState
       return;
     }
 
-    Navigator.pop(sheetContext);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!widget.hostContext.mounted) {
-        return;
-      }
-      _showOpportunityDetailsSheet(opportunity);
-    });
+    _showOpportunityDetailsSheet(opportunity);
   }
 
   @override
@@ -598,7 +589,6 @@ class _StandaloneApplicationDetailsSheetState
                 status: application.status,
                 studentId: application.studentId,
                 onTapProfile: () {
-                  Navigator.pop(context);
                   _openStudentProfile(application);
                 },
               ),
@@ -611,7 +601,6 @@ class _StandaloneApplicationDetailsSheetState
                     background: _ApplicationsPalette.primarySoft,
                     foreground: _ApplicationsPalette.primary,
                     onTap: () {
-                      Navigator.pop(context);
                       _openStudentProfile(application);
                     },
                   ),
@@ -621,7 +610,6 @@ class _StandaloneApplicationDetailsSheetState
                     background: AppColors.current.secondarySoft,
                     foreground: _ApplicationsPalette.secondaryDark,
                     onTap: () {
-                      Navigator.pop(context);
                       _openChatWithStudent(application);
                     },
                   ),
@@ -631,7 +619,6 @@ class _StandaloneApplicationDetailsSheetState
                     background: _ApplicationsPalette.accentSoft,
                     foreground: _ApplicationsPalette.accent,
                     onTap: () {
-                      Navigator.pop(context);
                       _showCvSheet(application);
                     },
                   ),
@@ -647,8 +634,7 @@ class _StandaloneApplicationDetailsSheetState
                   opportunity?.type ?? OpportunityType.job,
                 ),
                 tone: tone.foreground,
-                onTap: () =>
-                    _openOpportunityDetailsFromSheet(context, opportunity),
+                onTap: () => _openOpportunityDetailsFromSheet(opportunity),
               ),
               const SizedBox(height: 14),
               Consumer<CompanyProvider>(
@@ -2198,7 +2184,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     status: application.status,
                     studentId: application.studentId,
                     onTapProfile: () {
-                      Navigator.pop(sheetContext);
                       _openStudentProfile(application);
                     },
                   ),
@@ -2211,7 +2196,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         background: _ApplicationsPalette.primarySoft,
                         foreground: _ApplicationsPalette.primary,
                         onTap: () {
-                          Navigator.pop(sheetContext);
                           _openStudentProfile(application);
                         },
                       ),
@@ -2221,7 +2205,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         background: AppColors.current.secondarySoft,
                         foreground: _ApplicationsPalette.secondaryDark,
                         onTap: () {
-                          Navigator.pop(sheetContext);
                           _openChatWithStudent(application);
                         },
                       ),
@@ -2231,7 +2214,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                         background: _ApplicationsPalette.accentSoft,
                         foreground: _ApplicationsPalette.accent,
                         onTap: () {
-                          Navigator.pop(sheetContext);
                           _showCvSheet(context, application, provider);
                         },
                       ),
@@ -2247,10 +2229,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                       opportunity?.type ?? OpportunityType.job,
                     ),
                     tone: tone.foreground,
-                    onTap: () => _openOpportunityDetailsFromSheet(
-                      sheetContext,
-                      opportunity,
-                    ),
+                    onTap: () => _openOpportunityDetailsFromSheet(opportunity),
                   ),
                   const SizedBox(height: 14),
                   _DecisionPanel(
@@ -2377,10 +2356,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         _l10n.uiNotSpecified;
   }
 
-  void _openOpportunityDetailsFromSheet(
-    BuildContext sheetContext,
-    OpportunityModel? opportunity,
-  ) {
+  void _openOpportunityDetailsFromSheet(OpportunityModel? opportunity) {
     if (opportunity == null) {
       context.showAppSnackBar(
         _l10n.uiTheLinkedOpportunityIsNoLongerAvailable,
@@ -2390,13 +2366,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       return;
     }
 
-    Navigator.pop(sheetContext);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      _showOpportunityDetailsSheet(opportunity);
-    });
+    _showOpportunityDetailsSheet(opportunity);
   }
 
   Future<void> _showOpportunityDetailsSheet(

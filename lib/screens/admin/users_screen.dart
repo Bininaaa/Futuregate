@@ -1055,7 +1055,6 @@ class _UsersScreenState extends State<UsersScreen> {
                     subtitle: l10n.uiOpenTheFullAdminProfileSheetForThisUser,
                     color: AdminPalette.primary,
                     onTap: () {
-                      Navigator.pop(sheetContext);
                       _showUserDetails(user);
                     },
                   ),
@@ -1069,11 +1068,15 @@ class _UsersScreenState extends State<UsersScreen> {
                       onTap: _isUserModerationBusy(user.uid)
                           ? null
                           : () {
-                              Navigator.pop(sheetContext);
                               _showCompanyApprovalDialog(
                                 user,
                                 provider,
                                 'approved',
+                                onSuccess: () {
+                                  if (sheetContext.mounted) {
+                                    Navigator.maybePop(sheetContext);
+                                  }
+                                },
                               );
                             },
                     ),
@@ -1088,11 +1091,15 @@ class _UsersScreenState extends State<UsersScreen> {
                       onTap: _isUserModerationBusy(user.uid)
                           ? null
                           : () {
-                              Navigator.pop(sheetContext);
                               _showCompanyApprovalDialog(
                                 user,
                                 provider,
                                 'rejected',
+                                onSuccess: () {
+                                  if (sheetContext.mounted) {
+                                    Navigator.maybePop(sheetContext);
+                                  }
+                                },
                               );
                             },
                     ),
@@ -1108,11 +1115,15 @@ class _UsersScreenState extends State<UsersScreen> {
                       onTap: _isUserModerationBusy(user.uid)
                           ? null
                           : () {
-                              Navigator.pop(sheetContext);
                               _showCompanyApprovalDialog(
                                 user,
                                 provider,
                                 'pending',
+                                onSuccess: () {
+                                  if (sheetContext.mounted) {
+                                    Navigator.maybePop(sheetContext);
+                                  }
+                                },
                               );
                             },
                     ),
@@ -1128,8 +1139,15 @@ class _UsersScreenState extends State<UsersScreen> {
                         : l10n.uiUnblockUserSubtitle,
                     color: actionColor,
                     onTap: () {
-                      Navigator.pop(sheetContext);
-                      _showToggleDialog(user, provider);
+                      _showToggleDialog(
+                        user,
+                        provider,
+                        onSuccess: () {
+                          if (sheetContext.mounted) {
+                            Navigator.maybePop(sheetContext);
+                          }
+                        },
+                      );
                     },
                   ),
                 ],
@@ -1144,8 +1162,9 @@ class _UsersScreenState extends State<UsersScreen> {
   void _showCompanyApprovalDialog(
     UserModel user,
     AdminProvider provider,
-    String nextStatus,
-  ) {
+    String nextStatus, {
+    VoidCallback? onSuccess,
+  }) {
     final companyLabel = user.companyName?.trim().isNotEmpty == true
         ? user.companyName!.trim()
         : user.fullName;
@@ -1197,6 +1216,7 @@ class _UsersScreenState extends State<UsersScreen> {
       },
       successIcon: actionIcon,
       onConfirm: () => _runCompanyApprovalAction(user, provider, nextStatus),
+      onSuccess: onSuccess,
     );
   }
 
@@ -1214,6 +1234,7 @@ class _UsersScreenState extends State<UsersScreen> {
     required String successMessage,
     required AppFeedbackType successType,
     required IconData successIcon,
+    VoidCallback? onSuccess,
   }) {
     var isSubmitting = false;
     showDialog(
@@ -1385,6 +1406,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                   icon: successIcon,
                                 );
                               }
+                              onSuccess?.call();
                             },
                       color: accentColor,
                     ),
@@ -1460,7 +1482,11 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 
-  void _showToggleDialog(UserModel user, AdminProvider provider) {
+  void _showToggleDialog(
+    UserModel user,
+    AdminProvider provider, {
+    VoidCallback? onSuccess,
+  }) {
     final nextActive = !user.isActive;
     _showConfirmationDialog(
       eyebrow: _l10n.uiAccountAccess,
@@ -1486,6 +1512,7 @@ class _UsersScreenState extends State<UsersScreen> {
           ? Icons.check_circle_outline_rounded
           : Icons.block_outlined,
       onConfirm: () => provider.toggleUserActive(user.uid, nextActive),
+      onSuccess: onSuccess,
     );
   }
 

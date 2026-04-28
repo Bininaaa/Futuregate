@@ -610,7 +610,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 width: double.infinity,
                 child: FilledButton.icon(
                   onPressed: () {
-                    Navigator.pop(sheetContext);
+                    if (widget.onOpenUsers != null) {
+                      Navigator.pop(sheetContext);
+                    }
                     _openUserManagementProfile(user);
                   },
                   icon: const Icon(Icons.open_in_new_rounded),
@@ -1705,7 +1707,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    Navigator.pop(sheetContext);
+                    if (widget.onOpenUsers != null) {
+                      Navigator.pop(sheetContext);
+                    }
                     _openCompanyManagementProfile(companyId: companyId);
                   },
                   icon: const Icon(Icons.business_outlined, size: 18),
@@ -1719,7 +1723,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      Navigator.pop(sheetContext);
+                      if (widget.onOpenContent != null) {
+                        Navigator.pop(sheetContext);
+                      }
                       _openContent(
                         AdminContentCenterScreen.opportunitiesTab,
                         targetId: model.id,
@@ -1734,7 +1740,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   Expanded(
                     child: FilledButton.icon(
                       onPressed: () {
-                        Navigator.pop(sheetContext);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => AdminOpportunityEditorScreen(

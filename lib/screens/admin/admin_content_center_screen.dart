@@ -1218,7 +1218,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             )
                           : null,
                       onTap: () {
-                        Navigator.pop(context);
                         _showApplicantQuickActions(item);
                       },
                     );
@@ -2563,8 +2562,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     );
   }
 
-  void _openPublisherProfileAfterClosingSheet(
-    BuildContext sheetContext, {
+  void _openPublisherProfileFromSheet({
     required String userId,
     required String fallbackName,
     required String fallbackRole,
@@ -2574,23 +2572,16 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     String fallbackWebsite = '',
     String contextLabel = '',
   }) {
-    Navigator.pop(sheetContext);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-
-      _openPublisherProfile(
-        userId: userId,
-        fallbackName: fallbackName,
-        fallbackRole: fallbackRole,
-        fallbackHeadline: fallbackHeadline,
-        fallbackAbout: fallbackAbout,
-        fallbackLocation: fallbackLocation,
-        fallbackWebsite: fallbackWebsite,
-        contextLabel: contextLabel,
-      );
-    });
+    _openPublisherProfile(
+      userId: userId,
+      fallbackName: fallbackName,
+      fallbackRole: fallbackRole,
+      fallbackHeadline: fallbackHeadline,
+      fallbackAbout: fallbackAbout,
+      fallbackLocation: fallbackLocation,
+      fallbackWebsite: fallbackWebsite,
+      contextLabel: contextLabel,
+    );
   }
 
   void _openPublisherProfile({
@@ -3523,8 +3514,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (idea.submittedBy.trim().isNotEmpty) ...[
               const SizedBox(height: 10),
               OutlinedButton.icon(
-                onPressed: () => _openPublisherProfileAfterClosingSheet(
-                  context,
+                onPressed: () => _openPublisherProfileFromSheet(
                   userId: idea.submittedBy,
                   fallbackName: idea.creatorName,
                   fallbackRole: idea.creatorName == AdminIdentity.publicName
@@ -3549,7 +3539,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               const SizedBox(height: 10),
               FilledButton.icon(
                 onPressed: () {
-                  Navigator.pop(context);
                   _openIdeaEditor(idea: idea);
                 },
                 icon: const Icon(Icons.edit_outlined),
@@ -4169,18 +4158,10 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           onPressed: applicant == null
                               ? null
                               : () {
-                                  Navigator.pop(sheetContext);
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    if (!mounted) {
-                                      return;
-                                    }
-                                    showAdminStudentProfileSheet(
-                                      this.context,
-                                      user: applicant,
-                                    );
-                                  });
+                                  showAdminStudentProfileSheet(
+                                    this.context,
+                                    user: applicant,
+                                  );
                                 },
                           icon: const Icon(Icons.person_outline_rounded),
                           label: Text(
@@ -4194,13 +4175,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         ),
                         FilledButton.icon(
                           onPressed: () {
-                            Navigator.pop(sheetContext);
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) {
-                                return;
-                              }
-                              _showApplicationCv(liveItem.application.id);
-                            });
+                            _showApplicationCv(liveItem.application.id);
                           },
                           icon: const Icon(Icons.description_outlined),
                           label: Text(AppLocalizations.of(context)!.uiViewCv),
@@ -4212,17 +4187,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         ),
                         OutlinedButton.icon(
                           onPressed: () {
-                            Navigator.pop(sheetContext);
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) {
-                                return;
-                              }
-                              showAdminStudentApplicationsSheet(
-                                this.context,
-                                studentId: liveItem.application.studentId,
-                                studentName: liveItem.studentName,
-                              );
-                            });
+                            showAdminStudentApplicationsSheet(
+                              this.context,
+                              studentId: liveItem.application.studentId,
+                              studentName: liveItem.studentName,
+                            );
                           },
                           icon: const Icon(Icons.assignment_outlined),
                           label: Text(
@@ -4928,8 +4897,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
             if (opportunityModel.companyId.trim().isNotEmpty) ...[
               const SizedBox(height: 10),
               OutlinedButton.icon(
-                onPressed: () => _openPublisherProfileAfterClosingSheet(
-                  context,
+                onPressed: () => _openPublisherProfileFromSheet(
                   userId: opportunityModel.companyId,
                   fallbackName: opportunityModel.companyName.isNotEmpty
                       ? opportunityModel.companyName
@@ -4961,7 +4929,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               const SizedBox(height: 10),
               FilledButton.icon(
                 onPressed: () {
-                  Navigator.pop(context);
                   _showOpportunityApplications(opportunity, applications);
                 },
                 icon: const Icon(Icons.assignment_outlined),
@@ -4981,7 +4948,6 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
               const SizedBox(height: 10),
               FilledButton.icon(
                 onPressed: () {
-                  Navigator.pop(context);
                   _openOpportunityEditor(opportunity: opportunity);
                 },
                 icon: const Icon(Icons.edit_outlined),
