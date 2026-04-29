@@ -1283,7 +1283,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiAvatarUnavailable => 'Avatar unavailable';
 
   @override
-  String get uiAvenirCloudSupport => 'Avenir Cloud â¢ Support';
+  String get uiAvenirCloudSupport => 'Avenir Cloud • Support';
 
   @override
   String get uiBac => 'Bac';
@@ -1345,7 +1345,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiBrandStory => 'Brand Story';
 
   @override
-  String get uiBrightStudioGrowth => 'Bright Studio â¢ Growth';
+  String get uiBrightStudioGrowth => 'Bright Studio • Growth';
 
   @override
   String get uiBrowseCategories => 'Browse categories';
@@ -2306,7 +2306,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiLogoVisualIdentity => 'Logo & Visual Identity';
 
   @override
-  String get uiLoomStudioDesign => 'Loom Studio â¢ Design';
+  String get uiLoomStudioDesign => 'Loom Studio • Design';
 
   @override
   String get uiMakeItEasyForStudentsToUnderstandWhereYourCompany =>
@@ -2542,7 +2542,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiNoVideosMatchThisSearch => 'No videos match this search';
 
   @override
-  String get uiNorthMetricsAnalytics => 'North Metrics â¢ Analytics';
+  String get uiNorthMetricsAnalytics => 'North Metrics • Analytics';
 
   @override
   String get uiNotSignedIn => 'Not signed in';
@@ -2551,7 +2551,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiNotificationCenter => 'Notification Center';
 
   @override
-  String get uiNovaLabsProductDesign => 'Nova Labs â¢ Product Design';
+  String get uiNovaLabsProductDesign => 'Nova Labs • Product Design';
 
   @override
   String get uiOffers => 'Offers';
@@ -2651,7 +2651,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiOrUploadYourOwn => 'or upload your own';
 
   @override
-  String get uiOrbitAiAiOps => 'Orbit AI â¢ AI Ops';
+  String get uiOrbitAiAiOps => 'Orbit AI • AI Ops';
 
   @override
   String get uiOverview => 'Overview';
@@ -2759,7 +2759,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick the resume style that best fits the role you want.';
 
   @override
-  String get uiPixelFoundryEngineering => 'Pixel Foundry â¢ Engineering';
+  String get uiPixelFoundryEngineering => 'Pixel Foundry • Engineering';
 
   @override
   String get uiPlatformMissionAndVersionDetails =>
@@ -3412,7 +3412,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Share screenshots, steps, or account issues';
 
   @override
-  String get uiShieldOpsSecurity => 'Shield Ops â¢ Security';
+  String get uiShieldOpsSecurity => 'Shield Ops • Security';
 
   @override
   String get uiShortDescription => 'Short description';
@@ -3482,10 +3482,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign out of the company workspace';
 
   @override
-  String get uiSignalGrowthMarketing => 'Signal Growth â¢ Marketing';
+  String get uiSignalGrowthMarketing => 'Signal Growth • Marketing';
 
   @override
-  String get uiSketchroomIllustration => 'Sketchroom â¢ Illustration';
+  String get uiSketchroomIllustration => 'Sketchroom • Illustration';
 
   @override
   String get uiSkills => 'Skills';
@@ -3519,7 +3519,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiSources => 'Sources';
 
   @override
-  String get uiStackHarborPlatform => 'Stack Harbor â¢ Platform';
+  String get uiStackHarborPlatform => 'Stack Harbor • Platform';
 
   @override
   String get uiStage => 'Stage';
@@ -4169,7 +4169,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiVisible => 'Visible';
 
   @override
-  String get uiWaveHouseSocial => 'Wave House â¢ Social';
+  String get uiWaveHouseSocial => 'Wave House • Social';
 
   @override
   String get uiWeCouldNotLoadAdminAnalyticsRightNow =>
@@ -5151,6 +5151,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get applicationStatusPendingSentence => 'pending';
+
+  @override
+  String get applicationStatusWithdrawnSentence => 'withdrawn';
 
   @override
   String get launchAnimationHint =>
@@ -9537,6 +9540,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studentPaidTrack => 'Paid track';
 
   @override
+  String get studentPaidInternship => 'Paid internship';
+
+  @override
   String get studentStudentGrowth => 'Student growth';
 
   @override
@@ -9617,6 +9623,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get studentUnsaveOpportunityTooltip => 'Unsave opportunity';
+
+  @override
+  String get studentSaveResourceTooltip => 'Save resource';
+
+  @override
+  String get studentUnsaveResourceTooltip => 'Remove from saved resources';
 
   @override
   String get studentWithdrawing => 'Withdrawing...';

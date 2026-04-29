@@ -2590,7 +2590,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiNotificationCenter => 'Centre de notifications';
 
   @override
-  String get uiNovaLabsProductDesign => 'Nova Labs â¢ Conception de produits';
+  String get uiNovaLabsProductDesign => 'Nova Labs • Conception de produits';
 
   @override
   String get uiOffers => 'Offres';
@@ -3464,7 +3464,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Partager des captures d\'écran, des étapes ou des problèmes de compte';
 
   @override
-  String get uiShieldOpsSecurity => 'Shield Ops â¢ Sécurité';
+  String get uiShieldOpsSecurity => 'Shield Ops • Sécurité';
 
   @override
   String get uiShortDescription => 'Brève description';
@@ -3572,7 +3572,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiSources => 'Sources';
 
   @override
-  String get uiStackHarborPlatform => 'Stack Harbor ™ Plateforme';
+  String get uiStackHarborPlatform => 'Stack Harbor • Plateforme';
 
   @override
   String get uiStage => 'Étape';
@@ -4227,7 +4227,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiVisible => 'Visible';
 
   @override
-  String get uiWaveHouseSocial => 'Wave House â¢ Social';
+  String get uiWaveHouseSocial => 'Wave House • Social';
 
   @override
   String get uiWeCouldNotLoadAdminAnalyticsRightNow =>
@@ -5221,6 +5221,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get applicationStatusPendingSentence => 'en attente';
+
+  @override
+  String get applicationStatusWithdrawnSentence => 'retirée';
 
   @override
   String get launchAnimationHint =>
@@ -6456,7 +6459,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le document demandé n\'est plus disponible.';
 
   @override
-  String get uiNotProvided => 'Non renseigne';
+  String get uiNotProvided => 'Non renseigné';
 
   @override
   String get uiStudent => 'Étudiant';
@@ -6557,7 +6560,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiEmploymentType => 'Type d\'emploi';
 
   @override
-  String get uiPaidStatus => 'Statut de remuneration';
+  String get uiPaidStatus => 'Statut de rémunération';
 
   @override
   String get uiTags => 'Etiquettes';
@@ -9334,7 +9337,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get studentProfileHintGoodShape =>
-      'Votre profil est en bonne forme pour la prochaine opportunit? que vous ouvrirez.';
+      'Votre profil est en bonne forme pour la prochaine opportunité que vous ouvrirez.';
 
   @override
   String get studentAddCv => 'Ajouter CV';
@@ -9680,6 +9683,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get studentPaidTrack => 'Parcours rémunéré';
 
   @override
+  String get studentPaidInternship => 'Stage rémunéré';
+
+  @override
   String get studentStudentGrowth => 'Progression étudiante';
 
   @override
@@ -9764,6 +9770,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get studentUnsaveOpportunityTooltip =>
       'Retirer l’opportunité des enregistrés';
+
+  @override
+  String get studentSaveResourceTooltip => 'Enregistrer la ressource';
+
+  @override
+  String get studentUnsaveResourceTooltip =>
+      'Retirer des ressources enregistrées';
 
   @override
   String get studentWithdrawing => 'Retrait en cours...';
@@ -9942,18 +9955,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get studentApplicationMovedForward =>
-      'Avanc?e. Surveillez les prochaines ?tapes.';
+      'Avancée. Surveillez les prochaines étapes.';
 
   @override
   String get studentApplicationNotSelectedHistory =>
-      'Non retenue, mais conserv?e dans votre historique.';
+      'Non retenue, mais conservée dans votre historique.';
 
   @override
   String get studentApplicationAwaitingDecision =>
-      'En attente d?une d?cision de l?entreprise.';
+      'En attente d’une décision de l’entreprise.';
 
   @override
-  String get studentUpdate => 'Mettre ? jour';
+  String get studentUpdate => 'Mettre à jour';
 
   @override
   String get studentJobsHeadlinePrefix => 'Trouvez votre prochain\n';
@@ -9971,34 +9984,34 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get studentNoRolesMatchSearch =>
-      'Aucun poste ne correspond ? votre recherche';
+      'Aucun poste ne correspond à votre recherche';
 
   @override
   String get studentCheckBackNewJobs =>
-      'Revenez bient?t pour de nouvelles offres d?emploi.';
+      'Revenez bientôt pour de nouvelles offres d’emploi.';
 
   @override
   String get studentTryKeywordClearCategory =>
-      'Essayez un autre mot-cl? ou effacez le filtre de cat?gorie pour voir plus de postes.';
+      'Essayez un autre mot-clé ou effacez le filtre de catégorie pour voir plus de postes.';
 
   @override
   String get studentTrySearchClearCategories =>
-      'Essayez une autre recherche ou effacez les filtres de cat?gorie pour voir plus de postes.';
+      'Essayez une autre recherche ou effacez les filtres de catégorie pour voir plus de postes.';
 
   @override
-  String get studentListing => 'r?sultat';
+  String get studentListing => 'résultat';
 
   @override
   String get studentNoInternshipsMatchView =>
-      'Aucun stage ne correspond ? cette vue';
+      'Aucun stage ne correspond à cette vue';
 
   @override
   String get studentCheckBackNewInternships =>
-      'Revenez bient?t pour de nouvelles offres de stage.';
+      'Revenez bientôt pour de nouvelles offres de stage.';
 
   @override
   String get studentTryAdjustSearchFiltersOpportunities =>
-      'Ajustez votre recherche ou vos filtres pour explorer plus d?opportunit?s.';
+      'Ajustez votre recherche ou vos filtres pour explorer plus d’opportunités.';
 
   @override
   String get studentTryAdjustSearchInternshipMatches =>
@@ -10014,15 +10027,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get studentSponsoredHeadlinePrefix => 'Trouvez votre prochain\n';
 
   @override
-  String get studentSponsoredHeadlineAccent => 'parcours financ?';
+  String get studentSponsoredHeadlineAccent => 'parcours financé';
 
   @override
   String get studentNoSponsoredProgramsMatchView =>
-      'Aucun programme sponsoris? ne correspond ? cette vue';
+      'Aucun programme sponsorisé ne correspond à cette vue';
 
   @override
   String get studentCheckBackNewSponsoredPrograms =>
-      'Revenez bient?t pour de nouveaux programmes sponsoris?s.';
+      'Revenez bientôt pour de nouveaux programmes sponsorisés.';
 
   @override
   String get studentTryAdjustSearchSponsoredPrograms =>
@@ -10033,15 +10046,15 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count programmes trouv?s dans $filter',
-      one: '1 programme trouv? dans $filter',
-      zero: 'Aucun programme trouv? dans $filter',
+      other: '$count programmes trouvés dans $filter',
+      one: '1 programme trouvé dans $filter',
+      zero: 'Aucun programme trouvé dans $filter',
     );
     return '$_temp0';
   }
 
   @override
-  String get studentLimited => 'Places limit?es';
+  String get studentLimited => 'Places limitées';
 
   @override
   String get studentApplyingEllipsis => 'Candidature en cours...';
@@ -10050,32 +10063,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get studentSave => 'Enregistrer';
 
   @override
-  String get studentPublisher => '?diteur';
+  String get studentPublisher => 'Éditeur';
 
   @override
-  String get studentResponsibilities => 'Responsabilit?s';
+  String get studentResponsibilities => 'Responsabilités';
 
   @override
-  String get studentPartiallyFunded => 'Partiellement financ?';
+  String get studentPartiallyFunded => 'Partiellement financé';
 
   @override
-  String get studentMeritBased => 'Fond? sur le m?rite';
+  String get studentMeritBased => 'Fondé sur le mérite';
 
   @override
   String get studentPrestige => 'Prestige';
 
   @override
   String studentTrainingErrorShowingAvailable(Object error) {
-    return '$error Le contenu de formation actuellement disponible reste affich?.';
+    return '$error Le contenu de formation actuellement disponible reste affiché.';
   }
 
   @override
   String get studentProfileSubtitleFallback =>
-      'Construisez un profil pr?t pour la prochaine opportunit?.';
+      'Construisez un profil prêt pour la prochaine opportunité.';
 
   @override
   String get studentUniversityProfileHint =>
-      'Le nom de l?universit? ajoute du contexte et de la cr?dibilit? ? votre profil acad?mique.';
+      'Le nom de l’université ajoute du contexte et de la crédibilité à votre profil académique.';
 
   @override
   String get studentEmailProfileHint =>
@@ -10083,10 +10096,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get studentLocationProfileHint =>
-      'Une localisation facilite la correspondance avec les opportunit?s ? distance, locales et hybrides.';
+      'Une localisation facilite la correspondance avec les opportunités à distance, locales et hybrides.';
 
   @override
-  String get studentUniversity => 'Universit?';
+  String get studentUniversity => 'Université';
 
   @override
   String get studentEmail => 'E-mail';
@@ -10095,11 +10108,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get studentLocation => 'Localisation';
 
   @override
-  String get studentPhone => 'T?l?phone';
+  String get studentPhone => 'Téléphone';
 
   @override
   String get studentWaitCoverUpload =>
-      'Veuillez attendre la fin du t?l?versement de l?image de couverture.';
+      'Veuillez attendre la fin du téléversement de l’image de couverture.';
 
   @override
   String get studentFileUnavailable => 'Fichier indisponible.';

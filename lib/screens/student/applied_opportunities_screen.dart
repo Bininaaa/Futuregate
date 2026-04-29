@@ -538,7 +538,9 @@ class _AppliedCompactSummary extends StatelessWidget {
                   SizedBox(
                     width: tileWidth,
                     child: _AppliedMiniStat(
-                      label: 'Withdrawn',
+                      label: AppLocalizations.of(
+                        context,
+                      )!.studentApplicationFilterWithdrawn,
                       value: '$withdrawn',
                       color: StudentOpportunityHubPalette.textMuted,
                       icon: Icons.undo_rounded,

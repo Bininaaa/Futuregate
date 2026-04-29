@@ -140,7 +140,9 @@ class TrainingResourceCard extends StatelessWidget {
                       ),
                       if (training.isFeatured)
                         _buildChip(
-                          label: AppLocalizations.of(context)!.uiFeatured.toUpperCase(),
+                          label: AppLocalizations.of(
+                            context,
+                          )!.uiFeatured.toUpperCase(),
                           color: Colors.amber.shade800,
                           icon: Icons.star_rounded,
                         ),
@@ -180,8 +182,12 @@ class TrainingResourceCard extends StatelessWidget {
                               )
                             : IconButton(
                                 tooltip: isSaved
-                                    ? 'Remove from saved'
-                                    : 'Save resource',
+                                    ? AppLocalizations.of(
+                                        context,
+                                      )!.studentUnsaveResourceTooltip
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.studentSaveResourceTooltip,
                                 onPressed: onToggleSaved,
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),

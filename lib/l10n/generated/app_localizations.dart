@@ -2432,7 +2432,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiAvenirCloudSupport.
   ///
   /// In en, this message translates to:
-  /// **'Avenir Cloud â¢ Support'**
+  /// **'Avenir Cloud • Support'**
   String get uiAvenirCloudSupport;
 
   /// No description provided for @uiBac.
@@ -2552,7 +2552,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiBrightStudioGrowth.
   ///
   /// In en, this message translates to:
-  /// **'Bright Studio â¢ Growth'**
+  /// **'Bright Studio • Growth'**
   String get uiBrightStudioGrowth;
 
   /// No description provided for @uiBrowseCategories.
@@ -4312,7 +4312,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiLoomStudioDesign.
   ///
   /// In en, this message translates to:
-  /// **'Loom Studio â¢ Design'**
+  /// **'Loom Studio • Design'**
   String get uiLoomStudioDesign;
 
   /// No description provided for @uiMakeItEasyForStudentsToUnderstandWhereYourCompany.
@@ -4747,7 +4747,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiNorthMetricsAnalytics.
   ///
   /// In en, this message translates to:
-  /// **'North Metrics â¢ Analytics'**
+  /// **'North Metrics • Analytics'**
   String get uiNorthMetricsAnalytics;
 
   /// No description provided for @uiNotSignedIn.
@@ -4765,7 +4765,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiNovaLabsProductDesign.
   ///
   /// In en, this message translates to:
-  /// **'Nova Labs â¢ Product Design'**
+  /// **'Nova Labs • Product Design'**
   String get uiNovaLabsProductDesign;
 
   /// No description provided for @uiOffers.
@@ -4951,7 +4951,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiOrbitAiAiOps.
   ///
   /// In en, this message translates to:
-  /// **'Orbit AI â¢ AI Ops'**
+  /// **'Orbit AI • AI Ops'**
   String get uiOrbitAiAiOps;
 
   /// No description provided for @uiOverview.
@@ -5137,7 +5137,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiPixelFoundryEngineering.
   ///
   /// In en, this message translates to:
-  /// **'Pixel Foundry â¢ Engineering'**
+  /// **'Pixel Foundry • Engineering'**
   String get uiPixelFoundryEngineering;
 
   /// No description provided for @uiPlatformMissionAndVersionDetails.
@@ -6316,7 +6316,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiShieldOpsSecurity.
   ///
   /// In en, this message translates to:
-  /// **'Shield Ops â¢ Security'**
+  /// **'Shield Ops • Security'**
   String get uiShieldOpsSecurity;
 
   /// No description provided for @uiShortDescription.
@@ -6439,13 +6439,13 @@ abstract class AppLocalizations {
   /// No description provided for @uiSignalGrowthMarketing.
   ///
   /// In en, this message translates to:
-  /// **'Signal Growth â¢ Marketing'**
+  /// **'Signal Growth • Marketing'**
   String get uiSignalGrowthMarketing;
 
   /// No description provided for @uiSketchroomIllustration.
   ///
   /// In en, this message translates to:
-  /// **'Sketchroom â¢ Illustration'**
+  /// **'Sketchroom • Illustration'**
   String get uiSketchroomIllustration;
 
   /// No description provided for @uiSkills.
@@ -6511,7 +6511,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiStackHarborPlatform.
   ///
   /// In en, this message translates to:
-  /// **'Stack Harbor â¢ Platform'**
+  /// **'Stack Harbor • Platform'**
   String get uiStackHarborPlatform;
 
   /// No description provided for @uiStage.
@@ -7589,7 +7589,7 @@ abstract class AppLocalizations {
   /// No description provided for @uiWaveHouseSocial.
   ///
   /// In en, this message translates to:
-  /// **'Wave House â¢ Social'**
+  /// **'Wave House • Social'**
   String get uiWaveHouseSocial;
 
   /// No description provided for @uiWeCouldNotLoadAdminAnalyticsRightNow.
@@ -9100,6 +9100,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'pending'**
   String get applicationStatusPendingSentence;
+
+  /// No description provided for @applicationStatusWithdrawnSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'withdrawn'**
+  String get applicationStatusWithdrawnSentence;
 
   /// No description provided for @launchAnimationHint.
   ///
@@ -16075,6 +16081,12 @@ abstract class AppLocalizations {
   /// **'Paid track'**
   String get studentPaidTrack;
 
+  /// No description provided for @studentPaidInternship.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid internship'**
+  String get studentPaidInternship;
+
   /// No description provided for @studentStudentGrowth.
   ///
   /// In en, this message translates to:
@@ -16236,6 +16248,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unsave opportunity'**
   String get studentUnsaveOpportunityTooltip;
+
+  /// No description provided for @studentSaveResourceTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Save resource'**
+  String get studentSaveResourceTooltip;
+
+  /// No description provided for @studentUnsaveResourceTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from saved resources'**
+  String get studentUnsaveResourceTooltip;
 
   /// No description provided for @studentWithdrawing.
   ///

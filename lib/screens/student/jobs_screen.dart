@@ -1420,6 +1420,7 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final palette = _availableRolePaletteFor(job.uniqueKey);
     final cardRadius = BorderRadius.circular(compact ? 17 : 19);
     final supportingLine = _supportingLine();
@@ -1577,7 +1578,7 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                                 if (showExplicitFullTime) ...[
                                   SizedBox(width: compact ? 8 : 10),
                                   Text(
-                                    'FULL-TIME',
+                                    l10n.employmentTypeFullTime.toUpperCase(),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: AppTypography.product(

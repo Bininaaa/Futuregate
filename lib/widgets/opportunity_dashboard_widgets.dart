@@ -1476,7 +1476,9 @@ class _OpportunitySaveButton extends StatelessWidget {
 
     return IconButton(
       onPressed: onPressed,
-      tooltip: isSaved ? 'Remove bookmark' : 'Save opportunity',
+      tooltip: isSaved
+          ? AppLocalizations.of(context)!.studentUnsaveOpportunityTooltip
+          : AppLocalizations.of(context)!.studentSaveOpportunityTooltip,
       padding: EdgeInsets.zero,
       constraints: BoxConstraints.tightFor(width: boxSize, height: boxSize),
       splashRadius: boxSize * 0.7,

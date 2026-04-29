@@ -1555,10 +1555,11 @@ class _InternshipFeaturedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topTag = _featuredHeroTag(item);
+    final l10n = AppLocalizations.of(context)!;
+    final topTag = _featuredHeroTag(item, l10n);
     final supportingLine = _supportingLine();
     final metadataLine = _metadataLine();
-    final compensationLabel = _compensationLineFor(item)?.trim();
+    final compensationLabel = _compensationLineFor(item, l10n)?.trim();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -2285,10 +2286,11 @@ class _AvailableInternshipCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final l10n = AppLocalizations.of(context)!;
     final compact = screenSize.width < 390 || screenSize.height < 780;
     final palette = _availableInternshipPaletteFor(item.uniqueKey);
-    final compensationLabel = _compensationLineFor(item);
-    final topBadge = _availableTopBadge(item);
+    final compensationLabel = _compensationLineFor(item, l10n);
+    final topBadge = _availableTopBadge(item, l10n);
     final cardRadius = BorderRadius.circular(compact ? 20 : 24);
 
     return Material(
@@ -2614,10 +2616,11 @@ class _AvailableInternshipListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final l10n = AppLocalizations.of(context)!;
     final compact = screenSize.width < 390 || screenSize.height < 780;
     final palette = _availableInternshipPaletteFor(item.uniqueKey);
-    final compensationLabel = _compensationLineFor(item);
-    final topBadge = _availableTopBadge(item);
+    final compensationLabel = _compensationLineFor(item, l10n);
+    final topBadge = _availableTopBadge(item, l10n);
     final cardRadius = BorderRadius.circular(compact ? 17 : 19);
     final supportingLine = _supportingLine();
     final detailText = item.location?.trim().isNotEmpty ?? false
@@ -3370,7 +3373,7 @@ class _InternshipCardModel {
   String get uniqueKey => id.isEmpty ? '$title|$companyName' : id;
 }
 
-String? _featuredHeroTag(_InternshipCardModel item) {
+String? _featuredHeroTag(_InternshipCardModel item, AppLocalizations l10n) {
   if (item.workMode != null && item.workMode!.trim().isNotEmpty) {
     return item.workMode!.toUpperCase();
   }
@@ -3378,20 +3381,20 @@ String? _featuredHeroTag(_InternshipCardModel item) {
     return item.duration!.trim().toUpperCase();
   }
   if (item.isPaid) {
-    return 'PAID';
+    return l10n.uiPaid.toUpperCase();
   }
   return null;
 }
 
-String? _compensationLineFor(_InternshipCardModel item) {
+String? _compensationLineFor(_InternshipCardModel item, AppLocalizations l10n) {
   final compensation = item.compensation?.trim();
   if (compensation != null && compensation.isNotEmpty) {
     return compensation;
   }
-  return item.isPaid ? 'Paid internship' : null;
+  return item.isPaid ? l10n.studentPaidInternship : null;
 }
 
-String? _availableTopBadge(_InternshipCardModel item) {
+String? _availableTopBadge(_InternshipCardModel item, AppLocalizations l10n) {
   if (item.workMode != null && item.workMode!.trim().isNotEmpty) {
     return item.workMode!.toUpperCase();
   }
@@ -3399,7 +3402,7 @@ String? _availableTopBadge(_InternshipCardModel item) {
     return item.duration!.trim().toUpperCase();
   }
   if (item.isPaid) {
-    return 'PAID';
+    return l10n.uiPaid.toUpperCase();
   }
   return null;
 }

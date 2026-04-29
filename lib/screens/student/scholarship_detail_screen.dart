@@ -113,24 +113,24 @@ class ScholarshipDetailScreen extends StatelessWidget {
     return host.replaceFirst(RegExp(r'^www\.'), '');
   }
 
-  String get _primaryBadgeLabel {
+  String _primaryBadgeLabel(AppLocalizations l10n) {
     final funding = _fundingType;
     if (funding != null) {
       return funding.toUpperCase();
     }
     if (scholarship.isFeatured) {
-      return 'FEATURED';
+      return l10n.uiFeatured.toUpperCase();
     }
     final level = _level;
     if (level != null) {
       return level.toUpperCase();
     }
-    return 'SCHOLARSHIP';
+    return l10n.uiScholarshipLabel.toUpperCase();
   }
 
-  String? get _secondaryBadgeLabel {
+  String? _secondaryBadgeLabel(AppLocalizations l10n) {
     if (_fundingType != null && scholarship.isFeatured) {
-      return 'FEATURED';
+      return l10n.uiFeatured.toUpperCase();
     }
     return null;
   }
@@ -587,7 +587,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Scholarship',
+                            l10n.uiScholarshipLabel,
                             textAlign: TextAlign.left,
                             style: AppTypography.product(
                               fontSize: 19,
@@ -620,8 +620,8 @@ class ScholarshipDetailScreen extends StatelessWidget {
                     children: [
                       _ScholarshipHeroCard(
                         scholarship: scholarship,
-                        badgeLabel: _primaryBadgeLabel,
-                        secondaryBadgeLabel: _secondaryBadgeLabel,
+                        badgeLabel: _primaryBadgeLabel(l10n),
+                        secondaryBadgeLabel: _secondaryBadgeLabel(l10n),
                         provider: fallbackProvider,
                         title: displayTitle,
                         location: location,
@@ -719,7 +719,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                             if (scholarship.tags.isNotEmpty) ...[
                               const SizedBox(height: 16),
                               Text(
-                                'Highlights',
+                                l10n.uiHighlights,
                                 style: AppTypography.product(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,

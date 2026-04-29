@@ -254,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (fullName.isNotEmpty) return fullName;
     final email = (user?.email ?? '').trim();
     if (email.contains('@')) return email.split('@').first;
-    return 'Student';
+    return AppLocalizations.of(context)!.uiStudent;
   }
 
   String _resolveHeadline(UserModel? user, CvModel? cv) {
@@ -1783,7 +1783,7 @@ class _FactRow extends StatelessWidget {
                 Text(
                   filled
                       ? DisplayText.capitalizeDisplayValue(data.value!)
-                      : 'Not added yet',
+                      : AppLocalizations.of(context)!.uiNotProvided,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style:

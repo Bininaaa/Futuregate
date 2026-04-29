@@ -41,7 +41,7 @@ class ApplicationStatus {
       case rejected:
         return l10n.uiRejected;
       case withdrawn:
-        return 'Withdrawn';
+        return l10n.studentApplicationFilterWithdrawn;
       case pending:
       default:
         return l10n.uiPending;
@@ -55,7 +55,7 @@ class ApplicationStatus {
       case rejected:
         return l10n.applicationStatusRejectedSentence;
       case withdrawn:
-        return 'You withdrew this application.';
+        return l10n.applicationStatusWithdrawnSentence;
       case pending:
       default:
         return l10n.applicationStatusPendingSentence;
