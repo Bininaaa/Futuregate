@@ -23,7 +23,12 @@
       "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"auth account action SaaS education minimal modern\" --design-system -p \"FutureGate Auth\")",
       "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"flutter widgets layout theming\" --stack flutter)",
       "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"flutter widgets layout theming\" --stack flutter)",
-      "Bash(flutter build *)"
+      "Bash(flutter build *)",
+      "Bash(cd c:\\\\\\\\AV4)",
+      "Bash(grep -rn '\\\\$\\\\|%' lib/screens/student lib/widgets/student lib/widgets/student_opportunity_hub_widgets.dart lib/widgets/opportunity_dashboard_widgets.dart --include=\"*.dart\")",
+      "Bash(comm -23 /tmp/en_keys.txt /tmp/ar_keys.txt)",
+      "Read(//tmp/**)",
+      "Bash(grep -E \"return '[A-Z0-9]{2,}'\")"
     ]
   }
 }
