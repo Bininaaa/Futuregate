@@ -768,7 +768,9 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
                 theme: widget.theme,
                 hint: widget.hint,
                 suffixIcon: IconButton(
-                  tooltip: AppLocalizations.of(context)!.studentAddItem,
+                  tooltip:
+                      AppLocalizations.of(context)?.studentAddItem ??
+                      'Add item',
                   icon: Icon(widget.addIcon, color: widget.theme.accent),
                   onPressed: () => _commitPendingInput(field),
                 ),
