@@ -211,19 +211,20 @@ class _SponsoredOpportunitiesScreenState
     });
 
     try {
+      final l10n = AppLocalizations.of(context)!;
       String? error;
-      var message = 'Opportunity saved';
+      var message = l10n.studentOpportunitySaved;
 
       if (existingSaved != null) {
         error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
-        message = 'Removed from saved opportunities';
+        message = l10n.studentRemovedFromSavedOpportunities;
       } else {
         error = await savedProvider.saveOpportunity(
           studentId: userId,
           opportunityId: opportunity.id,
           title: DisplayText.opportunityTitle(
             opportunity.title,
-            fallback: 'Sponsored Opportunity',
+            fallback: l10n.opportunitySponsoredFallback,
           ),
           companyName: opportunity.companyName.trim(),
           type: opportunity.type,
@@ -239,7 +240,9 @@ class _SponsoredOpportunitiesScreenState
 
       context.showAppSnackBar(
         error ?? message,
-        title: error == null ? 'Saved items updated' : 'Save unavailable',
+        title: error == null
+            ? l10n.trainingSavedUpdatedTitle
+            : l10n.uiSaveUnavailable,
         type: error == null
             ? (existingSaved != null
                   ? AppFeedbackType.removed
@@ -330,8 +333,11 @@ class _SponsoredOpportunitiesScreenState
       }
 
       context.showAppSnackBar(
-        error ?? 'Your application has been submitted successfully.',
-        title: error == null ? 'Application sent' : 'Application unavailable',
+        error ??
+            AppLocalizations.of(context)!.studentApplicationSubmittedSuccess,
+        title: error == null
+            ? AppLocalizations.of(context)!.studentApplicationSentTitle
+            : AppLocalizations.of(context)!.uiApplicationUnavailable,
         type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
       );
     } finally {
@@ -344,17 +350,18 @@ class _SponsoredOpportunitiesScreenState
   }
 
   String _messageForEligibility(ApplicationEligibilityStatus status) {
+    final l10n = AppLocalizations.of(context)!;
     switch (status) {
       case ApplicationEligibilityStatus.requiresLogin:
-        return 'You must be logged in to apply';
+        return l10n.studentMustBeLoggedInApply;
       case ApplicationEligibilityStatus.available:
-        return 'You can apply to this opportunity';
+        return l10n.studentCanApplyOpportunity;
       case ApplicationEligibilityStatus.alreadyApplied:
-        return 'You have already applied to this opportunity';
+        return l10n.studentAlreadyAppliedOpportunity;
       case ApplicationEligibilityStatus.closed:
-        return 'This opportunity is closed';
+        return l10n.studentOpportunityClosedMessage;
       case ApplicationEligibilityStatus.unavailable:
-        return 'This opportunity is no longer available';
+        return l10n.studentOpportunityUnavailableMessage;
     }
   }
 
@@ -443,10 +450,10 @@ class _SponsoredOpportunitiesScreenState
     if (item.opportunity.isFeatured) {
       score += 80;
     }
-    if (item.badgeLabel == 'Closing soon') {
+    if (item.badgeLabel == AppLocalizations.of(context)!.uiClosingSoon) {
       score += 48;
     }
-    if (item.badgeLabel == 'Fully funded') {
+    if (item.badgeLabel == AppLocalizations.of(context)!.uiFullyFunded) {
       score += 36;
     }
     if (item.filters.contains(_SponsoredFilter.grants)) {
@@ -455,8 +462,10 @@ class _SponsoredOpportunitiesScreenState
     if (item.filters.contains(_SponsoredFilter.funding)) {
       score += 14;
     }
-    if (item.urgencyText != null &&
-        item.urgencyText!.toLowerCase().contains('day')) {
+    final daysUntilDeadline = _daysUntil(_deadlineFor(item.opportunity));
+    if (daysUntilDeadline != null &&
+        daysUntilDeadline >= 0 &&
+        daysUntilDeadline <= 7) {
       score += 10;
     }
     score += 12;
@@ -489,7 +498,7 @@ class _SponsoredOpportunitiesScreenState
   _SponsoredCardModel _mapOpportunityToCardModel(OpportunityModel opportunity) {
     final title = DisplayText.opportunityTitle(
       opportunity.title,
-      fallback: 'Sponsored Opportunity',
+      fallback: AppLocalizations.of(context)!.opportunitySponsoredFallback,
     );
     final description = opportunity.description.trim();
     final filters = _filtersForOpportunity(opportunity);
@@ -701,6 +710,7 @@ class _SponsoredOpportunitiesScreenState
     OpportunityModel opportunity,
     Set<_SponsoredFilter> filters,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final normalized = _normalizedSearchText(opportunity);
     final deadline = _deadlineFor(opportunity);
     final daysUntilDeadline = _daysUntil(deadline);
@@ -708,7 +718,7 @@ class _SponsoredOpportunitiesScreenState
     if (daysUntilDeadline != null &&
         daysUntilDeadline >= 0 &&
         daysUntilDeadline <= 4) {
-      return 'Closing soon';
+      return l10n.uiClosingSoon;
     }
 
     if (_containsAny(normalized, const [
@@ -716,7 +726,7 @@ class _SponsoredOpportunitiesScreenState
       'full funding',
       'all expenses',
     ])) {
-      return 'Fully funded';
+      return l10n.uiFullyFunded;
     }
 
     if (_containsAny(normalized, const [
@@ -725,24 +735,25 @@ class _SponsoredOpportunitiesScreenState
       'limited spots',
       'exclusive',
     ])) {
-      return 'Limited';
+      return l10n.studentLimited;
     }
 
     if (filters.contains(_SponsoredFilter.funding) &&
         filters.contains(_SponsoredFilter.grants)) {
-      return 'Fully funded';
+      return l10n.uiFullyFunded;
     }
 
-    return 'Open';
+    return l10n.studentAvailable;
   }
 
   Color _badgeColorForLabel(String label) {
+    final l10n = AppLocalizations.of(context)!;
     switch (label) {
-      case 'Closing soon':
+      case var value when value == l10n.uiClosingSoon:
         return OpportunityDashboardPalette.error;
-      case 'Fully funded':
+      case var value when value == l10n.uiFullyFunded:
         return OpportunityDashboardPalette.warning;
-      case 'Limited':
+      case var value when value == l10n.studentLimited:
         return _SponsoredPalette.accent;
       default:
         return OpportunityDashboardPalette.secondary;
@@ -750,11 +761,12 @@ class _SponsoredOpportunitiesScreenState
   }
 
   String? _urgencyTextFor(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     final deadline = _deadlineFor(opportunity);
     final daysUntilDeadline = _daysUntil(deadline);
 
     if (daysUntilDeadline == null) {
-      return 'Applications open';
+      return l10n.studentApplicationsOpen;
     }
 
     if (daysUntilDeadline < 0) {
@@ -762,18 +774,20 @@ class _SponsoredOpportunitiesScreenState
     }
 
     if (daysUntilDeadline == 0) {
-      return 'Closes today';
+      return l10n.studentClosesToday;
     }
 
     if (daysUntilDeadline == 1) {
-      return '1 day left';
+      return l10n.dashDayLeft;
     }
 
     if (daysUntilDeadline <= 7) {
-      return 'Closing in $daysUntilDeadline days';
+      return l10n.studentClosesInDays(daysUntilDeadline);
     }
 
-    return 'Apply by ${OpportunityMetadata.formatDateLabel(deadline!, pattern: 'MMM d')}';
+    return l10n.studentApplyByDate(
+      OpportunityMetadata.formatDateLabel(deadline!, pattern: 'MMM d'),
+    );
   }
 
   Color? _urgencyColorFor(OpportunityModel opportunity) {
@@ -889,9 +903,9 @@ class _SponsoredOpportunitiesScreenState
     final l10n = AppLocalizations.of(context)!;
     final activeFilterLabel = _labelForFilter(_activeFilter, l10n);
     final showCatalogEmptyState = allCards.isEmpty && !hasActiveFilters;
-    final countLabel = visibleCards.length == 1
-        ? '1 program live now'
-        : '${visibleCards.length} programs live now';
+    final countLabel = l10n.studentSponsoredProgramsLiveCount(
+      visibleCards.length,
+    );
     final horizontalPadding = isExtraCompact
         ? 16.0
         : isCompact
@@ -970,7 +984,7 @@ class _SponsoredOpportunitiesScreenState
                               TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: 'Find your next\n',
+                                    text: l10n.studentSponsoredHeadlinePrefix,
                                     style: AppTypography.product(
                                       fontSize: headlineFontSize,
                                       fontWeight: FontWeight.w700,
@@ -979,7 +993,7 @@ class _SponsoredOpportunitiesScreenState
                                     ),
                                   ),
                                   TextSpan(
-                                    text: 'funded path',
+                                    text: l10n.studentSponsoredHeadlineAccent,
                                     style: AppTypography.product(
                                       fontSize: headlineFontSize,
                                       fontWeight: FontWeight.w700,
@@ -1044,7 +1058,10 @@ class _SponsoredOpportunitiesScreenState
                                 context,
                               )!.uiAllSponsoredPrograms,
                               countLabel: hasActiveFilters
-                                  ? '$countLabel matched in ${activeFilterLabel.toLowerCase()}'
+                                  ? l10n.studentSponsoredProgramsMatchedInFilter(
+                                      visibleCards.length,
+                                      activeFilterLabel.toLowerCase(),
+                                    )
                                   : countLabel,
                               compact: isCompact,
                               trailing: _SponsoredViewToggle(
@@ -1065,11 +1082,11 @@ class _SponsoredOpportunitiesScreenState
                               ),
                               child: _SponsoredEmptyState(
                                 title: showCatalogEmptyState
-                                    ? 'No sponsored programs available right now'
-                                    : 'No sponsored programs match this view',
+                                    ? l10n.uiNoSponsoredProgramsAvailableRightNow
+                                    : l10n.studentNoSponsoredProgramsMatchView,
                                 message: showCatalogEmptyState
-                                    ? 'Check back soon for new sponsored programs.'
-                                    : 'Try adjusting your search or filters to see matching programs.',
+                                    ? l10n.studentCheckBackNewSponsoredPrograms
+                                    : l10n.studentTryAdjustSearchSponsoredPrograms,
                               ),
                             )
                           else

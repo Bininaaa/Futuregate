@@ -271,7 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (fieldOfStudy.isNotEmpty) return fieldOfStudy;
     if (university.isNotEmpty) return university;
     if (academicLevel.isNotEmpty) return academicLevel;
-    return 'Shape a profile that feels ready for the next opportunity.';
+    return AppLocalizations.of(context)!.studentProfileSubtitleFallback;
   }
 
   String _displayProfileValue(String? value) {
@@ -279,10 +279,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   String _cvStatus(CvModel? cv) {
-    if (cv == null) return 'Not started';
-    if (cv.hasUploadedCv || cv.hasExportedPdf) return 'Ready';
-    if (cv.hasBuilderContent) return 'Draft';
-    return 'Not started';
+    final l10n = AppLocalizations.of(context)!;
+    if (cv == null) return l10n.studentNotStarted;
+    if (cv.hasUploadedCv || cv.hasExportedPdf) return l10n.studentReady;
+    if (cv.hasBuilderContent) return l10n.studentDraft;
+    return l10n.studentNotStarted;
   }
 
   double _profileCompletion(UserModel? user, CvModel? cv) {
@@ -294,28 +295,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   String _completionTitle(double completion) {
-    if (completion >= 0.95) return 'Ready to stand out';
-    if (completion >= 0.75) return 'Nearly polished';
-    if (completion >= 0.45) return 'Strong foundation';
-    return 'Let your profile catch up';
+    final l10n = AppLocalizations.of(context)!;
+    if (completion >= 0.95) return l10n.studentProfileHeadlineReady;
+    if (completion >= 0.75) return l10n.studentProfileHeadlineNearly;
+    if (completion >= 0.45) return l10n.studentProfileHeadlineFoundation;
+    return l10n.studentProfileHeadlineCatchUp;
   }
 
   String _completionMessage(double completion, List<String> missingItems) {
+    final l10n = AppLocalizations.of(context)!;
     if (missingItems.isEmpty) {
-      return 'Everything essential is already in place. The profile looks complete and confident.';
+      return l10n.studentProfileCompleteSummary;
     }
 
-    final suffix = missingItems.length == 1
-        ? '1 detail still needs attention.'
-        : '${missingItems.length} details still need attention.';
+    final suffix = l10n.studentProfileDetailsMissingCount(missingItems.length);
 
     if (completion >= 0.75) {
-      return 'A few thoughtful updates will make the profile feel complete. $suffix';
+      return l10n.studentProfileThoughtfulUpdates(suffix);
     }
     if (completion >= 0.45) {
-      return 'The core story is taking shape. Keep filling the essentials to make matching stronger. $suffix';
+      return l10n.studentProfileCoreStory(suffix);
     }
-    return 'This profile still has room to grow before it makes its best first impression. $suffix';
+    return l10n.studentProfileRoomToGrow(suffix);
   }
 
   String? _focusItem(List<String> missingItems) {
@@ -340,27 +341,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   String _focusMessage(String? item) {
+    final l10n = AppLocalizations.of(context)!;
     switch (item) {
       case 'CV':
-        return 'Uploading or building a CV unlocks a much stronger profile instantly.';
+        return l10n.studentCvProfileHint;
       case 'Bio':
-        return 'A short bio makes the profile feel human, intentional, and easier to trust.';
+        return l10n.studentBioProfileHint;
       case 'Field of study':
-        return 'Your study focus helps opportunities feel much more relevant.';
+        return l10n.studentFieldOfStudyProfileHint;
       case 'University':
-        return 'A university name adds context and credibility to your academic profile.';
+        return l10n.studentUniversityProfileHint;
       case 'Academic level':
-        return 'Your academic level helps recruiters and programs understand where you are right now.';
+        return l10n.studentAcademicLevelProfileHint;
       case 'Full name':
-        return 'Your name makes the profile feel complete and recognizable right away.';
+        return l10n.studentFullNameProfileHint;
       case 'Email':
-        return 'A working email keeps applications, notifications, and follow-up communication on track.';
+        return l10n.studentEmailProfileHint;
       case 'Location':
-        return 'A location makes remote, local, and hybrid opportunities easier to match.';
+        return l10n.studentLocationProfileHint;
       case 'Phone':
-        return 'A phone number gives your profile one more reliable contact channel.';
+        return l10n.studentPhoneProfileHint;
       default:
-        return 'Keep refining the essentials so the profile reads clearly at a glance.';
+        return l10n.studentProfileKeepRefining;
     }
   }
 
@@ -592,7 +594,13 @@ class _ProfileHeader extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Flexible(
                                   child: Text(
-                                    bio == null ? 'Profile tip' : 'About you',
+                                    bio == null
+                                        ? AppLocalizations.of(
+                                            context,
+                                          )!.studentProfileTip
+                                        : AppLocalizations.of(
+                                            context,
+                                          )!.studentAboutYou,
                                     style: AppTypography.product(
                                       fontSize: 11.5,
                                       fontWeight: FontWeight.w700,
@@ -605,7 +613,9 @@ class _ProfileHeader extends StatelessWidget {
                             const SizedBox(height: 10),
                             Text(
                               bio ??
-                                  'Add a short bio to make your profile feel more personal, memorable, and recruiter-friendly.',
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.studentBioHelpText,
                               textAlign: wide
                                   ? TextAlign.start
                                   : TextAlign.center,
@@ -678,7 +688,7 @@ class _ProfileHeader extends StatelessWidget {
                   return Column(
                     children: [
                       if (!embedded) ...[
-                        _buildTopBar(),
+                        _buildTopBar(context),
                         const SizedBox(height: 14),
                       ],
                       if (wide)
@@ -706,13 +716,13 @@ class _ProfileHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildTopBar() {
+  Widget _buildTopBar(BuildContext context) {
     return Row(
       children: [
         _FrostedCircle(icon: Icons.arrow_back_ios_new_rounded, onTap: onBack),
         const Spacer(),
         Text(
-          'Profile',
+          AppLocalizations.of(context)!.uiProfile,
           style: AppTypography.product(
             fontSize: 17,
             fontWeight: FontWeight.w600,
@@ -1143,8 +1153,12 @@ class _HeroStatusCard extends StatelessWidget {
                     width: tileWidth,
                     child: _HeroMetricTile(
                       value: unreadNotifications > 0
-                          ? '$unreadNotifications new'
-                          : 'All clear',
+                          ? AppLocalizations.of(
+                              context,
+                            )!.studentProfileUnreadNotificationsCount(
+                              unreadNotifications,
+                            )
+                          : AppLocalizations.of(context)!.studentAllClear,
                       label: AppLocalizations.of(context)!.uiAlerts,
                       icon: Icons.notifications_none_rounded,
                       color: SettingsFlowPalette.primary,
@@ -1250,6 +1264,21 @@ class _HeroMetricTile extends StatelessWidget {
 //    Four compact tiles: Saved, Applied, Completion %, CV status.
 //    Each is one small card. No overlap with anything else.
 // =============================================================================
+
+String _localizedProfileFocusItem(BuildContext context, String item) {
+  final l10n = AppLocalizations.of(context)!;
+  return switch (item) {
+    'Bio' => l10n.studentAboutYou,
+    'Field of study' => l10n.studentFieldOfStudy,
+    'University' => l10n.studentUniversity,
+    'Academic level' => l10n.studentAcademicLevel,
+    'Full name' => l10n.studentFullName,
+    'Email' => l10n.studentEmail,
+    'Location' => l10n.studentLocation,
+    'Phone' => l10n.studentPhone,
+    _ => item,
+  };
+}
 
 class _ActivityStrip extends StatelessWidget {
   final double completion;
@@ -1358,8 +1387,14 @@ class _ActivityStrip extends StatelessWidget {
                   children: [
                     Text(
                       completed
-                          ? 'Everything important is filled in'
-                          : '${missingItems.length} detail${missingItems.length == 1 ? '' : 's'} left',
+                          ? AppLocalizations.of(
+                              context,
+                            )!.studentEverythingImportantFilled
+                          : AppLocalizations.of(
+                              context,
+                            )!.studentProfileDetailsMissingCount(
+                              missingItems.length,
+                            ),
                       style: AppTypography.product(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -1368,7 +1403,9 @@ class _ActivityStrip extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      completed ? 'Complete' : 'In progress',
+                      completed
+                          ? AppLocalizations.of(context)!.studentComplete
+                          : AppLocalizations.of(context)!.studentInProgress,
                       style: AppTypography.product(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
@@ -1478,8 +1515,12 @@ class _ActivityStrip extends StatelessWidget {
                     children: [
                       Text(
                         focusItem == null
-                            ? 'You are in a strong place'
-                            : 'Best next update: $focusItem',
+                            ? AppLocalizations.of(context)!.studentStrongPlace
+                            : AppLocalizations.of(
+                                context,
+                              )!.studentBestNextUpdate(
+                                _localizedProfileFocusItem(context, focusItem!),
+                              ),
                         style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -1489,7 +1530,9 @@ class _ActivityStrip extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         focusItem == null
-                            ? 'Keep the profile current as your student journey changes.'
+                            ? AppLocalizations.of(
+                                context,
+                              )!.studentKeepProfileCurrent
                             : focusMessage,
                         style: AppTypography.product(
                           fontSize: 12.2,
@@ -1634,7 +1677,9 @@ class _DetailsCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      bio == null ? 'Bio still missing' : 'About you',
+                      bio == null
+                          ? AppLocalizations.of(context)!.studentBioStillMissing
+                          : AppLocalizations.of(context)!.studentAboutYou,
                       style: AppTypography.product(
                         fontSize: 12.8,
                         fontWeight: FontWeight.w700,
@@ -1645,8 +1690,7 @@ class _DetailsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  bio ??
-                      'A short bio helps your profile feel intentional and gives people a quick sense of your direction.',
+                  bio ?? AppLocalizations.of(context)!.studentBioHelpText,
                   style: AppTypography.product(
                     fontSize: 11.8,
                     fontWeight: FontWeight.w500,
@@ -1833,20 +1877,18 @@ class _LinksCard extends StatelessWidget {
               );
               final savedCard = _FeaturedActionCard(
                 title: AppLocalizations.of(context)!.uiSavedCollection,
-                subtitle: savedCount == 0
-                    ? 'Nothing saved yet'
-                    : savedCount == 1
-                    ? '1 saved item'
-                    : '$savedCount saved items',
+                subtitle: AppLocalizations.of(
+                  context,
+                )!.studentProfileSavedItemsCount(savedCount),
                 icon: Icons.bookmark_outline_rounded,
                 color: SettingsFlowPalette.primary,
                 onTap: onSaved,
               );
               final appliedCard = _FeaturedActionCard(
                 title: AppLocalizations.of(context)!.uiApplied,
-                subtitle: appliedCount == 1
-                    ? '1 submitted opportunity'
-                    : '$appliedCount submitted opportunities',
+                subtitle: AppLocalizations.of(
+                  context,
+                )!.studentProfileSubmittedOpportunitiesCount(appliedCount),
                 icon: Icons.assignment_turned_in_outlined,
                 color: SettingsFlowPalette.accent,
                 onTap: onApplied,
@@ -1871,9 +1913,9 @@ class _LinksCard extends StatelessWidget {
             icon: Icons.notifications_none_rounded,
             color: SettingsFlowPalette.accent,
             title: AppLocalizations.of(context)!.uiNotifications,
-            subtitle: unreadNotifications > 0
-                ? '$unreadNotifications unread right now'
-                : 'Everything is caught up.',
+            subtitle: AppLocalizations.of(
+              context,
+            )!.studentProfileUnreadNotificationsCount(unreadNotifications),
             onTap: onNotifications,
             badge: unreadNotifications > 0 ? '$unreadNotifications' : null,
           ),

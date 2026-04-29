@@ -175,19 +175,20 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
         .toList();
     final existingSaved = matchingSaved.isNotEmpty ? matchingSaved.first : null;
 
+    final l10n = AppLocalizations.of(context)!;
     String? error;
-    var message = 'Internship saved';
+    var message = l10n.studentOpportunitySaved;
 
     if (existingSaved != null) {
       error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
-      message = 'Removed from saved internships';
+      message = l10n.studentRemovedFromSavedOpportunities;
     } else {
       error = await savedProvider.saveOpportunity(
         studentId: userId,
         opportunityId: opportunity.id,
         title: DisplayText.opportunityTitle(
           opportunity.title,
-          fallback: 'Open Internship',
+          fallback: l10n.uiOpenInternship,
         ),
         companyName: opportunity.companyName,
         type: opportunity.type,
@@ -202,7 +203,9 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
 
     context.showAppSnackBar(
       error ?? message,
-      title: error == null ? 'Saved items updated' : 'Save unavailable',
+      title: error == null
+          ? l10n.trainingSavedUpdatedTitle
+          : l10n.uiSaveUnavailable,
       type: error == null
           ? (existingSaved != null
                 ? AppFeedbackType.removed
@@ -236,7 +239,8 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       final matchesQuery = query.isEmpty || item.searchText.contains(query);
       final matchesChip = switch (_selectedQuickFilter) {
         null => true,
-        _InternshipQuickFilter.remote => item.workMode == 'Remote',
+        _InternshipQuickFilter.remote =>
+          item.workMode == AppLocalizations.of(context)!.workModeRemote,
         _InternshipQuickFilter.paid => item.isPaid,
         _InternshipQuickFilter.summer => item.matchesSummer,
         _InternshipQuickFilter.tech => item.matchesTech,
@@ -305,7 +309,8 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     if (item.isPaid) {
       score += 30;
     }
-    if (item.workMode == 'Remote' || item.workMode == 'Hybrid') {
+    if (item.workMode == AppLocalizations.of(context)!.workModeRemote ||
+        item.workMode == AppLocalizations.of(context)!.workModeHybrid) {
       score += 12;
     }
     if (item.deadline != null) {
@@ -370,7 +375,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       id: opportunity.id,
       title: DisplayText.opportunityTitle(
         opportunity.title,
-        fallback: 'Open Internship',
+        fallback: AppLocalizations.of(context)!.uiOpenInternship,
       ),
       companyName: companyName,
       companyLabel: companyLabel,
@@ -467,7 +472,9 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
 
   String _companyName(OpportunityModel opportunity) {
     final trimmed = opportunity.companyName.trim();
-    return trimmed.isEmpty ? 'FutureGate Partner' : trimmed;
+    return trimmed.isEmpty
+        ? AppLocalizations.of(context)!.studentFutureGatePartner
+        : trimmed;
   }
 
   String? _locationLabel(OpportunityModel opportunity) {
@@ -487,12 +494,26 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
   }
 
   String? _workModeLabel(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (_workModeKey(opportunity)) {
+      'remote' => l10n.workModeRemote,
+      'hybrid' => l10n.workModeHybrid,
+      'onsite' => l10n.workModeOnsite,
+      _ => null,
+    };
+  }
+
+  String? _workModeKey(OpportunityModel opportunity) {
     final normalizedMode =
         opportunity.workMode ??
         OpportunityMetadata.extractWorkMode(opportunity.rawData);
-    final formatted = OpportunityMetadata.formatWorkMode(normalizedMode);
-    if (formatted != null) {
-      return formatted;
+    if (normalizedMode != null) {
+      final lower = normalizedMode.trim().toLowerCase();
+      if (lower.contains('remote')) return 'remote';
+      if (lower.contains('hybrid')) return 'hybrid';
+      if (lower.contains('onsite') || lower.contains('on-site')) {
+        return 'onsite';
+      }
     }
 
     final searchable = [
@@ -502,15 +523,15 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     ].join(' ').toLowerCase();
 
     if (searchable.contains('hybrid')) {
-      return 'Hybrid';
+      return 'hybrid';
     }
     if (searchable.contains('remote')) {
-      return 'Remote';
+      return 'remote';
     }
     if (searchable.contains('on-site') ||
         searchable.contains('onsite') ||
         searchable.contains('on site')) {
-      return 'On-site';
+      return 'onsite';
     }
 
     return null;
@@ -527,11 +548,14 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
   }
 
   String _applyByText(DateTime? deadline) {
+    final l10n = AppLocalizations.of(context)!;
     if (deadline == null) {
-      return 'Applications open';
+      return l10n.studentApplicationsOpen;
     }
 
-    return 'Applying by ${OpportunityMetadata.formatDateLabel(deadline, pattern: 'MMM d')}';
+    return l10n.studentApplyByDate(
+      OpportunityMetadata.formatDateLabel(deadline, pattern: 'MMM d'),
+    );
   }
 
   String? _deadlinePillText(DateTime? deadline, int? daysUntilDeadline) {
@@ -541,13 +565,13 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       return null;
     }
     if (daysUntilDeadline == 0) {
-      return 'Today';
+      return AppLocalizations.of(context)!.studentRelativeToday;
     }
     if (daysUntilDeadline == 1) {
-      return '1 day left';
+      return AppLocalizations.of(context)!.dashDayLeft;
     }
     if (daysUntilDeadline <= 21) {
-      return '$daysUntilDeadline days left';
+      return AppLocalizations.of(context)!.dashDaysLeft(daysUntilDeadline);
     }
 
     return OpportunityMetadata.formatDateLabel(deadline, pattern: 'MMM d');
@@ -682,9 +706,9 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     final availableInternships = _selectAvailableInternships(
       filteredInternships,
     );
-    final availableCountLabel = availableInternships.length == 1
-        ? '1 internship'
-        : '${availableInternships.length} internships';
+    final availableCountLabel = AppLocalizations.of(
+      context,
+    )!.studentInternshipsAvailableCount(availableInternships.length);
     final gridCrossAxisCount = 2;
     final gridSpacing = isExtraCompact ? 12.0 : 14.0;
     final gridMainExtent = isExtraCompact
@@ -770,11 +794,19 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     if (filteredInternships.isEmpty)
                       _InternshipsEmptyState(
                         title: liveInternships.isEmpty
-                            ? 'No internships available right now'
-                            : 'No internships match this view',
+                            ? AppLocalizations.of(
+                                context,
+                              )!.uiNoInternshipsAvailableRightNow
+                            : AppLocalizations.of(
+                                context,
+                              )!.studentNoInternshipsMatchView,
                         subtitle: liveInternships.isEmpty
-                            ? 'Check back soon for new internship listings.'
-                            : 'Try adjusting your search or filters to explore more opportunities.',
+                            ? AppLocalizations.of(
+                                context,
+                              )!.studentCheckBackNewInternships
+                            : AppLocalizations.of(
+                                context,
+                              )!.studentTryAdjustSearchFiltersOpportunities,
                       )
                     else
                       _ApplyThisWeekSection(
@@ -811,11 +843,19 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                     if (filteredInternships.isEmpty)
                       _InternshipsEmptyState(
                         title: liveInternships.isEmpty
-                            ? 'No internships available right now'
-                            : 'No internships match this view',
+                            ? AppLocalizations.of(
+                                context,
+                              )!.uiNoInternshipsAvailableRightNow
+                            : AppLocalizations.of(
+                                context,
+                              )!.studentNoInternshipsMatchView,
                         subtitle: liveInternships.isEmpty
-                            ? 'Check back soon for new internship listings.'
-                            : 'Try adjusting your search to see more internship matches.',
+                            ? AppLocalizations.of(
+                                context,
+                              )!.studentCheckBackNewInternships
+                            : AppLocalizations.of(
+                                context,
+                              )!.studentTryAdjustSearchInternshipMatches,
                       )
                     else
                       AnimatedSwitcher(
@@ -954,7 +994,9 @@ class _InternshipsIntro extends StatelessWidget {
       TextSpan(
         children: [
           TextSpan(
-            text: 'Find your next\n',
+            text: AppLocalizations.of(
+              context,
+            )!.studentInternshipsHeadlinePrefix,
             style: AppTypography.product(
               fontSize: 30,
               fontWeight: FontWeight.w700,
@@ -963,7 +1005,9 @@ class _InternshipsIntro extends StatelessWidget {
             ),
           ),
           TextSpan(
-            text: 'placement',
+            text: AppLocalizations.of(
+              context,
+            )!.studentInternshipsHeadlineAccent,
             style: AppTypography.product(
               fontSize: 30,
               fontWeight: FontWeight.w700,
@@ -1552,7 +1596,8 @@ class _InternshipFeaturedCard extends StatelessWidget {
         final cardRadius = BorderRadius.circular(cardRadiusValue);
         final hasCompensation =
             compensationLabel != null && compensationLabel.isNotEmpty;
-        final actionLabel = statusData?.label ?? 'Apply Now';
+        final actionLabel =
+            statusData?.label ?? AppLocalizations.of(context)!.uiApplyNow;
         final useStackedFooter =
             constraints.maxWidth < 286 ||
             ((compensationLabel?.length ?? 0) > (isTight ? 18 : 20) &&

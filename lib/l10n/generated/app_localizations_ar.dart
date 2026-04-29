@@ -7876,8 +7876,18 @@ class AppLocalizationsAr extends AppLocalizations {
       'ابدأ بسيرتك الذاتية، ثم أكمل تفاصيل الملف الشخصي لتحسين نتائج المطابقة.';
 
   @override
-  String dashFocusProfileSubtitle(Object count) {
-    return 'لا تزال هناك $count تفاصيل ناقصة لتحسين المطابقة.';
+  String dashFocusProfileSubtitle(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'لا يزال هناك $count تفصيل ناقص لتحسين المطابقة.',
+      many: 'لا يزال هناك $count تفصيلًا ناقصًا لتحسين المطابقة.',
+      few: 'لا تزال هناك $count تفاصيل ناقصة لتحسين المطابقة.',
+      two: 'لا يزال هناك تفصيلان ناقصان لتحسين المطابقة.',
+      one: 'لا يزال هناك تفصيل واحد ناقص لتحسين المطابقة.',
+      zero: 'اكتملت تفاصيل ملفك لتحسين المطابقة.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7905,8 +7915,18 @@ class AppLocalizationsAr extends AppLocalizations {
       'استخدم الوصول السريع للانتقال إلى الوظائف أو التدريبات أو المنح أو قائمتك المحفوظة.';
 
   @override
-  String dashFocusClosingSoonSubtitle(Object count) {
-    return 'تُغلق $count فرصة خلال الأسبوعين القادمين.';
+  String dashFocusClosingSoonSubtitle(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تُغلق $count فرصة خلال الأسبوعين القادمين.',
+      many: 'تُغلق $count فرصة خلال الأسبوعين القادمين.',
+      few: 'تُغلق $count فرص خلال الأسبوعين القادمين.',
+      two: 'تُغلق فرصتان خلال الأسبوعين القادمين.',
+      one: 'تُغلق فرصة واحدة خلال الأسبوعين القادمين.',
+      zero: 'لا توجد فرص تُغلق خلال الأسبوعين القادمين.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7919,8 +7939,18 @@ class AppLocalizationsAr extends AppLocalizations {
       'احتفظ بأقوى الفرص والتمويلات وخيارات التعلم في متناولك.';
 
   @override
-  String dashSavedBannerCount(Object count) {
-    return '$count عنصر محفوظ جاهز لمراجعة ثانية.';
+  String dashSavedBannerCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصر محفوظ جاهز لمراجعة ثانية.',
+      many: '$count عنصرًا محفوظًا جاهزًا لمراجعة ثانية.',
+      few: '$count عناصر محفوظة جاهزة لمراجعة ثانية.',
+      two: 'عنصران محفوظان جاهزان لمراجعة ثانية.',
+      one: 'عنصر محفوظ واحد جاهز لمراجعة ثانية.',
+      zero: 'لا توجد عناصر محفوظة جاهزة بعد.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7933,8 +7963,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashDayLeft => 'يوم واحد متبقٍ';
 
   @override
-  String dashDaysLeft(Object count) {
-    return 'متبقٍ $count يوم';
+  String dashDaysLeft(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count يوم متبقٍ',
+      many: '$count يومًا متبقيًا',
+      few: '$count أيام متبقية',
+      two: 'يومان متبقيان',
+      one: 'يوم واحد متبقٍ',
+      zero: 'اليوم الأخير',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7957,8 +7997,18 @@ class AppLocalizationsAr extends AppLocalizations {
       'تُبرز التوصيات الجديدة كلما أُضيفت قوائم حديثة.';
 
   @override
-  String discoverLatestSubtitle(Object count) {
-    return 'أحدث $count وظائف وتدريبات ومسارات مدعومة';
+  String discoverLatestSubtitle(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'أحدث $count فرصة من الوظائف والتدريبات والمسارات المدعومة',
+      many: 'أحدث $count فرصة من الوظائف والتدريبات والمسارات المدعومة',
+      few: 'أحدث $count فرص من الوظائف والتدريبات والمسارات المدعومة',
+      two: 'أحدث فرصتين من الوظائف والتدريبات والمسارات المدعومة',
+      one: 'أحدث فرصة واحدة من الوظائف والتدريبات والمسارات المدعومة',
+      zero: 'أحدث الوظائف والتدريبات والمسارات المدعومة',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7974,16 +8024,36 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String studentApplicationsShown(Object count) {
-    return '$count طلبات معروضة';
+  String studentApplicationsShown(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count طلب معروض',
+      many: '$count طلبًا معروضًا',
+      few: '$count طلبات معروضة',
+      two: 'طلبان معروضان',
+      one: 'طلب واحد معروض',
+      zero: 'لا توجد طلبات معروضة',
+    );
+    return '$_temp0';
   }
 
   @override
   String get studentAppliedOpportunityOne => 'فرصة واحدة تم التقديم لها';
 
   @override
-  String studentAppliedOpportunitiesCount(Object count) {
-    return '$count فرص تم التقديم لها';
+  String studentAppliedOpportunitiesCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فرصة تم التقديم لها',
+      many: '$count فرصة تم التقديم لها',
+      few: '$count فرص تم التقديم لها',
+      two: 'فرصتان تم التقديم لهما',
+      one: 'فرصة واحدة تم التقديم لها',
+      zero: 'لا توجد فرص تم التقديم لها',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8216,8 +8286,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentCvWriteProfile => 'اكتب نبذة مهنية قصيرة.';
 
   @override
-  String studentCvEducationSaved(Object count) {
-    return 'تم حفظ $count عنصر تعليمي.';
+  String studentCvEducationSaved(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم حفظ $count عنصر تعليمي.',
+      many: 'تم حفظ $count عنصرًا تعليميًا.',
+      few: 'تم حفظ $count عناصر تعليمية.',
+      two: 'تم حفظ عنصرين تعليميين.',
+      one: 'تم حفظ عنصر تعليمي واحد.',
+      zero: 'لم يتم حفظ أي عنصر تعليمي.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8227,24 +8307,54 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentCvExperienceProjects => 'الخبرات أو المشاريع';
 
   @override
-  String studentCvExperienceSaved(Object count) {
-    return 'تم حفظ $count عنصر خبرة.';
+  String studentCvExperienceSaved(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم حفظ $count عنصر خبرة.',
+      many: 'تم حفظ $count عنصر خبرة.',
+      few: 'تم حفظ $count عناصر خبرة.',
+      two: 'تم حفظ عنصرَي خبرة.',
+      one: 'تم حفظ عنصر خبرة واحد.',
+      zero: 'لم يتم حفظ أي عنصر خبرة.',
+    );
+    return '$_temp0';
   }
 
   @override
   String get studentCvAddExperience => 'أضف تدريباً أو عملاً أو تجربة مشروع.';
 
   @override
-  String studentCvSkillsListed(Object count) {
-    return 'تم إدراج $count مهارات.';
+  String studentCvSkillsListed(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم إدراج $count مهارة.',
+      many: 'تم إدراج $count مهارة.',
+      few: 'تم إدراج $count مهارات.',
+      two: 'تم إدراج مهارتين.',
+      one: 'تم إدراج مهارة واحدة.',
+      zero: 'لم تُدرج أي مهارات.',
+    );
+    return '$_temp0';
   }
 
   @override
   String get studentCvListSkills => 'اذكر أقوى مهاراتك.';
 
   @override
-  String studentCvLanguagesListed(Object count) {
-    return 'تم إدراج $count لغات.';
+  String studentCvLanguagesListed(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم إدراج $count لغة.',
+      many: 'تم إدراج $count لغة.',
+      few: 'تم إدراج $count لغات.',
+      two: 'تم إدراج لغتين.',
+      one: 'تم إدراج لغة واحدة.',
+      zero: 'لم تُدرج أي لغات.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8300,8 +8410,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentCvReadiness => 'جاهزية CV';
 
   @override
-  String studentCvEssentialsComplete(Object completed, Object total) {
-    return '$completed من $total عناصر أساسية مكتملة';
+  String studentCvEssentialsComplete(num completed, num total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'اكتمل $completed من $total عنصر أساسي',
+      many: 'اكتمل $completed من $total عنصرًا أساسيًا',
+      few: 'اكتمل $completed من $total عناصر أساسية',
+      two: 'اكتمل $completed من عنصرين أساسيين',
+      one: 'اكتمل $completed من عنصر أساسي واحد',
+      zero: 'لم تكتمل أي عناصر أساسية',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8650,16 +8770,36 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentSponsoredFilter => 'مدعومة';
 
   @override
-  String studentItemsShown(Object count) {
-    return '$count عناصر معروضة';
+  String studentItemsShown(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصر معروض',
+      many: '$count عنصرًا معروضًا',
+      few: '$count عناصر معروضة',
+      two: 'عنصران معروضان',
+      one: 'عنصر واحد معروض',
+      zero: 'لا توجد عناصر معروضة',
+    );
+    return '$_temp0';
   }
 
   @override
   String get studentSavedItemOne => 'عنصر محفوظ واحد';
 
   @override
-  String studentSavedItemsCount(Object count) {
-    return '$count عناصر محفوظة';
+  String studentSavedItemsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصر محفوظ',
+      many: '$count عنصرًا محفوظًا',
+      few: '$count عناصر محفوظة',
+      two: 'عنصران محفوظان',
+      one: 'عنصر محفوظ واحد',
+      zero: 'لا توجد عناصر محفوظة',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8710,13 +8850,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentRelativeYesterday => 'أمس';
 
   @override
-  String studentDaysAgoCompact(Object count) {
-    return 'منذ $count يوم';
+  String studentDaysAgoCompact(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'منذ $count يوم',
+      many: 'منذ $count يومًا',
+      few: 'منذ $count أيام',
+      two: 'منذ يومين',
+      one: 'منذ يوم واحد',
+      zero: 'اليوم',
+    );
+    return '$_temp0';
   }
 
   @override
-  String studentWeeksAgoCompact(Object count) {
-    return 'منذ $count أسبوع';
+  String studentWeeksAgoCompact(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'منذ $count أسبوع',
+      many: 'منذ $count أسبوعًا',
+      few: 'منذ $count أسابيع',
+      two: 'منذ أسبوعين',
+      one: 'منذ أسبوع واحد',
+      zero: 'هذا الأسبوع',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8733,23 +8893,63 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String studentInterestedCountLower(Object count) {
-    return '$count مهتم';
+  String studentInterestedCountLower(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مهتم',
+      many: '$count مهتمًا',
+      few: '$count مهتمون',
+      two: 'مهتمان',
+      one: 'مهتم واحد',
+      zero: 'لا يوجد مهتمون',
+    );
+    return '$_temp0';
   }
 
   @override
-  String studentInterestedCountTitle(Object count) {
-    return '$count مهتم';
+  String studentInterestedCountTitle(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مهتم',
+      many: '$count مهتمًا',
+      few: '$count مهتمون',
+      two: 'مهتمان',
+      one: 'مهتم واحد',
+      zero: 'لا يوجد مهتمون',
+    );
+    return '$_temp0';
   }
 
   @override
-  String studentDashboardApprovedApplicationsTitle(Object count, Object word) {
-    return 'تم قبول $count $word.';
+  String studentDashboardApprovedApplicationsTitle(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم قبول $count طلب.',
+      many: 'تم قبول $count طلبًا.',
+      few: 'تم قبول $count طلبات.',
+      two: 'تم قبول طلبين.',
+      one: 'تم قبول طلب واحد.',
+      zero: 'لا توجد طلبات مقبولة بعد.',
+    );
+    return '$_temp0';
   }
 
   @override
-  String studentDashboardPendingApplicationsTitle(Object count, Object word) {
-    return '$count $word قيد المراجعة.';
+  String studentDashboardPendingApplicationsTitle(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count طلب قيد المراجعة.',
+      many: '$count طلبًا قيد المراجعة.',
+      few: '$count طلبات قيد المراجعة.',
+      two: 'طلبان قيد المراجعة.',
+      one: 'طلب واحد قيد المراجعة.',
+      zero: 'لا توجد طلبات قيد المراجعة.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8868,8 +9068,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentCvBuilderSteps => 'خطوات منشئ CV';
 
   @override
-  String studentCvSectionsComplete(Object completed, Object total) {
-    return '$completed من $total أقسام مكتملة';
+  String studentCvSectionsComplete(num completed, num total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'اكتمل $completed من $total قسم',
+      many: 'اكتمل $completed من $total قسمًا',
+      few: 'اكتمل $completed من $total أقسام',
+      two: 'اكتمل $completed من قسمين',
+      one: 'اكتمل $completed من قسم واحد',
+      zero: 'لم تكتمل أي أقسام',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8955,4 +9165,822 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentReviewProfile => 'مراجعة الملف الشخصي';
+
+  @override
+  String studentSkillCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مهارة',
+      many: '$count مهارة',
+      few: '$count مهارات',
+      two: 'مهارتان',
+      one: 'مهارة واحدة',
+      zero: 'لا توجد مهارات',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentExperienceBlockCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصر خبرة',
+      many: '$count عنصر خبرة',
+      few: '$count عناصر خبرة',
+      two: 'عنصرا خبرة',
+      one: 'عنصر خبرة واحد',
+      zero: 'لا توجد عناصر خبرة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentLanguageCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count لغة',
+      many: '$count لغة',
+      few: '$count لغات',
+      two: 'لغتان',
+      one: 'لغة واحدة',
+      zero: 'لا توجد لغات',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentOpenPositionsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count وظيفة مفتوحة',
+      many: '$count وظيفة مفتوحة',
+      few: '$count وظائف مفتوحة',
+      two: 'وظيفتان مفتوحتان',
+      one: 'وظيفة واحدة مفتوحة',
+      zero: 'لا توجد وظائف مفتوحة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentOpenInternshipsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تدريب مفتوح',
+      many: '$count تدريبًا مفتوحًا',
+      few: '$count تدريبات مفتوحة',
+      two: 'تدريبان مفتوحان',
+      one: 'تدريب واحد مفتوح',
+      zero: 'لا توجد تدريبات مفتوحة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentActiveTracksCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مسار نشط',
+      many: '$count مسارًا نشطًا',
+      few: '$count مسارات نشطة',
+      two: 'مساران نشطان',
+      one: 'مسار نشط واحد',
+      zero: 'لا توجد مسارات نشطة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentInternshipsAvailableCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تدريب',
+      many: '$count تدريبًا',
+      few: '$count تدريبات',
+      two: 'تدريبان',
+      one: 'تدريب واحد',
+      zero: 'لا توجد تدريبات',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentSponsoredProgramsLiveCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count برنامج متاح الآن',
+      many: '$count برنامجًا متاحًا الآن',
+      few: '$count برامج متاحة الآن',
+      two: 'برنامجان متاحان الآن',
+      one: 'برنامج واحد متاح الآن',
+      zero: 'لا توجد برامج متاحة الآن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentSavedRolesCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count وظيفة محفوظة',
+      many: '$count وظيفة محفوظة',
+      few: '$count وظائف محفوظة',
+      two: 'وظيفتان محفوظتان',
+      one: 'وظيفة محفوظة واحدة',
+      zero: 'لا توجد وظائف محفوظة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentSavedScholarshipsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count منحة محفوظة',
+      many: '$count منحة محفوظة',
+      few: '$count منح محفوظة',
+      two: 'منحتان محفوظتان',
+      one: 'منحة محفوظة واحدة',
+      zero: 'لا توجد منح محفوظة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentSavedTrainingsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تدريب محفوظ',
+      many: '$count تدريبًا محفوظًا',
+      few: '$count تدريبات محفوظة',
+      two: 'تدريبان محفوظان',
+      one: 'تدريب محفوظ واحد',
+      zero: 'لا توجد تدريبات محفوظة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentSavedIdeasCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فكرة محفوظة',
+      many: '$count فكرة محفوظة',
+      few: '$count أفكار محفوظة',
+      two: 'فكرتان محفوظتان',
+      one: 'فكرة محفوظة واحدة',
+      zero: 'لا توجد أفكار محفوظة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentDashboardSavedBadgeCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصر محفوظ',
+      many: '$count عنصرًا محفوظًا',
+      few: '$count عناصر محفوظة',
+      two: 'عنصران محفوظان',
+      one: 'عنصر محفوظ واحد',
+      zero: 'ابدأ الحفظ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentMatchingListingsFound(num count, Object filter) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نتيجة مطابقة لـ $filter',
+      many: '$count نتيجة مطابقة لـ $filter',
+      few: '$count نتائج مطابقة لـ $filter',
+      two: 'نتيجتان مطابقتان لـ $filter',
+      one: 'نتيجة واحدة مطابقة لـ $filter',
+      zero: 'لا توجد نتائج مطابقة لـ $filter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentOpenListingsFound(num count, Object filter) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نتيجة مفتوحة لـ $filter',
+      many: '$count نتيجة مفتوحة لـ $filter',
+      few: '$count نتائج مفتوحة لـ $filter',
+      two: 'نتيجتان مفتوحتان لـ $filter',
+      one: 'نتيجة واحدة مفتوحة لـ $filter',
+      zero: 'لا توجد نتائج مفتوحة لـ $filter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentMinutesAgoCompact(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'منذ $count دقيقة',
+      many: 'منذ $count دقيقة',
+      few: 'منذ $count دقائق',
+      two: 'منذ دقيقتين',
+      one: 'منذ دقيقة واحدة',
+      zero: 'الآن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentHoursAgoCompact(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'منذ $count ساعة',
+      many: 'منذ $count ساعة',
+      few: 'منذ $count ساعات',
+      two: 'منذ ساعتين',
+      one: 'منذ ساعة واحدة',
+      zero: 'الآن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentClosesInMinutes(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تُغلق خلال $count دقيقة',
+      many: 'تُغلق خلال $count دقيقة',
+      few: 'تُغلق خلال $count دقائق',
+      two: 'تُغلق خلال دقيقتين',
+      one: 'تُغلق خلال دقيقة واحدة',
+      zero: 'تُغلق الآن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentClosesInHours(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تُغلق خلال $count ساعة',
+      many: 'تُغلق خلال $count ساعة',
+      few: 'تُغلق خلال $count ساعات',
+      two: 'تُغلق خلال ساعتين',
+      one: 'تُغلق خلال ساعة واحدة',
+      zero: 'تُغلق الآن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentClosesInDays(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تُغلق خلال $count يوم',
+      many: 'تُغلق خلال $count يومًا',
+      few: 'تُغلق خلال $count أيام',
+      two: 'تُغلق خلال يومين',
+      one: 'تُغلق غدًا',
+      zero: 'تُغلق اليوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentProfileDetailsMissingCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تفصيل لا يزال يحتاج إلى اهتمام.',
+      many: '$count تفصيلًا لا يزال يحتاج إلى اهتمام.',
+      few: '$count تفاصيل لا تزال تحتاج إلى اهتمام.',
+      two: 'تفصيلان لا يزالان يحتاجان إلى اهتمام.',
+      one: 'تفصيل واحد لا يزال يحتاج إلى اهتمام.',
+      zero: 'تم إدخال كل التفاصيل المهمة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentProfileSavedItemsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصر محفوظ',
+      many: '$count عنصرًا محفوظًا',
+      few: '$count عناصر محفوظة',
+      two: 'عنصران محفوظان',
+      one: 'عنصر محفوظ واحد',
+      zero: 'لا توجد عناصر محفوظة بعد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentProfileSubmittedOpportunitiesCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فرصة مرسلة',
+      many: '$count فرصة مرسلة',
+      few: '$count فرص مرسلة',
+      two: 'فرصتان مرسلتان',
+      one: 'فرصة واحدة مرسلة',
+      zero: 'لا توجد فرص مرسلة بعد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String studentProfileUnreadNotificationsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count إشعار غير مقروء الآن',
+      many: '$count إشعارًا غير مقروء الآن',
+      few: '$count إشعارات غير مقروءة الآن',
+      two: 'إشعاران غير مقروءان الآن',
+      one: 'إشعار واحد غير مقروء الآن',
+      zero: 'كل شيء مُحدّث.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studentNoDeadline => 'لا يوجد موعد نهائي';
+
+  @override
+  String get studentDateUnavailable => 'التاريخ غير متاح';
+
+  @override
+  String get studentRecentlyAdded => 'أُضيفت مؤخرًا';
+
+  @override
+  String get studentDeadlineUnavailable => 'الموعد النهائي غير متاح';
+
+  @override
+  String get studentClosesToday => 'تُغلق اليوم';
+
+  @override
+  String get studentClosesTomorrow => 'تُغلق غدًا';
+
+  @override
+  String studentDeadlineDate(Object date) {
+    return 'الموعد النهائي $date';
+  }
+
+  @override
+  String studentApplyByDate(Object date) {
+    return 'قدّم قبل $date';
+  }
+
+  @override
+  String get studentApplicationsOpen => 'التقديم مفتوح';
+
+  @override
+  String get studentPartnerPick => 'اختيار الشريك';
+
+  @override
+  String get studentNewThisWeek => 'جديد هذا الأسبوع';
+
+  @override
+  String get studentRemoteFriendly => 'مناسب للعمل عن بُعد';
+
+  @override
+  String get studentHybridSetup => 'نظام عمل هجين';
+
+  @override
+  String get studentPaidTrack => 'مسار مدفوع';
+
+  @override
+  String get studentStudentGrowth => 'نمو طلابي';
+
+  @override
+  String get studentSponsoredSupport => 'دعم ممول';
+
+  @override
+  String get studentCareerMove => 'خطوة مهنية';
+
+  @override
+  String get studentOpenRole => 'وظيفة مفتوحة';
+
+  @override
+  String get studentFutureGatePartner => 'شريك FutureGate';
+
+  @override
+  String get studentNewBadge => 'جديد';
+
+  @override
+  String get studentUrgentBadge => 'عاجل';
+
+  @override
+  String get studentStudentPlacement => 'فرصة تدريبية للطلاب';
+
+  @override
+  String get studentPartnerBackedProgram => 'برنامج مدعوم من شريك';
+
+  @override
+  String get studentCareerOpportunity => 'فرصة مهنية';
+
+  @override
+  String get studentStrongOpportunitySubtitle => 'فرصة قوية تستحق نظرة أقرب.';
+
+  @override
+  String get studentSaveFailed => 'تعذّر الحفظ';
+
+  @override
+  String get studentUnsaved => 'غير محفوظ';
+
+  @override
+  String get studentEditEducation => 'تعديل التعليم';
+
+  @override
+  String get studentAddEducationTitle => 'إضافة تعليم';
+
+  @override
+  String get studentEditExperience => 'تعديل الخبرة';
+
+  @override
+  String get studentAddExperienceTitle => 'إضافة خبرة';
+
+  @override
+  String get studentDateRangeHint => 'مثال: يناير 2023 - حتى الآن';
+
+  @override
+  String get studentTypeAndPressEnter => 'اكتب ثم اضغط Enter';
+
+  @override
+  String get studentSavingChanges => 'جارٍ حفظ التغييرات...';
+
+  @override
+  String get studentChangesSaveAutomatically => 'يتم حفظ التغييرات تلقائيًا';
+
+  @override
+  String get studentDownloadCvPdf => 'تنزيل CV بصيغة PDF';
+
+  @override
+  String get studentDownloadUnavailableMessage => 'التنزيل غير متاح.';
+
+  @override
+  String get studentOpeningChat => 'جارٍ فتح المحادثة...';
+
+  @override
+  String get studentChatWithCompany => 'مراسلة الشركة';
+
+  @override
+  String get studentSaveOpportunityTooltip => 'حفظ الفرصة';
+
+  @override
+  String get studentUnsaveOpportunityTooltip => 'إزالة الفرصة من المحفوظات';
+
+  @override
+  String get studentWithdrawing => 'جارٍ السحب...';
+
+  @override
+  String get studentWithdrawApplicationAction => 'سحب الطلب';
+
+  @override
+  String get studentFundingNote => 'ملاحظة التمويل';
+
+  @override
+  String get studentCompensationNote => 'ملاحظة التعويض';
+
+  @override
+  String get studentProgramDetails => 'تفاصيل البرنامج';
+
+  @override
+  String get studentProfileTip => 'نصيحة للملف الشخصي';
+
+  @override
+  String get studentAboutYou => 'نبذة عنك';
+
+  @override
+  String get studentBioStillMissing => 'النبذة لا تزال ناقصة';
+
+  @override
+  String get studentAllClear => 'كل شيء جاهز';
+
+  @override
+  String get studentProfileHeadlineReady => 'جاهز للتميز';
+
+  @override
+  String get studentProfileHeadlineNearly => 'قريب من الاكتمال';
+
+  @override
+  String get studentProfileHeadlineFoundation => 'أساس قوي';
+
+  @override
+  String get studentProfileHeadlineCatchUp => 'ملفك يحتاج إلى بعض التحسين';
+
+  @override
+  String get studentProfileCompleteSummary =>
+      'كل العناصر الأساسية موجودة. يبدو الملف مكتملًا وواثقًا.';
+
+  @override
+  String studentProfileThoughtfulUpdates(Object label) {
+    return 'بعض التحديثات المدروسة ستجعل الملف أكثر اكتمالًا. $label';
+  }
+
+  @override
+  String studentProfileCoreStory(Object label) {
+    return 'بدأت القصة الأساسية تتضح. واصل إكمال العناصر المهمة لتحسين المطابقة. $label';
+  }
+
+  @override
+  String studentProfileRoomToGrow(Object label) {
+    return 'لا يزال هذا الملف يحتاج إلى تحسين ليترك أفضل انطباع أول. $label';
+  }
+
+  @override
+  String get studentFieldOfStudy => 'مجال الدراسة';
+
+  @override
+  String get studentAcademicLevel => 'المستوى الأكاديمي';
+
+  @override
+  String get studentFullName => 'الاسم الكامل';
+
+  @override
+  String get studentCvProfileHint =>
+      'رفع CV أو إنشاؤه يمنح ملفك قوة أكبر فورًا.';
+
+  @override
+  String get studentBioProfileHint =>
+      'نبذة قصيرة تجعل الملف أكثر إنسانية ووضوحًا وثقة.';
+
+  @override
+  String get studentFieldOfStudyProfileHint =>
+      'يساعد مجال دراستك على جعل الفرص أكثر صلة بك.';
+
+  @override
+  String get studentAcademicLevelProfileHint =>
+      'يساعد مستواك الأكاديمي جهات التوظيف والبرامج على فهم مرحلتك الحالية.';
+
+  @override
+  String get studentFullNameProfileHint =>
+      'يجعل اسمك الملف مكتملًا وسهل التعرّف عليه.';
+
+  @override
+  String get studentPhoneProfileHint =>
+      'يضيف رقم الهاتف قناة تواصل موثوقة أخرى.';
+
+  @override
+  String get studentProfileKeepRefining =>
+      'واصل تحسين العناصر الأساسية ليبدو الملف واضحًا من النظرة الأولى.';
+
+  @override
+  String get studentEverythingImportantFilled => 'تم إدخال كل العناصر المهمة';
+
+  @override
+  String get studentInProgress => 'قيد الإنجاز';
+
+  @override
+  String get studentStrongPlace => 'أنت في وضع قوي';
+
+  @override
+  String studentBestNextUpdate(Object label) {
+    return 'أفضل تحديث تالٍ: $label';
+  }
+
+  @override
+  String get studentKeepProfileCurrent =>
+      'حافظ على تحديث ملفك مع تطور رحلتك الطلابية.';
+
+  @override
+  String get studentBioHelpText =>
+      'تساعد النبذة القصيرة ملفك على أن يبدو مقصودًا وتمنح الآخرين فكرة سريعة عن توجهك.';
+
+  @override
+  String get studentOfficialPage => 'الصفحة الرسمية';
+
+  @override
+  String get studentOfficialScholarshipSource => 'المصدر الرسمي للمنحة';
+
+  @override
+  String get studentApplicationLinkUnavailable => 'رابط التقديم غير متاح';
+
+  @override
+  String get studentScholarshipNoExternalLink =>
+      'لم يرفق المزود رابط تقديم خارجيًا بعد.';
+
+  @override
+  String studentApplyOnHost(Object label) {
+    return 'التقديم عبر $label';
+  }
+
+  @override
+  String get studentRemovingSavedItem => 'جارٍ إزالة العنصر المحفوظ';
+
+  @override
+  String get studentRemoveSavedItem => 'إزالة العنصر المحفوظ';
+
+  @override
+  String get studentTrainingNoLinkYet => 'لا يحتوي هذا التدريب على رابط بعد.';
+
+  @override
+  String get studentIdeaRemovedFromCollection =>
+      'تمت إزالة الفكرة من مجموعتك المحفوظة.';
+
+  @override
+  String get studentIdeaSavedToCollection => 'تم حفظ الفكرة في مجموعتك.';
+
+  @override
+  String get studentIdeaUnsavedTitle => 'تمت إزالة الفكرة';
+
+  @override
+  String get studentIdeaSavedTitle => 'تم حفظ الفكرة';
+
+  @override
+  String get studentInterestRemovedMessage =>
+      'لم تعد مسجلًا كمهتم بهذه الفكرة.';
+
+  @override
+  String get studentInterestMarkedMessage =>
+      'أصبحت الآن مسجلًا كمهتم بهذه الفكرة.';
+
+  @override
+  String get studentInterestRemovedTitle => 'تمت إزالة الاهتمام';
+
+  @override
+  String get studentInterestMarkedTitle => 'تم تسجيل الاهتمام';
+
+  @override
+  String get studentApplicationMovedForward =>
+      '????? ?????. ???? ??????? ???????.';
+
+  @override
+  String get studentApplicationNotSelectedHistory =>
+      '?? ??? ????????? ??? ????? ????? ?? ????.';
+
+  @override
+  String get studentApplicationAwaitingDecision => '??????? ???? ?? ??????.';
+
+  @override
+  String get studentUpdate => '?????';
+
+  @override
+  String get studentJobsHeadlinePrefix => '???? ??? ?????\n';
+
+  @override
+  String get studentJobsHeadlineAccent => '???????';
+
+  @override
+  String get studentNoFeaturedJobsInView => '?? ???? ????? ????? ?? ??? ?????';
+
+  @override
+  String get studentNoRolesAvailableNow => '?? ???? ????? ????? ????';
+
+  @override
+  String get studentNoRolesMatchSearch => '?? ???? ????? ????? ????';
+
+  @override
+  String get studentCheckBackNewJobs => '???? ?????? ??????? ??? ????? ?????.';
+
+  @override
+  String get studentTryKeywordClearCategory =>
+      '???? ???? ??? ???? ?? ???? ???? ????? ????? ?????? ?? ???????.';
+
+  @override
+  String get studentTrySearchClearCategories =>
+      '???? ????? ??? ?? ???? ????? ?????? ????? ?????? ?? ???????.';
+
+  @override
+  String get studentListing => '?????';
+
+  @override
+  String get studentNoInternshipsMatchView => '?? ???? ??????? ????? ??? ?????';
+
+  @override
+  String get studentCheckBackNewInternships =>
+      '???? ?????? ??????? ??? ??????? ?????.';
+
+  @override
+  String get studentTryAdjustSearchFiltersOpportunities =>
+      '???? ????? ?? ??????? ???????? ?????? ?? ?????.';
+
+  @override
+  String get studentTryAdjustSearchInternshipMatches =>
+      '???? ????? ????? ?????? ?? ????????? ????????.';
+
+  @override
+  String get studentInternshipsHeadlinePrefix => '???? ??? ??????\n';
+
+  @override
+  String get studentInternshipsHeadlineAccent => '??????';
+
+  @override
+  String get studentSponsoredHeadlinePrefix => '???? ??? ?????\n';
+
+  @override
+  String get studentSponsoredHeadlineAccent => '??????';
+
+  @override
+  String get studentNoSponsoredProgramsMatchView =>
+      '?? ???? ????? ?????? ????? ??? ?????';
+
+  @override
+  String get studentCheckBackNewSponsoredPrograms =>
+      '???? ?????? ??????? ??? ????? ?????? ?????.';
+
+  @override
+  String get studentTryAdjustSearchSponsoredPrograms =>
+      '???? ????? ?? ??????? ????? ??????? ????????.';
+
+  @override
+  String studentSponsoredProgramsMatchedInFilter(num count, Object filter) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ?????? ????? ?? $filter',
+      many: '$count ???????? ??????? ?? $filter',
+      few: '$count ????? ?????? ?? $filter',
+      two: '???????? ??????? ?? $filter',
+      one: '?????? ???? ????? ?? $filter',
+      zero: '?? ???? ????? ?????? ?? $filter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studentLimited => '?????';
+
+  @override
+  String get studentApplyingEllipsis => '???? ???????...';
+
+  @override
+  String get studentSave => '???';
+
+  @override
+  String get studentPublisher => '??????';
+
+  @override
+  String get studentResponsibilities => '??????????';
+
+  @override
+  String get studentPartiallyFunded => '???? ??????';
+
+  @override
+  String get studentMeritBased => '??? ???????';
+
+  @override
+  String get studentPrestige => '??????';
+
+  @override
+  String studentTrainingErrorShowingAvailable(Object error) {
+    return '$error ??? ??? ????? ??????? ?????? ??????.';
+  }
+
+  @override
+  String get studentProfileSubtitleFallback =>
+      '???? ????? ?????? ?????? ???????.';
+
+  @override
+  String get studentUniversityProfileHint =>
+      '???? ??? ??????? ?????? ???????? ??? ???? ?????????.';
+
+  @override
+  String get studentEmailProfileHint =>
+      '????? ?????? ?????????? ??????? ??? ?????? ??????? ?????????? ???????? ??????.';
+
+  @override
+  String get studentLocationProfileHint =>
+      '????? ?????? ??? ?????? ??? ????? ?? ???? ???????? ????????.';
+
+  @override
+  String get studentUniversity => '???????';
+
+  @override
+  String get studentEmail => '?????? ??????????';
+
+  @override
+  String get studentLocation => '??????';
+
+  @override
+  String get studentPhone => '??????';
+
+  @override
+  String get studentWaitCoverUpload => '???? ?????? ?????? ??? ???? ??????.';
+
+  @override
+  String get studentFileUnavailable => '????? ??? ????.';
 }

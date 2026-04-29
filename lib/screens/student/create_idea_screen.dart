@@ -163,7 +163,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
     }
     if (_isUploadingImage) {
       context.showAppSnackBar(
-        'Please wait for the cover image upload to finish.',
+        AppLocalizations.of(context)!.studentWaitCoverUpload,
         title: AppLocalizations.of(context)!.uiUploadInProgress,
         type: AppFeedbackType.warning,
       );
@@ -638,7 +638,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
 
     final uri = Uri.tryParse(trimmed);
     if (uri == null || uri.pathSegments.isEmpty) {
-      return 'Current cover image';
+      return AppLocalizations.of(context)!.studentCurrentCoverImage;
     }
 
     return Uri.decodeComponent(uri.pathSegments.last);

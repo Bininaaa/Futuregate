@@ -351,7 +351,7 @@ class _SavedScreenState extends State<SavedScreen> {
     if (link.isEmpty) {
       if (!mounted) return;
       context.showAppSnackBar(
-        'This training does not have a link yet.',
+        AppLocalizations.of(context)!.studentTrainingNoLinkYet,
         title: AppLocalizations.of(context)!.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
@@ -1417,7 +1417,7 @@ class _SavedListCard extends StatelessWidget {
     final normalizedSummary = summary?.trim() ?? '';
     final normalizedSubtitle = subtitle.trim();
     final normalizedTypeLabel = typeLabel.trim().isEmpty
-        ? 'Saved item'
+        ? AppLocalizations.of(context)!.studentSavedItemFallback
         : typeLabel.trim();
     final isBusy = isOpening || isRemoving;
 
@@ -1569,7 +1569,9 @@ class _SavedRemoveMetaChip extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: isRemoving ? 'Removing saved item' : 'Remove saved item',
+      label: isRemoving
+          ? AppLocalizations.of(context)!.studentRemovingSavedItem
+          : AppLocalizations.of(context)!.studentRemoveSavedItem,
       child: InkWell(
         onTap: isDisabled ? null : onTap,
         borderRadius: BorderRadius.circular(999),

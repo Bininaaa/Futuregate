@@ -2347,30 +2347,32 @@
   "dashSectionDefaultSubtitle": "كل ما يهمك في متناول لمسة واحدة.",
   "dashFocusCvSubtitle": "السيرة الذاتية الجاهزة تُسرّع تقديمك على الوظائف والتدريبات والمنح.",
   "dashFocusCvInsight": "ابدأ بسيرتك الذاتية، ثم أكمل تفاصيل الملف الشخصي لتحسين نتائج المطابقة.",
-  "dashFocusProfileSubtitle": "لا تزال هناك {count} تفاصيل ناقصة لتحسين المطابقة.",
+  "dashFocusProfileSubtitle": "{count, plural, zero{اكتملت تفاصيل ملفك لتحسين المطابقة.} one{لا يزال هناك تفصيل واحد ناقص لتحسين المطابقة.} two{لا يزال هناك تفصيلان ناقصان لتحسين المطابقة.} few{لا تزال هناك {count} تفاصيل ناقصة لتحسين المطابقة.} many{لا يزال هناك {count} تفصيلًا ناقصًا لتحسين المطابقة.} other{لا يزال هناك {count} تفصيل ناقص لتحسين المطابقة.}}",
   "dashFocusInsightApprovedMomentum": "هذه لحظة مثالية لمواصلة الاستكشاف بينما يلقى ملفك الشخصي استحسانًا.",
   "dashFocusSubtitleInReview": "تابع عدة خيارات قوية بينما تنتظر الردود.",
   "dashFocusInsightInReview": "المتابعة الآن تُبقي مساراتك في حالة أفضل لاحقًا.",
   "dashFocusInsightSavedReady": "قائمتك المحفوظة جاهزة لمراجعة ثانية قبل اقتراب المواعيد.",
   "dashFocusSubtitleDiscover": "استكشف وظائف وتدريبات ومصادر تمويل واختيارات تعليمية مصممة للطلاب الطموحين.",
   "dashFocusInsightDiscover": "استخدم الوصول السريع للانتقال إلى الوظائف أو التدريبات أو المنح أو قائمتك المحفوظة.",
-  "dashFocusClosingSoonSubtitle": "تُغلق {count} فرصة خلال الأسبوعين القادمين.",
+  "dashFocusClosingSoonSubtitle": "{count, plural, zero{لا توجد فرص تُغلق خلال الأسبوعين القادمين.} one{تُغلق فرصة واحدة خلال الأسبوعين القادمين.} two{تُغلق فرصتان خلال الأسبوعين القادمين.} few{تُغلق {count} فرص خلال الأسبوعين القادمين.} many{تُغلق {count} فرصة خلال الأسبوعين القادمين.} other{تُغلق {count} فرصة خلال الأسبوعين القادمين.}}",
   "dashFocusClosingSoonInsight": "{company} هي الأولوية الآن، وتُغلق {deadline}.",
   "dashSavedBannerEmpty": "احتفظ بأقوى الفرص والتمويلات وخيارات التعلم في متناولك.",
-  "dashSavedBannerCount": "{count} عنصر محفوظ جاهز لمراجعة ثانية.",
+  "dashSavedBannerCount": "{count, plural, zero{لا توجد عناصر محفوظة جاهزة بعد.} one{عنصر محفوظ واحد جاهز لمراجعة ثانية.} two{عنصران محفوظان جاهزان لمراجعة ثانية.} few{{count} عناصر محفوظة جاهزة لمراجعة ثانية.} many{{count} عنصرًا محفوظًا جاهزًا لمراجعة ثانية.} other{{count} عنصر محفوظ جاهز لمراجعة ثانية.}}",
   "dashDeadlineSoon": "الموعد النهائي قريباً",
   "dashLastDay": "اليوم الأخير",
   "dashDayLeft": "يوم واحد متبقٍ",
-  "dashDaysLeft": "متبقٍ {count} يوم",
+  "dashDaysLeft": "{count, plural, zero{اليوم الأخير} one{يوم واحد متبقٍ} two{يومان متبقيان} few{{count} أيام متبقية} many{{count} يومًا متبقيًا} other{{count} يوم متبقٍ}}",
   "discoverResultsTitle": "النتائج",
   "discoverResultsSubtitle": "القوائم المطابقة لبحثك والفلاتر الحالية",
   "discoverNoResultsHint": "حاول تعديل بحثك أو الفلاتر لاكتشاف مزيد من النتائج.",
   "discoverTrendingSubtitle": "اختيارات حديثة ومميزة وعالية الجودة من البيانات المباشرة",
   "discoverTrendingEmptyHint": "تُبرز التوصيات الجديدة كلما أُضيفت قوائم حديثة.",
-  "discoverLatestSubtitle": "أحدث {count} وظائف وتدريبات ومسارات مدعومة",
+  "discoverLatestSubtitle": "{count, plural, zero{أحدث الوظائف والتدريبات والمسارات المدعومة} one{أحدث فرصة واحدة من الوظائف والتدريبات والمسارات المدعومة} two{أحدث فرصتين من الوظائف والتدريبات والمسارات المدعومة} few{أحدث {count} فرص من الوظائف والتدريبات والمسارات المدعومة} many{أحدث {count} فرصة من الوظائف والتدريبات والمسارات المدعومة} other{أحدث {count} فرصة من الوظائف والتدريبات والمسارات المدعومة}}",
   "@dashDaysLeft": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "@dashFocusClosingSoonInsight": {
@@ -2381,12 +2383,16 @@
   },
   "@dashFocusProfileSubtitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "@discoverLatestSubtitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentOpportunityNoLongerAvailableOpen": "لم تعد هذه الفرصة متاحة للفتح.",
@@ -2398,17 +2404,21 @@
       "label": {}
     }
   },
-  "studentApplicationsShown": "{count} طلبات معروضة",
+  "studentApplicationsShown": "{count, plural, zero{لا توجد طلبات معروضة} one{طلب واحد معروض} two{طلبان معروضان} few{{count} طلبات معروضة} many{{count} طلبًا معروضًا} other{{count} طلب معروض}}",
   "@studentApplicationsShown": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentAppliedOpportunityOne": "فرصة واحدة تم التقديم لها",
-  "studentAppliedOpportunitiesCount": "{count} فرص تم التقديم لها",
+  "studentAppliedOpportunitiesCount": "{count, plural, zero{لا توجد فرص تم التقديم لها} one{فرصة واحدة تم التقديم لها} two{فرصتان تم التقديم لهما} few{{count} فرص تم التقديم لها} many{{count} فرصة تم التقديم لها} other{{count} فرصة تم التقديم لها}}",
   "@studentAppliedOpportunitiesCount": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentBrowseOpportunities": "تصفح الفرص",
@@ -2489,32 +2499,40 @@
   "studentCvAddNameEmail": "أضف اسمك وبريدك الإلكتروني.",
   "studentCvProfileIntroReady": "يحتوي ملفك على مقدمة قصيرة.",
   "studentCvWriteProfile": "اكتب نبذة مهنية قصيرة.",
-  "studentCvEducationSaved": "تم حفظ {count} عنصر تعليمي.",
+  "studentCvEducationSaved": "{count, plural, zero{لم يتم حفظ أي عنصر تعليمي.} one{تم حفظ عنصر تعليمي واحد.} two{تم حفظ عنصرين تعليميين.} few{تم حفظ {count} عناصر تعليمية.} many{تم حفظ {count} عنصرًا تعليميًا.} other{تم حفظ {count} عنصر تعليمي.}}",
   "@studentCvEducationSaved": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddEducation": "أضف أحدث شهادة أو تكوين لديك.",
   "studentCvExperienceProjects": "الخبرات أو المشاريع",
-  "studentCvExperienceSaved": "تم حفظ {count} عنصر خبرة.",
+  "studentCvExperienceSaved": "{count, plural, zero{لم يتم حفظ أي عنصر خبرة.} one{تم حفظ عنصر خبرة واحد.} two{تم حفظ عنصرَي خبرة.} few{تم حفظ {count} عناصر خبرة.} many{تم حفظ {count} عنصر خبرة.} other{تم حفظ {count} عنصر خبرة.}}",
   "@studentCvExperienceSaved": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddExperience": "أضف تدريباً أو عملاً أو تجربة مشروع.",
-  "studentCvSkillsListed": "تم إدراج {count} مهارات.",
+  "studentCvSkillsListed": "{count, plural, zero{لم تُدرج أي مهارات.} one{تم إدراج مهارة واحدة.} two{تم إدراج مهارتين.} few{تم إدراج {count} مهارات.} many{تم إدراج {count} مهارة.} other{تم إدراج {count} مهارة.}}",
   "@studentCvSkillsListed": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvListSkills": "اذكر أقوى مهاراتك.",
-  "studentCvLanguagesListed": "تم إدراج {count} لغات.",
+  "studentCvLanguagesListed": "{count, plural, zero{لم تُدرج أي لغات.} one{تم إدراج لغة واحدة.} two{تم إدراج لغتين.} few{تم إدراج {count} لغات.} many{تم إدراج {count} لغة.} other{تم إدراج {count} لغة.}}",
   "@studentCvLanguagesListed": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddLanguages": "أضف اللغات التي ينبغي أن يعرفها مسؤولو التوظيف.",
@@ -2538,11 +2556,15 @@
   "studentViewActiveCv": "عرض CV النشط",
   "studentSaveAsPdf": "حفظ كـ PDF",
   "studentCvReadiness": "جاهزية CV",
-  "studentCvEssentialsComplete": "{completed} من {total} عناصر أساسية مكتملة",
+  "studentCvEssentialsComplete": "{total, plural, zero{لم تكتمل أي عناصر أساسية} one{اكتمل {completed} من عنصر أساسي واحد} two{اكتمل {completed} من عنصرين أساسيين} few{اكتمل {completed} من {total} عناصر أساسية} many{اكتمل {completed} من {total} عنصرًا أساسيًا} other{اكتمل {completed} من {total} عنصر أساسي}}",
   "@studentCvEssentialsComplete": {
     "placeholders": {
-      "completed": {},
-      "total": {}
+      "completed": {
+        "type": "num"
+      },
+      "total": {
+        "type": "num"
+      }
     }
   },
   "studentUploadedPdfActive": "ملف PDF المرفوع نشط",
@@ -2711,17 +2733,21 @@
   "studentRemovedFromSavedIdeas": "تمت الإزالة من الأفكار المحفوظة",
   "studentSavedFilterTrainings": "التدريبات",
   "studentSponsoredFilter": "مدعومة",
-  "studentItemsShown": "{count} عناصر معروضة",
+  "studentItemsShown": "{count, plural, zero{لا توجد عناصر معروضة} one{عنصر واحد معروض} two{عنصران معروضان} few{{count} عناصر معروضة} many{{count} عنصرًا معروضًا} other{{count} عنصر معروض}}",
   "@studentItemsShown": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentSavedItemOne": "عنصر محفوظ واحد",
-  "studentSavedItemsCount": "{count} عناصر محفوظة",
+  "studentSavedItemsCount": "{count, plural, zero{لا توجد عناصر محفوظة} one{عنصر محفوظ واحد} two{عنصران محفوظان} few{{count} عناصر محفوظة} many{{count} عنصرًا محفوظًا} other{{count} عنصر محفوظ}}",
   "@studentSavedItemsCount": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentNoSavedItemsMatchView": "لا توجد عناصر محفوظة تطابق هذا العرض",
@@ -2743,16 +2769,20 @@
   "studentRelativeSaved": "محفوظ",
   "studentRelativeToday": "اليوم",
   "studentRelativeYesterday": "أمس",
-  "studentDaysAgoCompact": "منذ {count} يوم",
+  "studentDaysAgoCompact": "{count, plural, zero{اليوم} one{منذ يوم واحد} two{منذ يومين} few{منذ {count} أيام} many{منذ {count} يومًا} other{منذ {count} يوم}}",
   "@studentDaysAgoCompact": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentWeeksAgoCompact": "منذ {count} أسبوع",
+  "studentWeeksAgoCompact": "{count, plural, zero{هذا الأسبوع} one{منذ أسبوع واحد} two{منذ أسبوعين} few{منذ {count} أسابيع} many{منذ {count} أسبوعًا} other{منذ {count} أسبوع}}",
   "@studentWeeksAgoCompact": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentNoDeadlineShared": "لم تتم مشاركة موعد نهائي",
@@ -2768,30 +2798,36 @@
       "date": {}
     }
   },
-  "studentInterestedCountLower": "{count} مهتم",
+  "studentInterestedCountLower": "{count, plural, zero{لا يوجد مهتمون} one{مهتم واحد} two{مهتمان} few{{count} مهتمون} many{{count} مهتمًا} other{{count} مهتم}}",
   "@studentInterestedCountLower": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentInterestedCountTitle": "{count} مهتم",
+  "studentInterestedCountTitle": "{count, plural, zero{لا يوجد مهتمون} one{مهتم واحد} two{مهتمان} few{{count} مهتمون} many{{count} مهتمًا} other{{count} مهتم}}",
   "@studentInterestedCountTitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentDashboardApprovedApplicationsTitle": "تم قبول {count} {word}.",
+  "studentDashboardApprovedApplicationsTitle": "{count, plural, zero{لا توجد طلبات مقبولة بعد.} one{تم قبول طلب واحد.} two{تم قبول طلبين.} few{تم قبول {count} طلبات.} many{تم قبول {count} طلبًا.} other{تم قبول {count} طلب.}}",
   "@studentDashboardApprovedApplicationsTitle": {
     "placeholders": {
-      "count": {},
-      "word": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentDashboardPendingApplicationsTitle": "{count} {word} قيد المراجعة.",
+  "studentDashboardPendingApplicationsTitle": "{count, plural, zero{لا توجد طلبات قيد المراجعة.} one{طلب واحد قيد المراجعة.} two{طلبان قيد المراجعة.} few{{count} طلبات قيد المراجعة.} many{{count} طلبًا قيد المراجعة.} other{{count} طلب قيد المراجعة.}}",
   "@studentDashboardPendingApplicationsTitle": {
     "placeholders": {
-      "count": {},
-      "word": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentApplicationSingular": "طلب",
@@ -2840,11 +2876,15 @@
   "studentManaged": "مُدار",
   "studentReset": "إعادة ضبط",
   "studentCvBuilderSteps": "خطوات منشئ CV",
-  "studentCvSectionsComplete": "{completed} من {total} أقسام مكتملة",
+  "studentCvSectionsComplete": "{total, plural, zero{لم تكتمل أي أقسام} one{اكتمل {completed} من قسم واحد} two{اكتمل {completed} من قسمين} few{اكتمل {completed} من {total} أقسام} many{اكتمل {completed} من {total} قسمًا} other{اكتمل {completed} من {total} قسم}}",
   "@studentCvSectionsComplete": {
     "placeholders": {
-      "completed": {},
-      "total": {}
+      "completed": {
+        "type": "num"
+      },
+      "total": {
+        "type": "num"
+      }
     }
   },
   "studentAddYourEducation": "أضف تعليمك",
@@ -2881,5 +2921,395 @@
   "studentProfileHintGoodShape": "ملفك الشخصي في حالة جيدة للفرصة التالية التي تفتحها.",
   "studentAddCv": "إضافة CV",
   "studentCompleteProfile": "إكمال الملف الشخصي",
-  "studentReviewProfile": "مراجعة الملف الشخصي"
+  "studentReviewProfile": "مراجعة الملف الشخصي",
+  "@dashFocusClosingSoonSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "@dashSavedBannerCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSkillCount": "{count, plural, zero{لا توجد مهارات} one{مهارة واحدة} two{مهارتان} few{{count} مهارات} many{{count} مهارة} other{{count} مهارة}}",
+  "@studentSkillCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentExperienceBlockCount": "{count, plural, zero{لا توجد عناصر خبرة} one{عنصر خبرة واحد} two{عنصرا خبرة} few{{count} عناصر خبرة} many{{count} عنصر خبرة} other{{count} عنصر خبرة}}",
+  "@studentExperienceBlockCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentLanguageCount": "{count, plural, zero{لا توجد لغات} one{لغة واحدة} two{لغتان} few{{count} لغات} many{{count} لغة} other{{count} لغة}}",
+  "@studentLanguageCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentOpenPositionsCount": "{count, plural, zero{لا توجد وظائف مفتوحة} one{وظيفة واحدة مفتوحة} two{وظيفتان مفتوحتان} few{{count} وظائف مفتوحة} many{{count} وظيفة مفتوحة} other{{count} وظيفة مفتوحة}}",
+  "@studentOpenPositionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentOpenInternshipsCount": "{count, plural, zero{لا توجد تدريبات مفتوحة} one{تدريب واحد مفتوح} two{تدريبان مفتوحان} few{{count} تدريبات مفتوحة} many{{count} تدريبًا مفتوحًا} other{{count} تدريب مفتوح}}",
+  "@studentOpenInternshipsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentActiveTracksCount": "{count, plural, zero{لا توجد مسارات نشطة} one{مسار نشط واحد} two{مساران نشطان} few{{count} مسارات نشطة} many{{count} مسارًا نشطًا} other{{count} مسار نشط}}",
+  "@studentActiveTracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentInternshipsAvailableCount": "{count, plural, zero{لا توجد تدريبات} one{تدريب واحد} two{تدريبان} few{{count} تدريبات} many{{count} تدريبًا} other{{count} تدريب}}",
+  "@studentInternshipsAvailableCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSponsoredProgramsLiveCount": "{count, plural, zero{لا توجد برامج متاحة الآن} one{برنامج واحد متاح الآن} two{برنامجان متاحان الآن} few{{count} برامج متاحة الآن} many{{count} برنامجًا متاحًا الآن} other{{count} برنامج متاح الآن}}",
+  "@studentSponsoredProgramsLiveCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedRolesCount": "{count, plural, zero{لا توجد وظائف محفوظة} one{وظيفة محفوظة واحدة} two{وظيفتان محفوظتان} few{{count} وظائف محفوظة} many{{count} وظيفة محفوظة} other{{count} وظيفة محفوظة}}",
+  "@studentSavedRolesCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedScholarshipsCount": "{count, plural, zero{لا توجد منح محفوظة} one{منحة محفوظة واحدة} two{منحتان محفوظتان} few{{count} منح محفوظة} many{{count} منحة محفوظة} other{{count} منحة محفوظة}}",
+  "@studentSavedScholarshipsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedTrainingsCount": "{count, plural, zero{لا توجد تدريبات محفوظة} one{تدريب محفوظ واحد} two{تدريبان محفوظان} few{{count} تدريبات محفوظة} many{{count} تدريبًا محفوظًا} other{{count} تدريب محفوظ}}",
+  "@studentSavedTrainingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedIdeasCount": "{count, plural, zero{لا توجد أفكار محفوظة} one{فكرة محفوظة واحدة} two{فكرتان محفوظتان} few{{count} أفكار محفوظة} many{{count} فكرة محفوظة} other{{count} فكرة محفوظة}}",
+  "@studentSavedIdeasCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentDashboardSavedBadgeCount": "{count, plural, zero{ابدأ الحفظ} one{عنصر محفوظ واحد} two{عنصران محفوظان} few{{count} عناصر محفوظة} many{{count} عنصرًا محفوظًا} other{{count} عنصر محفوظ}}",
+  "@studentDashboardSavedBadgeCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentMatchingListingsFound": "{count, plural, zero{لا توجد نتائج مطابقة لـ {filter}} one{نتيجة واحدة مطابقة لـ {filter}} two{نتيجتان مطابقتان لـ {filter}} few{{count} نتائج مطابقة لـ {filter}} many{{count} نتيجة مطابقة لـ {filter}} other{{count} نتيجة مطابقة لـ {filter}}}",
+  "@studentMatchingListingsFound": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentOpenListingsFound": "{count, plural, zero{لا توجد نتائج مفتوحة لـ {filter}} one{نتيجة واحدة مفتوحة لـ {filter}} two{نتيجتان مفتوحتان لـ {filter}} few{{count} نتائج مفتوحة لـ {filter}} many{{count} نتيجة مفتوحة لـ {filter}} other{{count} نتيجة مفتوحة لـ {filter}}}",
+  "@studentOpenListingsFound": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentMinutesAgoCompact": "{count, plural, zero{الآن} one{منذ دقيقة واحدة} two{منذ دقيقتين} few{منذ {count} دقائق} many{منذ {count} دقيقة} other{منذ {count} دقيقة}}",
+  "@studentMinutesAgoCompact": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentHoursAgoCompact": "{count, plural, zero{الآن} one{منذ ساعة واحدة} two{منذ ساعتين} few{منذ {count} ساعات} many{منذ {count} ساعة} other{منذ {count} ساعة}}",
+  "@studentHoursAgoCompact": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInMinutes": "{count, plural, zero{تُغلق الآن} one{تُغلق خلال دقيقة واحدة} two{تُغلق خلال دقيقتين} few{تُغلق خلال {count} دقائق} many{تُغلق خلال {count} دقيقة} other{تُغلق خلال {count} دقيقة}}",
+  "@studentClosesInMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInHours": "{count, plural, zero{تُغلق الآن} one{تُغلق خلال ساعة واحدة} two{تُغلق خلال ساعتين} few{تُغلق خلال {count} ساعات} many{تُغلق خلال {count} ساعة} other{تُغلق خلال {count} ساعة}}",
+  "@studentClosesInHours": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInDays": "{count, plural, zero{تُغلق اليوم} one{تُغلق غدًا} two{تُغلق خلال يومين} few{تُغلق خلال {count} أيام} many{تُغلق خلال {count} يومًا} other{تُغلق خلال {count} يوم}}",
+  "@studentClosesInDays": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileDetailsMissingCount": "{count, plural, zero{تم إدخال كل التفاصيل المهمة} one{تفصيل واحد لا يزال يحتاج إلى اهتمام.} two{تفصيلان لا يزالان يحتاجان إلى اهتمام.} few{{count} تفاصيل لا تزال تحتاج إلى اهتمام.} many{{count} تفصيلًا لا يزال يحتاج إلى اهتمام.} other{{count} تفصيل لا يزال يحتاج إلى اهتمام.}}",
+  "@studentProfileDetailsMissingCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileSavedItemsCount": "{count, plural, zero{لا توجد عناصر محفوظة بعد} one{عنصر محفوظ واحد} two{عنصران محفوظان} few{{count} عناصر محفوظة} many{{count} عنصرًا محفوظًا} other{{count} عنصر محفوظ}}",
+  "@studentProfileSavedItemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileSubmittedOpportunitiesCount": "{count, plural, zero{لا توجد فرص مرسلة بعد} one{فرصة واحدة مرسلة} two{فرصتان مرسلتان} few{{count} فرص مرسلة} many{{count} فرصة مرسلة} other{{count} فرصة مرسلة}}",
+  "@studentProfileSubmittedOpportunitiesCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileUnreadNotificationsCount": "{count, plural, zero{كل شيء مُحدّث.} one{إشعار واحد غير مقروء الآن} two{إشعاران غير مقروءان الآن} few{{count} إشعارات غير مقروءة الآن} many{{count} إشعارًا غير مقروء الآن} other{{count} إشعار غير مقروء الآن}}",
+  "@studentProfileUnreadNotificationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentNoDeadline": "لا يوجد موعد نهائي",
+  "studentDateUnavailable": "التاريخ غير متاح",
+  "studentRecentlyAdded": "أُضيفت مؤخرًا",
+  "studentDeadlineUnavailable": "الموعد النهائي غير متاح",
+  "studentClosesToday": "تُغلق اليوم",
+  "studentClosesTomorrow": "تُغلق غدًا",
+  "studentDeadlineDate": "الموعد النهائي {date}",
+  "@studentDeadlineDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentApplyByDate": "قدّم قبل {date}",
+  "@studentApplyByDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentApplicationsOpen": "التقديم مفتوح",
+  "studentPartnerPick": "اختيار الشريك",
+  "studentNewThisWeek": "جديد هذا الأسبوع",
+  "studentRemoteFriendly": "مناسب للعمل عن بُعد",
+  "studentHybridSetup": "نظام عمل هجين",
+  "studentPaidTrack": "مسار مدفوع",
+  "studentStudentGrowth": "نمو طلابي",
+  "studentSponsoredSupport": "دعم ممول",
+  "studentCareerMove": "خطوة مهنية",
+  "studentOpenRole": "وظيفة مفتوحة",
+  "studentFutureGatePartner": "شريك FutureGate",
+  "studentNewBadge": "جديد",
+  "studentUrgentBadge": "عاجل",
+  "studentStudentPlacement": "فرصة تدريبية للطلاب",
+  "studentPartnerBackedProgram": "برنامج مدعوم من شريك",
+  "studentCareerOpportunity": "فرصة مهنية",
+  "studentStrongOpportunitySubtitle": "فرصة قوية تستحق نظرة أقرب.",
+  "studentSaveFailed": "تعذّر الحفظ",
+  "studentUnsaved": "غير محفوظ",
+  "studentEditEducation": "تعديل التعليم",
+  "studentAddEducationTitle": "إضافة تعليم",
+  "studentEditExperience": "تعديل الخبرة",
+  "studentAddExperienceTitle": "إضافة خبرة",
+  "studentDateRangeHint": "مثال: يناير 2023 - حتى الآن",
+  "studentTypeAndPressEnter": "اكتب ثم اضغط Enter",
+  "studentSavingChanges": "جارٍ حفظ التغييرات...",
+  "studentChangesSaveAutomatically": "يتم حفظ التغييرات تلقائيًا",
+  "studentDownloadCvPdf": "تنزيل CV بصيغة PDF",
+  "studentDownloadUnavailableMessage": "التنزيل غير متاح.",
+  "studentOpeningChat": "جارٍ فتح المحادثة...",
+  "studentChatWithCompany": "مراسلة الشركة",
+  "studentSaveOpportunityTooltip": "حفظ الفرصة",
+  "studentUnsaveOpportunityTooltip": "إزالة الفرصة من المحفوظات",
+  "studentWithdrawing": "جارٍ السحب...",
+  "studentWithdrawApplicationAction": "سحب الطلب",
+  "studentFundingNote": "ملاحظة التمويل",
+  "studentCompensationNote": "ملاحظة التعويض",
+  "studentProgramDetails": "تفاصيل البرنامج",
+  "studentProfileTip": "نصيحة للملف الشخصي",
+  "studentAboutYou": "نبذة عنك",
+  "studentBioStillMissing": "النبذة لا تزال ناقصة",
+  "studentAllClear": "كل شيء جاهز",
+  "studentProfileHeadlineReady": "جاهز للتميز",
+  "studentProfileHeadlineNearly": "قريب من الاكتمال",
+  "studentProfileHeadlineFoundation": "أساس قوي",
+  "studentProfileHeadlineCatchUp": "ملفك يحتاج إلى بعض التحسين",
+  "studentProfileCompleteSummary": "كل العناصر الأساسية موجودة. يبدو الملف مكتملًا وواثقًا.",
+  "studentProfileThoughtfulUpdates": "بعض التحديثات المدروسة ستجعل الملف أكثر اكتمالًا. {label}",
+  "@studentProfileThoughtfulUpdates": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentProfileCoreStory": "بدأت القصة الأساسية تتضح. واصل إكمال العناصر المهمة لتحسين المطابقة. {label}",
+  "@studentProfileCoreStory": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentProfileRoomToGrow": "لا يزال هذا الملف يحتاج إلى تحسين ليترك أفضل انطباع أول. {label}",
+  "@studentProfileRoomToGrow": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentFieldOfStudy": "مجال الدراسة",
+  "studentAcademicLevel": "المستوى الأكاديمي",
+  "studentFullName": "الاسم الكامل",
+  "studentCvProfileHint": "رفع CV أو إنشاؤه يمنح ملفك قوة أكبر فورًا.",
+  "studentBioProfileHint": "نبذة قصيرة تجعل الملف أكثر إنسانية ووضوحًا وثقة.",
+  "studentFieldOfStudyProfileHint": "يساعد مجال دراستك على جعل الفرص أكثر صلة بك.",
+  "studentAcademicLevelProfileHint": "يساعد مستواك الأكاديمي جهات التوظيف والبرامج على فهم مرحلتك الحالية.",
+  "studentFullNameProfileHint": "يجعل اسمك الملف مكتملًا وسهل التعرّف عليه.",
+  "studentPhoneProfileHint": "يضيف رقم الهاتف قناة تواصل موثوقة أخرى.",
+  "studentProfileKeepRefining": "واصل تحسين العناصر الأساسية ليبدو الملف واضحًا من النظرة الأولى.",
+  "studentEverythingImportantFilled": "تم إدخال كل العناصر المهمة",
+  "studentInProgress": "قيد الإنجاز",
+  "studentStrongPlace": "أنت في وضع قوي",
+  "studentBestNextUpdate": "أفضل تحديث تالٍ: {label}",
+  "@studentBestNextUpdate": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentKeepProfileCurrent": "حافظ على تحديث ملفك مع تطور رحلتك الطلابية.",
+  "studentBioHelpText": "تساعد النبذة القصيرة ملفك على أن يبدو مقصودًا وتمنح الآخرين فكرة سريعة عن توجهك.",
+  "studentOfficialPage": "الصفحة الرسمية",
+  "studentOfficialScholarshipSource": "المصدر الرسمي للمنحة",
+  "studentApplicationLinkUnavailable": "رابط التقديم غير متاح",
+  "studentScholarshipNoExternalLink": "لم يرفق المزود رابط تقديم خارجيًا بعد.",
+  "studentApplyOnHost": "التقديم عبر {label}",
+  "@studentApplyOnHost": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentRemovingSavedItem": "جارٍ إزالة العنصر المحفوظ",
+  "studentRemoveSavedItem": "إزالة العنصر المحفوظ",
+  "studentTrainingNoLinkYet": "لا يحتوي هذا التدريب على رابط بعد.",
+  "studentIdeaRemovedFromCollection": "تمت إزالة الفكرة من مجموعتك المحفوظة.",
+  "studentIdeaSavedToCollection": "تم حفظ الفكرة في مجموعتك.",
+  "studentIdeaUnsavedTitle": "تمت إزالة الفكرة",
+  "studentIdeaSavedTitle": "تم حفظ الفكرة",
+  "studentInterestRemovedMessage": "لم تعد مسجلًا كمهتم بهذه الفكرة.",
+  "studentInterestMarkedMessage": "أصبحت الآن مسجلًا كمهتم بهذه الفكرة.",
+  "studentInterestRemovedTitle": "تمت إزالة الاهتمام",
+  "studentInterestMarkedTitle": "تم تسجيل الاهتمام",
+  "studentApplicationMovedForward": "????? ?????. ???? ??????? ???????.",
+  "studentApplicationNotSelectedHistory": "?? ??? ????????? ??? ????? ????? ?? ????.",
+  "studentApplicationAwaitingDecision": "??????? ???? ?? ??????.",
+  "studentUpdate": "?????",
+  "studentJobsHeadlinePrefix": "???? ??? ?????\n",
+  "studentJobsHeadlineAccent": "???????",
+  "studentNoFeaturedJobsInView": "?? ???? ????? ????? ?? ??? ?????",
+  "studentNoRolesAvailableNow": "?? ???? ????? ????? ????",
+  "studentNoRolesMatchSearch": "?? ???? ????? ????? ????",
+  "studentCheckBackNewJobs": "???? ?????? ??????? ??? ????? ?????.",
+  "studentTryKeywordClearCategory": "???? ???? ??? ???? ?? ???? ???? ????? ????? ?????? ?? ???????.",
+  "studentTrySearchClearCategories": "???? ????? ??? ?? ???? ????? ?????? ????? ?????? ?? ???????.",
+  "studentListing": "?????",
+  "studentNoInternshipsMatchView": "?? ???? ??????? ????? ??? ?????",
+  "studentCheckBackNewInternships": "???? ?????? ??????? ??? ??????? ?????.",
+  "studentTryAdjustSearchFiltersOpportunities": "???? ????? ?? ??????? ???????? ?????? ?? ?????.",
+  "studentTryAdjustSearchInternshipMatches": "???? ????? ????? ?????? ?? ????????? ????????.",
+  "studentInternshipsHeadlinePrefix": "???? ??? ??????\n",
+  "studentInternshipsHeadlineAccent": "??????",
+  "studentSponsoredHeadlinePrefix": "???? ??? ?????\n",
+  "studentSponsoredHeadlineAccent": "??????",
+  "studentNoSponsoredProgramsMatchView": "?? ???? ????? ?????? ????? ??? ?????",
+  "studentCheckBackNewSponsoredPrograms": "???? ?????? ??????? ??? ????? ?????? ?????.",
+  "studentTryAdjustSearchSponsoredPrograms": "???? ????? ?? ??????? ????? ??????? ????????.",
+  "studentSponsoredProgramsMatchedInFilter": "{count, plural, zero{?? ???? ????? ?????? ?? {filter}} one{?????? ???? ????? ?? {filter}} two{???????? ??????? ?? {filter}} few{{count} ????? ?????? ?? {filter}} many{{count} ???????? ??????? ?? {filter}} other{{count} ?????? ????? ?? {filter}}}",
+  "@studentSponsoredProgramsMatchedInFilter": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentLimited": "?????",
+  "studentApplyingEllipsis": "???? ???????...",
+  "studentSave": "???",
+  "studentPublisher": "??????",
+  "studentResponsibilities": "??????????",
+  "studentPartiallyFunded": "???? ??????",
+  "studentMeritBased": "??? ???????",
+  "studentPrestige": "??????",
+  "studentTrainingErrorShowingAvailable": "{error} ??? ??? ????? ??????? ?????? ??????.",
+  "@studentTrainingErrorShowingAvailable": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "studentProfileSubtitleFallback": "???? ????? ?????? ?????? ???????.",
+  "studentUniversityProfileHint": "???? ??? ??????? ?????? ???????? ??? ???? ?????????.",
+  "studentEmailProfileHint": "????? ?????? ?????????? ??????? ??? ?????? ??????? ?????????? ???????? ??????.",
+  "studentLocationProfileHint": "????? ?????? ??? ?????? ??? ????? ?? ???? ???????? ????????.",
+  "studentUniversity": "???????",
+  "studentEmail": "?????? ??????????",
+  "studentLocation": "??????",
+  "studentPhone": "??????",
+  "studentWaitCoverUpload": "???? ?????? ?????? ??? ???? ??????.",
+  "studentFileUnavailable": "????? ??? ????."
 }

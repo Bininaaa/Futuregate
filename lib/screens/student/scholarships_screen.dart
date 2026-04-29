@@ -229,6 +229,8 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
       scholarship.location?.trim() ?? '',
     ].where((value) => value.isNotEmpty).toList(growable: false);
 
+    final l10n = AppLocalizations.of(context)!;
+    final locationFallback = l10n.studentLocationNotSpecified;
     final error = existing != null
         ? await provider.unsaveScholarship(existing.id, userId)
         : await provider.saveScholarship(
@@ -238,7 +240,7 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
             provider: scholarship.provider,
             deadline: scholarship.deadline,
             location: locationParts.isEmpty
-                ? 'Location not specified'
+                ? locationFallback
                 : locationParts.join(', '),
             fundingType: scholarship.fundingType?.trim() ?? '',
             level: scholarship.level?.trim() ?? '',
@@ -251,9 +253,11 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
     context.showAppSnackBar(
       error ??
           (existing != null
-              ? 'This scholarship was removed from your saved list.'
-              : 'This scholarship has been saved.'),
-      title: error == null ? 'Saved items updated' : 'Update unavailable',
+              ? l10n.scholarshipRemovedSavedMessage
+              : l10n.scholarshipSavedMessage),
+      title: error == null
+          ? l10n.trainingSavedUpdatedTitle
+          : l10n.trainingUpdateUnavailableTitle,
       type: error == null
           ? (existing != null
                 ? AppFeedbackType.removed
@@ -994,7 +998,7 @@ class _ScholarshipCard extends StatelessWidget {
         scholarship.imageUrl != null && scholarship.imageUrl!.isNotEmpty;
     final gradientColors = _gradients[cardIndex % _gradients.length];
     final locationText = _locationText();
-    final fundingBadge = _fundingBadgeText();
+    final fundingBadge = _fundingBadgeText(context);
     final tagText = _tagText();
 
     return GestureDetector(
@@ -1364,14 +1368,17 @@ class _ScholarshipCard extends StatelessWidget {
     return parts.isEmpty ? null : parts.join(', ');
   }
 
-  String? _fundingBadgeText() {
+  String? _fundingBadgeText(BuildContext context) {
     final ft = scholarship.fundingType;
     if (ft == null || ft.isEmpty) return null;
     final lower = ft.toLowerCase();
-    if (lower.contains('full')) return 'FULLY FUNDED';
-    if (lower.contains('partial')) return 'PARTIALLY FUNDED';
-    if (lower.contains('merit')) return 'MERIT-BASED';
-    if (lower.contains('prestige')) return 'PRESTIGE';
+    final l10n = AppLocalizations.of(context)!;
+    if (lower.contains('full')) return l10n.uiFullyFunded.toUpperCase();
+    if (lower.contains('partial')) {
+      return l10n.studentPartiallyFunded.toUpperCase();
+    }
+    if (lower.contains('merit')) return l10n.studentMeritBased.toUpperCase();
+    if (lower.contains('prestige')) return l10n.studentPrestige.toUpperCase();
     return ft.toUpperCase();
   }
 

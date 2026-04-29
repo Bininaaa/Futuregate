@@ -866,14 +866,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final l10n = AppLocalizations.of(context)!;
       return _DashboardFocus(
         badgeLabel: l10n.uiBadgeMomentum,
-        title: l10n.studentDashboardApprovedApplicationsTitle(
-          approved,
-          _pluralizedWord(
-            approved,
-            l10n.studentApplicationSingular,
-            l10n.studentApplicationsPlural,
-          ),
-        ),
+        title: l10n.studentDashboardApprovedApplicationsTitle(approved),
         subtitle:
             l10n.uiKeepApplyingWhileTeamsAreAlreadyEngagingWithYourProfile,
         insight: pending > 0
@@ -900,14 +893,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final l10n = AppLocalizations.of(context)!;
       return _DashboardFocus(
         badgeLabel: l10n.uiBadgeInReview,
-        title: l10n.studentDashboardPendingApplicationsTitle(
-          pending,
-          _pluralizedWord(
-            pending,
-            l10n.studentApplicationSingular,
-            l10n.studentApplicationsPlural,
-          ),
-        ),
+        title: l10n.studentDashboardPendingApplicationsTitle(pending),
         subtitle: l10n.dashFocusSubtitleInReview,
         insight: firstUrgent != null && firstUrgentDeadline != null
             ? l10n.dashFocusClosingSoonInsight(
@@ -1070,18 +1056,20 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final chips = <Widget>[
       if (snapshot.savedOpportunityCount > 0)
         _buildSavedShortcutChip(
-          '${snapshot.savedOpportunityCount} ${l10n.uiRoles}',
+          l10n.studentSavedRolesCount(snapshot.savedOpportunityCount),
         ),
       if (snapshot.savedScholarshipCount > 0)
         _buildSavedShortcutChip(
-          '${snapshot.savedScholarshipCount} ${l10n.uiScholarships}',
+          l10n.studentSavedScholarshipsCount(snapshot.savedScholarshipCount),
         ),
       if (snapshot.savedTrainingCount > 0)
         _buildSavedShortcutChip(
-          '${snapshot.savedTrainingCount} ${l10n.uiTraining}',
+          l10n.studentSavedTrainingsCount(snapshot.savedTrainingCount),
         ),
       if (snapshot.savedIdeaCount > 0)
-        _buildSavedShortcutChip('${snapshot.savedIdeaCount} ${l10n.uiIdeas}'),
+        _buildSavedShortcutChip(
+          l10n.studentSavedIdeasCount(snapshot.savedIdeaCount),
+        ),
     ];
 
     return Material(
@@ -1151,9 +1139,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
-                            totalSaved == 0
-                                ? 'Start saving'
-                                : '$totalSaved saved',
+                            l10n.studentDashboardSavedBadgeCount(totalSaved),
                             style: AppTypography.product(
                               fontSize: 9.8,
                               fontWeight: FontWeight.w700,
@@ -1614,14 +1600,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         : OpportunityMetadata.formatDateLabel(deadline);
     final urgencyColor = _closingSoonUrgencyColor(deadline);
     final deadlineLabel = deadline == null
-        ? 'Deadline soon'
+        ? l10n.dashDeadlineSoon
         : _deadlineCountdown(deadline);
     final fundingLabel = normalizedType == OpportunityType.sponsoring
         ? item.fundingLabel()
         : null;
     final footerLabel = fundingLabel == null
         ? _closingSoonFooterLabel(normalizedType, dateLabel)
-        : 'Funding: $fundingLabel';
+        : l10n.studentFundingValue(fundingLabel);
     final locationLabel = item.location.trim().isNotEmpty
         ? item.location.trim()
         : _closingSoonLocationFallback(normalizedType);
@@ -1835,26 +1821,28 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   String _closingSoonFooterLabel(String type, String dateLabel) {
+    final l10n = AppLocalizations.of(context)!;
     switch (OpportunityType.parse(type)) {
       case OpportunityType.internship:
-        return 'Closes $dateLabel';
+        return l10n.studentClosesDate(dateLabel);
       case OpportunityType.sponsoring:
-        return 'Closes $dateLabel';
+        return l10n.studentClosesDate(dateLabel);
       case OpportunityType.job:
       default:
-        return 'Apply by $dateLabel';
+        return l10n.studentApplyByDate(dateLabel);
     }
   }
 
   String _closingSoonLocationFallback(String type) {
+    final l10n = AppLocalizations.of(context)!;
     switch (OpportunityType.parse(type)) {
       case OpportunityType.internship:
-        return 'Student placement';
+        return l10n.studentStudentPlacement;
       case OpportunityType.sponsoring:
-        return 'Partner-backed program';
+        return l10n.studentPartnerBackedProgram;
       case OpportunityType.job:
       default:
-        return 'Career opportunity';
+        return l10n.studentCareerOpportunity;
     }
   }
 
@@ -1984,6 +1972,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     UserModel? user, {
     String? applicationStatus,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final freshness = _timeAgo(
       item.createdAt?.toDate() ?? item.updatedAt?.toDate(),
     );
@@ -2120,7 +2109,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               Text(
                 _summarize(
                   item.description,
-                  fallback: 'A strong opportunity worth a closer look.',
+                  fallback: l10n.studentStrongOpportunitySubtitle,
                 ),
                 style: AppTypography.product(
                   fontSize: 10.8,
@@ -2187,7 +2176,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             constraints: const BoxConstraints(maxWidth: 128),
                             child: Text(
                               fundingLabel != null
-                                  ? 'Funding: $footerMetaLabel'
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.studentFundingValue(footerMetaLabel)
                                   : footerMetaLabel,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -2780,13 +2771,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             : AppLocalizations.of(context)!.studentCvReadyNextApplication,
     };
 
+    final l10n = AppLocalizations.of(context)!;
     final cvSignals = <String>[
-      if (cv.skills.isNotEmpty)
-        '${cv.skills.length} ${_pluralizedWord(cv.skills.length, AppLocalizations.of(context)!.studentSkillSingular, AppLocalizations.of(context)!.studentSkillsPlural)}',
+      if (cv.skills.isNotEmpty) l10n.studentSkillCount(cv.skills.length),
       if (cv.experience.isNotEmpty)
-        '${cv.experience.length} ${_pluralizedWord(cv.experience.length, AppLocalizations.of(context)!.studentExperienceBlockSingular, AppLocalizations.of(context)!.studentExperienceBlocksPlural)}',
+        l10n.studentExperienceBlockCount(cv.experience.length),
       if (cv.languages.isNotEmpty)
-        '${cv.languages.length} ${_pluralizedWord(cv.languages.length, AppLocalizations.of(context)!.studentLanguageSingular, AppLocalizations.of(context)!.studentLanguagesPlural)}',
+        l10n.studentLanguageCount(cv.languages.length),
     ];
 
     return _DashboardActivityEntry(
@@ -3148,10 +3139,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return buildStudentProfileCompletionSummary(user, cv).missingCount;
   }
 
-  String _pluralizedWord(int count, String singular, String plural) {
-    return count == 1 ? singular : plural;
-  }
-
   bool _isHomeOpportunity(OpportunityModel item) {
     return item.isVisibleToStudents();
   }
@@ -3399,20 +3386,21 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       return null;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final difference = DateTime.now().difference(dateTime);
     if (difference.inMinutes < 1) {
-      return 'Now';
+      return l10n.uiJustNow;
     }
     if (difference.inHours < 1) {
-      return '${difference.inMinutes}m';
+      return l10n.studentMinutesAgoCompact(difference.inMinutes);
     }
     if (difference.inDays < 1) {
-      return '${difference.inHours}h';
+      return l10n.studentHoursAgoCompact(difference.inHours);
     }
     if (difference.inDays < 7) {
-      return '${difference.inDays}d';
+      return l10n.studentDaysAgoCompact(difference.inDays);
     }
-    return '${(difference.inDays / 7).floor()}w';
+    return l10n.studentWeeksAgoCompact((difference.inDays / 7).floor());
   }
 
   String _summarize(String text, {required String fallback}) {

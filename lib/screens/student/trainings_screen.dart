@@ -264,6 +264,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     return activeDomain == 'All' || _domainLabelFor(training) == activeDomain;
   }
 
+  String _domainDisplayLabel(String domain, AppLocalizations l10n) {
+    return domain == 'All' ? l10n.uiAll : domain;
+  }
+
   bool _matchesSearchQuery(TrainingModel training) {
     final query = _searchQuery.trim().toLowerCase();
     if (query.isEmpty) {
@@ -859,7 +863,9 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       TrainingInfoBanner(
                         message: provider.trainings.isEmpty
                             ? provider.errorMessage!
-                            : '${provider.errorMessage!} Showing the training content currently available.',
+                            : l10n.studentTrainingErrorShowingAvailable(
+                                provider.errorMessage!,
+                              ),
                       ),
                     ],
                     const SizedBox(height: 12),
@@ -886,6 +892,8 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                       TrainingCatalogueSelector(
                         domains: availableDomains,
                         selectedDomain: activeDomain,
+                        domainLabelBuilder: (domain) =>
+                            _domainDisplayLabel(domain, l10n),
                         headerTrailing: TrainingLayoutToggle(
                           view: _trainingLayoutView,
                           onChanged: (view) {

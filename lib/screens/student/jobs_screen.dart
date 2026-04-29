@@ -251,19 +251,20 @@ class _JobsScreenState extends State<JobsScreen> {
         .toList();
     final existingSaved = matchingSaved.isNotEmpty ? matchingSaved.first : null;
 
+    final l10n = AppLocalizations.of(context)!;
     String? error;
-    var message = 'Opportunity saved';
+    var message = l10n.studentOpportunitySaved;
 
     if (existingSaved != null) {
       error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
-      message = 'Removed from saved opportunities';
+      message = l10n.studentRemovedFromSavedOpportunities;
     } else {
       error = await savedProvider.saveOpportunity(
         studentId: userId,
         opportunityId: opportunity.id,
         title: DisplayText.opportunityTitle(
           opportunity.title,
-          fallback: 'Open Role',
+          fallback: l10n.studentOpenRole,
         ),
         companyName: opportunity.companyName,
         type: opportunity.type,
@@ -278,7 +279,9 @@ class _JobsScreenState extends State<JobsScreen> {
 
     context.showAppSnackBar(
       error ?? message,
-      title: error == null ? 'Saved items updated' : 'Save unavailable',
+      title: error == null
+          ? l10n.trainingSavedUpdatedTitle
+          : l10n.uiSaveUnavailable,
       type: error == null
           ? (existingSaved != null
                 ? AppFeedbackType.removed
@@ -414,7 +417,7 @@ class _JobsScreenState extends State<JobsScreen> {
     final category = _categoryFor(opportunity);
     final title = DisplayText.opportunityTitle(
       opportunity.title,
-      fallback: 'Open Role',
+      fallback: AppLocalizations.of(context)!.studentOpenRole,
     );
     final company = _companyName(opportunity);
     final subtitle = _subtitleLabel(opportunity, company: company);
@@ -502,7 +505,9 @@ class _JobsScreenState extends State<JobsScreen> {
 
   String _companyName(OpportunityModel opportunity) {
     final companyName = opportunity.companyName.trim();
-    return companyName.isEmpty ? 'FutureGate partner' : companyName;
+    return companyName.isEmpty
+        ? AppLocalizations.of(context)!.studentFutureGatePartner
+        : companyName;
   }
 
   String? _locationLabel(OpportunityModel opportunity) {
@@ -523,10 +528,11 @@ class _JobsScreenState extends State<JobsScreen> {
       return fallback;
     }
 
-    return switch (_workModeLabel(opportunity)) {
-      'Remote' => 'Remote',
-      'Hybrid' => 'Hybrid',
-      'On-site' => 'On-site',
+    final l10n = AppLocalizations.of(context)!;
+    return switch (_workModeKey(opportunity)) {
+      'remote' => l10n.workModeRemote,
+      'hybrid' => l10n.workModeHybrid,
+      'onsite' => l10n.workModeOnsite,
       _ => null,
     };
   }
@@ -696,9 +702,24 @@ class _JobsScreenState extends State<JobsScreen> {
   }
 
   String? _workModeLabel(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (_workModeKey(opportunity)) {
+      'remote' => l10n.workModeRemote,
+      'hybrid' => l10n.workModeHybrid,
+      'onsite' => l10n.workModeOnsite,
+      _ => null,
+    };
+  }
+
+  String? _workModeKey(OpportunityModel opportunity) {
     final normalizedMode = _normalizedWorkMode(opportunity);
     if (normalizedMode != null) {
-      return OpportunityMetadata.formatWorkMode(normalizedMode);
+      final lower = normalizedMode.trim().toLowerCase();
+      if (lower.contains('remote')) return 'remote';
+      if (lower.contains('hybrid')) return 'hybrid';
+      if (lower.contains('onsite') || lower.contains('on-site')) {
+        return 'onsite';
+      }
     }
 
     final searchable = [
@@ -708,15 +729,15 @@ class _JobsScreenState extends State<JobsScreen> {
     ].whereType<String>().join(' ').toLowerCase();
 
     if (searchable.contains('hybrid')) {
-      return 'Hybrid';
+      return 'hybrid';
     }
     if (searchable.contains('remote')) {
-      return 'Remote';
+      return 'remote';
     }
     if (searchable.contains('on-site') ||
         searchable.contains('onsite') ||
         searchable.contains('on site')) {
-      return 'On-site';
+      return 'onsite';
     }
 
     return null;
@@ -1028,7 +1049,9 @@ class _JobsScreenState extends State<JobsScreen> {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Find your next\n',
+                          text: AppLocalizations.of(
+                            context,
+                          )!.studentJobsHeadlinePrefix,
                           style: AppTypography.product(
                             fontSize: headlineFontSize,
                             fontWeight: FontWeight.w700,
@@ -1037,7 +1060,9 @@ class _JobsScreenState extends State<JobsScreen> {
                           ),
                         ),
                         TextSpan(
-                          text: 'breakthrough',
+                          text: AppLocalizations.of(
+                            context,
+                          )!.studentJobsHeadlineAccent,
                           style: AppTypography.product(
                             fontSize: headlineFontSize,
                             fontWeight: FontWeight.w700,
@@ -1152,11 +1177,19 @@ class _JobsScreenState extends State<JobsScreen> {
                   sliver: SliverToBoxAdapter(
                     child: _JobsEmptyStateCard(
                       title: showCatalogEmptyState
-                          ? 'No jobs available right now'
-                          : 'No featured jobs in this view',
+                          ? AppLocalizations.of(
+                              context,
+                            )!.uiNoJobsAvailableRightNow
+                          : AppLocalizations.of(
+                              context,
+                            )!.studentNoFeaturedJobsInView,
                       message: showCatalogEmptyState
-                          ? 'Check back soon for new job listings.'
-                          : 'Try another keyword or clear your category filter to see more roles.',
+                          ? AppLocalizations.of(
+                              context,
+                            )!.studentCheckBackNewJobs
+                          : AppLocalizations.of(
+                              context,
+                            )!.studentTryKeywordClearCategory,
                       compact: isCompact,
                     ),
                   ),
@@ -1252,11 +1285,19 @@ class _JobsScreenState extends State<JobsScreen> {
                   sliver: SliverToBoxAdapter(
                     child: _JobsEmptyStateCard(
                       title: showCatalogEmptyState
-                          ? 'No roles available right now'
-                          : 'No roles match your search',
+                          ? AppLocalizations.of(
+                              context,
+                            )!.studentNoRolesAvailableNow
+                          : AppLocalizations.of(
+                              context,
+                            )!.studentNoRolesMatchSearch,
                       message: showCatalogEmptyState
-                          ? 'Check back soon for new job listings.'
-                          : 'Try another search or clear your category filters to see more roles.',
+                          ? AppLocalizations.of(
+                              context,
+                            )!.studentCheckBackNewJobs
+                          : AppLocalizations.of(
+                              context,
+                            )!.studentTrySearchClearCategories,
                       compact: isCompact,
                     ),
                   ),
@@ -2295,7 +2336,9 @@ class FeaturedJobCard extends StatelessWidget {
         final footerButtonCompact = compact || denseLayout;
         final actionLabel =
             statusData?.label ??
-            (job.opportunity == null ? 'Preview' : 'Apply Now');
+            (job.opportunity == null
+                ? AppLocalizations.of(context)!.uiPreview
+                : AppLocalizations.of(context)!.uiApplyNow);
         final Widget? salaryLabel = !hasFooterSalary
             ? null
             : Row(

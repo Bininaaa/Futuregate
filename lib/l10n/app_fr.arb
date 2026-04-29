@@ -2341,10 +2341,12 @@
   "uiCvCompletionRateValue": "{percent} % ({totalCvs} sur {students} étudiants)",
   "uiPendingApprovedIdeasValue": "{pending} en attente et {approved} approuvées",
   "dashDayLeft": "1 jour restant",
-  "dashDaysLeft": "{count} jours restants",
+  "dashDaysLeft": "{count, plural, =0{Dernier jour} =1{1 jour restant} other{{count} jours restants}}",
   "@dashDaysLeft": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "dashDeadlineSoon": "échéance proche",
@@ -2355,10 +2357,12 @@
       "deadline": {}
     }
   },
-  "dashFocusClosingSoonSubtitle": "{count} opportunités se clôturent dans les deux prochaines semaines.",
+  "dashFocusClosingSoonSubtitle": "{count, plural, =0{Aucune opportunité ne se clôture dans les deux prochaines semaines.} =1{1 opportunité se clôture dans les deux prochaines semaines.} other{{count} opportunités se clôturent dans les deux prochaines semaines.}}",
   "@dashFocusClosingSoonSubtitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "dashFocusCvInsight": "Commencez par votre CV, puis affinez les détails du profil qui améliorent la pertinence des recommandations.",
@@ -2367,19 +2371,23 @@
   "dashFocusInsightDiscover": "Utilisez les accès rapides ci-dessous pour rejoindre les emplois, stages, bourses, formations ou votre liste sauvegardée.",
   "dashFocusInsightInReview": "Un petit suivi maintenant gardera vos candidatures plus solides par la suite.",
   "dashFocusInsightSavedReady": "Votre liste sauvegardée mérite une deuxième lecture avant que les échéances se rapprochent.",
-  "dashFocusProfileSubtitle": "{count} détail(s) encore manquant(s) pour améliorer la correspondance.",
+  "dashFocusProfileSubtitle": "{count, plural, =0{Les détails de votre profil sont prêts pour une meilleure correspondance.} =1{1 détail manque encore pour améliorer la correspondance.} other{{count} détails manquent encore pour améliorer la correspondance.}}",
   "@dashFocusProfileSubtitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "dashFocusSubtitleDiscover": "Explorez des emplois, stages, financements et formations pensés pour les étudiants qui avancent.",
   "dashFocusSubtitleInReview": "Gardez quelques options solides en mouvement pendant que vous attendez les réponses.",
   "dashLastDay": "Dernier jour",
-  "dashSavedBannerCount": "{count} élément(s) sauvegardé(s) prêt(s) pour une deuxième lecture.",
+  "dashSavedBannerCount": "{count, plural, =0{Aucun élément enregistré prêt pour le moment.} =1{1 élément enregistré prêt pour une deuxième lecture.} other{{count} éléments enregistrés prêts pour une deuxième lecture.}}",
   "@dashSavedBannerCount": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "dashSavedBannerEmpty": "Gardez vos meilleures offres, financements et formations à portée de main.",
@@ -2388,10 +2396,12 @@
   "dashSectionQuickAccessSubtitle": "Votre chemin le plus rapide vers emplois, financements, outils et sauvegardes.",
   "dashSectionRecommendedSubtitle": "Sélectionnées selon votre profil, le timing et votre progression.",
   "dashSectionDefaultSubtitle": "Tout ce qui compte reste à portée de main.",
-  "discoverLatestSubtitle": "Les {count} offres, stages et parcours sponsorisés les plus récents",
+  "discoverLatestSubtitle": "{count, plural, =0{Les offres, stages et parcours sponsorisés les plus récents} =1{L’offre, le stage ou le parcours sponsorisé le plus récent} other{Les {count} offres, stages et parcours sponsorisés les plus récents}}",
   "@discoverLatestSubtitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "discoverNoResultsHint": "Essayez d’ajuster votre recherche ou vos filtres pour afficher plus de résultats.",
@@ -2408,17 +2418,21 @@
       "label": {}
     }
   },
-  "studentApplicationsShown": "{count} candidatures affichées",
+  "studentApplicationsShown": "{count, plural, =0{Aucune candidature affichée} =1{1 candidature affichée} other{{count} candidatures affichées}}",
   "@studentApplicationsShown": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentAppliedOpportunityOne": "1 opportunité postulée",
-  "studentAppliedOpportunitiesCount": "{count} opportunités postulées",
+  "studentAppliedOpportunitiesCount": "{count, plural, =0{Aucune opportunité postulée} =1{1 opportunité postulée} other{{count} opportunités postulées}}",
   "@studentAppliedOpportunitiesCount": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentBrowseOpportunities": "Parcourir les opportunités",
@@ -2499,32 +2513,40 @@
   "studentCvAddNameEmail": "Ajoutez votre nom et votre e-mail.",
   "studentCvProfileIntroReady": "Votre profil contient une courte introduction.",
   "studentCvWriteProfile": "Rédigez un court profil professionnel.",
-  "studentCvEducationSaved": "{count} élément de formation enregistré.",
+  "studentCvEducationSaved": "{count, plural, =0{Aucun élément de formation enregistré.} =1{1 élément de formation enregistré.} other{{count} éléments de formation enregistrés.}}",
   "@studentCvEducationSaved": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddEducation": "Ajoutez votre dernier diplôme ou formation.",
   "studentCvExperienceProjects": "Expériences ou projets",
-  "studentCvExperienceSaved": "{count} élément d’expérience enregistré.",
+  "studentCvExperienceSaved": "{count, plural, =0{Aucun élément d’expérience enregistré.} =1{1 élément d’expérience enregistré.} other{{count} éléments d’expérience enregistrés.}}",
   "@studentCvExperienceSaved": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddExperience": "Ajoutez un stage, un emploi ou un projet.",
-  "studentCvSkillsListed": "{count} compétences listées.",
+  "studentCvSkillsListed": "{count, plural, =0{Aucune compétence listée.} =1{1 compétence listée.} other{{count} compétences listées.}}",
   "@studentCvSkillsListed": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvListSkills": "Listez vos compétences les plus fortes.",
-  "studentCvLanguagesListed": "{count} langues listées.",
+  "studentCvLanguagesListed": "{count, plural, =0{Aucune langue listée.} =1{1 langue listée.} other{{count} langues listées.}}",
   "@studentCvLanguagesListed": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddLanguages": "Ajoutez les langues utiles aux recruteurs.",
@@ -2548,11 +2570,15 @@
   "studentViewActiveCv": "Voir le CV actif",
   "studentSaveAsPdf": "Enregistrer en PDF",
   "studentCvReadiness": "Préparation du CV",
-  "studentCvEssentialsComplete": "{completed} sur {total} éléments essentiels complétés",
+  "studentCvEssentialsComplete": "{total, plural, =0{Aucun essentiel complété} =1{{completed} sur 1 essentiel complété} other{{completed} sur {total} essentiels complétés}}",
   "@studentCvEssentialsComplete": {
     "placeholders": {
-      "completed": {},
-      "total": {}
+      "completed": {
+        "type": "num"
+      },
+      "total": {
+        "type": "num"
+      }
     }
   },
   "studentUploadedPdfActive": "PDF téléversé actif",
@@ -2721,17 +2747,21 @@
   "studentRemovedFromSavedIdeas": "Retirée des idées sauvegardées",
   "studentSavedFilterTrainings": "Formations",
   "studentSponsoredFilter": "Sponsorisé",
-  "studentItemsShown": "{count} éléments affichés",
+  "studentItemsShown": "{count, plural, =0{Aucun élément affiché} =1{1 élément affiché} other{{count} éléments affichés}}",
   "@studentItemsShown": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentSavedItemOne": "1 élément sauvegardé",
-  "studentSavedItemsCount": "{count} éléments sauvegardés",
+  "studentSavedItemsCount": "{count, plural, =0{Aucun élément enregistré} =1{1 élément enregistré} other{{count} éléments enregistrés}}",
   "@studentSavedItemsCount": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentNoSavedItemsMatchView": "Aucun élément sauvegardé ne correspond à cette vue",
@@ -2753,16 +2783,20 @@
   "studentRelativeSaved": "Sauvegardé",
   "studentRelativeToday": "Aujourd’hui",
   "studentRelativeYesterday": "Hier",
-  "studentDaysAgoCompact": "il y a {count} j",
+  "studentDaysAgoCompact": "{count, plural, =0{Aujourd’hui} =1{il y a 1 j} other{il y a {count} j}}",
   "@studentDaysAgoCompact": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentWeeksAgoCompact": "il y a {count} sem.",
+  "studentWeeksAgoCompact": "{count, plural, =0{Cette semaine} =1{il y a 1 sem.} other{il y a {count} sem.}}",
   "@studentWeeksAgoCompact": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentNoDeadlineShared": "Aucune échéance indiquée",
@@ -2778,30 +2812,36 @@
       "date": {}
     }
   },
-  "studentInterestedCountLower": "{count} intéressé(s)",
+  "studentInterestedCountLower": "{count, plural, =0{aucun étudiant intéressé} =1{1 étudiant intéressé} other{{count} étudiants intéressés}}",
   "@studentInterestedCountLower": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentInterestedCountTitle": "{count} intéressé(s)",
+  "studentInterestedCountTitle": "{count, plural, =0{Aucun étudiant intéressé} =1{1 étudiant intéressé} other{{count} étudiants intéressés}}",
   "@studentInterestedCountTitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentDashboardApprovedApplicationsTitle": "{count} {word} approuvée(s).",
+  "studentDashboardApprovedApplicationsTitle": "{count, plural, =0{Aucune candidature approuvée pour le moment.} =1{1 candidature approuvée.} other{{count} candidatures approuvées.}}",
   "@studentDashboardApprovedApplicationsTitle": {
     "placeholders": {
-      "count": {},
-      "word": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentDashboardPendingApplicationsTitle": "{count} {word} en cours d’examen.",
+  "studentDashboardPendingApplicationsTitle": "{count, plural, =0{Aucune candidature en cours d’examen.} =1{1 candidature en cours d’examen.} other{{count} candidatures en cours d’examen.}}",
   "@studentDashboardPendingApplicationsTitle": {
     "placeholders": {
-      "count": {},
-      "word": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentApplicationSingular": "candidature",
@@ -2850,11 +2890,15 @@
   "studentManaged": "Géré",
   "studentReset": "Réinitialiser",
   "studentCvBuilderSteps": "Étapes du créateur",
-  "studentCvSectionsComplete": "{completed} sur {total} sections complétées",
+  "studentCvSectionsComplete": "{total, plural, =0{Aucune section complétée} =1{{completed} sur 1 section complétée} other{{completed} sur {total} sections complétées}}",
   "@studentCvSectionsComplete": {
     "placeholders": {
-      "completed": {},
-      "total": {}
+      "completed": {
+        "type": "num"
+      },
+      "total": {
+        "type": "num"
+      }
     }
   },
   "studentAddYourEducation": "Ajoutez votre formation",
@@ -2891,5 +2935,381 @@
   "studentProfileHintGoodShape": "Votre profil est en bonne forme pour la prochaine opportunit? que vous ouvrirez.",
   "studentAddCv": "Ajouter CV",
   "studentCompleteProfile": "Compléter le profil",
-  "studentReviewProfile": "Vérifier le profil"
+  "studentReviewProfile": "Vérifier le profil",
+  "studentSkillCount": "{count, plural, =0{Aucune compétence} =1{1 compétence} other{{count} compétences}}",
+  "@studentSkillCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentExperienceBlockCount": "{count, plural, =0{Aucun bloc d’expérience} =1{1 bloc d’expérience} other{{count} blocs d’expérience}}",
+  "@studentExperienceBlockCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentLanguageCount": "{count, plural, =0{Aucune langue} =1{1 langue} other{{count} langues}}",
+  "@studentLanguageCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentOpenPositionsCount": "{count, plural, =0{Aucun poste ouvert} =1{1 poste ouvert} other{{count} postes ouverts}}",
+  "@studentOpenPositionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentOpenInternshipsCount": "{count, plural, =0{Aucun stage ouvert} =1{1 stage ouvert} other{{count} stages ouverts}}",
+  "@studentOpenInternshipsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentActiveTracksCount": "{count, plural, =0{Aucun parcours actif} =1{1 parcours actif} other{{count} parcours actifs}}",
+  "@studentActiveTracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentInternshipsAvailableCount": "{count, plural, =0{Aucun stage} =1{1 stage} other{{count} stages}}",
+  "@studentInternshipsAvailableCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSponsoredProgramsLiveCount": "{count, plural, =0{Aucun programme en ligne} =1{1 programme en ligne} other{{count} programmes en ligne}}",
+  "@studentSponsoredProgramsLiveCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedRolesCount": "{count, plural, =0{Aucun poste enregistré} =1{1 poste enregistré} other{{count} postes enregistrés}}",
+  "@studentSavedRolesCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedScholarshipsCount": "{count, plural, =0{Aucune bourse enregistrée} =1{1 bourse enregistrée} other{{count} bourses enregistrées}}",
+  "@studentSavedScholarshipsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedTrainingsCount": "{count, plural, =0{Aucune formation enregistrée} =1{1 formation enregistrée} other{{count} formations enregistrées}}",
+  "@studentSavedTrainingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedIdeasCount": "{count, plural, =0{Aucune idée enregistrée} =1{1 idée enregistrée} other{{count} idées enregistrées}}",
+  "@studentSavedIdeasCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentDashboardSavedBadgeCount": "{count, plural, =0{Commencer à enregistrer} =1{1 enregistré} other{{count} enregistrés}}",
+  "@studentDashboardSavedBadgeCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentMatchingListingsFound": "{count, plural, =0{Aucun résultat {filter} trouvé} =1{1 résultat {filter} trouvé} other{{count} résultats {filter} trouvés}}",
+  "@studentMatchingListingsFound": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentOpenListingsFound": "{count, plural, =0{Aucun {filter} ouvert trouvé} =1{1 {filter} ouvert trouvé} other{{count} {filter} ouverts trouvés}}",
+  "@studentOpenListingsFound": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentMinutesAgoCompact": "{count, plural, =0{À l’instant} =1{il y a 1 min} other{il y a {count} min}}",
+  "@studentMinutesAgoCompact": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentHoursAgoCompact": "{count, plural, =0{À l’instant} =1{il y a 1 h} other{il y a {count} h}}",
+  "@studentHoursAgoCompact": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInMinutes": "{count, plural, =0{Se clôture maintenant} =1{Se clôture dans 1 min} other{Se clôture dans {count} min}}",
+  "@studentClosesInMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInHours": "{count, plural, =0{Se clôture maintenant} =1{Se clôture dans 1 heure} other{Se clôture dans {count} heures}}",
+  "@studentClosesInHours": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInDays": "{count, plural, =0{Se clôture aujourd’hui} =1{Se clôture demain} other{Se clôture dans {count} jours}}",
+  "@studentClosesInDays": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileDetailsMissingCount": "{count, plural, =0{Tout l’essentiel est rempli} =1{1 détail nécessite encore votre attention.} other{{count} détails nécessitent encore votre attention.}}",
+  "@studentProfileDetailsMissingCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileSavedItemsCount": "{count, plural, =0{Rien d’enregistré pour le moment} =1{1 élément enregistré} other{{count} éléments enregistrés}}",
+  "@studentProfileSavedItemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileSubmittedOpportunitiesCount": "{count, plural, =0{Aucune opportunité soumise pour le moment} =1{1 opportunité soumise} other{{count} opportunités soumises}}",
+  "@studentProfileSubmittedOpportunitiesCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileUnreadNotificationsCount": "{count, plural, =0{Tout est à jour.} =1{1 notification non lue maintenant} other{{count} notifications non lues maintenant}}",
+  "@studentProfileUnreadNotificationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentNoDeadline": "Aucune date limite",
+  "studentDateUnavailable": "Date indisponible",
+  "studentRecentlyAdded": "Ajouté récemment",
+  "studentDeadlineUnavailable": "Date limite indisponible",
+  "studentClosesToday": "Se clôture aujourd’hui",
+  "studentClosesTomorrow": "Se clôture demain",
+  "studentDeadlineDate": "Date limite {date}",
+  "@studentDeadlineDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentApplyByDate": "Postuler avant le {date}",
+  "@studentApplyByDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentApplicationsOpen": "Candidatures ouvertes",
+  "studentPartnerPick": "Choix partenaire",
+  "studentNewThisWeek": "Nouveau cette semaine",
+  "studentRemoteFriendly": "Compatible télétravail",
+  "studentHybridSetup": "Mode hybride",
+  "studentPaidTrack": "Parcours rémunéré",
+  "studentStudentGrowth": "Progression étudiante",
+  "studentSponsoredSupport": "Soutien sponsorisé",
+  "studentCareerMove": "Élan de carrière",
+  "studentOpenRole": "Poste ouvert",
+  "studentFutureGatePartner": "Partenaire FutureGate",
+  "studentNewBadge": "NOUVEAU",
+  "studentUrgentBadge": "URGENT",
+  "studentStudentPlacement": "Placement étudiant",
+  "studentPartnerBackedProgram": "Programme soutenu par un partenaire",
+  "studentCareerOpportunity": "Opportunité professionnelle",
+  "studentStrongOpportunitySubtitle": "Une opportunité solide à examiner de plus près.",
+  "studentSaveFailed": "Échec de l’enregistrement",
+  "studentUnsaved": "Non enregistré",
+  "studentEditEducation": "Modifier la formation",
+  "studentAddEducationTitle": "Ajouter une formation",
+  "studentEditExperience": "Modifier l’expérience",
+  "studentAddExperienceTitle": "Ajouter une expérience",
+  "studentDateRangeHint": "ex. janv. 2023 - aujourd’hui",
+  "studentTypeAndPressEnter": "Saisissez puis appuyez sur Entrée",
+  "studentSavingChanges": "Enregistrement des modifications...",
+  "studentChangesSaveAutomatically": "Les modifications sont enregistrées automatiquement",
+  "studentDownloadCvPdf": "Télécharger le CV PDF",
+  "studentDownloadUnavailableMessage": "Téléchargement indisponible.",
+  "studentOpeningChat": "Ouverture du chat...",
+  "studentChatWithCompany": "Discuter avec l’entreprise",
+  "studentSaveOpportunityTooltip": "Enregistrer l’opportunité",
+  "studentUnsaveOpportunityTooltip": "Retirer l’opportunité des enregistrés",
+  "studentWithdrawing": "Retrait en cours...",
+  "studentWithdrawApplicationAction": "Retirer la candidature",
+  "studentFundingNote": "Note de financement",
+  "studentCompensationNote": "Note de rémunération",
+  "studentProgramDetails": "Détails du programme",
+  "studentProfileTip": "Conseil de profil",
+  "studentAboutYou": "À propos de vous",
+  "studentBioStillMissing": "Bio encore manquante",
+  "studentAllClear": "Tout est clair",
+  "studentProfileHeadlineReady": "Prêt à se démarquer",
+  "studentProfileHeadlineNearly": "Presque finalisé",
+  "studentProfileHeadlineFoundation": "Base solide",
+  "studentProfileHeadlineCatchUp": "Votre profil peut progresser",
+  "studentProfileCompleteSummary": "Tout l’essentiel est déjà en place. Le profil paraît complet et confiant.",
+  "studentProfileThoughtfulUpdates": "Quelques mises à jour ciblées rendront le profil complet. {label}",
+  "@studentProfileThoughtfulUpdates": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentProfileCoreStory": "Le récit principal prend forme. Continuez à compléter l’essentiel pour renforcer la correspondance. {label}",
+  "@studentProfileCoreStory": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentProfileRoomToGrow": "Ce profil peut encore progresser avant de donner sa meilleure première impression. {label}",
+  "@studentProfileRoomToGrow": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentFieldOfStudy": "Domaine d’études",
+  "studentAcademicLevel": "Niveau académique",
+  "studentFullName": "Nom complet",
+  "studentCvProfileHint": "Téléverser ou construire un CV renforce immédiatement le profil.",
+  "studentBioProfileHint": "Une courte bio rend le profil plus humain, intentionnel et fiable.",
+  "studentFieldOfStudyProfileHint": "Votre domaine d’études rend les opportunités beaucoup plus pertinentes.",
+  "studentAcademicLevelProfileHint": "Votre niveau académique aide les recruteurs et programmes à comprendre où vous en êtes.",
+  "studentFullNameProfileHint": "Votre nom rend le profil complet et reconnaissable immédiatement.",
+  "studentPhoneProfileHint": "Un numéro de téléphone ajoute un canal de contact fiable.",
+  "studentProfileKeepRefining": "Continuez à affiner l’essentiel pour que le profil se lise clairement.",
+  "studentEverythingImportantFilled": "Tout l’essentiel est rempli",
+  "studentInProgress": "En cours",
+  "studentStrongPlace": "Vous êtes bien positionné",
+  "studentBestNextUpdate": "Meilleure prochaine mise à jour : {label}",
+  "@studentBestNextUpdate": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentKeepProfileCurrent": "Gardez le profil à jour au fil de votre parcours étudiant.",
+  "studentBioHelpText": "Une courte bio aide votre profil à paraître intentionnel et donne rapidement une idée de votre direction.",
+  "studentOfficialPage": "page officielle",
+  "studentOfficialScholarshipSource": "Source officielle de la bourse",
+  "studentApplicationLinkUnavailable": "Lien de candidature indisponible",
+  "studentScholarshipNoExternalLink": "Le fournisseur n’a pas encore ajouté de lien externe de candidature.",
+  "studentApplyOnHost": "Postuler sur {label}",
+  "@studentApplyOnHost": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentRemovingSavedItem": "Suppression de l’élément enregistré",
+  "studentRemoveSavedItem": "Supprimer l’élément enregistré",
+  "studentTrainingNoLinkYet": "Cette formation n’a pas encore de lien.",
+  "studentIdeaRemovedFromCollection": "Idée retirée de votre collection enregistrée.",
+  "studentIdeaSavedToCollection": "Idée ajoutée à votre collection enregistrée.",
+  "studentIdeaUnsavedTitle": "Idée retirée",
+  "studentIdeaSavedTitle": "Idée enregistrée",
+  "studentInterestRemovedMessage": "Vous n’êtes plus marqué comme intéressé.",
+  "studentInterestMarkedMessage": "Vous êtes maintenant marqué comme intéressé par cette idée.",
+  "studentInterestRemovedTitle": "Intérêt retiré",
+  "studentInterestMarkedTitle": "Intérêt marqué",
+  "studentApplicationMovedForward": "Avanc?e. Surveillez les prochaines ?tapes.",
+  "studentApplicationNotSelectedHistory": "Non retenue, mais conserv?e dans votre historique.",
+  "studentApplicationAwaitingDecision": "En attente d?une d?cision de l?entreprise.",
+  "studentUpdate": "Mettre ? jour",
+  "studentJobsHeadlinePrefix": "Trouvez votre prochain\n",
+  "studentJobsHeadlineAccent": "tremplin",
+  "studentNoFeaturedJobsInView": "Aucun emploi mis en avant dans cette vue",
+  "studentNoRolesAvailableNow": "Aucun poste disponible pour le moment",
+  "studentNoRolesMatchSearch": "Aucun poste ne correspond ? votre recherche",
+  "studentCheckBackNewJobs": "Revenez bient?t pour de nouvelles offres d?emploi.",
+  "studentTryKeywordClearCategory": "Essayez un autre mot-cl? ou effacez le filtre de cat?gorie pour voir plus de postes.",
+  "studentTrySearchClearCategories": "Essayez une autre recherche ou effacez les filtres de cat?gorie pour voir plus de postes.",
+  "studentListing": "r?sultat",
+  "studentNoInternshipsMatchView": "Aucun stage ne correspond ? cette vue",
+  "studentCheckBackNewInternships": "Revenez bient?t pour de nouvelles offres de stage.",
+  "studentTryAdjustSearchFiltersOpportunities": "Ajustez votre recherche ou vos filtres pour explorer plus d?opportunit?s.",
+  "studentTryAdjustSearchInternshipMatches": "Ajustez votre recherche pour voir plus de stages correspondants.",
+  "studentInternshipsHeadlinePrefix": "Trouvez votre prochain\n",
+  "studentInternshipsHeadlineAccent": "stage",
+  "studentSponsoredHeadlinePrefix": "Trouvez votre prochain\n",
+  "studentSponsoredHeadlineAccent": "parcours financ?",
+  "studentNoSponsoredProgramsMatchView": "Aucun programme sponsoris? ne correspond ? cette vue",
+  "studentCheckBackNewSponsoredPrograms": "Revenez bient?t pour de nouveaux programmes sponsoris?s.",
+  "studentTryAdjustSearchSponsoredPrograms": "Ajustez votre recherche ou vos filtres pour voir les programmes correspondants.",
+  "studentSponsoredProgramsMatchedInFilter": "{count, plural, =0{Aucun programme trouv? dans {filter}} =1{1 programme trouv? dans {filter}} other{{count} programmes trouv?s dans {filter}}}",
+  "@studentSponsoredProgramsMatchedInFilter": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentLimited": "Places limit?es",
+  "studentApplyingEllipsis": "Candidature en cours...",
+  "studentSave": "Enregistrer",
+  "studentPublisher": "?diteur",
+  "studentResponsibilities": "Responsabilit?s",
+  "studentPartiallyFunded": "Partiellement financ?",
+  "studentMeritBased": "Fond? sur le m?rite",
+  "studentPrestige": "Prestige",
+  "studentTrainingErrorShowingAvailable": "{error} Le contenu de formation actuellement disponible reste affich?.",
+  "@studentTrainingErrorShowingAvailable": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "studentProfileSubtitleFallback": "Construisez un profil pr?t pour la prochaine opportunit?.",
+  "studentUniversityProfileHint": "Le nom de l?universit? ajoute du contexte et de la cr?dibilit? ? votre profil acad?mique.",
+  "studentEmailProfileHint": "Un e-mail fonctionnel garde les candidatures, notifications et suivis sur la bonne voie.",
+  "studentLocationProfileHint": "Une localisation facilite la correspondance avec les opportunit?s ? distance, locales et hybrides.",
+  "studentUniversity": "Universit?",
+  "studentEmail": "E-mail",
+  "studentLocation": "Localisation",
+  "studentPhone": "T?l?phone",
+  "studentWaitCoverUpload": "Veuillez attendre la fin du t?l?versement de l?image de couverture.",
+  "studentFileUnavailable": "Fichier indisponible."
 }

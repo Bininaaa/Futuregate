@@ -68,7 +68,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
 
     try {
       final savedPath = await FilePicker.platform.saveFile(
-        dialogTitle: 'Download CV PDF',
+        dialogTitle: AppLocalizations.of(context)!.studentDownloadCvPdf,
         fileName: fileName,
         type: FileType.custom,
         allowedExtensions: const ['pdf'],
@@ -93,7 +93,9 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
         );
         if (!mounted) return;
         if (!shared) {
-          throw Exception('Download unavailable.');
+          throw Exception(
+            AppLocalizations.of(context)!.studentDownloadUnavailableMessage,
+          );
         }
         context.showAppSnackBar(
           AppLocalizations.of(context)!.studentCvDownloadOpenedMessage,

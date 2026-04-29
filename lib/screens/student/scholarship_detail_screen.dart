@@ -427,7 +427,9 @@ class ScholarshipDetailScreen extends StatelessWidget {
           (existing != null
               ? l10n.scholarshipRemovedSavedMessage
               : l10n.scholarshipSavedMessage),
-      title: error == null ? 'Saved items updated' : 'Update unavailable',
+      title: error == null
+          ? l10n.trainingSavedUpdatedTitle
+          : l10n.trainingUpdateUnavailableTitle,
       type: error == null
           ? (existing != null
                 ? AppFeedbackType.removed
@@ -1360,7 +1362,7 @@ class _ApplicationPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final previewText = enabled
         ? link.trim()
-        : 'The provider has not attached an external application link yet.';
+        : AppLocalizations.of(context)!.studentScholarshipNoExternalLink;
 
     return Container(
       width: double.infinity,
@@ -1405,7 +1407,10 @@ class _ApplicationPreviewCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  hostLabel ?? 'Official scholarship source',
+                  hostLabel ??
+                      AppLocalizations.of(
+                        context,
+                      )!.studentOfficialScholarshipSource,
                   style: AppTypography.product(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
@@ -1465,8 +1470,13 @@ class _ScholarshipActionBar extends StatelessWidget {
         children: [
           _PrimaryActionButton(
             label: enabled
-                ? 'Apply on ${hostLabel ?? 'official page'}'
-                : 'Application link unavailable',
+                ? AppLocalizations.of(context)!.studentApplyOnHost(
+                    hostLabel ??
+                        AppLocalizations.of(context)!.studentOfficialPage,
+                  )
+                : AppLocalizations.of(
+                    context,
+                  )!.studentApplicationLinkUnavailable,
             icon: enabled ? Icons.open_in_new_rounded : Icons.link_off_rounded,
             onTap: onTap,
           ),

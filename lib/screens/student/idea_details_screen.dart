@@ -726,9 +726,11 @@ class IdeaDetailsScreen extends StatelessWidget {
       case ProjectIdeaInteractionType.save:
         context.showAppSnackBar(
           wasSaved
-              ? 'Idea removed from your saved collection.'
-              : 'Idea saved to your collection.',
-          title: wasSaved ? 'Idea unsaved' : 'Idea saved',
+              ? AppLocalizations.of(context)!.studentIdeaRemovedFromCollection
+              : AppLocalizations.of(context)!.studentIdeaSavedToCollection,
+          title: wasSaved
+              ? AppLocalizations.of(context)!.studentIdeaUnsavedTitle
+              : AppLocalizations.of(context)!.studentIdeaSavedTitle,
           type: wasSaved ? AppFeedbackType.removed : AppFeedbackType.success,
           icon: wasSaved
               ? Icons.bookmark_remove_outlined
@@ -738,9 +740,11 @@ class IdeaDetailsScreen extends StatelessWidget {
       case ProjectIdeaInteractionType.interest:
         context.showAppSnackBar(
           wasInterested
-              ? 'You are no longer marked as interested.'
-              : 'You are now marked as interested in this idea.',
-          title: wasInterested ? 'Interest removed' : 'Interest marked',
+              ? AppLocalizations.of(context)!.studentInterestRemovedMessage
+              : AppLocalizations.of(context)!.studentInterestMarkedMessage,
+          title: wasInterested
+              ? AppLocalizations.of(context)!.studentInterestRemovedTitle
+              : AppLocalizations.of(context)!.studentInterestMarkedTitle,
           type: wasInterested
               ? AppFeedbackType.removed
               : AppFeedbackType.success,

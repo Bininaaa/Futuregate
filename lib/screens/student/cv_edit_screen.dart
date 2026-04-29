@@ -319,10 +319,11 @@ class _CvEditScreenState extends State<CvEditScreen> {
   }
 
   String _autosaveStatusLabel() {
-    if (_autosaveError != null) return 'Save failed';
-    if (_isAutosaving) return 'Saving';
-    if (_hasPendingAutosave) return 'Unsaved';
-    return 'Saved';
+    final l10n = AppLocalizations.of(context)!;
+    if (_autosaveError != null) return l10n.studentSaveFailed;
+    if (_isAutosaving) return l10n.studentSavingEllipsis;
+    if (_hasPendingAutosave) return l10n.studentUnsaved;
+    return l10n.uiSaved;
   }
 
   Color _autosaveStatusColor() {
@@ -334,10 +335,11 @@ class _CvEditScreenState extends State<CvEditScreen> {
   }
 
   List<_BuilderGuideStep> _builderGuideSteps() {
+    final l10n = AppLocalizations.of(context)!;
     return [
       _BuilderGuideStep(
         key: _personalKey,
-        label: 'Basics',
+        label: l10n.uiBasicInformation,
         icon: Icons.badge_outlined,
         isComplete:
             _fullNameController.text.trim().isNotEmpty &&
@@ -345,31 +347,31 @@ class _CvEditScreenState extends State<CvEditScreen> {
       ),
       _BuilderGuideStep(
         key: _summaryKey,
-        label: 'Summary',
+        label: l10n.uiSummary,
         icon: Icons.subject_rounded,
         isComplete: _summaryController.text.trim().isNotEmpty,
       ),
       _BuilderGuideStep(
         key: _educationKey,
-        label: 'Education',
+        label: l10n.uiEducation,
         icon: Icons.school_outlined,
         isComplete: _education.isNotEmpty,
       ),
       _BuilderGuideStep(
         key: _experienceKey,
-        label: 'Experience',
+        label: l10n.uiExperience,
         icon: Icons.work_outline,
         isComplete: _experience.isNotEmpty,
       ),
       _BuilderGuideStep(
         key: _skillsKey,
-        label: 'Skills',
+        label: l10n.uiSkills,
         icon: Icons.auto_awesome_outlined,
         isComplete: _skills.isNotEmpty,
       ),
       _BuilderGuideStep(
         key: _languagesKey,
-        label: 'Languages',
+        label: l10n.uiLanguages,
         icon: Icons.translate_outlined,
         isComplete: _languages.isNotEmpty,
       ),
@@ -553,7 +555,9 @@ class _CvEditScreenState extends State<CvEditScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              isEdit ? 'Edit Education' : 'Add Education',
+              isEdit
+                  ? AppLocalizations.of(context)!.studentEditEducation
+                  : AppLocalizations.of(context)!.studentAddEducationTitle,
               style: SettingsFlowTheme.sectionTitle(),
             ),
             const SizedBox(height: 16),
@@ -585,7 +589,9 @@ class _CvEditScreenState extends State<CvEditScreen> {
             ),
             const SizedBox(height: 20),
             SettingsPrimaryButton(
-              label: isEdit ? 'Update' : 'Add',
+              label: isEdit
+                  ? AppLocalizations.of(context)!.studentUpdate
+                  : AppLocalizations.of(context)!.uiAdd,
               onPressed: () {
                 if (degreeCtrl.text.trim().isEmpty) return;
                 setState(() {
@@ -654,7 +660,9 @@ class _CvEditScreenState extends State<CvEditScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              isEdit ? 'Edit Experience' : 'Add Experience',
+              isEdit
+                  ? AppLocalizations.of(context)!.studentEditExperience
+                  : AppLocalizations.of(context)!.studentAddExperienceTitle,
               style: SettingsFlowTheme.sectionTitle(),
             ),
             const SizedBox(height: 16),
@@ -681,13 +689,15 @@ class _CvEditScreenState extends State<CvEditScreen> {
               style: SettingsFlowTheme.body(),
               decoration: _inputDecoration(
                 label: AppLocalizations.of(context)!.uiDuration,
-                hint: 'e.g. Jan 2023 — Present',
+                hint: AppLocalizations.of(context)!.studentDateRangeHint,
                 prefixIcon: Icons.date_range_outlined,
               ),
             ),
             const SizedBox(height: 20),
             SettingsPrimaryButton(
-              label: isEdit ? 'Update' : 'Add',
+              label: isEdit
+                  ? AppLocalizations.of(context)!.studentUpdate
+                  : AppLocalizations.of(context)!.uiAdd,
               onPressed: () {
                 if (positionCtrl.text.trim().isEmpty) return;
                 setState(() {
@@ -917,7 +927,9 @@ class _CvEditScreenState extends State<CvEditScreen> {
                       style: SettingsFlowTheme.body(),
                       decoration: _inputDecoration(
                         label: AppLocalizations.of(context)!.uiAddSkill,
-                        hint: 'Type and press Enter',
+                        hint: AppLocalizations.of(
+                          context,
+                        )!.studentTypeAndPressEnter,
                         prefixIcon: Icons.auto_awesome_outlined,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -965,7 +977,9 @@ class _CvEditScreenState extends State<CvEditScreen> {
                       style: SettingsFlowTheme.body(),
                       decoration: _inputDecoration(
                         label: AppLocalizations.of(context)!.uiAddALanguage,
-                        hint: 'Type and press Enter',
+                        hint: AppLocalizations.of(
+                          context,
+                        )!.studentTypeAndPressEnter,
                         prefixIcon: Icons.translate_outlined,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -985,8 +999,10 @@ class _CvEditScreenState extends State<CvEditScreen> {
               Center(
                 child: Text(
                   _isAutosaving
-                      ? 'Saving changes...'
-                      : 'Changes save automatically',
+                      ? AppLocalizations.of(context)!.studentSavingChanges
+                      : AppLocalizations.of(
+                          context,
+                        )!.studentChangesSaveAutomatically,
                   style: SettingsFlowTheme.caption(
                     _autosaveError == null
                         ? SettingsFlowPalette.textSecondary
@@ -1023,7 +1039,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
             ),
             const SizedBox(width: 4),
             Text(
-              'Add',
+              AppLocalizations.of(context)!.uiAdd,
               style: SettingsFlowTheme.micro(SettingsFlowPalette.primary),
             ),
           ],

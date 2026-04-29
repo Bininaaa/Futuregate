@@ -500,9 +500,11 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
 
     context.showAppSnackBar(
       wasSaved
-          ? 'Idea removed from your saved collection.'
-          : 'Idea saved to your collection.',
-      title: wasSaved ? 'Idea unsaved' : 'Idea saved',
+          ? AppLocalizations.of(context)!.studentIdeaRemovedFromCollection
+          : AppLocalizations.of(context)!.studentIdeaSavedToCollection,
+      title: wasSaved
+          ? AppLocalizations.of(context)!.studentIdeaUnsavedTitle
+          : AppLocalizations.of(context)!.studentIdeaSavedTitle,
       type: wasSaved ? AppFeedbackType.removed : AppFeedbackType.success,
       icon: wasSaved
           ? Icons.bookmark_remove_outlined

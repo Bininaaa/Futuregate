@@ -546,9 +546,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                             },
                           ),
                           ...OpportunityMetadata.workModes.map((mode) {
-                            final label =
-                                OpportunityMetadata.formatWorkMode(mode) ??
-                                mode;
+                            final label = _workModeFilterLabel(mode);
                             return buildChip(
                               label: label,
                               selected: draftWorkMode == mode,
@@ -676,15 +674,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String _typeLabel(String type) {
-    switch (OpportunityType.parse(type)) {
-      case OpportunityType.internship:
-        return 'Internships';
-      case OpportunityType.sponsoring:
-        return 'Sponsored';
-      case OpportunityType.job:
-      default:
-        return 'Jobs';
-    }
+    return OpportunityType.label(type, AppLocalizations.of(context)!);
   }
 
   String _summaryText(int visibleCount, int totalCount, BuildContext context) {
@@ -707,35 +697,20 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
         _selectedWorkModeFilter != null ||
         _paidOnly ||
         _closingSoonOnly) {
-      return visibleCount == 1
-          ? '1 matching ${filterLabel == l10n.uiOpportunities.toLowerCase() ? 'listing' : filterLabel} found'
-          : '$visibleCount matching $filterLabel found';
+      return l10n.studentMatchingListingsFound(
+        visibleCount,
+        filterLabel == l10n.uiOpportunities.toLowerCase()
+            ? l10n.studentListing
+            : filterLabel,
+      );
     }
 
-    return visibleCount == 1
-        ? '1 open ${filterLabel == l10n.uiOpportunities.toLowerCase() ? 'listing' : filterLabel} found'
-        : '$visibleCount open $filterLabel found';
-  }
-
-  String _formatCount(int count, String singular, String plural) {
-    if (count <= 0) {
-      return plural;
-    }
-
-    return '$count ${count == 1 ? singular : plural}';
-  }
-
-  String _supportingCountText({
-    required int count,
-    required String singular,
-    required String plural,
-    required String fallback,
-  }) {
-    if (count <= 0) {
-      return fallback;
-    }
-
-    return _formatCount(count, singular, plural);
+    return l10n.studentOpenListingsFound(
+      visibleCount,
+      filterLabel == l10n.uiOpportunities.toLowerCase()
+          ? l10n.studentListing
+          : filterLabel,
+    );
   }
 
   DateTime? _postedAt(OpportunityModel opportunity) {
@@ -771,39 +746,41 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String _formatDeadlineDisplay(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     final parsed = _deadlineFor(opportunity);
     if (parsed == null) {
       final fallback = opportunity.deadlineLabel.trim();
-      return fallback.isEmpty ? 'No deadline' : fallback;
+      return fallback.isEmpty ? l10n.studentNoDeadline : fallback;
     }
 
     return DateFormat('MMM d').format(parsed);
   }
 
   String _relativePostedTime(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     final createdAt = _postedAt(opportunity);
     if (createdAt == null) {
-      return 'Recently added';
+      return l10n.studentRecentlyAdded;
     }
 
     final now = DateTime.now();
     final difference = now.difference(createdAt);
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.uiJustNow;
     }
     if (difference.inHours < 1) {
-      return '${difference.inMinutes} min ago';
+      return l10n.studentMinutesAgoCompact(difference.inMinutes);
     }
     if (difference.inDays < 1) {
-      return '${difference.inHours}h ago';
+      return l10n.studentHoursAgoCompact(difference.inHours);
     }
     if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n.studentDaysAgoCompact(difference.inDays);
     }
     if (difference.inDays < 30) {
       final weeks = math.max(1, (difference.inDays / 7).floor());
-      return '${weeks}w ago';
+      return l10n.studentWeeksAgoCompact(weeks);
     }
 
     return DateFormat('MMM d').format(createdAt);
@@ -831,29 +808,30 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String _closingSoonText(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     final deadline = _deadlineFor(opportunity);
     if (deadline == null) {
-      return 'Deadline unavailable';
+      return l10n.studentDeadlineUnavailable;
     }
 
     final now = DateTime.now();
     final difference = deadline.difference(now);
 
     if (difference.isNegative) {
-      return 'Closes today';
+      return l10n.studentClosesToday;
     }
     if (difference.inHours < 1) {
       final minutes = math.max(1, difference.inMinutes);
-      return 'Closes in $minutes min';
+      return l10n.studentClosesInMinutes(minutes);
     }
     if (difference.inHours < 24) {
-      return 'Closes in ${difference.inHours} hours';
+      return l10n.studentClosesInHours(difference.inHours);
     }
     if (difference.inDays == 1) {
-      return 'Closes tomorrow';
+      return l10n.studentClosesTomorrow;
     }
 
-    return 'Closes in ${difference.inDays} days';
+    return l10n.studentClosesInDays(difference.inDays);
   }
 
   Color _closingSoonColor(OpportunityModel opportunity) {
@@ -1001,10 +979,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       score += 12;
     }
 
-    final workMode = _workModeLabel(opportunity);
-    if (workMode == 'Remote') {
+    final workMode = _workModeKey(opportunity);
+    if (workMode == 'remote') {
       score += 10;
-    } else if (workMode == 'Hybrid') {
+    } else if (workMode == 'hybrid') {
       score += 6;
     }
 
@@ -1021,32 +999,33 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String _trendingSignalLabel(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     if (opportunity.isFeatured) {
-      return 'Partner pick';
+      return l10n.studentPartnerPick;
     }
     if (_isNewOpportunity(opportunity)) {
-      return 'New this week';
+      return l10n.studentNewThisWeek;
     }
 
     final deadline = _deadlineFor(opportunity);
     if (deadline != null) {
       final difference = deadline.difference(DateTime.now());
       if (!difference.isNegative && difference.inDays <= 7) {
-        return 'Closing soon';
+        return l10n.uiClosingSoon;
       }
     }
 
-    final workMode = _workModeLabel(opportunity);
-    if (workMode == 'Remote') {
-      return 'Remote friendly';
+    final workMode = _workModeKey(opportunity);
+    if (workMode == 'remote') {
+      return l10n.studentRemoteFriendly;
     }
-    if (workMode == 'Hybrid') {
-      return 'Hybrid setup';
+    if (workMode == 'hybrid') {
+      return l10n.studentHybridSetup;
     }
 
     final compensation = _compensationText(opportunity)?.toLowerCase() ?? '';
     if (compensation.isNotEmpty && compensation != 'unpaid') {
-      return 'Paid track';
+      return l10n.studentPaidTrack;
     }
 
     final explicitTag = _explicitCategoryTag(opportunity);
@@ -1055,10 +1034,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     }
 
     return switch (OpportunityType.parse(opportunity.type)) {
-      OpportunityType.internship => 'Student growth',
-      OpportunityType.sponsoring => 'Sponsored support',
-      OpportunityType.job => 'Career move',
-      _ => 'Open role',
+      OpportunityType.internship => l10n.studentStudentGrowth,
+      OpportunityType.sponsoring => l10n.studentSponsoredSupport,
+      OpportunityType.job => l10n.studentCareerMove,
+      _ => l10n.studentOpenRole,
     };
   }
 
@@ -1066,6 +1045,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     OpportunityModel opportunity, {
     int maxItems = 2,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final items = <String>[];
     final employment = _employmentTypeLabel(opportunity);
     final workMode = _workModeLabel(opportunity);
@@ -1105,7 +1085,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     }
 
     if (items.isEmpty && deadline != null) {
-      items.add('Deadline ${_formatDeadlineDisplay(opportunity)}');
+      items.add(l10n.studentDeadlineDate(_formatDeadlineDisplay(opportunity)));
     }
 
     if (items.isEmpty) {
@@ -1201,8 +1181,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String _companyName(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     final companyName = opportunity.companyName.trim();
-    return companyName.isEmpty ? 'FutureGate partner' : companyName;
+    return companyName.isEmpty ? l10n.studentFutureGatePartner : companyName;
   }
 
   String? _companyNameOrNull(OpportunityModel opportunity) {
@@ -1228,9 +1209,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       return fallback;
     }
 
-    return switch (_workModeLabel(opportunity)) {
-      'Remote' => 'Remote',
-      'Hybrid' => 'Hybrid',
+    final l10n = AppLocalizations.of(context)!;
+    return switch (_workModeKey(opportunity)) {
+      'remote' => l10n.workModeRemote,
+      'hybrid' => l10n.workModeHybrid,
       _ => null,
     };
   }
@@ -1267,9 +1249,37 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String? _workModeLabel(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
+    final workMode = _workModeKey(opportunity);
+
+    return switch (workMode) {
+      'remote' => l10n.workModeRemote,
+      'hybrid' => l10n.workModeHybrid,
+      'onsite' => l10n.workModeOnsite,
+      _ => null,
+    };
+  }
+
+  String _workModeFilterLabel(String mode) {
+    final l10n = AppLocalizations.of(context)!;
+    final lower = mode.trim().toLowerCase();
+    if (lower.contains('remote')) return l10n.workModeRemote;
+    if (lower.contains('hybrid')) return l10n.workModeHybrid;
+    if (lower.contains('onsite') || lower.contains('on-site')) {
+      return l10n.workModeOnsite;
+    }
+    return OpportunityMetadata.formatWorkMode(mode) ?? mode;
+  }
+
+  String? _workModeKey(OpportunityModel opportunity) {
     final normalizedMode = _normalizedWorkMode(opportunity);
     if (normalizedMode != null) {
-      return OpportunityMetadata.formatWorkMode(normalizedMode);
+      final lower = normalizedMode.trim().toLowerCase();
+      if (lower.contains('remote')) return 'remote';
+      if (lower.contains('hybrid')) return 'hybrid';
+      if (lower.contains('onsite') || lower.contains('on-site')) {
+        return 'onsite';
+      }
     }
 
     final searchable = [
@@ -1279,15 +1289,15 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     ].whereType<String>().join(' ').toLowerCase();
 
     if (searchable.contains('hybrid')) {
-      return 'Hybrid';
+      return 'hybrid';
     }
     if (searchable.contains('remote')) {
-      return 'Remote';
+      return 'remote';
     }
     if (searchable.contains('on-site') ||
         searchable.contains('onsite') ||
         searchable.contains('on site')) {
-      return 'On-site';
+      return 'onsite';
     }
 
     return null;
@@ -1653,7 +1663,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               compensationText: _compensationText(opportunity),
                               detailChips: _latestStatusItems(opportunity),
                               badgeText: _isNewOpportunity(opportunity)
-                                  ? 'NEW'
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.studentNewBadge
                                   : null,
                               badgeColor: OpportunityDashboardPalette.primary,
                               applicationStatus:
@@ -1678,18 +1690,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               subtitle: AppLocalizations.of(
                                 context,
                               )!.uiDiscoverPremiumOpenRolesFromTrustedEmployersAndRemoteReady,
-                              supportingLabel: _supportingCountText(
-                                count: jobItems.length,
-                                singular: AppLocalizations.of(
-                                  context,
-                                )!.uiOpenPosition,
-                                plural: AppLocalizations.of(
-                                  context,
-                                )!.uiOpenPositions,
-                                fallback: AppLocalizations.of(
-                                  context,
-                                )!.uiNoJobsAvailableRightNow,
-                              ),
+                              supportingLabel: AppLocalizations.of(
+                                context,
+                              )!.studentOpenPositionsCount(jobItems.length),
                               icon: Icons.work_outline_rounded,
                               onTap: () => Navigator.push(
                                 context,
@@ -1711,18 +1714,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                       subtitle: AppLocalizations.of(
                                         context,
                                       )!.uiInternshipsSubtitle,
-                                      caption: _supportingCountText(
-                                        count: internshipItems.length,
-                                        singular: AppLocalizations.of(
-                                          context,
-                                        )!.uiOpenInternship,
-                                        plural: AppLocalizations.of(
-                                          context,
-                                        )!.uiOpenInternships,
-                                        fallback: AppLocalizations.of(
-                                          context,
-                                        )!.uiNoInternshipsAvailableRightNow,
-                                      ),
+                                      caption: AppLocalizations.of(context)!
+                                          .studentOpenInternshipsCount(
+                                            internshipItems.length,
+                                          ),
                                       icon: Icons.school_outlined,
                                       color:
                                           OpportunityDashboardPalette.secondary,
@@ -1747,18 +1742,10 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                       subtitle: AppLocalizations.of(
                                         context,
                                       )!.uiSponsoredSubtitle,
-                                      caption: _supportingCountText(
-                                        count: sponsoredItems.length,
-                                        singular: AppLocalizations.of(
-                                          context,
-                                        )!.uiActiveTrack,
-                                        plural: AppLocalizations.of(
-                                          context,
-                                        )!.uiActiveTracks,
-                                        fallback: AppLocalizations.of(
-                                          context,
-                                        )!.uiNoSponsoredProgramsAvailableRightNow,
-                                      ),
+                                      caption: AppLocalizations.of(context)!
+                                          .studentActiveTracksCount(
+                                            sponsoredItems.length,
+                                          ),
                                       icon: Icons.campaign_outlined,
                                       color: OpportunityDashboardPalette.accent,
                                       backgroundColor:
@@ -2006,7 +1993,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                           _compensationText(opportunity),
                                     ),
                                   ],
-                                  badgeText: 'URGENT',
+                                  badgeText: AppLocalizations.of(
+                                    context,
+                                  )!.studentUrgentBadge,
                                   badgeColor: urgencyColor,
                                   statusColor: urgencyColor,
                                   applicationStatus:

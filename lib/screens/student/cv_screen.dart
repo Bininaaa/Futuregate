@@ -349,7 +349,9 @@ class _CvScreenState extends State<CvScreen> {
         download ? document.downloadUrl : document.viewUrl,
       );
 
-      if (uri == null) throw Exception('File unavailable.');
+      if (uri == null) {
+        throw Exception(AppLocalizations.of(context)!.studentFileUnavailable);
+      }
 
       final launched = await launchUrl(
         uri,

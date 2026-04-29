@@ -4165,10 +4165,12 @@
   "dashSectionDefaultSubtitle": "Everything important stays one tap away.",
   "dashFocusCvSubtitle": "A ready CV makes jobs, internships, and scholarships much quicker to apply for.",
   "dashFocusCvInsight": "Start with your CV, then tighten the profile details that make matching feel smarter.",
-  "dashFocusProfileSubtitle": "{count} detail(s) still missing for better matching.",
+  "dashFocusProfileSubtitle": "{count, plural, =0{Your profile details are ready for better matching.} =1{1 detail still missing for better matching.} other{{count} details still missing for better matching.}}",
   "@dashFocusProfileSubtitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "dashFocusInsightApprovedMomentum": "This is a strong moment to keep exploring while your profile is landing well.",
@@ -4177,10 +4179,12 @@
   "dashFocusInsightSavedReady": "Your saved list is ready for a second pass before deadlines tighten.",
   "dashFocusSubtitleDiscover": "Explore open roles, internships, funding, and learning picks designed for students building momentum.",
   "dashFocusInsightDiscover": "Use quick access below to jump into jobs, internships, scholarships, learning, or your saved shortlist.",
-  "dashFocusClosingSoonSubtitle": "{count} opportunities close within the next two weeks.",
+  "dashFocusClosingSoonSubtitle": "{count, plural, =0{No opportunities close within the next two weeks.} =1{1 opportunity closes within the next two weeks.} other{{count} opportunities close within the next two weeks.}}",
   "@dashFocusClosingSoonSubtitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "dashFocusClosingSoonInsight": "{company} is first up, and it closes {deadline}.",
@@ -4191,19 +4195,23 @@
     }
   },
   "dashSavedBannerEmpty": "Keep your strongest roles, funding, and learning picks one tap away.",
-  "dashSavedBannerCount": "{count} saved item(s) ready for a second look.",
+  "dashSavedBannerCount": "{count, plural, =0{No saved items ready yet.} =1{1 saved item ready for a second look.} other{{count} saved items ready for a second look.}}",
   "@dashSavedBannerCount": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "dashDeadlineSoon": "deadline soon",
   "dashLastDay": "Last day",
   "dashDayLeft": "1 day left",
-  "dashDaysLeft": "{count} days left",
+  "dashDaysLeft": "{count, plural, =0{Last day} =1{1 day left} other{{count} days left}}",
   "@dashDaysLeft": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "discoverResultsTitle": "Results",
@@ -4211,10 +4219,12 @@
   "discoverNoResultsHint": "Try adjusting your search or filters to uncover more matches.",
   "discoverTrendingSubtitle": "Featured, fresh, and high-signal picks from live data",
   "discoverTrendingEmptyHint": "Fresh recommendations are highlighted as new listings go live.",
-  "discoverLatestSubtitle": "The {count} newest roles, internships, and sponsored tracks",
+  "discoverLatestSubtitle": "{count, plural, =0{The newest roles, internships, and sponsored tracks} =1{The newest role, internship, or sponsored track} other{The {count} newest roles, internships, and sponsored tracks}}",
   "@discoverLatestSubtitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentOpportunityNoLongerAvailableOpen": "This opportunity is no longer available to open.",
@@ -4226,17 +4236,21 @@
       "label": {}
     }
   },
-  "studentApplicationsShown": "{count} applications shown",
+  "studentApplicationsShown": "{count, plural, =0{No applications shown} =1{1 application shown} other{{count} applications shown}}",
   "@studentApplicationsShown": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentAppliedOpportunityOne": "1 applied opportunity",
-  "studentAppliedOpportunitiesCount": "{count} applied opportunities",
+  "studentAppliedOpportunitiesCount": "{count, plural, =0{No applied opportunities} =1{1 applied opportunity} other{{count} applied opportunities}}",
   "@studentAppliedOpportunitiesCount": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentBrowseOpportunities": "Browse opportunities",
@@ -4317,32 +4331,40 @@
   "studentCvAddNameEmail": "Add your name and email.",
   "studentCvProfileIntroReady": "Your profile has a short introduction.",
   "studentCvWriteProfile": "Write a short professional profile.",
-  "studentCvEducationSaved": "{count} education item saved.",
+  "studentCvEducationSaved": "{count, plural, =0{No education items saved.} =1{1 education item saved.} other{{count} education items saved.}}",
   "@studentCvEducationSaved": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddEducation": "Add your latest degree or training.",
   "studentCvExperienceProjects": "Experience or projects",
-  "studentCvExperienceSaved": "{count} experience item saved.",
+  "studentCvExperienceSaved": "{count, plural, =0{No experience items saved.} =1{1 experience item saved.} other{{count} experience items saved.}}",
   "@studentCvExperienceSaved": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddExperience": "Add internships, work, or project experience.",
-  "studentCvSkillsListed": "{count} skills listed.",
+  "studentCvSkillsListed": "{count, plural, =0{No skills listed.} =1{1 skill listed.} other{{count} skills listed.}}",
   "@studentCvSkillsListed": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvListSkills": "List your strongest skills.",
-  "studentCvLanguagesListed": "{count} languages listed.",
+  "studentCvLanguagesListed": "{count, plural, =0{No languages listed.} =1{1 language listed.} other{{count} languages listed.}}",
   "@studentCvLanguagesListed": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentCvAddLanguages": "Add languages recruiters should know.",
@@ -4366,11 +4388,15 @@
   "studentViewActiveCv": "View active CV",
   "studentSaveAsPdf": "Save as PDF",
   "studentCvReadiness": "CV readiness",
-  "studentCvEssentialsComplete": "{completed} of {total} essentials complete",
+  "studentCvEssentialsComplete": "{total, plural, =0{No essentials complete} =1{{completed} of 1 essential complete} other{{completed} of {total} essentials complete}}",
   "@studentCvEssentialsComplete": {
     "placeholders": {
-      "completed": {},
-      "total": {}
+      "completed": {
+        "type": "num"
+      },
+      "total": {
+        "type": "num"
+      }
     }
   },
   "studentUploadedPdfActive": "Uploaded PDF active",
@@ -4539,17 +4565,21 @@
   "studentRemovedFromSavedIdeas": "Removed from saved ideas",
   "studentSavedFilterTrainings": "Trainings",
   "studentSponsoredFilter": "Sponsored",
-  "studentItemsShown": "{count} items shown",
+  "studentItemsShown": "{count, plural, =0{No items shown} =1{1 item shown} other{{count} items shown}}",
   "@studentItemsShown": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentSavedItemOne": "1 saved item",
-  "studentSavedItemsCount": "{count} saved items",
+  "studentSavedItemsCount": "{count, plural, =0{No saved items} =1{1 saved item} other{{count} saved items}}",
   "@studentSavedItemsCount": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentNoSavedItemsMatchView": "No saved items match this view",
@@ -4571,16 +4601,20 @@
   "studentRelativeSaved": "Saved",
   "studentRelativeToday": "Today",
   "studentRelativeYesterday": "Yesterday",
-  "studentDaysAgoCompact": "{count}d ago",
+  "studentDaysAgoCompact": "{count, plural, =0{Today} =1{1d ago} other{{count}d ago}}",
   "@studentDaysAgoCompact": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentWeeksAgoCompact": "{count}w ago",
+  "studentWeeksAgoCompact": "{count, plural, =0{This week} =1{1w ago} other{{count}w ago}}",
   "@studentWeeksAgoCompact": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentNoDeadlineShared": "No deadline shared",
@@ -4596,30 +4630,36 @@
       "date": {}
     }
   },
-  "studentInterestedCountLower": "{count} interested",
+  "studentInterestedCountLower": "{count, plural, =0{no interested students} =1{1 interested student} other{{count} interested students}}",
   "@studentInterestedCountLower": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentInterestedCountTitle": "{count} Interested",
+  "studentInterestedCountTitle": "{count, plural, =0{No Interested Students} =1{1 Interested Student} other{{count} Interested Students}}",
   "@studentInterestedCountTitle": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentDashboardApprovedApplicationsTitle": "{count} {word} approved.",
+  "studentDashboardApprovedApplicationsTitle": "{count, plural, =0{No applications approved yet.} =1{1 application approved.} other{{count} applications approved.}}",
   "@studentDashboardApprovedApplicationsTitle": {
     "placeholders": {
-      "count": {},
-      "word": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
-  "studentDashboardPendingApplicationsTitle": "{count} {word} in review.",
+  "studentDashboardPendingApplicationsTitle": "{count, plural, =0{No applications in review.} =1{1 application in review.} other{{count} applications in review.}}",
   "@studentDashboardPendingApplicationsTitle": {
     "placeholders": {
-      "count": {},
-      "word": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "studentApplicationSingular": "application",
@@ -4668,11 +4708,15 @@
   "studentManaged": "Managed",
   "studentReset": "Reset",
   "studentCvBuilderSteps": "Builder steps",
-  "studentCvSectionsComplete": "{completed} of {total} sections complete",
+  "studentCvSectionsComplete": "{total, plural, =0{No sections complete} =1{{completed} of 1 section complete} other{{completed} of {total} sections complete}}",
   "@studentCvSectionsComplete": {
     "placeholders": {
-      "completed": {},
-      "total": {}
+      "completed": {
+        "type": "num"
+      },
+      "total": {
+        "type": "num"
+      }
     }
   },
   "studentAddYourEducation": "Add your education",
@@ -4709,5 +4753,381 @@
   "studentProfileHintGoodShape": "Your profile is in good shape for the next opportunity you open.",
   "studentAddCv": "Add CV",
   "studentCompleteProfile": "Complete profile",
-  "studentReviewProfile": "Review profile"
+  "studentReviewProfile": "Review profile",
+  "studentSkillCount": "{count, plural, =0{No skills} =1{1 skill} other{{count} skills}}",
+  "@studentSkillCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentExperienceBlockCount": "{count, plural, =0{No experience blocks} =1{1 experience block} other{{count} experience blocks}}",
+  "@studentExperienceBlockCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentLanguageCount": "{count, plural, =0{No languages} =1{1 language} other{{count} languages}}",
+  "@studentLanguageCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentOpenPositionsCount": "{count, plural, =0{No open positions} =1{1 open position} other{{count} open positions}}",
+  "@studentOpenPositionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentOpenInternshipsCount": "{count, plural, =0{No open internships} =1{1 open internship} other{{count} open internships}}",
+  "@studentOpenInternshipsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentActiveTracksCount": "{count, plural, =0{No active tracks} =1{1 active track} other{{count} active tracks}}",
+  "@studentActiveTracksCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentInternshipsAvailableCount": "{count, plural, =0{No internships} =1{1 internship} other{{count} internships}}",
+  "@studentInternshipsAvailableCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSponsoredProgramsLiveCount": "{count, plural, =0{No programs live now} =1{1 program live now} other{{count} programs live now}}",
+  "@studentSponsoredProgramsLiveCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedRolesCount": "{count, plural, =0{No saved roles} =1{1 saved role} other{{count} saved roles}}",
+  "@studentSavedRolesCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedScholarshipsCount": "{count, plural, =0{No saved scholarships} =1{1 saved scholarship} other{{count} saved scholarships}}",
+  "@studentSavedScholarshipsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedTrainingsCount": "{count, plural, =0{No saved training} =1{1 saved training} other{{count} saved trainings}}",
+  "@studentSavedTrainingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentSavedIdeasCount": "{count, plural, =0{No saved ideas} =1{1 saved idea} other{{count} saved ideas}}",
+  "@studentSavedIdeasCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentDashboardSavedBadgeCount": "{count, plural, =0{Start saving} =1{1 saved} other{{count} saved}}",
+  "@studentDashboardSavedBadgeCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentMatchingListingsFound": "{count, plural, =0{No matching {filter} found} =1{1 matching {filter} found} other{{count} matching {filter} found}}",
+  "@studentMatchingListingsFound": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentOpenListingsFound": "{count, plural, =0{No open {filter} found} =1{1 open {filter} found} other{{count} open {filter} found}}",
+  "@studentOpenListingsFound": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentMinutesAgoCompact": "{count, plural, =0{Just now} =1{1 min ago} other{{count} min ago}}",
+  "@studentMinutesAgoCompact": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentHoursAgoCompact": "{count, plural, =0{Just now} =1{1h ago} other{{count}h ago}}",
+  "@studentHoursAgoCompact": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInMinutes": "{count, plural, =0{Closes now} =1{Closes in 1 min} other{Closes in {count} min}}",
+  "@studentClosesInMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInHours": "{count, plural, =0{Closes now} =1{Closes in 1 hour} other{Closes in {count} hours}}",
+  "@studentClosesInHours": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentClosesInDays": "{count, plural, =0{Closes today} =1{Closes tomorrow} other{Closes in {count} days}}",
+  "@studentClosesInDays": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileDetailsMissingCount": "{count, plural, =0{Everything important is filled in} =1{1 detail still needs attention.} other{{count} details still need attention.}}",
+  "@studentProfileDetailsMissingCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileSavedItemsCount": "{count, plural, =0{Nothing saved yet} =1{1 saved item} other{{count} saved items}}",
+  "@studentProfileSavedItemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileSubmittedOpportunitiesCount": "{count, plural, =0{No submitted opportunities yet} =1{1 submitted opportunity} other{{count} submitted opportunities}}",
+  "@studentProfileSubmittedOpportunitiesCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentProfileUnreadNotificationsCount": "{count, plural, =0{Everything is caught up.} =1{1 unread right now} other{{count} unread right now}}",
+  "@studentProfileUnreadNotificationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "studentNoDeadline": "No deadline",
+  "studentDateUnavailable": "Date unavailable",
+  "studentRecentlyAdded": "Recently added",
+  "studentDeadlineUnavailable": "Deadline unavailable",
+  "studentClosesToday": "Closes today",
+  "studentClosesTomorrow": "Closes tomorrow",
+  "studentDeadlineDate": "Deadline {date}",
+  "@studentDeadlineDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentApplyByDate": "Apply by {date}",
+  "@studentApplyByDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentApplicationsOpen": "Applications open",
+  "studentPartnerPick": "Partner pick",
+  "studentNewThisWeek": "New this week",
+  "studentRemoteFriendly": "Remote friendly",
+  "studentHybridSetup": "Hybrid setup",
+  "studentPaidTrack": "Paid track",
+  "studentStudentGrowth": "Student growth",
+  "studentSponsoredSupport": "Sponsored support",
+  "studentCareerMove": "Career move",
+  "studentOpenRole": "Open role",
+  "studentFutureGatePartner": "FutureGate partner",
+  "studentNewBadge": "NEW",
+  "studentUrgentBadge": "URGENT",
+  "studentStudentPlacement": "Student placement",
+  "studentPartnerBackedProgram": "Partner-backed program",
+  "studentCareerOpportunity": "Career opportunity",
+  "studentStrongOpportunitySubtitle": "A strong opportunity worth a closer look.",
+  "studentSaveFailed": "Save failed",
+  "studentUnsaved": "Unsaved",
+  "studentEditEducation": "Edit Education",
+  "studentAddEducationTitle": "Add Education",
+  "studentEditExperience": "Edit Experience",
+  "studentAddExperienceTitle": "Add Experience",
+  "studentDateRangeHint": "e.g. Jan 2023 - Present",
+  "studentTypeAndPressEnter": "Type and press Enter",
+  "studentSavingChanges": "Saving changes...",
+  "studentChangesSaveAutomatically": "Changes save automatically",
+  "studentDownloadCvPdf": "Download CV PDF",
+  "studentDownloadUnavailableMessage": "Download unavailable.",
+  "studentOpeningChat": "Opening chat...",
+  "studentChatWithCompany": "Chat with Company",
+  "studentSaveOpportunityTooltip": "Save opportunity",
+  "studentUnsaveOpportunityTooltip": "Unsave opportunity",
+  "studentWithdrawing": "Withdrawing...",
+  "studentWithdrawApplicationAction": "Withdraw application",
+  "studentFundingNote": "Funding note",
+  "studentCompensationNote": "Compensation note",
+  "studentProgramDetails": "Program Details",
+  "studentProfileTip": "Profile tip",
+  "studentAboutYou": "About you",
+  "studentBioStillMissing": "Bio still missing",
+  "studentAllClear": "All clear",
+  "studentProfileHeadlineReady": "Ready to stand out",
+  "studentProfileHeadlineNearly": "Nearly polished",
+  "studentProfileHeadlineFoundation": "Strong foundation",
+  "studentProfileHeadlineCatchUp": "Let your profile catch up",
+  "studentProfileCompleteSummary": "Everything essential is already in place. The profile looks complete and confident.",
+  "studentProfileThoughtfulUpdates": "A few thoughtful updates will make the profile feel complete. {label}",
+  "@studentProfileThoughtfulUpdates": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentProfileCoreStory": "The core story is taking shape. Keep filling the essentials to make matching stronger. {label}",
+  "@studentProfileCoreStory": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentProfileRoomToGrow": "This profile still has room to grow before it makes its best first impression. {label}",
+  "@studentProfileRoomToGrow": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentFieldOfStudy": "Field of study",
+  "studentAcademicLevel": "Academic level",
+  "studentFullName": "Full name",
+  "studentCvProfileHint": "Uploading or building a CV unlocks a much stronger profile instantly.",
+  "studentBioProfileHint": "A short bio makes the profile feel human, intentional, and easier to trust.",
+  "studentFieldOfStudyProfileHint": "Your study focus helps opportunities feel much more relevant.",
+  "studentAcademicLevelProfileHint": "Your academic level helps recruiters and programs understand where you are right now.",
+  "studentFullNameProfileHint": "Your name makes the profile feel complete and recognizable right away.",
+  "studentPhoneProfileHint": "A phone number gives your profile one more reliable contact channel.",
+  "studentProfileKeepRefining": "Keep refining the essentials so the profile reads clearly at a glance.",
+  "studentEverythingImportantFilled": "Everything important is filled in",
+  "studentInProgress": "In progress",
+  "studentStrongPlace": "You are in a strong place",
+  "studentBestNextUpdate": "Best next update: {label}",
+  "@studentBestNextUpdate": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentKeepProfileCurrent": "Keep the profile current as your student journey changes.",
+  "studentBioHelpText": "A short bio helps your profile feel intentional and gives people a quick sense of your direction.",
+  "studentOfficialPage": "official page",
+  "studentOfficialScholarshipSource": "Official scholarship source",
+  "studentApplicationLinkUnavailable": "Application link unavailable",
+  "studentScholarshipNoExternalLink": "The provider has not attached an external application link yet.",
+  "studentApplyOnHost": "Apply on {label}",
+  "@studentApplyOnHost": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "studentRemovingSavedItem": "Removing saved item",
+  "studentRemoveSavedItem": "Remove saved item",
+  "studentTrainingNoLinkYet": "This training does not have a link yet.",
+  "studentIdeaRemovedFromCollection": "Idea removed from your saved collection.",
+  "studentIdeaSavedToCollection": "Idea saved to your collection.",
+  "studentIdeaUnsavedTitle": "Idea unsaved",
+  "studentIdeaSavedTitle": "Idea saved",
+  "studentInterestRemovedMessage": "You are no longer marked as interested.",
+  "studentInterestMarkedMessage": "You are now marked as interested in this idea.",
+  "studentInterestRemovedTitle": "Interest removed",
+  "studentInterestMarkedTitle": "Interest marked",
+  "studentApplicationMovedForward": "Moved forward. Watch for next steps.",
+  "studentApplicationNotSelectedHistory": "Not selected, but kept in your history.",
+  "studentApplicationAwaitingDecision": "Awaiting a decision from the company.",
+  "studentUpdate": "Update",
+  "studentJobsHeadlinePrefix": "Find your next\n",
+  "studentJobsHeadlineAccent": "breakthrough",
+  "studentNoFeaturedJobsInView": "No featured jobs in this view",
+  "studentNoRolesAvailableNow": "No roles available right now",
+  "studentNoRolesMatchSearch": "No roles match your search",
+  "studentCheckBackNewJobs": "Check back soon for new job listings.",
+  "studentTryKeywordClearCategory": "Try another keyword or clear your category filter to see more roles.",
+  "studentTrySearchClearCategories": "Try another search or clear your category filters to see more roles.",
+  "studentListing": "listing",
+  "studentNoInternshipsMatchView": "No internships match this view",
+  "studentCheckBackNewInternships": "Check back soon for new internship listings.",
+  "studentTryAdjustSearchFiltersOpportunities": "Try adjusting your search or filters to explore more opportunities.",
+  "studentTryAdjustSearchInternshipMatches": "Try adjusting your search to see more internship matches.",
+  "studentInternshipsHeadlinePrefix": "Find your next\n",
+  "studentInternshipsHeadlineAccent": "internship",
+  "studentSponsoredHeadlinePrefix": "Find your next\n",
+  "studentSponsoredHeadlineAccent": "funded path",
+  "studentNoSponsoredProgramsMatchView": "No sponsored programs match this view",
+  "studentCheckBackNewSponsoredPrograms": "Check back soon for new sponsored programs.",
+  "studentTryAdjustSearchSponsoredPrograms": "Try adjusting your search or filters to see matching programs.",
+  "studentSponsoredProgramsMatchedInFilter": "{count, plural, =0{No programs matched in {filter}} =1{1 program matched in {filter}} other{{count} programs matched in {filter}}}",
+  "@studentSponsoredProgramsMatchedInFilter": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "filter": {}
+    }
+  },
+  "studentLimited": "Limited",
+  "studentApplyingEllipsis": "Applying...",
+  "studentSave": "Save",
+  "studentPublisher": "Publisher",
+  "studentResponsibilities": "Responsibilities",
+  "studentPartiallyFunded": "Partially funded",
+  "studentMeritBased": "Merit-based",
+  "studentPrestige": "Prestige",
+  "studentTrainingErrorShowingAvailable": "{error} Showing the training content currently available.",
+  "@studentTrainingErrorShowingAvailable": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "studentProfileSubtitleFallback": "Shape a profile that feels ready for the next opportunity.",
+  "studentUniversityProfileHint": "A university name adds context and credibility to your academic profile.",
+  "studentEmailProfileHint": "A working email keeps applications, notifications, and follow-up communication on track.",
+  "studentLocationProfileHint": "A location makes remote, local, and hybrid opportunities easier to match.",
+  "studentUniversity": "University",
+  "studentEmail": "Email",
+  "studentLocation": "Location",
+  "studentPhone": "Phone",
+  "studentWaitCoverUpload": "Please wait for the cover image upload to finish.",
+  "studentFileUnavailable": "File unavailable."
 }

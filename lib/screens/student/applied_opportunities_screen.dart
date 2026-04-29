@@ -684,12 +684,13 @@ class _AppliedHistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final accent = item.hasOpportunity
         ? OpportunityType.color(item.type)
         : StudentOpportunityHubPalette.textMuted;
     final deadline = item.deadline;
     final statusTone = ApplicationStatus.color(item.status);
-    final summary = _summaryText(item);
+    final summary = _summaryText(item, l10n);
     final leadingIcon = item.hasOpportunity
         ? OpportunityType.icon(item.type)
         : Icons.archive_outlined;
@@ -732,10 +733,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _AppliedLabelChip(
-                      label: ApplicationStatus.label(
-                        item.status,
-                        AppLocalizations.of(context)!,
-                      ),
+                      label: ApplicationStatus.label(item.status, l10n),
                       tone: statusTone,
                       filled: true,
                     ),
@@ -763,7 +761,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                                 item.type,
                                 AppLocalizations.of(context)!,
                               )
-                            : 'Archived',
+                            : l10n.uiArchived,
                         style: AppTypography.product(
                           fontSize: 11.2,
                           fontWeight: FontWeight.w700,
@@ -795,11 +793,11 @@ class _AppliedHistoryCard extends StatelessWidget {
                   children: [
                     _AppliedMetaChip(
                       icon: Icons.schedule_rounded,
-                      label: _relativeAppliedLabel(item.appliedAt),
+                      label: _relativeAppliedLabel(item.appliedAt, l10n),
                     ),
                     _AppliedMetaChip(
                       icon: _deadlineIcon(deadline),
-                      label: _deadlineLabel(deadline),
+                      label: _deadlineLabel(deadline, l10n),
                       tone: _deadlineTone(deadline),
                     ),
                     if (locationLabel != null)
@@ -809,7 +807,7 @@ class _AppliedHistoryCard extends StatelessWidget {
                       ),
                     _AppliedMetaChip(
                       icon: _availabilityIcon(item),
-                      label: _availabilityLabel(item),
+                      label: _availabilityLabel(item, l10n),
                       tone: _availabilityTone(item),
                     ),
                   ],
@@ -1076,7 +1074,7 @@ abstract final class _AppliedCardText {
   );
 }
 
-String _summaryText(StudentApplicationItemModel item) {
+String _summaryText(StudentApplicationItemModel item, AppLocalizations l10n) {
   final normalized = item.description.trim().replaceAll(RegExp(r'\s+'), ' ');
   if (normalized.isNotEmpty) {
     if (normalized.length <= 88) {
@@ -1086,16 +1084,16 @@ String _summaryText(StudentApplicationItemModel item) {
   }
 
   return switch (ApplicationStatus.parse(item.status)) {
-    ApplicationStatus.accepted => 'Moved forward. Watch for next steps.',
-    ApplicationStatus.rejected => 'Not selected, but kept in your history.',
-    ApplicationStatus.pending => 'Awaiting a decision from the company.',
-    _ => 'Awaiting a decision from the company.',
+    ApplicationStatus.accepted => l10n.studentApplicationMovedForward,
+    ApplicationStatus.rejected => l10n.studentApplicationNotSelectedHistory,
+    ApplicationStatus.pending => l10n.studentApplicationAwaitingDecision,
+    _ => l10n.studentApplicationAwaitingDecision,
   };
 }
 
-String _relativeAppliedLabel(DateTime? value) {
+String _relativeAppliedLabel(DateTime? value, AppLocalizations l10n) {
   if (value == null) {
-    return 'Date unavailable';
+    return l10n.studentDateUnavailable;
   }
 
   final now = DateTime.now();
@@ -1104,17 +1102,17 @@ String _relativeAppliedLabel(DateTime? value) {
   final difference = today.difference(target).inDays;
 
   if (difference <= 0) {
-    return 'Today';
+    return l10n.studentRelativeToday;
   }
   if (difference == 1) {
-    return 'Yesterday';
+    return l10n.studentRelativeYesterday;
   }
   if (difference < 7) {
-    return '${difference}d ago';
+    return l10n.studentDaysAgoCompact(difference);
   }
   if (difference < 30) {
     final weeks = (difference / 7).ceil();
-    return '${weeks}w ago';
+    return l10n.studentWeeksAgoCompact(weeks);
   }
 
   return DateFormat('MMM d').format(value);
@@ -1133,9 +1131,9 @@ IconData _deadlineIcon(DateTime? deadline) {
       : Icons.flag_outlined;
 }
 
-String _deadlineLabel(DateTime? deadline) {
+String _deadlineLabel(DateTime? deadline, AppLocalizations l10n) {
   if (deadline == null) {
-    return 'No deadline';
+    return l10n.studentNoDeadline;
   }
 
   return DateFormat('MMM d').format(deadline);
@@ -1160,14 +1158,17 @@ Color? _deadlineTone(DateTime? deadline) {
   return StudentOpportunityHubPalette.secondary;
 }
 
-String _availabilityLabel(StudentApplicationItemModel item) {
+String _availabilityLabel(
+  StudentApplicationItemModel item,
+  AppLocalizations l10n,
+) {
   if (item.isUnavailable) {
-    return 'Archived';
+    return l10n.uiArchived;
   }
   if (item.isOpen) {
-    return 'Open';
+    return l10n.studentAvailable;
   }
-  return 'Closed';
+  return l10n.uiClosed;
 }
 
 String? _compactLocationLabel(String value) {

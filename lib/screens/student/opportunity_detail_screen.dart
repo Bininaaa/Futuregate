@@ -663,8 +663,8 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
   String get _compensationNoteTitle =>
       _effectiveType == OpportunityType.sponsoring
-      ? 'Funding note'
-      : 'Compensation note';
+      ? AppLocalizations.of(context)!.studentFundingNote
+      : AppLocalizations.of(context)!.studentCompensationNote;
 
   String? get _salaryLabel => OpportunityMetadata.formatSalaryRange(
     salaryMin: widget.opportunity.salaryMin,
@@ -929,8 +929,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                     AppPrimaryButton(
                       theme: _theme,
                       label: _isChatOpening
-                          ? 'Opening chat...'
-                          : 'Chat with Company',
+                          ? AppLocalizations.of(context)!.studentOpeningChat
+                          : AppLocalizations.of(
+                              context,
+                            )!.studentChatWithCompany,
                       icon: Icons.chat_bubble_outline_rounded,
                       isBusy: _isChatOpening,
                       onPressed: _openCompanyChat,
@@ -939,7 +941,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                     AppPrimaryButton(
                       theme: _theme,
                       label: _isApplying
-                          ? 'Applying...'
+                          ? AppLocalizations.of(
+                              context,
+                            )!.studentApplyingEllipsis
                           : _buttonLabelForStatus(status, applicationProvider),
                       icon: canApply
                           ? Icons.send_rounded
@@ -955,7 +959,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                       Expanded(
                         child: AppSecondaryButton(
                           theme: _theme,
-                          label: isSaved ? 'Saved' : 'Save',
+                          label: isSaved
+                              ? AppLocalizations.of(context)!.uiSaved
+                              : AppLocalizations.of(context)!.studentSave,
                           icon: isSaved
                               ? Icons.bookmark_rounded
                               : Icons.bookmark_outline_rounded,
@@ -966,7 +972,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                       Expanded(
                         child: AppSecondaryButton(
                           theme: _theme,
-                          label: 'Publisher',
+                          label: AppLocalizations.of(context)!.studentPublisher,
                           icon: Icons.account_circle_outlined,
                           onPressed: _openPublisherProfile,
                         ),
@@ -1001,8 +1007,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                           gap: 7,
                           label: Text(
                             _isWithdrawing
-                                ? 'Withdrawing...'
-                                : 'Withdraw application',
+                                ? AppLocalizations.of(
+                                    context,
+                                  )!.studentWithdrawing
+                                : AppLocalizations.of(
+                                    context,
+                                  )!.studentWithdrawApplicationAction,
                             style: TextStyle(
                               fontSize: 12,
                               color: AppColors.current.danger,
@@ -1032,7 +1042,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         ),
         actions: <Widget>[
           IconButton(
-            tooltip: isSaved ? 'Unsave opportunity' : 'Save opportunity',
+            tooltip: isSaved
+                ? AppLocalizations.of(context)!.studentUnsaveOpportunityTooltip
+                : AppLocalizations.of(context)!.studentSaveOpportunityTooltip,
             onPressed: _toggleSavedOpportunity,
             icon: Icon(
               isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
@@ -1206,8 +1218,8 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
             AppDetailSection(
               theme: _theme,
               title: _effectiveType == OpportunityType.sponsoring
-                  ? 'Program Details'
-                  : 'Responsibilities',
+                  ? AppLocalizations.of(context)!.studentProgramDetails
+                  : AppLocalizations.of(context)!.studentResponsibilities,
               icon: Icons.checklist_rounded,
               child: _OpportunityTextOrList(
                 theme: _theme,

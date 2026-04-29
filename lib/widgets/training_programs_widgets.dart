@@ -622,6 +622,7 @@ class TrainingCatalogueSelector extends StatelessWidget {
   final String selectedDomain;
   final Widget? headerTrailing;
   final ValueChanged<String> onSelected;
+  final String Function(String domain)? domainLabelBuilder;
 
   const TrainingCatalogueSelector({
     super.key,
@@ -629,6 +630,7 @@ class TrainingCatalogueSelector extends StatelessWidget {
     required this.selectedDomain,
     this.headerTrailing,
     required this.onSelected,
+    this.domainLabelBuilder,
   });
 
   @override
@@ -676,7 +678,7 @@ class TrainingCatalogueSelector extends StatelessWidget {
           children: domains
               .map(
                 (domain) => _TrainingCatalogueChip(
-                  label: domain,
+                  label: domainLabelBuilder?.call(domain) ?? domain,
                   isSelected: domain == selectedDomain,
                   onTap: () => onSelected(domain),
                 ),
