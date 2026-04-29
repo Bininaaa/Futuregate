@@ -361,8 +361,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                             ),
                             maxLines: 6,
                             minLength: 60,
-                            helperText:
-                                'Include scope, expectations, requirements, and why students should apply.',
+                            helperText: _l10n
+                                .publishOpportunityDescriptionHelperText,
                             validator: _validateDescription,
                           ),
                         ),

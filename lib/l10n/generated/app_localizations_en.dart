@@ -9962,4 +9962,504 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get studentFileUnavailable => 'File unavailable.';
+
+  @override
+  String get companyReviewNeedsAttentionTitle =>
+      'Company Review Needs Attention';
+
+  @override
+  String get companyReviewInProgressTitle => 'Company Review In Progress';
+
+  @override
+  String get companyReviewRejectedSubtitle =>
+      'Your company account has not been approved yet. Review your profile and commercial register, then update anything that needs correction before trying again.';
+
+  @override
+  String get companyReviewPendingSubtitle =>
+      'Your company account has been created successfully. An administrator still needs to review your commercial register before your workspace goes live.';
+
+  @override
+  String get companyReviewRejectedHelperTitle =>
+      'What to fix before the next review';
+
+  @override
+  String get companyReviewPendingHelperTitle => 'What happens next';
+
+  @override
+  String get companyReviewRejectedHelperItem1 =>
+      'Check your company details and commercial register document.';
+
+  @override
+  String get companyReviewRejectedHelperItem2 =>
+      'Update anything incomplete or unclear from your company profile.';
+
+  @override
+  String get companyReviewRejectedHelperItem3 =>
+      'Once the admin reviews it again, access will open automatically.';
+
+  @override
+  String get companyReviewPendingHelperItem1 =>
+      'The admin team reviews the company profile and uploaded register.';
+
+  @override
+  String get companyReviewPendingHelperItem2 =>
+      'Your workspace will unlock automatically as soon as the company is approved.';
+
+  @override
+  String get companyReviewPendingHelperItem3 =>
+      'You can still open your profile now and improve the information before approval.';
+
+  @override
+  String get companyReviewStatNotSet => 'Not set';
+
+  @override
+  String get companyReviewStatRegisterUploaded => 'Uploaded';
+
+  @override
+  String get companyReviewStatRegisterMissing => 'Missing';
+
+  @override
+  String get companyReviewUpdateProfileButton => 'Update Company Profile';
+
+  @override
+  String get companyReviewOpenProfileButton => 'Open Company Profile';
+
+  @override
+  String opportunityCountdownHoursLeft(Object hours) {
+    return '${hours}h left';
+  }
+
+  @override
+  String opportunityCountdownDaysLeft(Object days) {
+    return '${days}d left';
+  }
+
+  @override
+  String get opportunityFreshnessRecent => 'Recent';
+
+  @override
+  String get opportunityClosedNoticeMessage =>
+      'This opportunity has been closed. Students can no longer apply, but existing applications stay available for review.';
+
+  @override
+  String get opportunityReopenedNoticeMessage =>
+      'This opportunity is open again and can receive new applications.';
+
+  @override
+  String get opportunityReopenedNoticeTitle => 'Opportunity reopened';
+
+  @override
+  String opportunityDeleteConfirmationMessage(Object title) {
+    return 'Delete \"$title\"? If it has pending applications, it will be closed instead so students can still be reviewed.';
+  }
+
+  @override
+  String get opportunityClosedDueToPendingMessage =>
+      'Opportunity closed because pending applications still need review.';
+
+  @override
+  String get opportunityCouldNotRefreshApplicants =>
+      'Could not refresh applicants';
+
+  @override
+  String get opportunityNoStudentsYetTitle => 'No students yet';
+
+  @override
+  String get opportunityNoStudentsYetSubtitle =>
+      'Students who apply to this opportunity will appear here.';
+
+  @override
+  String get opportunityNoMatchesFoundTitle => 'No matches found';
+
+  @override
+  String get opportunityNoMatchesFoundSubtitle =>
+      'Try clearing the filters or adjusting your search.';
+
+  @override
+  String get opportunityPublishFirstRolePrompt =>
+      'Publish your first role to start hiring.';
+
+  @override
+  String get opportunityActionReopen => 'Reopen';
+
+  @override
+  String get companyProfileBrandStoryFallback =>
+      'Build a strong first impression with a short company story, clear contact details, and a polished visual identity.';
+
+  @override
+  String get companyProfileLogoMissingLabel => 'Logo';
+
+  @override
+  String get companyProfileCouldNotOpenWebsite => 'Could not open the website.';
+
+  @override
+  String get companyProfileMissingDetailSingular =>
+      '1 detail is still missing from the company profile.';
+
+  @override
+  String companyProfileMissingDetailsPlural(Object missingCount) {
+    return '$missingCount details are still missing from the company profile.';
+  }
+
+  @override
+  String get companyProfileIncompleteTitle => 'Profile incomplete';
+
+  @override
+  String companyProfileIncompleteMessageFormat(Object message) {
+    return '$message Add what is missing so students see a clearer, more trusted company page.';
+  }
+
+  @override
+  String get companyProfileCouldNotOpenEmail =>
+      'Could not open email right now.';
+
+  @override
+  String get companyProfileAddPhonePlaceholder => 'Add a company phone number';
+
+  @override
+  String get companyProfileAddLocationPlaceholder =>
+      'Add your company location';
+
+  @override
+  String get companyProfileAddWebsitePlaceholder => 'Add your website';
+
+  @override
+  String get companyProfileAddSectorPlaceholder => 'Add a sector or specialty';
+
+  @override
+  String get companyProfileNotAvailable => 'Not available';
+
+  @override
+  String get companyProfileRegisterPendingSummary =>
+      'The required document is attached and waiting for admin review.';
+
+  @override
+  String get companyProfileRegisterRejectedSummary =>
+      'The required document is attached, but the company approval still needs attention.';
+
+  @override
+  String get companyProfileRegisterApprovedSummary =>
+      'The required document is attached and the company is approved.';
+
+  @override
+  String get companyProfileApprovalPendingTitle => 'Approval pending';
+
+  @override
+  String get companyProfileApprovalRejectedTitle => 'Approval needs changes';
+
+  @override
+  String get companyProfileApprovalApprovedTitle => 'Company approved';
+
+  @override
+  String get companyProfileApprovalPendingMessage =>
+      'Your commercial register is uploaded and the admin team still needs to review this company account.';
+
+  @override
+  String get companyProfileApprovalRejectedMessage =>
+      'Your document is uploaded, but the company account still needs corrections before it can be approved.';
+
+  @override
+  String get companyProfileApprovalApprovedMessage =>
+      'Your commercial register is uploaded and the company account is approved.';
+
+  @override
+  String get companyProfileRegisterUploadPrompt =>
+      'Upload a current document to keep the company profile complete and trusted.';
+
+  @override
+  String get companyProfileDocumentUploadedFallback => 'Document uploaded';
+
+  @override
+  String get companyProfileEditRegisterAlreadyAttached =>
+      'Verification document is already attached.';
+
+  @override
+  String get companyProfileEditRegisterNeedsAttention =>
+      'Commercial register still needs attention.';
+
+  @override
+  String get companyProfileEditCompanyNameHint => 'Your public company name';
+
+  @override
+  String get companyProfileEditCompanyNameValidation =>
+      'Company name is required.';
+
+  @override
+  String get companyProfileEditSectorHint =>
+      'Technology, finance, design, education...';
+
+  @override
+  String get companyProfileEditDescriptionHint =>
+      'What does your company build, who do you serve, and what can students expect?';
+
+  @override
+  String get companyProfileEditPhoneHint => 'Company phone number';
+
+  @override
+  String get companyProfileEditLocationHint => 'City, region, or headquarters';
+
+  @override
+  String get companyProfileEditWebsiteValidationSpaces =>
+      'Website cannot contain spaces.';
+
+  @override
+  String get companyProfileEditWebsiteValidationInvalid =>
+      'Enter a valid website.';
+
+  @override
+  String get companyProfileEditLogoLiveMessage =>
+      'Your current company visual is live.';
+
+  @override
+  String get companyProfileEditLogoMissingMessage =>
+      'Add a logo to make your company profile feel complete.';
+
+  @override
+  String get companyProfileEditReplaceLogoLabel => 'Replace Logo';
+
+  @override
+  String get companyProfileEditUploadLogoLabel => 'Upload Logo';
+
+  @override
+  String get companyProfileEditLogoRemovedMessage => 'Company logo removed.';
+
+  @override
+  String get companyProfileEditLogoRemovedTitle => 'Logo removed';
+
+  @override
+  String get companyProfileEditRegisterRequiredValidation =>
+      'Commercial register is required for company profiles.';
+
+  @override
+  String get companyProfileApprovedCompanyTooltip => 'Approved company';
+
+  @override
+  String get publishOpportunityDescriptionHelperText =>
+      'Include scope, expectations, requirements, and why students should apply.';
+
+  @override
+  String get uiCompanyBrandStoryEmptySubtitle =>
+      'Add a few lines about what your company builds and what students can expect from your team.';
+
+  @override
+  String get uiDetailsSectionSubtitle =>
+      'The essentials students and applicants usually look for first.';
+
+  @override
+  String get uiVerificationSectionSubtitle =>
+      'Keep your company presence trusted with an up-to-date commercial register.';
+
+  @override
+  String get uiBuildStrongFirstImpressionSubtitle =>
+      'Build a strong first impression with a short company story, clear contact details, and a polished visual identity.';
+
+  @override
+  String get uiCouldNotOpenTheWebsite => 'Could not open the website.';
+
+  @override
+  String get uiCompleteLabel => 'Complete';
+
+  @override
+  String get uiProfileIncomplete => 'Profile incomplete';
+
+  @override
+  String get uiCompleteProfileButton => 'Complete profile';
+
+  @override
+  String get uiCouldNotOpenEmailRightNow => 'Could not open email right now.';
+
+  @override
+  String get uiAddACompanyPhoneNumber => 'Add a company phone number';
+
+  @override
+  String get uiAddYourCompanyLocation => 'Add your company location';
+
+  @override
+  String get uiAddYourWebsite => 'Add your website';
+
+  @override
+  String get uiAddASectorOrSpecialty => 'Add a sector or specialty';
+
+  @override
+  String get uiNotAvailable => 'Not available';
+
+  @override
+  String get uiVerificationDocumentAttachedPending =>
+      'The required document is attached and waiting for admin review.';
+
+  @override
+  String get uiVerificationDocumentAttachedNeedsAttention =>
+      'The required document is attached, but the company approval still needs attention.';
+
+  @override
+  String get uiVerificationDocumentAttachedApproved =>
+      'The required document is attached and the company is approved.';
+
+  @override
+  String get uiApprovalPending => 'Approval pending';
+
+  @override
+  String get uiApprovalNeedsChanges => 'Approval needs changes';
+
+  @override
+  String get uiCompanyApproved => 'Company approved';
+
+  @override
+  String get uiYourCommercialRegisterUploadedAdminPending =>
+      'Your commercial register is uploaded and the admin team still needs to review this company account.';
+
+  @override
+  String get uiYourDocumentUploadedNeedsCorrections =>
+      'Your document is uploaded, but the company account still needs corrections before it can be approved.';
+
+  @override
+  String get uiYourCommercialRegisterUploadedApproved =>
+      'Your commercial register is uploaded and the company account is approved.';
+
+  @override
+  String get uiUploadCurrentDocumentSubtitle =>
+      'Upload a current document to keep the company profile complete and trusted.';
+
+  @override
+  String get uiDocumentUploaded => 'Document uploaded';
+
+  @override
+  String uiUploadedOn(Object date) {
+    return 'Uploaded: $date';
+  }
+
+  @override
+  String get uiFileUnavailable => 'File unavailable.';
+
+  @override
+  String get uiPermissionDeniedOpeningDocument =>
+      'Permission denied while opening the document.';
+
+  @override
+  String get uiSavingChangesEllipsis => 'Saving changes...';
+
+  @override
+  String get uiKeepProfileCrispTrustworthyReady =>
+      'Keep the profile crisp, trustworthy, and ready for students to explore.';
+
+  @override
+  String get uiVerificationDocumentAlreadyAttached =>
+      'Verification document is already attached.';
+
+  @override
+  String get uiCommercialRegisterStillNeedsAttention =>
+      'Commercial register still needs attention.';
+
+  @override
+  String get uiShapeFirstImpressionFromYourCompany =>
+      'Shape the first impression students get from your company.';
+
+  @override
+  String get uiYourPublicCompanyName => 'Your public company name';
+
+  @override
+  String get uiTechnologyFinanceDesignEducationHint =>
+      'Technology, finance, design, education...';
+
+  @override
+  String get uiCompanyDescriptionHint =>
+      'What does your company build, who do you serve, and what can students expect?';
+
+  @override
+  String get uiMakeItEasyForStudentsToFindYouSubtitle =>
+      'Make it easy for students to understand where your company is and how to reach it.';
+
+  @override
+  String get uiCompanyPhoneNumberHint => 'Company phone number';
+
+  @override
+  String get uiCityRegionOrHeadquartersHint => 'City, region, or headquarters';
+
+  @override
+  String get uiWebsiteHintExample => 'https://www.yourcompany.com';
+
+  @override
+  String get uiWebsiteCannotContainSpaces => 'Website cannot contain spaces.';
+
+  @override
+  String get uiEnterAValidWebsite => 'Enter a valid website.';
+
+  @override
+  String get uiYourCurrentCompanyVisualIsLive =>
+      'Your current company visual is live.';
+
+  @override
+  String get uiAddALogoToMakeCompanyProfileFeelComplete =>
+      'Add a logo to make your company profile feel complete.';
+
+  @override
+  String get uiUploadingEllipsis => 'Uploading...';
+
+  @override
+  String get uiReplaceLogo => 'Replace Logo';
+
+  @override
+  String get uiUploadLogo => 'Upload Logo';
+
+  @override
+  String get uiKeepCurrentVerificationDocumentSubtitle =>
+      'Keep a current verification document attached to maintain a trustworthy company profile.';
+
+  @override
+  String get uiLogoRemoved => 'Logo removed';
+
+  @override
+  String get uiCompanyLogoRemoved => 'Company logo removed.';
+
+  @override
+  String get uiCommercialRegisterIsRequired =>
+      'Commercial register is required for company profiles.';
+
+  @override
+  String get uiApprovedCompanySubtitle => 'Approved company';
+
+  @override
+  String get uiCouldNotOpenDocumentRightNow =>
+      'We couldn’t open the document right now.';
+
+  @override
+  String get uiCommercialRegisterReinforcesTrustMessage =>
+      'A current commercial register reinforces trust and helps keep the company profile ready for review.';
+
+  @override
+  String get uiOneDetailStillMissingFromCompanyProfile =>
+      '1 detail is still missing from the company profile.';
+
+  @override
+  String uiCountDetailsStillMissingFromCompanyProfile(Object count) {
+    return '$count details are still missing from the company profile.';
+  }
+
+  @override
+  String get uiAddWhatIsMissingForClearerCompanyPage =>
+      'Add what is missing so students see a clearer, more trusted company page.';
+
+  @override
+  String get uiAcceptedLogoFormatsAndSizeHint =>
+      'Accepted formats: JPG, PNG, or WebP. Maximum size: 5 MB.';
+
+  @override
+  String get uiUploadPdfJpgPngForVerificationHint =>
+      'Upload a PDF, JPG, or PNG document up to 10 MB to complete this part of the profile.';
+
+  @override
+  String uiSizeMbSelected(Object size) {
+    return '$size MB selected';
+  }
+
+  @override
+  String get uiChooseAnImageSmallerThan5Mb =>
+      'Choose an image smaller than 5 MB.';
+
+  @override
+  String get uiCompanyFallback => 'Company';
+
+  @override
+  String get uiStrongLogoMakesProfilePolishedSubtitle =>
+      'A strong logo or company photo makes the profile feel more polished and recognizable.';
 }

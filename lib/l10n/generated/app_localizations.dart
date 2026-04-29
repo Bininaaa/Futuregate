@@ -16818,6 +16818,834 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'File unavailable.'**
   String get studentFileUnavailable;
+
+  /// No description provided for @companyReviewNeedsAttentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company Review Needs Attention'**
+  String get companyReviewNeedsAttentionTitle;
+
+  /// No description provided for @companyReviewInProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company Review In Progress'**
+  String get companyReviewInProgressTitle;
+
+  /// No description provided for @companyReviewRejectedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your company account has not been approved yet. Review your profile and commercial register, then update anything that needs correction before trying again.'**
+  String get companyReviewRejectedSubtitle;
+
+  /// No description provided for @companyReviewPendingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your company account has been created successfully. An administrator still needs to review your commercial register before your workspace goes live.'**
+  String get companyReviewPendingSubtitle;
+
+  /// No description provided for @companyReviewRejectedHelperTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What to fix before the next review'**
+  String get companyReviewRejectedHelperTitle;
+
+  /// No description provided for @companyReviewPendingHelperTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens next'**
+  String get companyReviewPendingHelperTitle;
+
+  /// No description provided for @companyReviewRejectedHelperItem1.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your company details and commercial register document.'**
+  String get companyReviewRejectedHelperItem1;
+
+  /// No description provided for @companyReviewRejectedHelperItem2.
+  ///
+  /// In en, this message translates to:
+  /// **'Update anything incomplete or unclear from your company profile.'**
+  String get companyReviewRejectedHelperItem2;
+
+  /// No description provided for @companyReviewRejectedHelperItem3.
+  ///
+  /// In en, this message translates to:
+  /// **'Once the admin reviews it again, access will open automatically.'**
+  String get companyReviewRejectedHelperItem3;
+
+  /// No description provided for @companyReviewPendingHelperItem1.
+  ///
+  /// In en, this message translates to:
+  /// **'The admin team reviews the company profile and uploaded register.'**
+  String get companyReviewPendingHelperItem1;
+
+  /// No description provided for @companyReviewPendingHelperItem2.
+  ///
+  /// In en, this message translates to:
+  /// **'Your workspace will unlock automatically as soon as the company is approved.'**
+  String get companyReviewPendingHelperItem2;
+
+  /// No description provided for @companyReviewPendingHelperItem3.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still open your profile now and improve the information before approval.'**
+  String get companyReviewPendingHelperItem3;
+
+  /// No description provided for @companyReviewStatNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get companyReviewStatNotSet;
+
+  /// No description provided for @companyReviewStatRegisterUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded'**
+  String get companyReviewStatRegisterUploaded;
+
+  /// No description provided for @companyReviewStatRegisterMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get companyReviewStatRegisterMissing;
+
+  /// No description provided for @companyReviewUpdateProfileButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Company Profile'**
+  String get companyReviewUpdateProfileButton;
+
+  /// No description provided for @companyReviewOpenProfileButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Company Profile'**
+  String get companyReviewOpenProfileButton;
+
+  /// No description provided for @opportunityCountdownHoursLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h left'**
+  String opportunityCountdownHoursLeft(Object hours);
+
+  /// No description provided for @opportunityCountdownDaysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d left'**
+  String opportunityCountdownDaysLeft(Object days);
+
+  /// No description provided for @opportunityFreshnessRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get opportunityFreshnessRecent;
+
+  /// No description provided for @opportunityClosedNoticeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This opportunity has been closed. Students can no longer apply, but existing applications stay available for review.'**
+  String get opportunityClosedNoticeMessage;
+
+  /// No description provided for @opportunityReopenedNoticeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This opportunity is open again and can receive new applications.'**
+  String get opportunityReopenedNoticeMessage;
+
+  /// No description provided for @opportunityReopenedNoticeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity reopened'**
+  String get opportunityReopenedNoticeTitle;
+
+  /// No description provided for @opportunityDeleteConfirmationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{title}\"? If it has pending applications, it will be closed instead so students can still be reviewed.'**
+  String opportunityDeleteConfirmationMessage(Object title);
+
+  /// No description provided for @opportunityClosedDueToPendingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity closed because pending applications still need review.'**
+  String get opportunityClosedDueToPendingMessage;
+
+  /// No description provided for @opportunityCouldNotRefreshApplicants.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not refresh applicants'**
+  String get opportunityCouldNotRefreshApplicants;
+
+  /// No description provided for @opportunityNoStudentsYetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No students yet'**
+  String get opportunityNoStudentsYetTitle;
+
+  /// No description provided for @opportunityNoStudentsYetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Students who apply to this opportunity will appear here.'**
+  String get opportunityNoStudentsYetSubtitle;
+
+  /// No description provided for @opportunityNoMatchesFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches found'**
+  String get opportunityNoMatchesFoundTitle;
+
+  /// No description provided for @opportunityNoMatchesFoundSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try clearing the filters or adjusting your search.'**
+  String get opportunityNoMatchesFoundSubtitle;
+
+  /// No description provided for @opportunityPublishFirstRolePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish your first role to start hiring.'**
+  String get opportunityPublishFirstRolePrompt;
+
+  /// No description provided for @opportunityActionReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get opportunityActionReopen;
+
+  /// No description provided for @companyProfileBrandStoryFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a strong first impression with a short company story, clear contact details, and a polished visual identity.'**
+  String get companyProfileBrandStoryFallback;
+
+  /// No description provided for @companyProfileLogoMissingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get companyProfileLogoMissingLabel;
+
+  /// No description provided for @companyProfileCouldNotOpenWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the website.'**
+  String get companyProfileCouldNotOpenWebsite;
+
+  /// No description provided for @companyProfileMissingDetailSingular.
+  ///
+  /// In en, this message translates to:
+  /// **'1 detail is still missing from the company profile.'**
+  String get companyProfileMissingDetailSingular;
+
+  /// No description provided for @companyProfileMissingDetailsPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'{missingCount} details are still missing from the company profile.'**
+  String companyProfileMissingDetailsPlural(Object missingCount);
+
+  /// No description provided for @companyProfileIncompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile incomplete'**
+  String get companyProfileIncompleteTitle;
+
+  /// No description provided for @companyProfileIncompleteMessageFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{message} Add what is missing so students see a clearer, more trusted company page.'**
+  String companyProfileIncompleteMessageFormat(Object message);
+
+  /// No description provided for @companyProfileCouldNotOpenEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open email right now.'**
+  String get companyProfileCouldNotOpenEmail;
+
+  /// No description provided for @companyProfileAddPhonePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a company phone number'**
+  String get companyProfileAddPhonePlaceholder;
+
+  /// No description provided for @companyProfileAddLocationPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your company location'**
+  String get companyProfileAddLocationPlaceholder;
+
+  /// No description provided for @companyProfileAddWebsitePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your website'**
+  String get companyProfileAddWebsitePlaceholder;
+
+  /// No description provided for @companyProfileAddSectorPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a sector or specialty'**
+  String get companyProfileAddSectorPlaceholder;
+
+  /// No description provided for @companyProfileNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get companyProfileNotAvailable;
+
+  /// No description provided for @companyProfileRegisterPendingSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'The required document is attached and waiting for admin review.'**
+  String get companyProfileRegisterPendingSummary;
+
+  /// No description provided for @companyProfileRegisterRejectedSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'The required document is attached, but the company approval still needs attention.'**
+  String get companyProfileRegisterRejectedSummary;
+
+  /// No description provided for @companyProfileRegisterApprovedSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'The required document is attached and the company is approved.'**
+  String get companyProfileRegisterApprovedSummary;
+
+  /// No description provided for @companyProfileApprovalPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval pending'**
+  String get companyProfileApprovalPendingTitle;
+
+  /// No description provided for @companyProfileApprovalRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval needs changes'**
+  String get companyProfileApprovalRejectedTitle;
+
+  /// No description provided for @companyProfileApprovalApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company approved'**
+  String get companyProfileApprovalApprovedTitle;
+
+  /// No description provided for @companyProfileApprovalPendingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your commercial register is uploaded and the admin team still needs to review this company account.'**
+  String get companyProfileApprovalPendingMessage;
+
+  /// No description provided for @companyProfileApprovalRejectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your document is uploaded, but the company account still needs corrections before it can be approved.'**
+  String get companyProfileApprovalRejectedMessage;
+
+  /// No description provided for @companyProfileApprovalApprovedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your commercial register is uploaded and the company account is approved.'**
+  String get companyProfileApprovalApprovedMessage;
+
+  /// No description provided for @companyProfileRegisterUploadPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a current document to keep the company profile complete and trusted.'**
+  String get companyProfileRegisterUploadPrompt;
+
+  /// No description provided for @companyProfileDocumentUploadedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Document uploaded'**
+  String get companyProfileDocumentUploadedFallback;
+
+  /// No description provided for @companyProfileEditRegisterAlreadyAttached.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification document is already attached.'**
+  String get companyProfileEditRegisterAlreadyAttached;
+
+  /// No description provided for @companyProfileEditRegisterNeedsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial register still needs attention.'**
+  String get companyProfileEditRegisterNeedsAttention;
+
+  /// No description provided for @companyProfileEditCompanyNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your public company name'**
+  String get companyProfileEditCompanyNameHint;
+
+  /// No description provided for @companyProfileEditCompanyNameValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Company name is required.'**
+  String get companyProfileEditCompanyNameValidation;
+
+  /// No description provided for @companyProfileEditSectorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Technology, finance, design, education...'**
+  String get companyProfileEditSectorHint;
+
+  /// No description provided for @companyProfileEditDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What does your company build, who do you serve, and what can students expect?'**
+  String get companyProfileEditDescriptionHint;
+
+  /// No description provided for @companyProfileEditPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Company phone number'**
+  String get companyProfileEditPhoneHint;
+
+  /// No description provided for @companyProfileEditLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'City, region, or headquarters'**
+  String get companyProfileEditLocationHint;
+
+  /// No description provided for @companyProfileEditWebsiteValidationSpaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Website cannot contain spaces.'**
+  String get companyProfileEditWebsiteValidationSpaces;
+
+  /// No description provided for @companyProfileEditWebsiteValidationInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid website.'**
+  String get companyProfileEditWebsiteValidationInvalid;
+
+  /// No description provided for @companyProfileEditLogoLiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current company visual is live.'**
+  String get companyProfileEditLogoLiveMessage;
+
+  /// No description provided for @companyProfileEditLogoMissingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a logo to make your company profile feel complete.'**
+  String get companyProfileEditLogoMissingMessage;
+
+  /// No description provided for @companyProfileEditReplaceLogoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Logo'**
+  String get companyProfileEditReplaceLogoLabel;
+
+  /// No description provided for @companyProfileEditUploadLogoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Logo'**
+  String get companyProfileEditUploadLogoLabel;
+
+  /// No description provided for @companyProfileEditLogoRemovedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Company logo removed.'**
+  String get companyProfileEditLogoRemovedMessage;
+
+  /// No description provided for @companyProfileEditLogoRemovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo removed'**
+  String get companyProfileEditLogoRemovedTitle;
+
+  /// No description provided for @companyProfileEditRegisterRequiredValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial register is required for company profiles.'**
+  String get companyProfileEditRegisterRequiredValidation;
+
+  /// No description provided for @companyProfileApprovedCompanyTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved company'**
+  String get companyProfileApprovedCompanyTooltip;
+
+  /// No description provided for @publishOpportunityDescriptionHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Include scope, expectations, requirements, and why students should apply.'**
+  String get publishOpportunityDescriptionHelperText;
+
+  /// uiCompanyBrandStoryEmptySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add a few lines about what your company builds and what students can expect from your team.'**
+  String get uiCompanyBrandStoryEmptySubtitle;
+
+  /// uiDetailsSectionSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'The essentials students and applicants usually look for first.'**
+  String get uiDetailsSectionSubtitle;
+
+  /// uiVerificationSectionSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your company presence trusted with an up-to-date commercial register.'**
+  String get uiVerificationSectionSubtitle;
+
+  /// uiBuildStrongFirstImpressionSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Build a strong first impression with a short company story, clear contact details, and a polished visual identity.'**
+  String get uiBuildStrongFirstImpressionSubtitle;
+
+  /// uiCouldNotOpenTheWebsite
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the website.'**
+  String get uiCouldNotOpenTheWebsite;
+
+  /// uiCompleteLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get uiCompleteLabel;
+
+  /// uiProfileIncomplete
+  ///
+  /// In en, this message translates to:
+  /// **'Profile incomplete'**
+  String get uiProfileIncomplete;
+
+  /// uiCompleteProfileButton
+  ///
+  /// In en, this message translates to:
+  /// **'Complete profile'**
+  String get uiCompleteProfileButton;
+
+  /// uiCouldNotOpenEmailRightNow
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open email right now.'**
+  String get uiCouldNotOpenEmailRightNow;
+
+  /// uiAddACompanyPhoneNumber
+  ///
+  /// In en, this message translates to:
+  /// **'Add a company phone number'**
+  String get uiAddACompanyPhoneNumber;
+
+  /// uiAddYourCompanyLocation
+  ///
+  /// In en, this message translates to:
+  /// **'Add your company location'**
+  String get uiAddYourCompanyLocation;
+
+  /// uiAddYourWebsite
+  ///
+  /// In en, this message translates to:
+  /// **'Add your website'**
+  String get uiAddYourWebsite;
+
+  /// uiAddASectorOrSpecialty
+  ///
+  /// In en, this message translates to:
+  /// **'Add a sector or specialty'**
+  String get uiAddASectorOrSpecialty;
+
+  /// uiNotAvailable
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get uiNotAvailable;
+
+  /// uiVerificationDocumentAttachedPending
+  ///
+  /// In en, this message translates to:
+  /// **'The required document is attached and waiting for admin review.'**
+  String get uiVerificationDocumentAttachedPending;
+
+  /// uiVerificationDocumentAttachedNeedsAttention
+  ///
+  /// In en, this message translates to:
+  /// **'The required document is attached, but the company approval still needs attention.'**
+  String get uiVerificationDocumentAttachedNeedsAttention;
+
+  /// uiVerificationDocumentAttachedApproved
+  ///
+  /// In en, this message translates to:
+  /// **'The required document is attached and the company is approved.'**
+  String get uiVerificationDocumentAttachedApproved;
+
+  /// uiApprovalPending
+  ///
+  /// In en, this message translates to:
+  /// **'Approval pending'**
+  String get uiApprovalPending;
+
+  /// uiApprovalNeedsChanges
+  ///
+  /// In en, this message translates to:
+  /// **'Approval needs changes'**
+  String get uiApprovalNeedsChanges;
+
+  /// uiCompanyApproved
+  ///
+  /// In en, this message translates to:
+  /// **'Company approved'**
+  String get uiCompanyApproved;
+
+  /// uiYourCommercialRegisterUploadedAdminPending
+  ///
+  /// In en, this message translates to:
+  /// **'Your commercial register is uploaded and the admin team still needs to review this company account.'**
+  String get uiYourCommercialRegisterUploadedAdminPending;
+
+  /// uiYourDocumentUploadedNeedsCorrections
+  ///
+  /// In en, this message translates to:
+  /// **'Your document is uploaded, but the company account still needs corrections before it can be approved.'**
+  String get uiYourDocumentUploadedNeedsCorrections;
+
+  /// uiYourCommercialRegisterUploadedApproved
+  ///
+  /// In en, this message translates to:
+  /// **'Your commercial register is uploaded and the company account is approved.'**
+  String get uiYourCommercialRegisterUploadedApproved;
+
+  /// uiUploadCurrentDocumentSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a current document to keep the company profile complete and trusted.'**
+  String get uiUploadCurrentDocumentSubtitle;
+
+  /// uiDocumentUploaded
+  ///
+  /// In en, this message translates to:
+  /// **'Document uploaded'**
+  String get uiDocumentUploaded;
+
+  /// uiUploadedOn
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded: {date}'**
+  String uiUploadedOn(Object date);
+
+  /// uiFileUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'File unavailable.'**
+  String get uiFileUnavailable;
+
+  /// uiPermissionDeniedOpeningDocument
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied while opening the document.'**
+  String get uiPermissionDeniedOpeningDocument;
+
+  /// uiSavingChangesEllipsis
+  ///
+  /// In en, this message translates to:
+  /// **'Saving changes...'**
+  String get uiSavingChangesEllipsis;
+
+  /// uiKeepProfileCrispTrustworthyReady
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the profile crisp, trustworthy, and ready for students to explore.'**
+  String get uiKeepProfileCrispTrustworthyReady;
+
+  /// uiVerificationDocumentAlreadyAttached
+  ///
+  /// In en, this message translates to:
+  /// **'Verification document is already attached.'**
+  String get uiVerificationDocumentAlreadyAttached;
+
+  /// uiCommercialRegisterStillNeedsAttention
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial register still needs attention.'**
+  String get uiCommercialRegisterStillNeedsAttention;
+
+  /// uiShapeFirstImpressionFromYourCompany
+  ///
+  /// In en, this message translates to:
+  /// **'Shape the first impression students get from your company.'**
+  String get uiShapeFirstImpressionFromYourCompany;
+
+  /// uiYourPublicCompanyName
+  ///
+  /// In en, this message translates to:
+  /// **'Your public company name'**
+  String get uiYourPublicCompanyName;
+
+  /// uiTechnologyFinanceDesignEducationHint
+  ///
+  /// In en, this message translates to:
+  /// **'Technology, finance, design, education...'**
+  String get uiTechnologyFinanceDesignEducationHint;
+
+  /// uiCompanyDescriptionHint
+  ///
+  /// In en, this message translates to:
+  /// **'What does your company build, who do you serve, and what can students expect?'**
+  String get uiCompanyDescriptionHint;
+
+  /// uiMakeItEasyForStudentsToFindYouSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Make it easy for students to understand where your company is and how to reach it.'**
+  String get uiMakeItEasyForStudentsToFindYouSubtitle;
+
+  /// uiCompanyPhoneNumberHint
+  ///
+  /// In en, this message translates to:
+  /// **'Company phone number'**
+  String get uiCompanyPhoneNumberHint;
+
+  /// uiCityRegionOrHeadquartersHint
+  ///
+  /// In en, this message translates to:
+  /// **'City, region, or headquarters'**
+  String get uiCityRegionOrHeadquartersHint;
+
+  /// uiWebsiteHintExample
+  ///
+  /// In en, this message translates to:
+  /// **'https://www.yourcompany.com'**
+  String get uiWebsiteHintExample;
+
+  /// uiWebsiteCannotContainSpaces
+  ///
+  /// In en, this message translates to:
+  /// **'Website cannot contain spaces.'**
+  String get uiWebsiteCannotContainSpaces;
+
+  /// uiEnterAValidWebsite
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid website.'**
+  String get uiEnterAValidWebsite;
+
+  /// uiYourCurrentCompanyVisualIsLive
+  ///
+  /// In en, this message translates to:
+  /// **'Your current company visual is live.'**
+  String get uiYourCurrentCompanyVisualIsLive;
+
+  /// uiAddALogoToMakeCompanyProfileFeelComplete
+  ///
+  /// In en, this message translates to:
+  /// **'Add a logo to make your company profile feel complete.'**
+  String get uiAddALogoToMakeCompanyProfileFeelComplete;
+
+  /// uiUploadingEllipsis
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading...'**
+  String get uiUploadingEllipsis;
+
+  /// uiReplaceLogo
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Logo'**
+  String get uiReplaceLogo;
+
+  /// uiUploadLogo
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Logo'**
+  String get uiUploadLogo;
+
+  /// uiKeepCurrentVerificationDocumentSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a current verification document attached to maintain a trustworthy company profile.'**
+  String get uiKeepCurrentVerificationDocumentSubtitle;
+
+  /// uiLogoRemoved
+  ///
+  /// In en, this message translates to:
+  /// **'Logo removed'**
+  String get uiLogoRemoved;
+
+  /// uiCompanyLogoRemoved
+  ///
+  /// In en, this message translates to:
+  /// **'Company logo removed.'**
+  String get uiCompanyLogoRemoved;
+
+  /// uiCommercialRegisterIsRequired
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial register is required for company profiles.'**
+  String get uiCommercialRegisterIsRequired;
+
+  /// uiApprovedCompanySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Approved company'**
+  String get uiApprovedCompanySubtitle;
+
+  /// uiCouldNotOpenDocumentRightNow
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t open the document right now.'**
+  String get uiCouldNotOpenDocumentRightNow;
+
+  /// uiCommercialRegisterReinforcesTrustMessage
+  ///
+  /// In en, this message translates to:
+  /// **'A current commercial register reinforces trust and helps keep the company profile ready for review.'**
+  String get uiCommercialRegisterReinforcesTrustMessage;
+
+  /// uiOneDetailStillMissingFromCompanyProfile
+  ///
+  /// In en, this message translates to:
+  /// **'1 detail is still missing from the company profile.'**
+  String get uiOneDetailStillMissingFromCompanyProfile;
+
+  /// uiCountDetailsStillMissingFromCompanyProfile
+  ///
+  /// In en, this message translates to:
+  /// **'{count} details are still missing from the company profile.'**
+  String uiCountDetailsStillMissingFromCompanyProfile(Object count);
+
+  /// uiAddWhatIsMissingForClearerCompanyPage
+  ///
+  /// In en, this message translates to:
+  /// **'Add what is missing so students see a clearer, more trusted company page.'**
+  String get uiAddWhatIsMissingForClearerCompanyPage;
+
+  /// uiAcceptedLogoFormatsAndSizeHint
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted formats: JPG, PNG, or WebP. Maximum size: 5 MB.'**
+  String get uiAcceptedLogoFormatsAndSizeHint;
+
+  /// uiUploadPdfJpgPngForVerificationHint
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a PDF, JPG, or PNG document up to 10 MB to complete this part of the profile.'**
+  String get uiUploadPdfJpgPngForVerificationHint;
+
+  /// uiSizeMbSelected
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB selected'**
+  String uiSizeMbSelected(Object size);
+
+  /// uiChooseAnImageSmallerThan5Mb
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an image smaller than 5 MB.'**
+  String get uiChooseAnImageSmallerThan5Mb;
+
+  /// uiCompanyFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get uiCompanyFallback;
+
+  /// uiStrongLogoMakesProfilePolishedSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'A strong logo or company photo makes the profile feel more polished and recognizable.'**
+  String get uiStrongLogoMakesProfilePolishedSubtitle;
 }
 
 class _AppLocalizationsDelegate

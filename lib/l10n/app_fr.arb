@@ -3315,5 +3315,366 @@
   "studentLocation": "Localisation",
   "studentPhone": "Téléphone",
   "studentWaitCoverUpload": "Veuillez attendre la fin du téléversement de l’image de couverture.",
-  "studentFileUnavailable": "Fichier indisponible."
+  "studentFileUnavailable": "Fichier indisponible.",
+  "companyReviewNeedsAttentionTitle": "L’examen de l’entreprise requiert votre attention",
+  "companyReviewInProgressTitle": "Examen de l’entreprise en cours",
+  "companyReviewRejectedSubtitle": "Votre compte entreprise n’a pas encore été approuvé. Vérifiez votre profil et votre registre du commerce, puis corrigez les éléments nécessaires avant une nouvelle tentative.",
+  "companyReviewPendingSubtitle": "Votre compte entreprise a été créé avec succès. Un administrateur doit encore examiner votre registre du commerce avant l’activation de votre espace de travail.",
+  "companyReviewRejectedHelperTitle": "Ce qu’il faut corriger avant le prochain examen",
+  "companyReviewPendingHelperTitle": "Les prochaines étapes",
+  "companyReviewRejectedHelperItem1": "Vérifiez les informations de votre entreprise et le document du registre du commerce.",
+  "companyReviewRejectedHelperItem2": "Mettez à jour tout élément incomplet ou imprécis dans le profil de votre entreprise.",
+  "companyReviewRejectedHelperItem3": "Dès que l’administrateur réexaminera le dossier, l’accès sera ouvert automatiquement.",
+  "companyReviewPendingHelperItem1": "L’équipe d’administration examine le profil de l’entreprise et le registre déposé.",
+  "companyReviewPendingHelperItem2": "Votre espace de travail sera automatiquement débloqué dès l’approbation de l’entreprise.",
+  "companyReviewPendingHelperItem3": "Vous pouvez d’ores et déjà ouvrir votre profil et enrichir ses informations avant l’approbation.",
+  "companyReviewStatNotSet": "Non défini",
+  "companyReviewStatRegisterUploaded": "Téléversé",
+  "companyReviewStatRegisterMissing": "Manquant",
+  "companyReviewUpdateProfileButton": "Mettre à jour le profil de l’entreprise",
+  "companyReviewOpenProfileButton": "Ouvrir le profil de l’entreprise",
+  "opportunityCountdownHoursLeft": "{hours} h restantes",
+  "@opportunityCountdownHoursLeft": {
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "opportunityCountdownDaysLeft": "{days} j restants",
+  "@opportunityCountdownDaysLeft": {
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "opportunityFreshnessRecent": "Récent",
+  "opportunityClosedNoticeMessage": "Cette opportunité a été clôturée. Les étudiants ne peuvent plus postuler, mais les candidatures existantes restent disponibles pour examen.",
+  "opportunityReopenedNoticeMessage": "Cette opportunité est de nouveau ouverte et peut recevoir de nouvelles candidatures.",
+  "opportunityReopenedNoticeTitle": "Opportunité rouverte",
+  "opportunityDeleteConfirmationMessage": "Supprimer « {title} » ? Si elle comporte des candidatures en attente, elle sera plutôt clôturée afin de continuer à examiner les étudiants.",
+  "@opportunityDeleteConfirmationMessage": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "opportunityClosedDueToPendingMessage": "Opportunité clôturée car des candidatures en attente nécessitent encore un examen.",
+  "opportunityCouldNotRefreshApplicants": "Impossible d’actualiser la liste des candidats",
+  "opportunityNoStudentsYetTitle": "Aucun étudiant pour le moment",
+  "opportunityNoStudentsYetSubtitle": "Les étudiants qui postuleront à cette opportunité apparaîtront ici.",
+  "opportunityNoMatchesFoundTitle": "Aucun résultat correspondant",
+  "opportunityNoMatchesFoundSubtitle": "Essayez d’effacer les filtres ou d’ajuster votre recherche.",
+  "opportunityPublishFirstRolePrompt": "Publiez votre première offre pour commencer le recrutement.",
+  "opportunityActionReopen": "Rouvrir",
+  "companyProfileBrandStoryFallback": "Créez une première impression marquante grâce à un bref récit d’entreprise, des coordonnées claires et une identité visuelle soignée.",
+  "companyProfileLogoMissingLabel": "Logo",
+  "companyProfileCouldNotOpenWebsite": "Impossible d’ouvrir le site web.",
+  "companyProfileMissingDetailSingular": "Un détail manque encore dans le profil de l’entreprise.",
+  "companyProfileMissingDetailsPlural": "{missingCount} détails manquent encore dans le profil de l’entreprise.",
+  "@companyProfileMissingDetailsPlural": {
+    "placeholders": {
+      "missingCount": {}
+    }
+  },
+  "companyProfileIncompleteTitle": "Profil incomplet",
+  "companyProfileIncompleteMessageFormat": "{message} Ajoutez les éléments manquants afin que les étudiants découvrent une page d’entreprise plus claire et plus crédible.",
+  "@companyProfileIncompleteMessageFormat": {
+    "placeholders": {
+      "message": {}
+    }
+  },
+  "companyProfileCouldNotOpenEmail": "Impossible d’ouvrir la messagerie pour le moment.",
+  "companyProfileAddPhonePlaceholder": "Ajoutez un numéro de téléphone d’entreprise",
+  "companyProfileAddLocationPlaceholder": "Ajoutez la localisation de votre entreprise",
+  "companyProfileAddWebsitePlaceholder": "Ajoutez votre site web",
+  "companyProfileAddSectorPlaceholder": "Ajoutez un secteur ou une spécialité",
+  "companyProfileNotAvailable": "Non disponible",
+  "companyProfileRegisterPendingSummary": "Le document requis est joint et en attente de l’examen par l’administrateur.",
+  "companyProfileRegisterRejectedSummary": "Le document requis est joint, mais l’approbation de l’entreprise nécessite encore votre attention.",
+  "companyProfileRegisterApprovedSummary": "Le document requis est joint et l’entreprise est approuvée.",
+  "companyProfileApprovalPendingTitle": "Approbation en attente",
+  "companyProfileApprovalRejectedTitle": "L’approbation nécessite des modifications",
+  "companyProfileApprovalApprovedTitle": "Entreprise approuvée",
+  "companyProfileApprovalPendingMessage": "Votre registre du commerce est téléversé et l’équipe d’administration doit encore examiner ce compte entreprise.",
+  "companyProfileApprovalRejectedMessage": "Votre document est téléversé, mais le compte entreprise nécessite encore des corrections avant son approbation.",
+  "companyProfileApprovalApprovedMessage": "Votre registre du commerce est téléversé et le compte entreprise est approuvé.",
+  "companyProfileRegisterUploadPrompt": "Téléversez un document à jour afin de conserver un profil d’entreprise complet et digne de confiance.",
+  "companyProfileDocumentUploadedFallback": "Document téléversé",
+  "companyProfileEditRegisterAlreadyAttached": "Le document de vérification est déjà joint.",
+  "companyProfileEditRegisterNeedsAttention": "Le registre du commerce nécessite encore votre attention.",
+  "companyProfileEditCompanyNameHint": "Le nom public de votre entreprise",
+  "companyProfileEditCompanyNameValidation": "Le nom de l’entreprise est obligatoire.",
+  "companyProfileEditSectorHint": "Technologie, finance, design, éducation…",
+  "companyProfileEditDescriptionHint": "Que construit votre entreprise, à qui s’adresse-t-elle et à quoi les étudiants peuvent-ils s’attendre ?",
+  "companyProfileEditPhoneHint": "Numéro de téléphone de l’entreprise",
+  "companyProfileEditLocationHint": "Ville, région ou siège social",
+  "companyProfileEditWebsiteValidationSpaces": "L’adresse du site ne peut pas contenir d’espaces.",
+  "companyProfileEditWebsiteValidationInvalid": "Saisissez une adresse de site web valide.",
+  "companyProfileEditLogoLiveMessage": "Le visuel actuel de votre entreprise est en ligne.",
+  "companyProfileEditLogoMissingMessage": "Ajoutez un logo pour que le profil de votre entreprise paraisse abouti.",
+  "companyProfileEditReplaceLogoLabel": "Remplacer le logo",
+  "companyProfileEditUploadLogoLabel": "Téléverser le logo",
+  "companyProfileEditLogoRemovedMessage": "Logo de l’entreprise supprimé.",
+  "companyProfileEditLogoRemovedTitle": "Logo supprimé",
+  "companyProfileEditRegisterRequiredValidation": "Le registre du commerce est obligatoire pour les profils d’entreprise.",
+  "companyProfileApprovedCompanyTooltip": "Entreprise approuvée",
+  "publishOpportunityDescriptionHelperText": "Précisez la portée, les attentes, les exigences ainsi que les raisons pour lesquelles les étudiants devraient postuler.",
+  "uiCompanyBrandStoryEmptySubtitle": "Ajoutez quelques lignes sur ce que votre entreprise construit et sur ce que les étudiants peuvent attendre de votre équipe.",
+  "@uiCompanyBrandStoryEmptySubtitle": {
+    "description": "uiCompanyBrandStoryEmptySubtitle"
+  },
+  "uiDetailsSectionSubtitle": "L’essentiel que les étudiants et les candidats consultent en priorité.",
+  "@uiDetailsSectionSubtitle": {
+    "description": "uiDetailsSectionSubtitle"
+  },
+  "uiVerificationSectionSubtitle": "Renforcez la confiance dans votre entreprise grâce à un registre du commerce à jour.",
+  "@uiVerificationSectionSubtitle": {
+    "description": "uiVerificationSectionSubtitle"
+  },
+  "uiBuildStrongFirstImpressionSubtitle": "Faites bonne impression dès le départ : une présentation concise de l’entreprise, des coordonnées claires et une identité visuelle soignée.",
+  "@uiBuildStrongFirstImpressionSubtitle": {
+    "description": "uiBuildStrongFirstImpressionSubtitle"
+  },
+  "uiCouldNotOpenTheWebsite": "Impossible d’ouvrir le site web.",
+  "@uiCouldNotOpenTheWebsite": {
+    "description": "uiCouldNotOpenTheWebsite"
+  },
+  "uiCompleteLabel": "Complet",
+  "@uiCompleteLabel": {
+    "description": "uiCompleteLabel"
+  },
+  "uiProfileIncomplete": "Profil incomplet",
+  "@uiProfileIncomplete": {
+    "description": "uiProfileIncomplete"
+  },
+  "uiCompleteProfileButton": "Compléter le profil",
+  "@uiCompleteProfileButton": {
+    "description": "uiCompleteProfileButton"
+  },
+  "uiCouldNotOpenEmailRightNow": "Impossible d’ouvrir la messagerie pour le moment.",
+  "@uiCouldNotOpenEmailRightNow": {
+    "description": "uiCouldNotOpenEmailRightNow"
+  },
+  "uiAddACompanyPhoneNumber": "Ajoutez un numéro de téléphone professionnel",
+  "@uiAddACompanyPhoneNumber": {
+    "description": "uiAddACompanyPhoneNumber"
+  },
+  "uiAddYourCompanyLocation": "Indiquez l’emplacement de votre entreprise",
+  "@uiAddYourCompanyLocation": {
+    "description": "uiAddYourCompanyLocation"
+  },
+  "uiAddYourWebsite": "Ajoutez votre site web",
+  "@uiAddYourWebsite": {
+    "description": "uiAddYourWebsite"
+  },
+  "uiAddASectorOrSpecialty": "Ajoutez un secteur ou une spécialité",
+  "@uiAddASectorOrSpecialty": {
+    "description": "uiAddASectorOrSpecialty"
+  },
+  "uiNotAvailable": "Non disponible",
+  "@uiNotAvailable": {
+    "description": "uiNotAvailable"
+  },
+  "uiVerificationDocumentAttachedPending": "Le document requis est joint ; il est en attente d’examen par l’équipe d’administration.",
+  "@uiVerificationDocumentAttachedPending": {
+    "description": "uiVerificationDocumentAttachedPending"
+  },
+  "uiVerificationDocumentAttachedNeedsAttention": "Le document requis est joint, mais la validation de l’entreprise nécessite encore votre attention.",
+  "@uiVerificationDocumentAttachedNeedsAttention": {
+    "description": "uiVerificationDocumentAttachedNeedsAttention"
+  },
+  "uiVerificationDocumentAttachedApproved": "Le document requis est joint et l’entreprise est approuvée.",
+  "@uiVerificationDocumentAttachedApproved": {
+    "description": "uiVerificationDocumentAttachedApproved"
+  },
+  "uiApprovalPending": "Validation en cours",
+  "@uiApprovalPending": {
+    "description": "uiApprovalPending"
+  },
+  "uiApprovalNeedsChanges": "La validation nécessite des modifications",
+  "@uiApprovalNeedsChanges": {
+    "description": "uiApprovalNeedsChanges"
+  },
+  "uiCompanyApproved": "Entreprise approuvée",
+  "@uiCompanyApproved": {
+    "description": "uiCompanyApproved"
+  },
+  "uiYourCommercialRegisterUploadedAdminPending": "Votre registre du commerce est téléversé ; l’équipe d’administration doit encore examiner ce compte d’entreprise.",
+  "@uiYourCommercialRegisterUploadedAdminPending": {
+    "description": "uiYourCommercialRegisterUploadedAdminPending"
+  },
+  "uiYourDocumentUploadedNeedsCorrections": "Votre document est téléversé, mais le compte de l’entreprise nécessite des corrections avant d’être approuvé.",
+  "@uiYourDocumentUploadedNeedsCorrections": {
+    "description": "uiYourDocumentUploadedNeedsCorrections"
+  },
+  "uiYourCommercialRegisterUploadedApproved": "Votre registre du commerce est téléversé et le compte de l’entreprise est approuvé.",
+  "@uiYourCommercialRegisterUploadedApproved": {
+    "description": "uiYourCommercialRegisterUploadedApproved"
+  },
+  "uiUploadCurrentDocumentSubtitle": "Téléversez un document à jour pour garder le profil de l’entreprise complet et fiable.",
+  "@uiUploadCurrentDocumentSubtitle": {
+    "description": "uiUploadCurrentDocumentSubtitle"
+  },
+  "uiDocumentUploaded": "Document téléversé",
+  "@uiDocumentUploaded": {
+    "description": "uiDocumentUploaded"
+  },
+  "uiUploadedOn": "Téléversé le {date}",
+  "@uiUploadedOn": {
+    "description": "uiUploadedOn",
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "uiFileUnavailable": "Le fichier n’est pas disponible.",
+  "@uiFileUnavailable": {
+    "description": "uiFileUnavailable"
+  },
+  "uiPermissionDeniedOpeningDocument": "L’accès au document a été refusé.",
+  "@uiPermissionDeniedOpeningDocument": {
+    "description": "uiPermissionDeniedOpeningDocument"
+  },
+  "uiSavingChangesEllipsis": "Enregistrement des modifications…",
+  "@uiSavingChangesEllipsis": {
+    "description": "uiSavingChangesEllipsis"
+  },
+  "uiKeepProfileCrispTrustworthyReady": "Gardez un profil net, fiable et prêt à être parcouru par les étudiants.",
+  "@uiKeepProfileCrispTrustworthyReady": {
+    "description": "uiKeepProfileCrispTrustworthyReady"
+  },
+  "uiVerificationDocumentAlreadyAttached": "Le document de vérification est déjà joint.",
+  "@uiVerificationDocumentAlreadyAttached": {
+    "description": "uiVerificationDocumentAlreadyAttached"
+  },
+  "uiCommercialRegisterStillNeedsAttention": "Le registre du commerce nécessite encore votre attention.",
+  "@uiCommercialRegisterStillNeedsAttention": {
+    "description": "uiCommercialRegisterStillNeedsAttention"
+  },
+  "uiShapeFirstImpressionFromYourCompany": "Façonnez la première impression que les étudiants se feront de votre entreprise.",
+  "@uiShapeFirstImpressionFromYourCompany": {
+    "description": "uiShapeFirstImpressionFromYourCompany"
+  },
+  "uiYourPublicCompanyName": "Le nom public de votre entreprise",
+  "@uiYourPublicCompanyName": {
+    "description": "uiYourPublicCompanyName"
+  },
+  "uiTechnologyFinanceDesignEducationHint": "Technologie, finance, design, éducation…",
+  "@uiTechnologyFinanceDesignEducationHint": {
+    "description": "uiTechnologyFinanceDesignEducationHint"
+  },
+  "uiCompanyDescriptionHint": "Que construit votre entreprise, à qui s’adresse-t-elle, et que peuvent en attendre les étudiants ?",
+  "@uiCompanyDescriptionHint": {
+    "description": "uiCompanyDescriptionHint"
+  },
+  "uiMakeItEasyForStudentsToFindYouSubtitle": "Aidez les étudiants à comprendre où se trouve votre entreprise et comment la contacter.",
+  "@uiMakeItEasyForStudentsToFindYouSubtitle": {
+    "description": "uiMakeItEasyForStudentsToFindYouSubtitle"
+  },
+  "uiCompanyPhoneNumberHint": "Numéro de téléphone de l’entreprise",
+  "@uiCompanyPhoneNumberHint": {
+    "description": "uiCompanyPhoneNumberHint"
+  },
+  "uiCityRegionOrHeadquartersHint": "Ville, région ou siège social",
+  "@uiCityRegionOrHeadquartersHint": {
+    "description": "uiCityRegionOrHeadquartersHint"
+  },
+  "uiWebsiteHintExample": "https://www.yourcompany.com",
+  "@uiWebsiteHintExample": {
+    "description": "uiWebsiteHintExample"
+  },
+  "uiWebsiteCannotContainSpaces": "L’adresse du site ne doit pas contenir d’espaces.",
+  "@uiWebsiteCannotContainSpaces": {
+    "description": "uiWebsiteCannotContainSpaces"
+  },
+  "uiEnterAValidWebsite": "Veuillez saisir une adresse de site valide.",
+  "@uiEnterAValidWebsite": {
+    "description": "uiEnterAValidWebsite"
+  },
+  "uiYourCurrentCompanyVisualIsLive": "Votre visuel d’entreprise actuel est en ligne.",
+  "@uiYourCurrentCompanyVisualIsLive": {
+    "description": "uiYourCurrentCompanyVisualIsLive"
+  },
+  "uiAddALogoToMakeCompanyProfileFeelComplete": "Ajoutez un logo pour donner une impression d’aboutissement à votre profil d’entreprise.",
+  "@uiAddALogoToMakeCompanyProfileFeelComplete": {
+    "description": "uiAddALogoToMakeCompanyProfileFeelComplete"
+  },
+  "uiUploadingEllipsis": "Téléversement…",
+  "@uiUploadingEllipsis": {
+    "description": "uiUploadingEllipsis"
+  },
+  "uiReplaceLogo": "Remplacer le logo",
+  "@uiReplaceLogo": {
+    "description": "uiReplaceLogo"
+  },
+  "uiUploadLogo": "Téléverser un logo",
+  "@uiUploadLogo": {
+    "description": "uiUploadLogo"
+  },
+  "uiKeepCurrentVerificationDocumentSubtitle": "Conservez un document de vérification à jour pour préserver la fiabilité de votre profil d’entreprise.",
+  "@uiKeepCurrentVerificationDocumentSubtitle": {
+    "description": "uiKeepCurrentVerificationDocumentSubtitle"
+  },
+  "uiLogoRemoved": "Logo supprimé",
+  "@uiLogoRemoved": {
+    "description": "uiLogoRemoved"
+  },
+  "uiCompanyLogoRemoved": "Le logo de l’entreprise a été supprimé.",
+  "@uiCompanyLogoRemoved": {
+    "description": "uiCompanyLogoRemoved"
+  },
+  "uiCommercialRegisterIsRequired": "Le registre du commerce est requis pour les profils d’entreprise.",
+  "@uiCommercialRegisterIsRequired": {
+    "description": "uiCommercialRegisterIsRequired"
+  },
+  "uiApprovedCompanySubtitle": "Entreprise approuvée",
+  "@uiApprovedCompanySubtitle": {
+    "description": "uiApprovedCompanySubtitle"
+  },
+  "uiCouldNotOpenDocumentRightNow": "Impossible d’ouvrir le document pour le moment.",
+  "@uiCouldNotOpenDocumentRightNow": {
+    "description": "uiCouldNotOpenDocumentRightNow"
+  },
+  "uiCommercialRegisterReinforcesTrustMessage": "Un registre du commerce à jour renforce la confiance et permet de garder le profil de l’entreprise prêt à être examiné.",
+  "@uiCommercialRegisterReinforcesTrustMessage": {
+    "description": "uiCommercialRegisterReinforcesTrustMessage"
+  },
+  "uiOneDetailStillMissingFromCompanyProfile": "Il manque encore 1 information dans le profil de l’entreprise.",
+  "@uiOneDetailStillMissingFromCompanyProfile": {
+    "description": "uiOneDetailStillMissingFromCompanyProfile"
+  },
+  "uiCountDetailsStillMissingFromCompanyProfile": "Il manque encore {count} informations dans le profil de l’entreprise.",
+  "@uiCountDetailsStillMissingFromCompanyProfile": {
+    "description": "uiCountDetailsStillMissingFromCompanyProfile",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiAddWhatIsMissingForClearerCompanyPage": "Complétez les informations manquantes pour offrir aux étudiants une page d’entreprise plus claire et plus fiable.",
+  "@uiAddWhatIsMissingForClearerCompanyPage": {
+    "description": "uiAddWhatIsMissingForClearerCompanyPage"
+  },
+  "uiAcceptedLogoFormatsAndSizeHint": "Formats acceptés : JPG, PNG ou WebP. Taille maximale : 5 Mo.",
+  "@uiAcceptedLogoFormatsAndSizeHint": {
+    "description": "uiAcceptedLogoFormatsAndSizeHint"
+  },
+  "uiUploadPdfJpgPngForVerificationHint": "Téléversez un document au format PDF, JPG ou PNG jusqu’à 10 Mo pour compléter cette partie du profil.",
+  "@uiUploadPdfJpgPngForVerificationHint": {
+    "description": "uiUploadPdfJpgPngForVerificationHint"
+  },
+  "uiSizeMbSelected": "{size} Mo sélectionnés",
+  "@uiSizeMbSelected": {
+    "description": "uiSizeMbSelected",
+    "placeholders": {
+      "size": {}
+    }
+  },
+  "uiChooseAnImageSmallerThan5Mb": "Choisissez une image de moins de 5 Mo.",
+  "@uiChooseAnImageSmallerThan5Mb": {
+    "description": "uiChooseAnImageSmallerThan5Mb"
+  },
+  "uiCompanyFallback": "Entreprise",
+  "@uiCompanyFallback": {
+    "description": "uiCompanyFallback"
+  },
+  "uiStrongLogoMakesProfilePolishedSubtitle": "Un logo fort ou une photo soignée de l’entreprise rend le profil plus abouti et plus reconnaissable.",
+  "@uiStrongLogoMakesProfilePolishedSubtitle": {
+    "description": "uiStrongLogoMakesProfilePolishedSubtitle"
+  }
 }

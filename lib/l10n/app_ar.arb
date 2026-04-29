@@ -3315,5 +3315,366 @@
   "studentLocation": "الموقع",
   "studentPhone": "الهاتف",
   "studentWaitCoverUpload": "يرجى انتظار انتهاء رفع صورة الغلاف.",
-  "studentFileUnavailable": "الملف غير متاح."
+  "studentFileUnavailable": "الملف غير متاح.",
+  "companyReviewNeedsAttentionTitle": "مراجعة الشركة بحاجة إلى انتباهك",
+  "companyReviewInProgressTitle": "مراجعة الشركة قيد التنفيذ",
+  "companyReviewRejectedSubtitle": "لم تتم الموافقة على حساب شركتك بعد. راجع ملف الشركة والسجل التجاري وحدّث ما يستوجب تصحيحه قبل إعادة المحاولة.",
+  "companyReviewPendingSubtitle": "تم إنشاء حساب شركتك بنجاح. لا يزال يتعين على المسؤول مراجعة سجلك التجاري قبل تفعيل مساحة العمل الخاصة بك.",
+  "companyReviewRejectedHelperTitle": "ما الذي ينبغي تصحيحه قبل المراجعة التالية",
+  "companyReviewPendingHelperTitle": "ما الذي سيحدث لاحقًا",
+  "companyReviewRejectedHelperItem1": "تحقّق من تفاصيل شركتك ومن وثيقة السجل التجاري.",
+  "companyReviewRejectedHelperItem2": "حدّث كل ما هو ناقص أو غير واضح في ملف شركتك.",
+  "companyReviewRejectedHelperItem3": "بمجرد إعادة مراجعة المسؤول للملف، سيُفتح الوصول تلقائيًا.",
+  "companyReviewPendingHelperItem1": "يتولى فريق الإدارة مراجعة ملف الشركة والسجل التجاري المرفوع.",
+  "companyReviewPendingHelperItem2": "ستُفتح مساحة العمل الخاصة بك تلقائيًا بمجرد اعتماد الشركة.",
+  "companyReviewPendingHelperItem3": "يمكنك الآن فتح ملفك وتحسين معلوماته قبل صدور الاعتماد.",
+  "companyReviewStatNotSet": "غير محدد",
+  "companyReviewStatRegisterUploaded": "تم رفعه",
+  "companyReviewStatRegisterMissing": "مفقود",
+  "companyReviewUpdateProfileButton": "تحديث ملف الشركة",
+  "companyReviewOpenProfileButton": "فتح ملف الشركة",
+  "opportunityCountdownHoursLeft": "تبقّت {hours} س",
+  "@opportunityCountdownHoursLeft": {
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "opportunityCountdownDaysLeft": "تبقّت {days} ي",
+  "@opportunityCountdownDaysLeft": {
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "opportunityFreshnessRecent": "حديث",
+  "opportunityClosedNoticeMessage": "تم إغلاق هذه الفرصة، فلم يعد بإمكان الطلاب التقديم عليها، غير أن الطلبات الحالية تبقى متاحة للمراجعة.",
+  "opportunityReopenedNoticeMessage": "تم إعادة فتح هذه الفرصة وأصبحت قادرة على استقبال طلبات جديدة.",
+  "opportunityReopenedNoticeTitle": "تمت إعادة فتح الفرصة",
+  "opportunityDeleteConfirmationMessage": "هل تريد حذف \"{title}\"؟ إذا كانت لديها طلبات قيد المراجعة فسيتم إغلاقها بدلًا من حذفها للحفاظ على إمكانية مراجعة الطلاب.",
+  "@opportunityDeleteConfirmationMessage": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "opportunityClosedDueToPendingMessage": "تم إغلاق الفرصة لأن هناك طلبات قيد المراجعة لا تزال بحاجة إلى المعالجة.",
+  "opportunityCouldNotRefreshApplicants": "تعذّر تحديث قائمة المتقدمين",
+  "opportunityNoStudentsYetTitle": "لا يوجد طلاب بعد",
+  "opportunityNoStudentsYetSubtitle": "سيظهر هنا الطلاب الذين يتقدّمون لهذه الفرصة.",
+  "opportunityNoMatchesFoundTitle": "لا توجد نتائج مطابقة",
+  "opportunityNoMatchesFoundSubtitle": "حاول إزالة عوامل التصفية أو تعديل عبارات البحث.",
+  "opportunityPublishFirstRolePrompt": "انشر أول وظيفة لديك لتبدأ عملية التوظيف.",
+  "opportunityActionReopen": "إعادة فتح",
+  "companyProfileBrandStoryFallback": "اصنع انطباعًا أوليًا قويًا من خلال قصة موجزة عن الشركة، وتفاصيل تواصل واضحة، وهوية بصرية متقنة.",
+  "companyProfileLogoMissingLabel": "الشعار",
+  "companyProfileCouldNotOpenWebsite": "تعذّر فتح الموقع الإلكتروني.",
+  "companyProfileMissingDetailSingular": "لا تزال هناك تفصيلة واحدة ناقصة في ملف الشركة.",
+  "companyProfileMissingDetailsPlural": "لا تزال هناك {missingCount} تفاصيل ناقصة في ملف الشركة.",
+  "@companyProfileMissingDetailsPlural": {
+    "placeholders": {
+      "missingCount": {}
+    }
+  },
+  "companyProfileIncompleteTitle": "الملف غير مكتمل",
+  "companyProfileIncompleteMessageFormat": "{message} أضف العناصر الناقصة ليرى الطلاب صفحة شركة أوضح وأكثر مصداقية.",
+  "@companyProfileIncompleteMessageFormat": {
+    "placeholders": {
+      "message": {}
+    }
+  },
+  "companyProfileCouldNotOpenEmail": "تعذّر فتح البريد الإلكتروني في الوقت الحالي.",
+  "companyProfileAddPhonePlaceholder": "أضف رقم هاتف الشركة",
+  "companyProfileAddLocationPlaceholder": "أضف موقع شركتك",
+  "companyProfileAddWebsitePlaceholder": "أضف موقعك الإلكتروني",
+  "companyProfileAddSectorPlaceholder": "أضف قطاعًا أو تخصصًا",
+  "companyProfileNotAvailable": "غير متاح",
+  "companyProfileRegisterPendingSummary": "تم إرفاق الوثيقة المطلوبة، وهي في انتظار مراجعة المسؤول.",
+  "companyProfileRegisterRejectedSummary": "تم إرفاق الوثيقة المطلوبة، إلا أن اعتماد الشركة لا يزال يستوجب المعالجة.",
+  "companyProfileRegisterApprovedSummary": "تم إرفاق الوثيقة المطلوبة، والشركة معتمدة.",
+  "companyProfileApprovalPendingTitle": "الاعتماد قيد الانتظار",
+  "companyProfileApprovalRejectedTitle": "الاعتماد يستلزم تعديلات",
+  "companyProfileApprovalApprovedTitle": "الشركة معتمدة",
+  "companyProfileApprovalPendingMessage": "تم رفع السجل التجاري، ولا يزال على فريق الإدارة مراجعة حساب هذه الشركة.",
+  "companyProfileApprovalRejectedMessage": "تم رفع الوثيقة، لكن حساب الشركة لا يزال بحاجة إلى تصحيحات قبل أن يحظى بالاعتماد.",
+  "companyProfileApprovalApprovedMessage": "تم رفع السجل التجاري، وحساب الشركة معتمد.",
+  "companyProfileRegisterUploadPrompt": "ارفع وثيقة محدّثة للحفاظ على اكتمال ملف الشركة وموثوقيته.",
+  "companyProfileDocumentUploadedFallback": "تم رفع الوثيقة",
+  "companyProfileEditRegisterAlreadyAttached": "وثيقة التحقق مُرفقة بالفعل.",
+  "companyProfileEditRegisterNeedsAttention": "السجل التجاري لا يزال بحاجة إلى المعالجة.",
+  "companyProfileEditCompanyNameHint": "اسم شركتك الظاهر للعموم",
+  "companyProfileEditCompanyNameValidation": "اسم الشركة مطلوب.",
+  "companyProfileEditSectorHint": "تقنية، مالية، تصميم، تعليم…",
+  "companyProfileEditDescriptionHint": "ما الذي تبنيه شركتكم؟ ومن هم عملاؤكم؟ وما الذي يمكن للطلاب توقّعه؟",
+  "companyProfileEditPhoneHint": "رقم هاتف الشركة",
+  "companyProfileEditLocationHint": "المدينة أو المنطقة أو المقر الرئيسي",
+  "companyProfileEditWebsiteValidationSpaces": "لا يمكن أن يحتوي عنوان الموقع على مسافات.",
+  "companyProfileEditWebsiteValidationInvalid": "أدخل عنوان موقع إلكتروني صالحًا.",
+  "companyProfileEditLogoLiveMessage": "هوية شركتك البصرية الحالية معروضة للجمهور.",
+  "companyProfileEditLogoMissingMessage": "أضف شعارًا ليبدو ملف شركتك مكتملًا.",
+  "companyProfileEditReplaceLogoLabel": "استبدال الشعار",
+  "companyProfileEditUploadLogoLabel": "رفع الشعار",
+  "companyProfileEditLogoRemovedMessage": "تمت إزالة شعار الشركة.",
+  "companyProfileEditLogoRemovedTitle": "تمت إزالة الشعار",
+  "companyProfileEditRegisterRequiredValidation": "السجل التجاري مطلوب لجميع ملفات الشركات.",
+  "companyProfileApprovedCompanyTooltip": "شركة معتمدة",
+  "publishOpportunityDescriptionHelperText": "اذكر النطاق والتوقعات والمتطلبات، وأبرز الأسباب التي تدفع الطلاب إلى التقديم.",
+  "uiCompanyBrandStoryEmptySubtitle": "أضف بضعة أسطر تشرح ما تبنيه شركتك وما يمكن للطلاب توقّعه من فريقك.",
+  "@uiCompanyBrandStoryEmptySubtitle": {
+    "description": "uiCompanyBrandStoryEmptySubtitle"
+  },
+  "uiDetailsSectionSubtitle": "المعلومات الأساسية التي يبحث عنها الطلاب والمتقدّمون أوّلاً.",
+  "@uiDetailsSectionSubtitle": {
+    "description": "uiDetailsSectionSubtitle"
+  },
+  "uiVerificationSectionSubtitle": "حافظ على ثقة الطلاب بشركتك بتقديم سجلّ تجاري مُحدَّث.",
+  "@uiVerificationSectionSubtitle": {
+    "description": "uiVerificationSectionSubtitle"
+  },
+  "uiBuildStrongFirstImpressionSubtitle": "اصنع انطباعاً أوّل قويّاً بقصّة موجزة عن الشركة وبيانات تواصل واضحة وهويّة بصريّة أنيقة.",
+  "@uiBuildStrongFirstImpressionSubtitle": {
+    "description": "uiBuildStrongFirstImpressionSubtitle"
+  },
+  "uiCouldNotOpenTheWebsite": "تعذّر فتح الموقع الإلكتروني.",
+  "@uiCouldNotOpenTheWebsite": {
+    "description": "uiCouldNotOpenTheWebsite"
+  },
+  "uiCompleteLabel": "مكتمل",
+  "@uiCompleteLabel": {
+    "description": "uiCompleteLabel"
+  },
+  "uiProfileIncomplete": "الملف غير مكتمل",
+  "@uiProfileIncomplete": {
+    "description": "uiProfileIncomplete"
+  },
+  "uiCompleteProfileButton": "إكمال الملف",
+  "@uiCompleteProfileButton": {
+    "description": "uiCompleteProfileButton"
+  },
+  "uiCouldNotOpenEmailRightNow": "تعذّر فتح البريد الإلكتروني الآن.",
+  "@uiCouldNotOpenEmailRightNow": {
+    "description": "uiCouldNotOpenEmailRightNow"
+  },
+  "uiAddACompanyPhoneNumber": "أضف رقم هاتف الشركة",
+  "@uiAddACompanyPhoneNumber": {
+    "description": "uiAddACompanyPhoneNumber"
+  },
+  "uiAddYourCompanyLocation": "أضف موقع الشركة",
+  "@uiAddYourCompanyLocation": {
+    "description": "uiAddYourCompanyLocation"
+  },
+  "uiAddYourWebsite": "أضف موقعك الإلكتروني",
+  "@uiAddYourWebsite": {
+    "description": "uiAddYourWebsite"
+  },
+  "uiAddASectorOrSpecialty": "أضف القطاع أو التخصّص",
+  "@uiAddASectorOrSpecialty": {
+    "description": "uiAddASectorOrSpecialty"
+  },
+  "uiNotAvailable": "غير متاح",
+  "@uiNotAvailable": {
+    "description": "uiNotAvailable"
+  },
+  "uiVerificationDocumentAttachedPending": "الوثيقة المطلوبة مُرفقة وفي انتظار مراجعة المسؤولين.",
+  "@uiVerificationDocumentAttachedPending": {
+    "description": "uiVerificationDocumentAttachedPending"
+  },
+  "uiVerificationDocumentAttachedNeedsAttention": "الوثيقة المطلوبة مُرفقة، لكنّ اعتماد الشركة لا يزال بحاجة إلى مراجعة.",
+  "@uiVerificationDocumentAttachedNeedsAttention": {
+    "description": "uiVerificationDocumentAttachedNeedsAttention"
+  },
+  "uiVerificationDocumentAttachedApproved": "الوثيقة المطلوبة مُرفقة، وقد تمّ اعتماد الشركة.",
+  "@uiVerificationDocumentAttachedApproved": {
+    "description": "uiVerificationDocumentAttachedApproved"
+  },
+  "uiApprovalPending": "قيد الاعتماد",
+  "@uiApprovalPending": {
+    "description": "uiApprovalPending"
+  },
+  "uiApprovalNeedsChanges": "الاعتماد يتطلّب تعديلات",
+  "@uiApprovalNeedsChanges": {
+    "description": "uiApprovalNeedsChanges"
+  },
+  "uiCompanyApproved": "تمّ اعتماد الشركة",
+  "@uiCompanyApproved": {
+    "description": "uiCompanyApproved"
+  },
+  "uiYourCommercialRegisterUploadedAdminPending": "تمّ رفع سجلّك التجاري، ولا يزال فريق الإدارة بحاجة إلى مراجعة حساب الشركة.",
+  "@uiYourCommercialRegisterUploadedAdminPending": {
+    "description": "uiYourCommercialRegisterUploadedAdminPending"
+  },
+  "uiYourDocumentUploadedNeedsCorrections": "تمّ رفع الوثيقة، لكنّ حساب الشركة بحاجة إلى تصحيحات قبل اعتماده.",
+  "@uiYourDocumentUploadedNeedsCorrections": {
+    "description": "uiYourDocumentUploadedNeedsCorrections"
+  },
+  "uiYourCommercialRegisterUploadedApproved": "تمّ رفع سجلّك التجاري واعتماد حساب الشركة.",
+  "@uiYourCommercialRegisterUploadedApproved": {
+    "description": "uiYourCommercialRegisterUploadedApproved"
+  },
+  "uiUploadCurrentDocumentSubtitle": "ارفع وثيقة سارية المفعول لإبقاء ملف الشركة مكتملاً وموثوقاً.",
+  "@uiUploadCurrentDocumentSubtitle": {
+    "description": "uiUploadCurrentDocumentSubtitle"
+  },
+  "uiDocumentUploaded": "تمّ رفع الوثيقة",
+  "@uiDocumentUploaded": {
+    "description": "uiDocumentUploaded"
+  },
+  "uiUploadedOn": "تاريخ الرفع: {date}",
+  "@uiUploadedOn": {
+    "description": "uiUploadedOn",
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "uiFileUnavailable": "الملف غير متاح.",
+  "@uiFileUnavailable": {
+    "description": "uiFileUnavailable"
+  },
+  "uiPermissionDeniedOpeningDocument": "تمّ رفض الإذن أثناء فتح الوثيقة.",
+  "@uiPermissionDeniedOpeningDocument": {
+    "description": "uiPermissionDeniedOpeningDocument"
+  },
+  "uiSavingChangesEllipsis": "جارٍ حفظ التغييرات...",
+  "@uiSavingChangesEllipsis": {
+    "description": "uiSavingChangesEllipsis"
+  },
+  "uiKeepProfileCrispTrustworthyReady": "اجعل الملف أنيقاً وموثوقاً وجاهزاً ليكتشفه الطلاب.",
+  "@uiKeepProfileCrispTrustworthyReady": {
+    "description": "uiKeepProfileCrispTrustworthyReady"
+  },
+  "uiVerificationDocumentAlreadyAttached": "وثيقة التحقّق مُرفقة بالفعل.",
+  "@uiVerificationDocumentAlreadyAttached": {
+    "description": "uiVerificationDocumentAlreadyAttached"
+  },
+  "uiCommercialRegisterStillNeedsAttention": "السجلّ التجاري لا يزال بحاجة إلى المراجعة.",
+  "@uiCommercialRegisterStillNeedsAttention": {
+    "description": "uiCommercialRegisterStillNeedsAttention"
+  },
+  "uiShapeFirstImpressionFromYourCompany": "اصنع الانطباع الأوّل الذي يأخذه الطلاب عن شركتك.",
+  "@uiShapeFirstImpressionFromYourCompany": {
+    "description": "uiShapeFirstImpressionFromYourCompany"
+  },
+  "uiYourPublicCompanyName": "الاسم العلني لشركتك",
+  "@uiYourPublicCompanyName": {
+    "description": "uiYourPublicCompanyName"
+  },
+  "uiTechnologyFinanceDesignEducationHint": "تقنية، تمويل، تصميم، تعليم...",
+  "@uiTechnologyFinanceDesignEducationHint": {
+    "description": "uiTechnologyFinanceDesignEducationHint"
+  },
+  "uiCompanyDescriptionHint": "ماذا تبني شركتك، ومن تخدم، وما الذي يمكن للطلاب توقّعه؟",
+  "@uiCompanyDescriptionHint": {
+    "description": "uiCompanyDescriptionHint"
+  },
+  "uiMakeItEasyForStudentsToFindYouSubtitle": "اجعل من السهل على الطلاب معرفة موقع شركتك وكيفيّة الوصول إليها.",
+  "@uiMakeItEasyForStudentsToFindYouSubtitle": {
+    "description": "uiMakeItEasyForStudentsToFindYouSubtitle"
+  },
+  "uiCompanyPhoneNumberHint": "رقم هاتف الشركة",
+  "@uiCompanyPhoneNumberHint": {
+    "description": "uiCompanyPhoneNumberHint"
+  },
+  "uiCityRegionOrHeadquartersHint": "المدينة أو الولاية أو موقع المقرّ",
+  "@uiCityRegionOrHeadquartersHint": {
+    "description": "uiCityRegionOrHeadquartersHint"
+  },
+  "uiWebsiteHintExample": "https://www.yourcompany.com",
+  "@uiWebsiteHintExample": {
+    "description": "uiWebsiteHintExample"
+  },
+  "uiWebsiteCannotContainSpaces": "لا يمكن أن يحتوي الموقع على مسافات.",
+  "@uiWebsiteCannotContainSpaces": {
+    "description": "uiWebsiteCannotContainSpaces"
+  },
+  "uiEnterAValidWebsite": "أدخل عنوان موقع صالح.",
+  "@uiEnterAValidWebsite": {
+    "description": "uiEnterAValidWebsite"
+  },
+  "uiYourCurrentCompanyVisualIsLive": "هويّتك البصريّة الحاليّة منشورة.",
+  "@uiYourCurrentCompanyVisualIsLive": {
+    "description": "uiYourCurrentCompanyVisualIsLive"
+  },
+  "uiAddALogoToMakeCompanyProfileFeelComplete": "أضف شعاراً ليبدو ملف شركتك مكتملاً.",
+  "@uiAddALogoToMakeCompanyProfileFeelComplete": {
+    "description": "uiAddALogoToMakeCompanyProfileFeelComplete"
+  },
+  "uiUploadingEllipsis": "جارٍ الرفع...",
+  "@uiUploadingEllipsis": {
+    "description": "uiUploadingEllipsis"
+  },
+  "uiReplaceLogo": "استبدال الشعار",
+  "@uiReplaceLogo": {
+    "description": "uiReplaceLogo"
+  },
+  "uiUploadLogo": "رفع الشعار",
+  "@uiUploadLogo": {
+    "description": "uiUploadLogo"
+  },
+  "uiKeepCurrentVerificationDocumentSubtitle": "أبقِ وثيقة تحقّق سارية مرفقة للحفاظ على ملف شركة موثوق.",
+  "@uiKeepCurrentVerificationDocumentSubtitle": {
+    "description": "uiKeepCurrentVerificationDocumentSubtitle"
+  },
+  "uiLogoRemoved": "تمّت إزالة الشعار",
+  "@uiLogoRemoved": {
+    "description": "uiLogoRemoved"
+  },
+  "uiCompanyLogoRemoved": "تمّت إزالة شعار الشركة.",
+  "@uiCompanyLogoRemoved": {
+    "description": "uiCompanyLogoRemoved"
+  },
+  "uiCommercialRegisterIsRequired": "السجلّ التجاري إلزامي لملفّات الشركات.",
+  "@uiCommercialRegisterIsRequired": {
+    "description": "uiCommercialRegisterIsRequired"
+  },
+  "uiApprovedCompanySubtitle": "شركة معتمدة",
+  "@uiApprovedCompanySubtitle": {
+    "description": "uiApprovedCompanySubtitle"
+  },
+  "uiCouldNotOpenDocumentRightNow": "تعذّر فتح الوثيقة في الوقت الحالي.",
+  "@uiCouldNotOpenDocumentRightNow": {
+    "description": "uiCouldNotOpenDocumentRightNow"
+  },
+  "uiCommercialRegisterReinforcesTrustMessage": "يعزّز السجلّ التجاري السّاري الثقة في الشركة، ويُبقي ملفّها جاهزاً للمراجعة.",
+  "@uiCommercialRegisterReinforcesTrustMessage": {
+    "description": "uiCommercialRegisterReinforcesTrustMessage"
+  },
+  "uiOneDetailStillMissingFromCompanyProfile": "لا تزال هناك معلومة واحدة مفقودة من ملف الشركة.",
+  "@uiOneDetailStillMissingFromCompanyProfile": {
+    "description": "uiOneDetailStillMissingFromCompanyProfile"
+  },
+  "uiCountDetailsStillMissingFromCompanyProfile": "لا تزال {count} معلومات مفقودة من ملف الشركة.",
+  "@uiCountDetailsStillMissingFromCompanyProfile": {
+    "description": "uiCountDetailsStillMissingFromCompanyProfile",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "uiAddWhatIsMissingForClearerCompanyPage": "أكمل المعلومات الناقصة ليرى الطلاب صفحة شركة أوضح وأكثر موثوقيّة.",
+  "@uiAddWhatIsMissingForClearerCompanyPage": {
+    "description": "uiAddWhatIsMissingForClearerCompanyPage"
+  },
+  "uiAcceptedLogoFormatsAndSizeHint": "الصيغ المقبولة: JPG أو PNG أو WebP. الحدّ الأقصى للحجم: 5 ميغابايت.",
+  "@uiAcceptedLogoFormatsAndSizeHint": {
+    "description": "uiAcceptedLogoFormatsAndSizeHint"
+  },
+  "uiUploadPdfJpgPngForVerificationHint": "ارفع وثيقة بصيغة PDF أو JPG أو PNG بحجم لا يتجاوز 10 ميغابايت لاستكمال هذا الجزء من الملف.",
+  "@uiUploadPdfJpgPngForVerificationHint": {
+    "description": "uiUploadPdfJpgPngForVerificationHint"
+  },
+  "uiSizeMbSelected": "{size} ميغابايت مُختارة",
+  "@uiSizeMbSelected": {
+    "description": "uiSizeMbSelected",
+    "placeholders": {
+      "size": {}
+    }
+  },
+  "uiChooseAnImageSmallerThan5Mb": "اختر صورة بحجم أقلّ من 5 ميغابايت.",
+  "@uiChooseAnImageSmallerThan5Mb": {
+    "description": "uiChooseAnImageSmallerThan5Mb"
+  },
+  "uiCompanyFallback": "شركة",
+  "@uiCompanyFallback": {
+    "description": "uiCompanyFallback"
+  },
+  "uiStrongLogoMakesProfilePolishedSubtitle": "يُضفي شعارٌ قويّ أو صورةٌ مميّزة للشركة لمسةً أكثر احترافيّة وتمنح الملف طابعاً أسهل للتذكّر.",
+  "@uiStrongLogoMakesProfilePolishedSubtitle": {
+    "description": "uiStrongLogoMakesProfilePolishedSubtitle"
+  }
 }

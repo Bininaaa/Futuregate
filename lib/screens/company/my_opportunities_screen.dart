@@ -220,7 +220,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     );
   }
 
-  String _statusLabel(String status) => status == 'closed' ? 'Closed' : 'Open';
+  String _statusLabel(String status) =>
+      status == 'closed' ? _l10n.closedStatusLabel : _l10n.openStatusLabel;
 
   DateTime? _deadlineDate(OpportunityModel opportunity) {
     return opportunity.applicationDeadline ??
@@ -229,33 +230,33 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
   String _timeLeftLabel(OpportunityModel opportunity) {
     if (opportunity.effectiveStatus() == 'closed') {
-      return 'Closed';
+      return _l10n.closedStatusLabel;
     }
 
     final deadline = _deadlineDate(opportunity);
     if (deadline == null) {
-      return 'No deadline';
+      return _l10n.studentNoDeadline;
     }
 
     final remaining = deadline.difference(DateTime.now());
     if (remaining.isNegative) {
-      return 'Expired';
+      return _l10n.uiExpired;
     }
     if (remaining.inHours < 24) {
       final hours = remaining.inHours == 0 ? 1 : remaining.inHours;
-      return '${hours}h left';
+      return _l10n.opportunityCountdownHoursLeft(hours.toString());
     }
 
     final days = remaining.inHours % 24 == 0
         ? remaining.inDays
         : remaining.inDays + 1;
-    return '${days}d left';
+    return _l10n.opportunityCountdownDaysLeft(days.toString());
   }
 
   String _postedLabel(OpportunityModel opportunity) {
     final createdAt = opportunity.createdAt?.toDate();
     if (createdAt == null) {
-      return 'Recent';
+      return _l10n.opportunityFreshnessRecent;
     }
 
     return DateFormat('MMM d').format(createdAt);
@@ -810,11 +811,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
     context.showAppSnackBar(
       nextStatus == 'closed'
-          ? 'This opportunity has been closed. Students can no longer apply, but existing applications stay available for review.'
-          : 'This opportunity is open again and can receive new applications.',
+          ? _l10n.opportunityClosedNoticeMessage
+          : _l10n.opportunityReopenedNoticeMessage,
       title: nextStatus == 'closed'
-          ? 'Opportunity closed'
-          : 'Opportunity reopened',
+          ? _l10n.uiOpportunityClosed
+          : _l10n.opportunityReopenedNoticeTitle,
       type: nextStatus == 'closed'
           ? AppFeedbackType.removed
           : AppFeedbackType.success,
@@ -840,7 +841,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             ),
           ),
           content: Text(
-            'Delete "${opportunity.title}"? If it has pending applications, it will be closed instead so students can still be reviewed.',
+            _l10n.opportunityDeleteConfirmationMessage(opportunity.title),
             style: AppTypography.product(
               fontSize: 13,
               color: _OpportunityPalette.textSecondary,
@@ -899,7 +900,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
     context.showAppSnackBar(
       wasClosed == true
-          ? 'Opportunity closed because pending applications still need review.'
+          ? _l10n.opportunityClosedDueToPendingMessage
           : _l10n.uiOpportunityDeleted,
       title: wasClosed == true
           ? _l10n.uiOpportunityClosed
@@ -1010,7 +1011,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                                   Expanded(
                                     child: Text(
                                       opportunity.location.trim().isEmpty
-                                          ? 'Location not specified'
+                                          ? _l10n.uiLocationNotSpecified
                                           : opportunity.location.trim(),
                                       style: AppTypography.product(
                                         fontSize: 12,
@@ -1052,9 +1053,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                       const SizedBox(height: 12),
                       _InlineBanner(
                         icon: Icons.lock_outline_rounded,
-                        title: 'Opportunity closed',
-                        message:
-                            'This opportunity has been closed. Students can no longer apply, but existing applications stay available for review.',
+                        title: _l10n.uiOpportunityClosed,
+                        message: _l10n.opportunityClosedNoticeMessage,
                         color: _OpportunityPalette.warning,
                       ),
                     ],
@@ -1073,7 +1073,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         children: [
                           Expanded(
                             child: _DetailStat(
-                              label: 'Applicants',
+                              label: _l10n.uiApplicants,
                               value: '$applicantCount',
                               icon: Icons.groups_rounded,
                             ),
@@ -1081,7 +1081,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                           const _DetailDivider(),
                           Expanded(
                             child: _DetailStat(
-                              label: 'Posted',
+                              label: _l10n.uiPosted,
                               value: _postedLabel(opportunity),
                               icon: Icons.event_note_rounded,
                             ),
@@ -1089,7 +1089,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                           const _DetailDivider(),
                           Expanded(
                             child: _DetailStat(
-                              label: 'Deadline',
+                              label: _l10n.uiDeadline,
                               value: deadline == null
                                   ? '—'
                                   : DateFormat('MMM d').format(deadline),
@@ -1115,7 +1115,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                       children: [
                         Expanded(
                           child: _GhostActionButton(
-                            label: 'Edit',
+                            label: _l10n.uiEdit,
                             icon: Icons.edit_outlined,
                             foreground: _OpportunityPalette.primary,
                             onTap: () {
@@ -1127,8 +1127,8 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         Expanded(
                           child: _GhostActionButton(
                             label: effectiveStatus == 'closed'
-                                ? 'Reopen'
-                                : 'Close',
+                                ? _l10n.opportunityActionReopen
+                                : _l10n.closeLabel,
                             icon: effectiveStatus == 'closed'
                                 ? Icons.play_circle_outline
                                 : Icons.pause_circle_outline,
@@ -1145,7 +1145,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                     ),
                     if (metadata.isNotEmpty) ...[
                       const SizedBox(height: 18),
-                      _SectionTitle('Role details'),
+                      _SectionTitle(_l10n.uiRoleDetails),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 6,
@@ -1156,11 +1156,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                       ),
                     ],
                     const SizedBox(height: 18),
-                    _SectionTitle('Description'),
+                    _SectionTitle(_l10n.uiDescription),
                     const SizedBox(height: 8),
                     Text(
                       opportunity.description.trim().isEmpty
-                          ? 'No description provided.'
+                          ? _l10n.uiNoDescriptionProvided
                           : opportunity.description.trim(),
                       style: AppTypography.product(
                         fontSize: 12.5,
@@ -1178,21 +1178,21 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                     const SizedBox(height: 8),
                     ..._buildRequirementItems(opportunity, tone),
                     const SizedBox(height: 18),
-                    _SectionTitle('Publishing'),
+                    _SectionTitle(_l10n.publishingSectionTitle),
                     const SizedBox(height: 8),
                     _DetailRow(
-                      label: 'Status',
+                      label: _l10n.uiStatus,
                       value: _statusLabel(effectiveStatus),
                     ),
                     _DetailRow(
-                      label: 'Posted',
+                      label: _l10n.uiPosted,
                       value: _postedLabel(opportunity),
                     ),
                     _DetailRow(
-                      label: 'Deadline',
+                      label: _l10n.uiDeadline,
                       value: deadline == null
                           ? (opportunity.deadline.trim().isEmpty
-                                ? 'Not specified'
+                                ? _l10n.uiNotSpecified
                                 : opportunity.deadline.trim())
                           : DateFormat('MMM d, yyyy').format(deadline),
                       isLast: true,
@@ -1209,7 +1209,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                           size: 16,
                         ),
                         label: Text(
-                          'Delete opportunity',
+                          _l10n.uiDeleteOpportunity,
                           style: AppTypography.product(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
@@ -1244,7 +1244,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     if (items.isEmpty) {
       return [
         Text(
-          'No requirements provided.',
+          _l10n.uiNoRequirementsProvided,
           style: AppTypography.product(
             fontSize: 12.5,
             color: _OpportunityPalette.textMuted,
@@ -1305,7 +1305,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
           onPressed: _openPublish,
           icon: const Icon(Icons.add_rounded, size: 20),
           label: Text(
-            'New',
+            _l10n.uiNew,
             style: AppTypography.product(
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -1491,7 +1491,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Opportunities',
+                _l10n.uiOpportunities,
                 style: AppTypography.product(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -1503,7 +1503,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
               ),
               const SizedBox(height: 2),
               Text(
-                'Manage your listings',
+                _l10n.uiManageYourListings,
                 style: AppTypography.product(
                   fontSize: 11,
                   color: _OpportunityPalette.textMuted,
@@ -1560,7 +1560,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
           children: [
             Expanded(
               child: _KpiCell(
-                label: 'Total',
+                label: _l10n.uiTotal,
                 value: '$total',
                 icon: Icons.work_outline_rounded,
                 color: _OpportunityPalette.primary,
@@ -1569,7 +1569,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             const _KpiDivider(),
             Expanded(
               child: _KpiCell(
-                label: 'Live',
+                label: _l10n.uiLive,
                 value: '$open',
                 icon: Icons.bolt_rounded,
                 color: _OpportunityPalette.success,
@@ -1578,7 +1578,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             const _KpiDivider(),
             Expanded(
               child: _KpiCell(
-                label: 'Applicants',
+                label: _l10n.uiApplicants,
                 value: '$applicants',
                 icon: Icons.groups_rounded,
                 color: _OpportunityPalette.accent,
@@ -1637,7 +1637,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             minWidth: 36,
             minHeight: 20,
           ),
-          hintText: 'Search title, location, or keyword',
+          hintText: _l10n.uiSearchTitleLocationOrKeyword,
           hintStyle: AppTypography.product(
             fontSize: 12,
             color: _OpportunityPalette.textMuted,
@@ -1676,7 +1676,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       children: [
         Expanded(
           child: Text(
-            '$shown of $total',
+            _l10n.uiShownOfTotal(shown, total),
             style: AppTypography.product(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -1690,7 +1690,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                'Clear',
+                _l10n.uiClear,
                 style: AppTypography.product(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -1880,6 +1880,7 @@ class _SegmentGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -1891,21 +1892,21 @@ class _SegmentGroup extends StatelessWidget {
         children: [
           Expanded(
             child: _SegmentButton(
-              label: 'All',
+              label: l10n.uiAll,
               selected: selectedFilter == _OpportunityFilter.all,
               onTap: () => onSelected(_OpportunityFilter.all),
             ),
           ),
           Expanded(
             child: _SegmentButton(
-              label: 'Open',
+              label: l10n.uiOpen,
               selected: selectedFilter == _OpportunityFilter.open,
               onTap: () => onSelected(_OpportunityFilter.open),
             ),
           ),
           Expanded(
             child: _SegmentButton(
-              label: 'Closed',
+              label: l10n.uiClosed,
               selected: selectedFilter == _OpportunityFilter.closed,
               onTap: () => onSelected(_OpportunityFilter.closed),
             ),
@@ -1993,7 +1994,7 @@ class _SortButton extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              'Top',
+              AppLocalizations.of(context)!.uiTop,
               style: AppTypography.product(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -2020,32 +2021,33 @@ class _TypeFilterGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         _TypeFilterChip(
-          label: 'All',
+          label: l10n.uiAll,
           selected: selectedFilter == _OpportunityTypeFilter.all,
           foreground: _OpportunityPalette.primary,
           onTap: () => onSelected(_OpportunityTypeFilter.all),
         ),
         const SizedBox(width: 6),
         _TypeFilterChip(
-          label: 'Jobs',
+          label: l10n.uiJobs,
           selected: selectedFilter == _OpportunityTypeFilter.jobs,
           foreground: OpportunityType.jobColor,
           onTap: () => onSelected(_OpportunityTypeFilter.jobs),
         ),
         const SizedBox(width: 6),
         _TypeFilterChip(
-          label: 'Internships',
+          label: l10n.uiInternships,
           selected: selectedFilter == _OpportunityTypeFilter.internships,
           foreground: OpportunityType.internshipColor,
           onTap: () => onSelected(_OpportunityTypeFilter.internships),
         ),
         const SizedBox(width: 6),
         _TypeFilterChip(
-          label: 'Sponsored',
+          label: l10n.uiSponsored,
           selected: selectedFilter == _OpportunityTypeFilter.sponsored,
           foreground: _OpportunityPalette.accent,
           onTap: () => onSelected(_OpportunityTypeFilter.sponsored),
@@ -2263,6 +2265,7 @@ class _ApplicantsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hasApplicants = applications.isNotEmpty;
     final initialSize = hasApplicants ? 0.72 : 0.44;
 
@@ -2322,7 +2325,7 @@ class _ApplicantsSheet extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${applications.length} ${applications.length == 1 ? 'applicant' : 'applicants'}',
+                          l10n.uiApplicantcountApplicants(applications.length),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.product(
@@ -2354,7 +2357,7 @@ class _ApplicantsSheet extends StatelessWidget {
                 const SizedBox(height: 14),
                 _InlineBanner(
                   icon: Icons.info_outline_rounded,
-                  title: 'Could not refresh applicants',
+                  title: l10n.opportunityCouldNotRefreshApplicants,
                   message: error!.trim(),
                 ),
               ],
@@ -2412,7 +2415,7 @@ class _ApplicantDetailsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final studentName = application.studentName.trim().isEmpty
-        ? 'Student'
+        ? l10n.uiStudent
         : application.studentName.trim();
     final opportunityTitle = opportunity.title.trim().isEmpty
         ? l10n.uiUntitledOpportunity
@@ -2516,6 +2519,7 @@ class _NoApplicantsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
@@ -2541,7 +2545,7 @@ class _NoApplicantsState extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'No students yet',
+            l10n.opportunityNoStudentsYetTitle,
             textAlign: TextAlign.center,
             style: AppTypography.product(
               fontSize: 14,
@@ -2551,7 +2555,7 @@ class _NoApplicantsState extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Students who apply to this opportunity will appear here.',
+            l10n.opportunityNoStudentsYetSubtitle,
             textAlign: TextAlign.center,
             style: AppTypography.product(
               fontSize: 12,
@@ -2578,10 +2582,10 @@ class _ApplicantListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final studentName = application.studentName.trim().isEmpty
-        ? 'Student'
-        : application.studentName.trim();
     final l10n = AppLocalizations.of(context)!;
+    final studentName = application.studentName.trim().isEmpty
+        ? l10n.uiStudent
+        : application.studentName.trim();
     final statusLabel = ApplicationStatus.label(application.status, l10n);
 
     return Semantics(
@@ -2692,6 +2696,7 @@ class _OpportunityGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -2770,7 +2775,7 @@ class _OpportunityGridCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       opportunity.location.trim().isEmpty
-                          ? 'Remote'
+                          ? l10n.uiRemote
                           : opportunity.location.trim(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -2853,6 +2858,7 @@ class _OpportunityListRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -2929,7 +2935,7 @@ class _OpportunityListRow extends StatelessWidget {
                         Flexible(
                           child: Text(
                             opportunity.location.trim().isEmpty
-                                ? 'Remote'
+                                ? l10n.uiRemote
                                 : opportunity.location.trim(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -3326,7 +3332,7 @@ class _LoadingState extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'Loading opportunities...',
+            AppLocalizations.of(context)!.uiLoadingOpportunities,
             style: AppTypography.product(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
@@ -3352,6 +3358,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
       child: Center(
@@ -3374,8 +3381,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 14),
             Text(
               hasExistingOpportunities
-                  ? 'No matches found'
-                  : 'No opportunities yet',
+                  ? l10n.opportunityNoMatchesFoundTitle
+                  : l10n.uiNoOpportunitiesYet,
               textAlign: TextAlign.center,
               style: AppTypography.product(
                 fontSize: 15,
@@ -3386,8 +3393,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               hasExistingOpportunities
-                  ? 'Try clearing the filters or adjusting your search.'
-                  : 'Publish your first role to start hiring.',
+                  ? l10n.opportunityNoMatchesFoundSubtitle
+                  : l10n.opportunityPublishFirstRolePrompt,
               textAlign: TextAlign.center,
               style: AppTypography.product(
                 fontSize: 12,
@@ -3411,7 +3418,7 @@ class _EmptyState extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Clear filters',
+                  l10n.uiClearFilters,
                   style: AppTypography.product(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -3423,7 +3430,7 @@ class _EmptyState extends StatelessWidget {
                 onPressed: onCreate,
                 icon: const Icon(Icons.add_rounded, size: 16),
                 label: Text(
-                  'Create opportunity',
+                  l10n.publishOpportunityTitle,
                   style: AppTypography.product(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,

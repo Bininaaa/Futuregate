@@ -10116,4 +10116,519 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get studentFileUnavailable => 'Fichier indisponible.';
+
+  @override
+  String get companyReviewNeedsAttentionTitle =>
+      'L’examen de l’entreprise requiert votre attention';
+
+  @override
+  String get companyReviewInProgressTitle => 'Examen de l’entreprise en cours';
+
+  @override
+  String get companyReviewRejectedSubtitle =>
+      'Votre compte entreprise n’a pas encore été approuvé. Vérifiez votre profil et votre registre du commerce, puis corrigez les éléments nécessaires avant une nouvelle tentative.';
+
+  @override
+  String get companyReviewPendingSubtitle =>
+      'Votre compte entreprise a été créé avec succès. Un administrateur doit encore examiner votre registre du commerce avant l’activation de votre espace de travail.';
+
+  @override
+  String get companyReviewRejectedHelperTitle =>
+      'Ce qu’il faut corriger avant le prochain examen';
+
+  @override
+  String get companyReviewPendingHelperTitle => 'Les prochaines étapes';
+
+  @override
+  String get companyReviewRejectedHelperItem1 =>
+      'Vérifiez les informations de votre entreprise et le document du registre du commerce.';
+
+  @override
+  String get companyReviewRejectedHelperItem2 =>
+      'Mettez à jour tout élément incomplet ou imprécis dans le profil de votre entreprise.';
+
+  @override
+  String get companyReviewRejectedHelperItem3 =>
+      'Dès que l’administrateur réexaminera le dossier, l’accès sera ouvert automatiquement.';
+
+  @override
+  String get companyReviewPendingHelperItem1 =>
+      'L’équipe d’administration examine le profil de l’entreprise et le registre déposé.';
+
+  @override
+  String get companyReviewPendingHelperItem2 =>
+      'Votre espace de travail sera automatiquement débloqué dès l’approbation de l’entreprise.';
+
+  @override
+  String get companyReviewPendingHelperItem3 =>
+      'Vous pouvez d’ores et déjà ouvrir votre profil et enrichir ses informations avant l’approbation.';
+
+  @override
+  String get companyReviewStatNotSet => 'Non défini';
+
+  @override
+  String get companyReviewStatRegisterUploaded => 'Téléversé';
+
+  @override
+  String get companyReviewStatRegisterMissing => 'Manquant';
+
+  @override
+  String get companyReviewUpdateProfileButton =>
+      'Mettre à jour le profil de l’entreprise';
+
+  @override
+  String get companyReviewOpenProfileButton =>
+      'Ouvrir le profil de l’entreprise';
+
+  @override
+  String opportunityCountdownHoursLeft(Object hours) {
+    return '$hours h restantes';
+  }
+
+  @override
+  String opportunityCountdownDaysLeft(Object days) {
+    return '$days j restants';
+  }
+
+  @override
+  String get opportunityFreshnessRecent => 'Récent';
+
+  @override
+  String get opportunityClosedNoticeMessage =>
+      'Cette opportunité a été clôturée. Les étudiants ne peuvent plus postuler, mais les candidatures existantes restent disponibles pour examen.';
+
+  @override
+  String get opportunityReopenedNoticeMessage =>
+      'Cette opportunité est de nouveau ouverte et peut recevoir de nouvelles candidatures.';
+
+  @override
+  String get opportunityReopenedNoticeTitle => 'Opportunité rouverte';
+
+  @override
+  String opportunityDeleteConfirmationMessage(Object title) {
+    return 'Supprimer « $title » ? Si elle comporte des candidatures en attente, elle sera plutôt clôturée afin de continuer à examiner les étudiants.';
+  }
+
+  @override
+  String get opportunityClosedDueToPendingMessage =>
+      'Opportunité clôturée car des candidatures en attente nécessitent encore un examen.';
+
+  @override
+  String get opportunityCouldNotRefreshApplicants =>
+      'Impossible d’actualiser la liste des candidats';
+
+  @override
+  String get opportunityNoStudentsYetTitle => 'Aucun étudiant pour le moment';
+
+  @override
+  String get opportunityNoStudentsYetSubtitle =>
+      'Les étudiants qui postuleront à cette opportunité apparaîtront ici.';
+
+  @override
+  String get opportunityNoMatchesFoundTitle => 'Aucun résultat correspondant';
+
+  @override
+  String get opportunityNoMatchesFoundSubtitle =>
+      'Essayez d’effacer les filtres ou d’ajuster votre recherche.';
+
+  @override
+  String get opportunityPublishFirstRolePrompt =>
+      'Publiez votre première offre pour commencer le recrutement.';
+
+  @override
+  String get opportunityActionReopen => 'Rouvrir';
+
+  @override
+  String get companyProfileBrandStoryFallback =>
+      'Créez une première impression marquante grâce à un bref récit d’entreprise, des coordonnées claires et une identité visuelle soignée.';
+
+  @override
+  String get companyProfileLogoMissingLabel => 'Logo';
+
+  @override
+  String get companyProfileCouldNotOpenWebsite =>
+      'Impossible d’ouvrir le site web.';
+
+  @override
+  String get companyProfileMissingDetailSingular =>
+      'Un détail manque encore dans le profil de l’entreprise.';
+
+  @override
+  String companyProfileMissingDetailsPlural(Object missingCount) {
+    return '$missingCount détails manquent encore dans le profil de l’entreprise.';
+  }
+
+  @override
+  String get companyProfileIncompleteTitle => 'Profil incomplet';
+
+  @override
+  String companyProfileIncompleteMessageFormat(Object message) {
+    return '$message Ajoutez les éléments manquants afin que les étudiants découvrent une page d’entreprise plus claire et plus crédible.';
+  }
+
+  @override
+  String get companyProfileCouldNotOpenEmail =>
+      'Impossible d’ouvrir la messagerie pour le moment.';
+
+  @override
+  String get companyProfileAddPhonePlaceholder =>
+      'Ajoutez un numéro de téléphone d’entreprise';
+
+  @override
+  String get companyProfileAddLocationPlaceholder =>
+      'Ajoutez la localisation de votre entreprise';
+
+  @override
+  String get companyProfileAddWebsitePlaceholder => 'Ajoutez votre site web';
+
+  @override
+  String get companyProfileAddSectorPlaceholder =>
+      'Ajoutez un secteur ou une spécialité';
+
+  @override
+  String get companyProfileNotAvailable => 'Non disponible';
+
+  @override
+  String get companyProfileRegisterPendingSummary =>
+      'Le document requis est joint et en attente de l’examen par l’administrateur.';
+
+  @override
+  String get companyProfileRegisterRejectedSummary =>
+      'Le document requis est joint, mais l’approbation de l’entreprise nécessite encore votre attention.';
+
+  @override
+  String get companyProfileRegisterApprovedSummary =>
+      'Le document requis est joint et l’entreprise est approuvée.';
+
+  @override
+  String get companyProfileApprovalPendingTitle => 'Approbation en attente';
+
+  @override
+  String get companyProfileApprovalRejectedTitle =>
+      'L’approbation nécessite des modifications';
+
+  @override
+  String get companyProfileApprovalApprovedTitle => 'Entreprise approuvée';
+
+  @override
+  String get companyProfileApprovalPendingMessage =>
+      'Votre registre du commerce est téléversé et l’équipe d’administration doit encore examiner ce compte entreprise.';
+
+  @override
+  String get companyProfileApprovalRejectedMessage =>
+      'Votre document est téléversé, mais le compte entreprise nécessite encore des corrections avant son approbation.';
+
+  @override
+  String get companyProfileApprovalApprovedMessage =>
+      'Votre registre du commerce est téléversé et le compte entreprise est approuvé.';
+
+  @override
+  String get companyProfileRegisterUploadPrompt =>
+      'Téléversez un document à jour afin de conserver un profil d’entreprise complet et digne de confiance.';
+
+  @override
+  String get companyProfileDocumentUploadedFallback => 'Document téléversé';
+
+  @override
+  String get companyProfileEditRegisterAlreadyAttached =>
+      'Le document de vérification est déjà joint.';
+
+  @override
+  String get companyProfileEditRegisterNeedsAttention =>
+      'Le registre du commerce nécessite encore votre attention.';
+
+  @override
+  String get companyProfileEditCompanyNameHint =>
+      'Le nom public de votre entreprise';
+
+  @override
+  String get companyProfileEditCompanyNameValidation =>
+      'Le nom de l’entreprise est obligatoire.';
+
+  @override
+  String get companyProfileEditSectorHint =>
+      'Technologie, finance, design, éducation…';
+
+  @override
+  String get companyProfileEditDescriptionHint =>
+      'Que construit votre entreprise, à qui s’adresse-t-elle et à quoi les étudiants peuvent-ils s’attendre ?';
+
+  @override
+  String get companyProfileEditPhoneHint =>
+      'Numéro de téléphone de l’entreprise';
+
+  @override
+  String get companyProfileEditLocationHint => 'Ville, région ou siège social';
+
+  @override
+  String get companyProfileEditWebsiteValidationSpaces =>
+      'L’adresse du site ne peut pas contenir d’espaces.';
+
+  @override
+  String get companyProfileEditWebsiteValidationInvalid =>
+      'Saisissez une adresse de site web valide.';
+
+  @override
+  String get companyProfileEditLogoLiveMessage =>
+      'Le visuel actuel de votre entreprise est en ligne.';
+
+  @override
+  String get companyProfileEditLogoMissingMessage =>
+      'Ajoutez un logo pour que le profil de votre entreprise paraisse abouti.';
+
+  @override
+  String get companyProfileEditReplaceLogoLabel => 'Remplacer le logo';
+
+  @override
+  String get companyProfileEditUploadLogoLabel => 'Téléverser le logo';
+
+  @override
+  String get companyProfileEditLogoRemovedMessage =>
+      'Logo de l’entreprise supprimé.';
+
+  @override
+  String get companyProfileEditLogoRemovedTitle => 'Logo supprimé';
+
+  @override
+  String get companyProfileEditRegisterRequiredValidation =>
+      'Le registre du commerce est obligatoire pour les profils d’entreprise.';
+
+  @override
+  String get companyProfileApprovedCompanyTooltip => 'Entreprise approuvée';
+
+  @override
+  String get publishOpportunityDescriptionHelperText =>
+      'Précisez la portée, les attentes, les exigences ainsi que les raisons pour lesquelles les étudiants devraient postuler.';
+
+  @override
+  String get uiCompanyBrandStoryEmptySubtitle =>
+      'Ajoutez quelques lignes sur ce que votre entreprise construit et sur ce que les étudiants peuvent attendre de votre équipe.';
+
+  @override
+  String get uiDetailsSectionSubtitle =>
+      'L’essentiel que les étudiants et les candidats consultent en priorité.';
+
+  @override
+  String get uiVerificationSectionSubtitle =>
+      'Renforcez la confiance dans votre entreprise grâce à un registre du commerce à jour.';
+
+  @override
+  String get uiBuildStrongFirstImpressionSubtitle =>
+      'Faites bonne impression dès le départ : une présentation concise de l’entreprise, des coordonnées claires et une identité visuelle soignée.';
+
+  @override
+  String get uiCouldNotOpenTheWebsite => 'Impossible d’ouvrir le site web.';
+
+  @override
+  String get uiCompleteLabel => 'Complet';
+
+  @override
+  String get uiProfileIncomplete => 'Profil incomplet';
+
+  @override
+  String get uiCompleteProfileButton => 'Compléter le profil';
+
+  @override
+  String get uiCouldNotOpenEmailRightNow =>
+      'Impossible d’ouvrir la messagerie pour le moment.';
+
+  @override
+  String get uiAddACompanyPhoneNumber =>
+      'Ajoutez un numéro de téléphone professionnel';
+
+  @override
+  String get uiAddYourCompanyLocation =>
+      'Indiquez l’emplacement de votre entreprise';
+
+  @override
+  String get uiAddYourWebsite => 'Ajoutez votre site web';
+
+  @override
+  String get uiAddASectorOrSpecialty => 'Ajoutez un secteur ou une spécialité';
+
+  @override
+  String get uiNotAvailable => 'Non disponible';
+
+  @override
+  String get uiVerificationDocumentAttachedPending =>
+      'Le document requis est joint ; il est en attente d’examen par l’équipe d’administration.';
+
+  @override
+  String get uiVerificationDocumentAttachedNeedsAttention =>
+      'Le document requis est joint, mais la validation de l’entreprise nécessite encore votre attention.';
+
+  @override
+  String get uiVerificationDocumentAttachedApproved =>
+      'Le document requis est joint et l’entreprise est approuvée.';
+
+  @override
+  String get uiApprovalPending => 'Validation en cours';
+
+  @override
+  String get uiApprovalNeedsChanges =>
+      'La validation nécessite des modifications';
+
+  @override
+  String get uiCompanyApproved => 'Entreprise approuvée';
+
+  @override
+  String get uiYourCommercialRegisterUploadedAdminPending =>
+      'Votre registre du commerce est téléversé ; l’équipe d’administration doit encore examiner ce compte d’entreprise.';
+
+  @override
+  String get uiYourDocumentUploadedNeedsCorrections =>
+      'Votre document est téléversé, mais le compte de l’entreprise nécessite des corrections avant d’être approuvé.';
+
+  @override
+  String get uiYourCommercialRegisterUploadedApproved =>
+      'Votre registre du commerce est téléversé et le compte de l’entreprise est approuvé.';
+
+  @override
+  String get uiUploadCurrentDocumentSubtitle =>
+      'Téléversez un document à jour pour garder le profil de l’entreprise complet et fiable.';
+
+  @override
+  String get uiDocumentUploaded => 'Document téléversé';
+
+  @override
+  String uiUploadedOn(Object date) {
+    return 'Téléversé le $date';
+  }
+
+  @override
+  String get uiFileUnavailable => 'Le fichier n’est pas disponible.';
+
+  @override
+  String get uiPermissionDeniedOpeningDocument =>
+      'L’accès au document a été refusé.';
+
+  @override
+  String get uiSavingChangesEllipsis => 'Enregistrement des modifications…';
+
+  @override
+  String get uiKeepProfileCrispTrustworthyReady =>
+      'Gardez un profil net, fiable et prêt à être parcouru par les étudiants.';
+
+  @override
+  String get uiVerificationDocumentAlreadyAttached =>
+      'Le document de vérification est déjà joint.';
+
+  @override
+  String get uiCommercialRegisterStillNeedsAttention =>
+      'Le registre du commerce nécessite encore votre attention.';
+
+  @override
+  String get uiShapeFirstImpressionFromYourCompany =>
+      'Façonnez la première impression que les étudiants se feront de votre entreprise.';
+
+  @override
+  String get uiYourPublicCompanyName => 'Le nom public de votre entreprise';
+
+  @override
+  String get uiTechnologyFinanceDesignEducationHint =>
+      'Technologie, finance, design, éducation…';
+
+  @override
+  String get uiCompanyDescriptionHint =>
+      'Que construit votre entreprise, à qui s’adresse-t-elle, et que peuvent en attendre les étudiants ?';
+
+  @override
+  String get uiMakeItEasyForStudentsToFindYouSubtitle =>
+      'Aidez les étudiants à comprendre où se trouve votre entreprise et comment la contacter.';
+
+  @override
+  String get uiCompanyPhoneNumberHint => 'Numéro de téléphone de l’entreprise';
+
+  @override
+  String get uiCityRegionOrHeadquartersHint => 'Ville, région ou siège social';
+
+  @override
+  String get uiWebsiteHintExample => 'https://www.yourcompany.com';
+
+  @override
+  String get uiWebsiteCannotContainSpaces =>
+      'L’adresse du site ne doit pas contenir d’espaces.';
+
+  @override
+  String get uiEnterAValidWebsite =>
+      'Veuillez saisir une adresse de site valide.';
+
+  @override
+  String get uiYourCurrentCompanyVisualIsLive =>
+      'Votre visuel d’entreprise actuel est en ligne.';
+
+  @override
+  String get uiAddALogoToMakeCompanyProfileFeelComplete =>
+      'Ajoutez un logo pour donner une impression d’aboutissement à votre profil d’entreprise.';
+
+  @override
+  String get uiUploadingEllipsis => 'Téléversement…';
+
+  @override
+  String get uiReplaceLogo => 'Remplacer le logo';
+
+  @override
+  String get uiUploadLogo => 'Téléverser un logo';
+
+  @override
+  String get uiKeepCurrentVerificationDocumentSubtitle =>
+      'Conservez un document de vérification à jour pour préserver la fiabilité de votre profil d’entreprise.';
+
+  @override
+  String get uiLogoRemoved => 'Logo supprimé';
+
+  @override
+  String get uiCompanyLogoRemoved => 'Le logo de l’entreprise a été supprimé.';
+
+  @override
+  String get uiCommercialRegisterIsRequired =>
+      'Le registre du commerce est requis pour les profils d’entreprise.';
+
+  @override
+  String get uiApprovedCompanySubtitle => 'Entreprise approuvée';
+
+  @override
+  String get uiCouldNotOpenDocumentRightNow =>
+      'Impossible d’ouvrir le document pour le moment.';
+
+  @override
+  String get uiCommercialRegisterReinforcesTrustMessage =>
+      'Un registre du commerce à jour renforce la confiance et permet de garder le profil de l’entreprise prêt à être examiné.';
+
+  @override
+  String get uiOneDetailStillMissingFromCompanyProfile =>
+      'Il manque encore 1 information dans le profil de l’entreprise.';
+
+  @override
+  String uiCountDetailsStillMissingFromCompanyProfile(Object count) {
+    return 'Il manque encore $count informations dans le profil de l’entreprise.';
+  }
+
+  @override
+  String get uiAddWhatIsMissingForClearerCompanyPage =>
+      'Complétez les informations manquantes pour offrir aux étudiants une page d’entreprise plus claire et plus fiable.';
+
+  @override
+  String get uiAcceptedLogoFormatsAndSizeHint =>
+      'Formats acceptés : JPG, PNG ou WebP. Taille maximale : 5 Mo.';
+
+  @override
+  String get uiUploadPdfJpgPngForVerificationHint =>
+      'Téléversez un document au format PDF, JPG ou PNG jusqu’à 10 Mo pour compléter cette partie du profil.';
+
+  @override
+  String uiSizeMbSelected(Object size) {
+    return '$size Mo sélectionnés';
+  }
+
+  @override
+  String get uiChooseAnImageSmallerThan5Mb =>
+      'Choisissez une image de moins de 5 Mo.';
+
+  @override
+  String get uiCompanyFallback => 'Entreprise';
+
+  @override
+  String get uiStrongLogoMakesProfilePolishedSubtitle =>
+      'Un logo fort ou une photo soignée de l’entreprise rend le profil plus abouti et plus reconnaissable.';
 }

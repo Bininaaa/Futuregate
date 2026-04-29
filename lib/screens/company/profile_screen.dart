@@ -30,6 +30,7 @@ class CompanyProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppColors.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.userModel;
     if (user == null) {
@@ -41,18 +42,16 @@ class CompanyProfileScreen extends StatelessWidget {
       );
     }
 
-    final companyName = _companyName(user);
-    final description = _companyDescription(user);
+    final companyName = _companyName(user, l10n);
+    final description = _companyDescription(user, l10n);
     final websiteUri = _websiteUri(user.website ?? '');
     final providerLabel = authProvider.linkedProviderLabel;
-    final missingItems = _missingProfileItems(user);
+    final missingItems = _missingProfileItems(user, l10n);
 
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: _CompanySettingsAppBar(
-          title: AppLocalizations.of(context)!.companyProfileTitle,
-        ),
+        appBar: _CompanySettingsAppBar(title: l10n.companyProfileTitle),
         body: Stack(
           children: [
             const Positioned(
@@ -77,16 +76,17 @@ class CompanyProfileScreen extends StatelessWidget {
                       user: user,
                       companyName: companyName,
                       websiteUri: websiteUri,
+                      l10n: l10n,
                     ),
                     if (missingItems.isNotEmpty) ...[
                       const SizedBox(height: 18),
-                      _buildIncompleteProfileCard(context, missingItems),
+                      _buildIncompleteProfileCard(context, missingItems, l10n),
                     ],
                     const SizedBox(height: 18),
-                    const SettingsSectionHeading(
-                      title: 'Brand Story',
-                      subtitle:
-                          'A sharper company story makes the profile feel more confident and trustworthy.',
+                    SettingsSectionHeading(
+                      title: l10n.uiBrandStory,
+                      subtitle: l10n
+                          .uiASharperCompanyStoryMakesTheProfileFeelMoreConfident,
                     ),
                     const SizedBox(height: 10),
                     SettingsPanel(
@@ -106,9 +106,8 @@ class CompanyProfileScreen extends StatelessWidget {
                             const SizedBox(height: 14),
                             SettingsInfoBanner(
                               icon: Icons.edit_note_rounded,
-                              title: 'Story still missing',
-                              message:
-                                  'Add a few lines about what your company builds and what students can expect from your team.',
+                              title: l10n.uiStoryStillMissing,
+                              message: l10n.uiCompanyBrandStoryEmptySubtitle,
                               color: CompanyDashboardPalette.accent,
                             ),
                           ],
@@ -116,21 +115,25 @@ class CompanyProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 18),
-                    const SettingsSectionHeading(
-                      title: 'Details',
-                      subtitle:
-                          'The essentials students and applicants usually look for first.',
+                    SettingsSectionHeading(
+                      title: l10n.uiDetails,
+                      subtitle: l10n.uiDetailsSectionSubtitle,
                     ),
                     const SizedBox(height: 10),
-                    _buildDetailsGrid(context, user, websiteUri, providerLabel),
+                    _buildDetailsGrid(
+                      context,
+                      user,
+                      websiteUri,
+                      providerLabel,
+                      l10n,
+                    ),
                     const SizedBox(height: 18),
-                    const SettingsSectionHeading(
-                      title: 'Verification',
-                      subtitle:
-                          'Keep your company presence trusted with an up-to-date commercial register.',
+                    SettingsSectionHeading(
+                      title: l10n.uiVerification,
+                      subtitle: l10n.uiVerificationSectionSubtitle,
                     ),
                     const SizedBox(height: 10),
-                    _buildCommercialRegisterCard(context, user),
+                    _buildCommercialRegisterCard(context, user, l10n),
                     const SizedBox(height: 18),
                     _buildQuickLinks(context),
                   ],
@@ -143,20 +146,22 @@ class CompanyProfileScreen extends StatelessWidget {
     );
   }
 
-  String _companyName(UserModel user) {
+  String _companyName(UserModel user, AppLocalizations l10n) {
     final companyName = (user.companyName ?? '').trim();
     if (companyName.isNotEmpty) {
       return companyName;
     }
-    return user.fullName.trim().isNotEmpty ? user.fullName.trim() : 'Company';
+    return user.fullName.trim().isNotEmpty
+        ? user.fullName.trim()
+        : l10n.uiCompanyFallback;
   }
 
-  String _companyDescription(UserModel user) {
+  String _companyDescription(UserModel user, AppLocalizations l10n) {
     final description = (user.description ?? '').trim();
     if (description.isNotEmpty) {
       return description;
     }
-    return 'Build a strong first impression with a short company story, clear contact details, and a polished visual identity.';
+    return l10n.uiBuildStrongFirstImpressionSubtitle;
   }
 
   Uri? _websiteUri(String rawValue) {
@@ -168,18 +173,22 @@ class CompanyProfileScreen extends StatelessWidget {
     return Uri.tryParse(normalized);
   }
 
-  int _profileCompletion(UserModel user) {
+  int _profileCompletion(UserModel user, AppLocalizations l10n) {
     const totalChecks = 8;
-    final completedChecks = totalChecks - _missingProfileItems(user).length;
+    final completedChecks =
+        totalChecks - _missingProfileItems(user, l10n).length;
     return ((completedChecks / totalChecks) * 100).round();
   }
 
-  List<_CompanyMissingItem> _missingProfileItems(UserModel user) {
+  List<_CompanyMissingItem> _missingProfileItems(
+    UserModel user,
+    AppLocalizations l10n,
+  ) {
     final items = <_CompanyMissingItem>[];
     if ((user.companyName ?? '').trim().isEmpty) {
       items.add(
         _CompanyMissingItem(
-          label: 'Company name',
+          label: l10n.uiCompanyName,
           icon: Icons.business_rounded,
           color: CompanyDashboardPalette.primary,
         ),
@@ -188,7 +197,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if ((user.sector ?? '').trim().isEmpty) {
       items.add(
         _CompanyMissingItem(
-          label: 'Sector',
+          label: l10n.uiSector,
           icon: Icons.factory_outlined,
           color: CompanyDashboardPalette.primaryDark,
         ),
@@ -197,7 +206,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if ((user.description ?? '').trim().isEmpty) {
       items.add(
         _CompanyMissingItem(
-          label: 'Brand story',
+          label: l10n.uiBrandStory,
           icon: Icons.notes_rounded,
           color: CompanyDashboardPalette.accent,
         ),
@@ -206,7 +215,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if (user.phone.trim().isEmpty) {
       items.add(
         _CompanyMissingItem(
-          label: 'Phone',
+          label: l10n.uiPhone,
           icon: Icons.phone_outlined,
           color: CompanyDashboardPalette.secondary,
         ),
@@ -215,7 +224,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if (user.location.trim().isEmpty) {
       items.add(
         _CompanyMissingItem(
-          label: 'Location',
+          label: l10n.uiLocation,
           icon: Icons.location_on_outlined,
           color: CompanyDashboardPalette.info,
         ),
@@ -224,7 +233,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if ((user.website ?? '').trim().isEmpty) {
       items.add(
         _CompanyMissingItem(
-          label: 'Website',
+          label: l10n.uiWebsite,
           icon: Icons.language_rounded,
           color: CompanyDashboardPalette.accent,
         ),
@@ -233,7 +242,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if ((user.logo ?? '').trim().isEmpty) {
       items.add(
         _CompanyMissingItem(
-          label: 'Logo',
+          label: l10n.companyProfileLogoMissingLabel,
           icon: Icons.image_outlined,
           color: CompanyDashboardPalette.secondaryDark,
         ),
@@ -242,7 +251,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if (!user.hasCommercialRegister) {
       items.add(
         _CompanyMissingItem(
-          label: 'Commercial register',
+          label: l10n.uiCommercialRegister,
           icon: Icons.verified_user_outlined,
           color: CompanyDashboardPalette.warning,
         ),
@@ -265,12 +274,13 @@ class CompanyProfileScreen extends StatelessWidget {
     required UserModel user,
     required String companyName,
     required Uri? websiteUri,
+    required AppLocalizations l10n,
   }) {
     final approvalStatus = user.normalizedApprovalStatus;
     final isApproved = approvalStatus == 'approved';
     final approvalLabel = switch (approvalStatus) {
-      'pending' => 'Pending review',
-      'rejected' => 'Rejected',
+      'pending' => l10n.uiPendingReview,
+      'rejected' => l10n.uiRejected,
       _ => '',
     };
     final approvalIcon = switch (approvalStatus) {
@@ -398,7 +408,7 @@ class CompanyProfileScreen extends StatelessWidget {
                 breakpoint: 380,
                 children: [
                   _HeroActionButton(
-                    label: 'Edit profile',
+                    label: l10n.uiEditProfile,
                     icon: Icons.edit_outlined,
                     filled: true,
                     onPressed: () => Navigator.push(
@@ -410,12 +420,13 @@ class CompanyProfileScreen extends StatelessWidget {
                   ),
                   if (websiteUri != null)
                     _HeroActionButton(
-                      label: 'Website',
+                      label: l10n.uiWebsite,
                       icon: Icons.open_in_new_rounded,
                       onPressed: () => _launchUri(
                         context,
                         websiteUri,
-                        failureMessage: 'Could not open the website.',
+                        failureMessage: l10n.uiCouldNotOpenTheWebsite,
+                        l10n: l10n,
                       ),
                     ),
                 ],
@@ -425,13 +436,16 @@ class CompanyProfileScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _heroMetric(
-                      '${_profileCompletion(user)}%',
-                      'Complete',
+                      '${_profileCompletion(user, l10n)}%',
+                      l10n.uiCompleteLabel,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _heroMetric('${_contactCount(user)}/4', 'Contact'),
+                    child: _heroMetric(
+                      '${_contactCount(user)}/4',
+                      l10n.uiContact,
+                    ),
                   ),
                 ],
               ),
@@ -445,11 +459,12 @@ class CompanyProfileScreen extends StatelessWidget {
   Widget _buildIncompleteProfileCard(
     BuildContext context,
     List<_CompanyMissingItem> missingItems,
+    AppLocalizations l10n,
   ) {
     final missingCount = missingItems.length;
     final message = missingCount == 1
-        ? '1 detail is still missing from the company profile.'
-        : '$missingCount details are still missing from the company profile.';
+        ? l10n.uiOneDetailStillMissingFromCompanyProfile
+        : l10n.uiCountDetailsStillMissingFromCompanyProfile(missingCount);
 
     return SettingsPanel(
       child: Column(
@@ -468,12 +483,12 @@ class CompanyProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Profile incomplete',
+                      l10n.uiProfileIncomplete,
                       style: SettingsFlowTheme.sectionTitle(),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$message Add what is missing so students see a clearer, more trusted company page.',
+                      '$message ${l10n.uiAddWhatIsMissingForClearerCompanyPage}',
                       style: SettingsFlowTheme.caption(),
                     ),
                   ],
@@ -491,7 +506,7 @@ class CompanyProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           SettingsPrimaryButton(
-            label: 'Complete profile',
+            label: l10n.uiCompleteProfileButton,
             icon: Icons.edit_outlined,
             backgroundColor: CompanyDashboardPalette.accent,
             onPressed: () => Navigator.push(
@@ -547,6 +562,7 @@ class CompanyProfileScreen extends StatelessWidget {
     UserModel user,
     Uri? websiteUri,
     String providerLabel,
+    AppLocalizations l10n,
   ) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -562,7 +578,7 @@ class CompanyProfileScreen extends StatelessWidget {
               width: width,
               child: _DetailTile(
                 icon: Icons.mail_outline_rounded,
-                label: 'Email',
+                label: l10n.uiEmail,
                 value: user.email,
                 accentColor: CompanyDashboardPalette.primary,
                 onTap: user.email.trim().isEmpty
@@ -570,7 +586,8 @@ class CompanyProfileScreen extends StatelessWidget {
                     : () => _launchUri(
                         context,
                         Uri(scheme: 'mailto', path: user.email.trim()),
-                        failureMessage: 'Could not open email right now.',
+                        failureMessage: l10n.uiCouldNotOpenEmailRightNow,
+                        l10n: l10n,
                       ),
               ),
             ),
@@ -578,10 +595,10 @@ class CompanyProfileScreen extends StatelessWidget {
               width: width,
               child: _DetailTile(
                 icon: Icons.phone_outlined,
-                label: 'Phone',
+                label: l10n.uiPhone,
                 value: user.phone.trim().isNotEmpty
                     ? user.phone.trim()
-                    : 'Add a company phone number',
+                    : l10n.uiAddACompanyPhoneNumber,
                 accentColor: CompanyDashboardPalette.secondary,
               ),
             ),
@@ -589,10 +606,10 @@ class CompanyProfileScreen extends StatelessWidget {
               width: width,
               child: _DetailTile(
                 icon: Icons.location_on_outlined,
-                label: 'Location',
+                label: l10n.uiLocation,
                 value: user.location.trim().isNotEmpty
                     ? user.location.trim()
-                    : 'Add your company location',
+                    : l10n.uiAddYourCompanyLocation,
                 accentColor: CompanyDashboardPalette.info,
               ),
             ),
@@ -600,17 +617,18 @@ class CompanyProfileScreen extends StatelessWidget {
               width: width,
               child: _DetailTile(
                 icon: Icons.language_rounded,
-                label: 'Website',
+                label: l10n.uiWebsite,
                 value: (user.website ?? '').trim().isNotEmpty
                     ? (user.website ?? '').trim()
-                    : 'Add your website',
+                    : l10n.uiAddYourWebsite,
                 accentColor: CompanyDashboardPalette.accent,
                 onTap: websiteUri == null
                     ? null
                     : () => _launchUri(
                         context,
                         websiteUri,
-                        failureMessage: 'Could not open the website.',
+                        failureMessage: l10n.uiCouldNotOpenTheWebsite,
+                        l10n: l10n,
                       ),
               ),
             ),
@@ -618,10 +636,10 @@ class CompanyProfileScreen extends StatelessWidget {
               width: width,
               child: _DetailTile(
                 icon: Icons.factory_outlined,
-                label: 'Sector',
+                label: l10n.uiSector,
                 value: (user.sector ?? '').trim().isNotEmpty
                     ? (user.sector ?? '').trim()
-                    : 'Add a sector or specialty',
+                    : l10n.uiAddASectorOrSpecialty,
                 accentColor: CompanyDashboardPalette.primaryDark,
               ),
             ),
@@ -629,7 +647,7 @@ class CompanyProfileScreen extends StatelessWidget {
               width: width,
               child: _DetailTile(
                 icon: Icons.verified_user_outlined,
-                label: 'Account',
+                label: l10n.accountTitle,
                 value: providerLabel,
                 accentColor: CompanyDashboardPalette.success,
               ),
@@ -640,30 +658,29 @@ class CompanyProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCommercialRegisterCard(BuildContext context, UserModel user) {
+  Widget _buildCommercialRegisterCard(
+    BuildContext context,
+    UserModel user,
+    AppLocalizations l10n,
+  ) {
     final uploadedAt = user.commercialRegisterUploadedAt;
     final uploadedAtLabel = uploadedAt == null
-        ? 'Not available'
+        ? l10n.uiNotAvailable
         : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
     final registerSummary = switch (user.normalizedApprovalStatus) {
-      'pending' =>
-        'The required document is attached and waiting for admin review.',
-      'rejected' =>
-        'The required document is attached, but the company approval still needs attention.',
-      _ => 'The required document is attached and the company is approved.',
+      'pending' => l10n.uiVerificationDocumentAttachedPending,
+      'rejected' => l10n.uiVerificationDocumentAttachedNeedsAttention,
+      _ => l10n.uiVerificationDocumentAttachedApproved,
     };
     final approvalTitle = switch (user.normalizedApprovalStatus) {
-      'pending' => 'Approval pending',
-      'rejected' => 'Approval needs changes',
-      _ => 'Company approved',
+      'pending' => l10n.uiApprovalPending,
+      'rejected' => l10n.uiApprovalNeedsChanges,
+      _ => l10n.uiCompanyApproved,
     };
     final approvalMessage = switch (user.normalizedApprovalStatus) {
-      'pending' =>
-        'Your commercial register is uploaded and the admin team still needs to review this company account.',
-      'rejected' =>
-        'Your document is uploaded, but the company account still needs corrections before it can be approved.',
-      _ =>
-        'Your commercial register is uploaded and the company account is approved.',
+      'pending' => l10n.uiYourCommercialRegisterUploadedAdminPending,
+      'rejected' => l10n.uiYourDocumentUploadedNeedsCorrections,
+      _ => l10n.uiYourCommercialRegisterUploadedApproved,
     };
     final approvalColor = switch (user.normalizedApprovalStatus) {
       'pending' => CompanyDashboardPalette.accent,
@@ -696,14 +713,14 @@ class CompanyProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Commercial Register',
+                      l10n.uiCommercialRegister,
                       style: SettingsFlowTheme.sectionTitle(),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       user.hasCommercialRegister
                           ? registerSummary
-                          : 'Upload a current document to keep the company profile complete and trusted.',
+                          : l10n.uiUploadCurrentDocumentSubtitle,
                       style: SettingsFlowTheme.caption(),
                     ),
                   ],
@@ -736,12 +753,12 @@ class CompanyProfileScreen extends StatelessWidget {
                   Text(
                     user.commercialRegisterFileName.trim().isNotEmpty
                         ? user.commercialRegisterFileName.trim()
-                        : 'Document uploaded',
+                        : l10n.uiDocumentUploaded,
                     style: SettingsFlowTheme.cardTitle(),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Uploaded: $uploadedAtLabel',
+                    l10n.uiUploadedOn(uploadedAtLabel),
                     style: SettingsFlowTheme.caption(),
                   ),
                 ],
@@ -751,20 +768,24 @@ class CompanyProfileScreen extends StatelessWidget {
             SettingsButtonGroup(
               children: [
                 SettingsSecondaryButton(
-                  label: 'View',
+                  label: l10n.uiView,
                   icon: Icons.visibility_outlined,
                   color: CompanyDashboardPalette.primary,
-                  onPressed: () =>
-                      _openCommercialRegister(context, companyId: user.uid),
+                  onPressed: () => _openCommercialRegister(
+                    context,
+                    companyId: user.uid,
+                    l10n: l10n,
+                  ),
                 ),
                 SettingsPrimaryButton(
-                  label: 'Download',
+                  label: l10n.uiDownload,
                   icon: Icons.download_outlined,
                   backgroundColor: CompanyDashboardPalette.accent,
                   onPressed: () => _openCommercialRegister(
                     context,
                     companyId: user.uid,
                     download: true,
+                    l10n: l10n,
                   ),
                 ),
               ],
@@ -772,14 +793,13 @@ class CompanyProfileScreen extends StatelessWidget {
           ] else ...[
             SettingsInfoBanner(
               icon: Icons.info_outline_rounded,
-              title: 'Document missing',
-              message:
-                  'A current commercial register reinforces trust and helps keep the company profile ready for review.',
+              title: l10n.uiDocumentMissing,
+              message: l10n.uiCommercialRegisterReinforcesTrustMessage,
               color: CompanyDashboardPalette.accent,
             ),
             const SizedBox(height: 14),
             SettingsPrimaryButton(
-              label: 'Update profile',
+              label: l10n.uiUpdateProfile,
               icon: Icons.edit_outlined,
               onPressed: () => Navigator.push(
                 context,
@@ -864,6 +884,7 @@ class CompanyProfileScreen extends StatelessWidget {
     BuildContext context,
     Uri uri, {
     required String failureMessage,
+    required AppLocalizations l10n,
   }) async {
     final launched = await launchUrl(
       uri,
@@ -873,7 +894,7 @@ class CompanyProfileScreen extends StatelessWidget {
     if (!launched && context.mounted) {
       context.showAppSnackBar(
         failureMessage,
-        title: 'Open unavailable',
+        title: l10n.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -882,6 +903,7 @@ class CompanyProfileScreen extends StatelessWidget {
   Future<void> _openCommercialRegister(
     BuildContext context, {
     required String companyId,
+    required AppLocalizations l10n,
     bool download = false,
   }) async {
     try {
@@ -900,8 +922,8 @@ class CompanyProfileScreen extends StatelessWidget {
       );
       if (!launched && context.mounted) {
         context.showAppSnackBar(
-          'We couldn\'t open the document right now.',
-          title: 'Document unavailable',
+          l10n.uiCouldNotOpenDocumentRightNow,
+          title: l10n.uiDocumentUnavailable,
           type: AppFeedbackType.error,
         );
       }
@@ -910,22 +932,22 @@ class CompanyProfileScreen extends StatelessWidget {
         return;
       }
       context.showAppSnackBar(
-        _documentErrorMessage(error),
-        title: 'Document unavailable',
+        _documentErrorMessage(error, l10n),
+        title: l10n.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
     }
   }
 
-  String _documentErrorMessage(Object error) {
+  String _documentErrorMessage(Object error, AppLocalizations l10n) {
     final message = error.toString().toLowerCase();
     if (message.contains('permission') || message.contains('403')) {
-      return 'Permission denied while opening the document.';
+      return l10n.uiPermissionDeniedOpeningDocument;
     }
     if (message.contains('404') || message.contains('not found')) {
-      return 'The requested document is no longer available.';
+      return l10n.uiRequestedDocumentNoLongerAvailable;
     }
-    return 'We couldn\'t open the document right now.';
+    return l10n.uiCouldNotOpenDocumentRightNow;
   }
 }
 
@@ -978,6 +1000,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final user = context.watch<AuthProvider>().userModel;
     if (user == null) {
       return const AppShellBackground(
@@ -991,9 +1014,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     return AppShellBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: _CompanySettingsAppBar(
-          title: AppLocalizations.of(context)!.editCompanyProfileTitle,
-        ),
+        appBar: _CompanySettingsAppBar(title: l10n.editCompanyProfileTitle),
         bottomNavigationBar: SafeArea(
           top: false,
           child: Container(
@@ -1017,7 +1038,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                     )
                   : const Icon(Icons.check_rounded),
               label: Text(
-                _saving ? 'Saving changes...' : 'Save Changes',
+                _saving ? l10n.uiSavingChangesEllipsis : l10n.saveChangesLabel,
                 style: AppTypography.product(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -1053,15 +1074,15 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildEditorIntro(user),
+                      _buildEditorIntro(user, l10n),
                       const SizedBox(height: 18),
-                      _buildIdentitySection(),
+                      _buildIdentitySection(l10n),
                       const SizedBox(height: 18),
-                      _buildContactSection(),
+                      _buildContactSection(l10n),
                       const SizedBox(height: 18),
-                      _buildLogoSection(user),
+                      _buildLogoSection(user, l10n),
                       const SizedBox(height: 18),
-                      _buildRegisterSection(user),
+                      _buildRegisterSection(user, l10n),
                     ],
                   ),
                 ),
@@ -1073,19 +1094,19 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     );
   }
 
-  Widget _buildEditorIntro(UserModel user) {
+  Widget _buildEditorIntro(UserModel user, AppLocalizations l10n) {
     return SettingsPanel(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Polish your public company presence',
+            l10n.uiPolishYourPublicCompanyPresence,
             style: SettingsFlowTheme.heroTitle(),
           ),
           const SizedBox(height: 8),
           Text(
-            'Keep the profile crisp, trustworthy, and ready for students to explore.',
+            l10n.uiKeepProfileCrispTrustworthyReady,
             style: SettingsFlowTheme.caption(),
           ),
           const SizedBox(height: 16),
@@ -1104,8 +1125,8 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                     const SizedBox(height: 4),
                     Text(
                       user.hasCommercialRegister
-                          ? 'Verification document is already attached.'
-                          : 'Commercial register still needs attention.',
+                          ? l10n.uiVerificationDocumentAlreadyAttached
+                          : l10n.uiCommercialRegisterStillNeedsAttention,
                       style: SettingsFlowTheme.caption(),
                     ),
                   ],
@@ -1118,37 +1139,36 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     );
   }
 
-  Widget _buildIdentitySection() {
+  Widget _buildIdentitySection(AppLocalizations l10n) {
     return _panel(
-      title: 'Basic Identity',
-      subtitle: 'Shape the first impression students get from your company.',
+      title: l10n.uiBasicIdentity,
+      subtitle: l10n.uiShapeFirstImpressionFromYourCompany,
       icon: Icons.apartment_rounded,
       child: Column(
         children: [
           _field(
-            label: 'Company Name',
-            hint: 'Your public company name',
+            label: l10n.uiCompanyName,
+            hint: l10n.uiYourPublicCompanyName,
             icon: Icons.business_rounded,
             controller: _companyNameController,
             validator: (value) {
               if ((value ?? '').trim().isEmpty) {
-                return 'Company name is required.';
+                return l10n.uiCompanyNameIsRequired;
               }
               return null;
             },
           ),
           const SizedBox(height: 14),
           _field(
-            label: 'Sector',
-            hint: 'Technology, finance, design, education...',
+            label: l10n.uiSector,
+            hint: l10n.uiTechnologyFinanceDesignEducationHint,
             icon: Icons.factory_outlined,
             controller: _sectorController,
           ),
           const SizedBox(height: 14),
           _field(
-            label: 'Description',
-            hint:
-                'What does your company build, who do you serve, and what can students expect?',
+            label: l10n.uiDescription,
+            hint: l10n.uiCompanyDescriptionHint,
             icon: Icons.notes_rounded,
             controller: _descriptionController,
             maxLines: 5,
@@ -1158,32 +1178,31 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     );
   }
 
-  Widget _buildContactSection() {
+  Widget _buildContactSection(AppLocalizations l10n) {
     return _panel(
-      title: 'Contact & Presence',
-      subtitle:
-          'Make it easy for students to understand where your company is and how to reach it.',
+      title: l10n.uiContactPresence,
+      subtitle: l10n.uiMakeItEasyForStudentsToFindYouSubtitle,
       icon: Icons.public_rounded,
       child: Column(
         children: [
           _field(
-            label: 'Phone',
-            hint: 'Company phone number',
+            label: l10n.uiPhone,
+            hint: l10n.uiCompanyPhoneNumberHint,
             icon: Icons.phone_outlined,
             controller: _phoneController,
             keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: 14),
           _field(
-            label: 'Location',
-            hint: 'City, region, or headquarters',
+            label: l10n.uiLocation,
+            hint: l10n.uiCityRegionOrHeadquartersHint,
             icon: Icons.location_on_outlined,
             controller: _locationController,
           ),
           const SizedBox(height: 14),
           _field(
-            label: 'Website',
-            hint: 'https://www.yourcompany.com',
+            label: l10n.uiWebsite,
+            hint: l10n.uiWebsiteHintExample,
             icon: Icons.language_rounded,
             controller: _websiteController,
             keyboardType: TextInputType.url,
@@ -1193,10 +1212,10 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                 return null;
               }
               if (trimmed.contains(' ')) {
-                return 'Website cannot contain spaces.';
+                return l10n.uiWebsiteCannotContainSpaces;
               }
               return _websiteUri(trimmed) == null
-                  ? 'Enter a valid website.'
+                  ? l10n.uiEnterAValidWebsite
                   : null;
             },
           ),
@@ -1301,12 +1320,11 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     );
   }
 
-  Widget _buildLogoSection(UserModel user) {
+  Widget _buildLogoSection(UserModel user, AppLocalizations l10n) {
     final hasLogo = (user.logo ?? '').trim().isNotEmpty;
     return _panel(
-      title: 'Logo & Visual Identity',
-      subtitle:
-          'A strong logo or company photo makes the profile feel more polished and recognizable.',
+      title: l10n.uiLogoVisualIdentity,
+      subtitle: l10n.uiStrongLogoMakesProfilePolishedSubtitle,
       icon: Icons.image_outlined,
       child: Container(
         width: double.infinity,
@@ -1322,14 +1340,14 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
             const SizedBox(height: 12),
             Text(
               hasLogo
-                  ? 'Your current company visual is live.'
-                  : 'Add a logo to make your company profile feel complete.',
+                  ? l10n.uiYourCurrentCompanyVisualIsLive
+                  : l10n.uiAddALogoToMakeCompanyProfileFeelComplete,
               style: SettingsFlowTheme.body(),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             Text(
-              'Accepted formats: JPG, PNG, or WebP. Maximum size: 5 MB.',
+              l10n.uiAcceptedLogoFormatsAndSizeHint,
               style: SettingsFlowTheme.caption(),
               textAlign: TextAlign.center,
             ),
@@ -1347,10 +1365,10 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                       : const Icon(Icons.upload_outlined, size: 18),
                   label: Text(
                     _uploadingLogo
-                        ? 'Uploading...'
+                        ? l10n.uiUploadingEllipsis
                         : hasLogo
-                        ? 'Replace Logo'
-                        : 'Upload Logo',
+                        ? l10n.uiReplaceLogo
+                        : l10n.uiUploadLogo,
                     style: AppTypography.product(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -1370,7 +1388,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
                     onPressed: _uploadingLogo ? null : _removeLogo,
                     icon: const Icon(Icons.delete_outline_rounded, size: 18),
                     label: Text(
-                      'Remove Logo',
+                      l10n.uiRemoveLogo,
                       style: AppTypography.product(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -1393,17 +1411,16 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     );
   }
 
-  Widget _buildRegisterSection(UserModel user) {
+  Widget _buildRegisterSection(UserModel user, AppLocalizations l10n) {
     final selectedFile = _commercialRegisterFile;
     final uploadedAt = user.commercialRegisterUploadedAt;
     final uploadedAtLabel = uploadedAt == null
-        ? 'Not available'
+        ? l10n.uiNotAvailable
         : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
 
     return _panel(
-      title: 'Commercial Register',
-      subtitle:
-          'Keep a current verification document attached to maintain a trustworthy company profile.',
+      title: l10n.uiCommercialRegister,
+      subtitle: l10n.uiKeepCurrentVerificationDocumentSubtitle,
       icon: Icons.verified_user_outlined,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1411,34 +1428,34 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
           if (selectedFile != null)
             _documentCard(
               title: selectedFile.name,
-              subtitle:
-                  '${(selectedFile.size / (1024 * 1024)).toStringAsFixed(2)} MB selected',
-              primaryLabel: 'Replace',
+              subtitle: l10n.uiSizeMbSelected(
+                (selectedFile.size / (1024 * 1024)).toStringAsFixed(2),
+              ),
+              primaryLabel: l10n.uiReplace,
               primaryAction: _pickCommercialRegister,
             )
           else if (user.hasCommercialRegister)
             _documentCard(
               title: user.commercialRegisterFileName.trim().isNotEmpty
                   ? user.commercialRegisterFileName.trim()
-                  : 'Document uploaded',
-              subtitle: 'Uploaded: $uploadedAtLabel',
-              primaryLabel: 'Replace',
+                  : l10n.uiDocumentUploaded,
+              subtitle: l10n.uiUploadedOn(uploadedAtLabel),
+              primaryLabel: l10n.uiReplace,
               primaryAction: _pickCommercialRegister,
-              secondaryLabel: 'View',
+              secondaryLabel: l10n.uiView,
               secondaryAction: () =>
-                  _openCommercialRegister(companyId: user.uid),
+                  _openCommercialRegister(companyId: user.uid, l10n: l10n),
             )
           else ...[
             SettingsInfoBanner(
               icon: Icons.upload_file_outlined,
-              title: 'No verification document uploaded yet',
-              message:
-                  'Upload a PDF, JPG, or PNG document up to 10 MB to complete this part of the profile.',
+              title: l10n.uiNoVerificationDocumentUploadedYet,
+              message: l10n.uiUploadPdfJpgPngForVerificationHint,
               color: CompanyDashboardPalette.accent,
             ),
             const SizedBox(height: 14),
             SettingsPrimaryButton(
-              label: 'Upload Document',
+              label: l10n.uiUploadDocument,
               icon: Icons.upload_file_outlined,
               backgroundColor: CompanyDashboardPalette.accent,
               onPressed: _pickCommercialRegister,
@@ -1532,6 +1549,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   }
 
   Future<void> _pickAndUploadLogo() async {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.read<AuthProvider>();
     final companyProvider = context.read<CompanyProvider>();
     final user = authProvider.userModel;
@@ -1554,8 +1572,8 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
         return;
       }
       context.showAppSnackBar(
-        'Choose an image smaller than 5 MB.',
-        title: 'Upload unavailable',
+        l10n.uiChooseAnImageSmallerThan5Mb,
+        title: l10n.uploadUnavailableTitle,
         type: AppFeedbackType.warning,
       );
       return;
@@ -1575,7 +1593,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
       if (error != null) {
         context.showAppSnackBar(
           error,
-          title: 'Upload unavailable',
+          title: l10n.uploadUnavailableTitle,
           type: AppFeedbackType.error,
         );
         return;
@@ -1583,8 +1601,8 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
       await authProvider.loadCurrentUser();
       if (mounted) {
         context.showAppSnackBar(
-          'Company logo removed.',
-          title: 'Logo removed',
+          l10n.uiCompanyLogoRemoved,
+          title: l10n.uiLogoRemoved,
           type: AppFeedbackType.removed,
           icon: Icons.delete_outline_rounded,
         );
@@ -1597,6 +1615,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   }
 
   Future<void> _removeLogo() async {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.userModel;
     if (user == null || _uploadingLogo) {
@@ -1614,7 +1633,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
       if (error != null) {
         context.showAppSnackBar(
           error,
-          title: 'Update unavailable',
+          title: l10n.uiUpdateUnavailable,
           type: AppFeedbackType.error,
         );
         return;
@@ -1649,6 +1668,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final form = _formKey.currentState;
     if (form == null || !form.validate()) {
       return;
@@ -1669,7 +1689,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
             sizeInBytes: selectedFile.size,
           )
         : (!user.hasCommercialRegister
-              ? 'Commercial register is required for company profiles.'
+              ? l10n.uiCommercialRegisterIsRequired
               : null);
 
     if (commercialRegisterError != null) {
@@ -1706,7 +1726,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: 'Update unavailable',
+        title: l10n.uiUpdateUnavailable,
         type: AppFeedbackType.error,
       );
       return;
@@ -1721,6 +1741,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
 
   Future<void> _openCommercialRegister({
     required String companyId,
+    required AppLocalizations l10n,
     bool download = false,
   }) async {
     try {
@@ -1739,8 +1760,8 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
       );
       if (!launched && mounted) {
         context.showAppSnackBar(
-          'We couldn\'t open the document right now.',
-          title: 'Document unavailable',
+          l10n.uiCouldNotOpenDocumentRightNow,
+          title: l10n.uiDocumentUnavailable,
           type: AppFeedbackType.error,
         );
       }
@@ -1749,22 +1770,22 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
         return;
       }
       context.showAppSnackBar(
-        _documentErrorMessage(error),
-        title: 'Document unavailable',
+        _documentErrorMessage(error, l10n),
+        title: l10n.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
     }
   }
 
-  String _documentErrorMessage(Object error) {
+  String _documentErrorMessage(Object error, AppLocalizations l10n) {
     final message = error.toString().toLowerCase();
     if (message.contains('permission') || message.contains('403')) {
-      return 'Permission denied while opening the document.';
+      return l10n.uiPermissionDeniedOpeningDocument;
     }
     if (message.contains('404') || message.contains('not found')) {
-      return 'The requested document is no longer available.';
+      return l10n.uiRequestedDocumentNoLongerAvailable;
     }
-    return 'We couldn\'t open the document right now.';
+    return l10n.uiCouldNotOpenDocumentRightNow;
   }
 }
 
@@ -1825,10 +1846,11 @@ class _VerifiedNameBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Tooltip(
-      message: 'Approved company',
+      message: l10n.uiApprovedCompanySubtitle,
       child: Semantics(
-        label: 'Approved company',
+        label: l10n.uiApprovedCompanySubtitle,
         child: Container(
           width: 23,
           height: 23,

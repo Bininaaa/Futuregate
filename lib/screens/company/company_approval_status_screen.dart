@@ -40,25 +40,25 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
     final isRejected = user.isCompanyRejected;
     final accent = isRejected ? _danger : _pending;
     final title = isRejected
-        ? 'Company Review Needs Attention'
-        : 'Company Review In Progress';
+        ? l10n.companyReviewNeedsAttentionTitle
+        : l10n.companyReviewInProgressTitle;
     final subtitle = isRejected
-        ? 'Your company account has not been approved yet. Review your profile and commercial register, then update anything that needs correction before trying again.'
-        : 'Your company account has been created successfully. An administrator still needs to review your commercial register before your workspace goes live.';
-    final badgeLabel = isRejected ? 'REJECTED' : 'PENDING REVIEW';
+        ? l10n.companyReviewRejectedSubtitle
+        : l10n.companyReviewPendingSubtitle;
+    final badgeLabel = isRejected ? l10n.uiRejected : l10n.uiPendingReview;
     final helperTitle = isRejected
-        ? 'What to fix before the next review'
-        : 'What happens next';
+        ? l10n.companyReviewRejectedHelperTitle
+        : l10n.companyReviewPendingHelperTitle;
     final helperItems = isRejected
-        ? const <String>[
-            'Check your company details and commercial register document.',
-            'Update anything incomplete or unclear from your company profile.',
-            'Once the admin reviews it again, access will open automatically.',
+        ? <String>[
+            l10n.companyReviewRejectedHelperItem1,
+            l10n.companyReviewRejectedHelperItem2,
+            l10n.companyReviewRejectedHelperItem3,
           ]
-        : const <String>[
-            'The admin team reviews the company profile and uploaded register.',
-            'Your workspace will unlock automatically as soon as the company is approved.',
-            'You can still open your profile now and improve the information before approval.',
+        : <String>[
+            l10n.companyReviewPendingHelperItem1,
+            l10n.companyReviewPendingHelperItem2,
+            l10n.companyReviewPendingHelperItem3,
           ];
 
     return AppShellBackground(
@@ -182,12 +182,12 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: _InfoStat(
-                                  label: 'Company',
+                                  label: l10n.uiCompany,
                                   value:
                                       (user.companyName ?? user.fullName)
                                           .trim()
                                           .isEmpty
-                                      ? 'Not set'
+                                      ? l10n.companyReviewStatNotSet
                                       : (user.companyName ?? user.fullName)
                                             .trim(),
                                   color: _primary,
@@ -196,10 +196,10 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: _InfoStat(
-                                  label: 'Register',
+                                  label: l10n.uiRegister,
                                   value: user.hasCommercialRegister
-                                      ? 'Uploaded'
-                                      : 'Missing',
+                                      ? l10n.companyReviewStatRegisterUploaded
+                                      : l10n.companyReviewStatRegisterMissing,
                                   color: user.hasCommercialRegister
                                       ? _success
                                       : _danger,
@@ -238,7 +238,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Need to review your profile?',
+                            l10n.uiNeedToReviewYourProfile,
                             style: AppTypography.product(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -247,7 +247,7 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'You can open the company profile right now to improve the company story, website, phone number, logo, or commercial register while the account is waiting for review.',
+                            l10n.uiYouCanOpenTheCompanyProfileRightNowToImprove,
                             style: AppTypography.product(
                               fontSize: 13,
                               height: 1.65,
@@ -266,8 +266,8 @@ class CompanyApprovalStatusScreen extends StatelessWidget {
                             icon: const Icon(Icons.open_in_new_rounded),
                             label: Text(
                               isRejected
-                                  ? 'Update Company Profile'
-                                  : 'Open Company Profile',
+                                  ? l10n.companyReviewUpdateProfileButton
+                                  : l10n.companyReviewOpenProfileButton,
                             ),
                             style: FilledButton.styleFrom(
                               minimumSize: const Size(double.infinity, 52),

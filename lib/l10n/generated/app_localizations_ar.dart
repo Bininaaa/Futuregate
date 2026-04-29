@@ -183,7 +183,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get companyProfileTitle => 'ملف الشركة';
 
   @override
-  String get companyProfileSubtitle => 'عاين حضور شركتك الظاهر للطلاب';
+  String get companyProfileSubtitle => 'استعرض حضور شركتك الظاهر للطلاب';
 
   @override
   String get editCompanyProfileTitle => 'تعديل ملف الشركة';
@@ -1277,7 +1277,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiBack => 'رجوع';
 
   @override
-  String get uiBackToLogin => 'العودة لتسجيل الدخول';
+  String get uiBackToLogin => 'العودة إلى تسجيل الدخول';
 
   @override
   String get uiBackToLoginB5Cd => 'العودة إلى تسجيل الدخول';
@@ -1904,7 +1904,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiFocusedApplicationView => 'عرض مركّز للطلب';
 
   @override
-  String get uiForgotPassword => 'هل نسيت كلمة السر؟';
+  String get uiForgotPassword => 'هل نسيت كلمة المرور؟';
 
   @override
   String get uiFormalize => 'اجعلها رسمية';
@@ -2041,7 +2041,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiIfYouCreatedThisAccountWithGoogleUseGoogleTo =>
-      'إذا قمت بإنشاء هذا الحساب مع Google، فاستخدم Google لتسجيل الدخول الآن. بعد ذلك، يمكنك إضافة كلمة مرور من الإعدادات إذا كنت تريد الوصول إلى البريد الإلكتروني/كلمة المرور أيضًا.';
+      'إذا أنشأت هذا الحساب بواسطة Google، فاستخدم Google لتسجيل الدخول الآن. بعد ذلك، يمكنك إضافة كلمة مرور من الإعدادات إذا أردت الوصول بالبريد الإلكتروني وكلمة المرور أيضًا.';
 
   @override
   String get uiIllustratorIntern => 'متدرب في التصميم التوضيحي';
@@ -2204,7 +2204,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiLaboratory => 'مخبر';
+  String get uiLaboratory => 'مختبر';
 
   @override
   String get uiLanguageFilters => 'تصفية اللغة';
@@ -2474,7 +2474,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNoRecentActivityYet => 'لا يوجد نشاط حديث حتى الآن';
 
   @override
-  String get uiNoRecentUsersYet => 'لا يوجد مستخدمين جدد حتى الآن';
+  String get uiNoRecentUsersYet => 'لا يوجد مستخدمون جدد حتى الآن';
 
   @override
   String get uiNoRecommendationsRightNow => 'لا توجد توصيات في الوقت الحالي';
@@ -3611,7 +3611,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiTeamNeeded => 'مطلوب فريق';
 
   @override
-  String get uiTeamNeeded3437 => 'الفريق بحاجة';
+  String get uiTeamNeeded3437 => 'مطلوب فريق';
 
   @override
   String get uiTeamRolesNeeded => 'أدوار الفريق المطلوبة';
@@ -3641,7 +3641,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTheCompanyWillContactYouByEmailSoon =>
-      'ستقوم الشركة بالتواصل معك عبر البريد الإلكتروني قريبًا.';
+      'ستتواصل الشركة معك عبر البريد الإلكتروني قريبًا.';
 
   @override
   String get uiTheEssentialsRecruitersAndProgramsOftenScanFirst =>
@@ -3724,7 +3724,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'يوضح هذا القسم ما تحله الفكرة، وكيف تعمل، والقيمة التي تهدف إلى خلقها.';
 
   @override
-  String get uiThisWeek => 'هذا الاسبوع';
+  String get uiThisWeek => 'هذا الأسبوع';
 
   @override
   String get uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBook =>
@@ -4085,7 +4085,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiVerification => 'تَحَقّق';
+  String get uiVerification => 'التحقق';
 
   @override
   String get uiVerificationSent => 'تم إرسال التحقق';
@@ -4158,7 +4158,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiWeDLoveToChatAbout => '\"نحن نحب أن نتحدث عن...\"';
+  String get uiWeDLoveToChatAbout => '\"يسعدنا التحدث عن...\"';
 
   @override
   String get uiWebsite => 'موقع إلكتروني';
@@ -4434,7 +4434,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiOpenActivityf327dd => 'نشاط مفتوح';
+  String get uiOpenActivityf327dd => 'فتح النشاط';
 
   @override
   String get uiUntitledOpportunity => 'فرصة بلا عنوان';
@@ -4468,7 +4468,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueFeatured(Object value1) {
-    return 'ظهرت $value1';
+    return '$value1 مميزة';
   }
 
   @override
@@ -4509,7 +4509,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueUsers(Object value1) {
-    return 'مستخدمي $value1';
+    return '$value1 مستخدمين';
   }
 
   @override
@@ -4524,7 +4524,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueAdmins(Object value1) {
-    return 'مدراء $value1';
+    return '$value1 مشرفين';
   }
 
   @override
@@ -4534,7 +4534,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueUser(Object value1) {
-    return 'مستخدمي $value1';
+    return '$value1 مستخدم';
   }
 
   @override
@@ -4588,7 +4588,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiStatus716883 => 'حالة';
 
   @override
-  String get uiType6e9816 => 'يكتب';
+  String get uiType6e9816 => 'النوع';
 
   @override
   String get uiRolesdd8b65 => 'الأدوار';
@@ -4645,7 +4645,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiPostOpportunity2f1ac8 => 'فرصة النشر';
+  String get uiPostOpportunity2f1ac8 => 'نشر\nفرصة';
 
   @override
   String uiValue391ff6(Object value1) {
@@ -4685,7 +4685,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiText85 => 'نص85';
+  String get uiText85 => 'نص';
 
   @override
   String get uiInternship => 'التدريب';
@@ -4705,7 +4705,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiYourPasswordHasBeenUpdatedSuccessfully =>
-      'لقد تم تحديث كلمة المرور الخاصة بك بنجاح';
+      'تم تحديث كلمة مرورك بنجاح.';
 
   @override
   String get uiVerificationEmailSentConfirmYourNewAddressToCompleteThe =>
@@ -4774,7 +4774,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiYourProfileHasBeenUpdatedSuccessfully =>
-      'لقد تم تحديث ملف التعريف الخاص بك بنجاح';
+      'تم تحديث ملفك الشخصي بنجاح.';
 
   @override
   String get uiEditProfilecd280a => 'تعديل الملف الشخصي';
@@ -4881,7 +4881,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiExploreScholarship => 'اكتشف المنحة الدراسية';
 
   @override
-  String get uiScholarship => 'المنحة غير متاحة';
+  String get uiScholarship => 'المنحة الدراسية';
 
   @override
   String get uiScholarshipProfile => 'ملف المنحة الدراسية';
@@ -5123,7 +5123,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get applicationStatusWithdrawnSentence => 'مسحوب';
 
   @override
-  String get launchAnimationHint => 'تفضل انطلاقة أسرع؟ أوقف هذا من الإعدادات.';
+  String get launchAnimationHint =>
+      'هل تفضل بدءًا أسرع؟ أوقف هذا من الإعدادات.';
 
   @override
   String get onboardingSlide1Title => 'تواصل مع\nالفرص المناسبة.';
@@ -5556,7 +5557,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get termsOfUseSettingsBody =>
-      'استخدم FutureGate بمشرفية، وحافظ على دقة معلومات الحساب، وتجنب تقديم طلبات مضللة أو محتوى ينتهك قواعد المنصة.';
+      'استخدم FutureGate بمسؤولية، وحافظ على دقة معلومات الحساب، وتجنب تقديم طلبات مضللة أو محتوى ينتهك قواعد المنصة.';
 
   @override
   String get addPasswordBannerTitle =>
@@ -6567,7 +6568,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiInternshipsSubtitle => 'تدريبات عملية للطلاب';
 
   @override
-  String get uiSponsoredSubtitle => 'دعم شراكات';
+  String get uiSponsoredSubtitle => 'برامج ممولة وشراكات داعمة';
 
   @override
   String get uiTryDifferentFilter => 'جرب فلتراً مختلفاً أو ابدأ فكرة جديدة.';
@@ -10005,4 +10006,505 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentFileUnavailable => 'الملف غير متاح.';
+
+  @override
+  String get companyReviewNeedsAttentionTitle =>
+      'مراجعة الشركة بحاجة إلى انتباهك';
+
+  @override
+  String get companyReviewInProgressTitle => 'مراجعة الشركة قيد التنفيذ';
+
+  @override
+  String get companyReviewRejectedSubtitle =>
+      'لم تتم الموافقة على حساب شركتك بعد. راجع ملف الشركة والسجل التجاري وحدّث ما يستوجب تصحيحه قبل إعادة المحاولة.';
+
+  @override
+  String get companyReviewPendingSubtitle =>
+      'تم إنشاء حساب شركتك بنجاح. لا يزال يتعين على المسؤول مراجعة سجلك التجاري قبل تفعيل مساحة العمل الخاصة بك.';
+
+  @override
+  String get companyReviewRejectedHelperTitle =>
+      'ما الذي ينبغي تصحيحه قبل المراجعة التالية';
+
+  @override
+  String get companyReviewPendingHelperTitle => 'ما الذي سيحدث لاحقًا';
+
+  @override
+  String get companyReviewRejectedHelperItem1 =>
+      'تحقّق من تفاصيل شركتك ومن وثيقة السجل التجاري.';
+
+  @override
+  String get companyReviewRejectedHelperItem2 =>
+      'حدّث كل ما هو ناقص أو غير واضح في ملف شركتك.';
+
+  @override
+  String get companyReviewRejectedHelperItem3 =>
+      'بمجرد إعادة مراجعة المسؤول للملف، سيُفتح الوصول تلقائيًا.';
+
+  @override
+  String get companyReviewPendingHelperItem1 =>
+      'يتولى فريق الإدارة مراجعة ملف الشركة والسجل التجاري المرفوع.';
+
+  @override
+  String get companyReviewPendingHelperItem2 =>
+      'ستُفتح مساحة العمل الخاصة بك تلقائيًا بمجرد اعتماد الشركة.';
+
+  @override
+  String get companyReviewPendingHelperItem3 =>
+      'يمكنك الآن فتح ملفك وتحسين معلوماته قبل صدور الاعتماد.';
+
+  @override
+  String get companyReviewStatNotSet => 'غير محدد';
+
+  @override
+  String get companyReviewStatRegisterUploaded => 'تم رفعه';
+
+  @override
+  String get companyReviewStatRegisterMissing => 'مفقود';
+
+  @override
+  String get companyReviewUpdateProfileButton => 'تحديث ملف الشركة';
+
+  @override
+  String get companyReviewOpenProfileButton => 'فتح ملف الشركة';
+
+  @override
+  String opportunityCountdownHoursLeft(Object hours) {
+    return 'تبقّت $hours س';
+  }
+
+  @override
+  String opportunityCountdownDaysLeft(Object days) {
+    return 'تبقّت $days ي';
+  }
+
+  @override
+  String get opportunityFreshnessRecent => 'حديث';
+
+  @override
+  String get opportunityClosedNoticeMessage =>
+      'تم إغلاق هذه الفرصة، فلم يعد بإمكان الطلاب التقديم عليها، غير أن الطلبات الحالية تبقى متاحة للمراجعة.';
+
+  @override
+  String get opportunityReopenedNoticeMessage =>
+      'تم إعادة فتح هذه الفرصة وأصبحت قادرة على استقبال طلبات جديدة.';
+
+  @override
+  String get opportunityReopenedNoticeTitle => 'تمت إعادة فتح الفرصة';
+
+  @override
+  String opportunityDeleteConfirmationMessage(Object title) {
+    return 'هل تريد حذف \"$title\"؟ إذا كانت لديها طلبات قيد المراجعة فسيتم إغلاقها بدلًا من حذفها للحفاظ على إمكانية مراجعة الطلاب.';
+  }
+
+  @override
+  String get opportunityClosedDueToPendingMessage =>
+      'تم إغلاق الفرصة لأن هناك طلبات قيد المراجعة لا تزال بحاجة إلى المعالجة.';
+
+  @override
+  String get opportunityCouldNotRefreshApplicants =>
+      'تعذّر تحديث قائمة المتقدمين';
+
+  @override
+  String get opportunityNoStudentsYetTitle => 'لا يوجد طلاب بعد';
+
+  @override
+  String get opportunityNoStudentsYetSubtitle =>
+      'سيظهر هنا الطلاب الذين يتقدّمون لهذه الفرصة.';
+
+  @override
+  String get opportunityNoMatchesFoundTitle => 'لا توجد نتائج مطابقة';
+
+  @override
+  String get opportunityNoMatchesFoundSubtitle =>
+      'حاول إزالة عوامل التصفية أو تعديل عبارات البحث.';
+
+  @override
+  String get opportunityPublishFirstRolePrompt =>
+      'انشر أول وظيفة لديك لتبدأ عملية التوظيف.';
+
+  @override
+  String get opportunityActionReopen => 'إعادة فتح';
+
+  @override
+  String get companyProfileBrandStoryFallback =>
+      'اصنع انطباعًا أوليًا قويًا من خلال قصة موجزة عن الشركة، وتفاصيل تواصل واضحة، وهوية بصرية متقنة.';
+
+  @override
+  String get companyProfileLogoMissingLabel => 'الشعار';
+
+  @override
+  String get companyProfileCouldNotOpenWebsite =>
+      'تعذّر فتح الموقع الإلكتروني.';
+
+  @override
+  String get companyProfileMissingDetailSingular =>
+      'لا تزال هناك تفصيلة واحدة ناقصة في ملف الشركة.';
+
+  @override
+  String companyProfileMissingDetailsPlural(Object missingCount) {
+    return 'لا تزال هناك $missingCount تفاصيل ناقصة في ملف الشركة.';
+  }
+
+  @override
+  String get companyProfileIncompleteTitle => 'الملف غير مكتمل';
+
+  @override
+  String companyProfileIncompleteMessageFormat(Object message) {
+    return '$message أضف العناصر الناقصة ليرى الطلاب صفحة شركة أوضح وأكثر مصداقية.';
+  }
+
+  @override
+  String get companyProfileCouldNotOpenEmail =>
+      'تعذّر فتح البريد الإلكتروني في الوقت الحالي.';
+
+  @override
+  String get companyProfileAddPhonePlaceholder => 'أضف رقم هاتف الشركة';
+
+  @override
+  String get companyProfileAddLocationPlaceholder => 'أضف موقع شركتك';
+
+  @override
+  String get companyProfileAddWebsitePlaceholder => 'أضف موقعك الإلكتروني';
+
+  @override
+  String get companyProfileAddSectorPlaceholder => 'أضف قطاعًا أو تخصصًا';
+
+  @override
+  String get companyProfileNotAvailable => 'غير متاح';
+
+  @override
+  String get companyProfileRegisterPendingSummary =>
+      'تم إرفاق الوثيقة المطلوبة، وهي في انتظار مراجعة المسؤول.';
+
+  @override
+  String get companyProfileRegisterRejectedSummary =>
+      'تم إرفاق الوثيقة المطلوبة، إلا أن اعتماد الشركة لا يزال يستوجب المعالجة.';
+
+  @override
+  String get companyProfileRegisterApprovedSummary =>
+      'تم إرفاق الوثيقة المطلوبة، والشركة معتمدة.';
+
+  @override
+  String get companyProfileApprovalPendingTitle => 'الاعتماد قيد الانتظار';
+
+  @override
+  String get companyProfileApprovalRejectedTitle => 'الاعتماد يستلزم تعديلات';
+
+  @override
+  String get companyProfileApprovalApprovedTitle => 'الشركة معتمدة';
+
+  @override
+  String get companyProfileApprovalPendingMessage =>
+      'تم رفع السجل التجاري، ولا يزال على فريق الإدارة مراجعة حساب هذه الشركة.';
+
+  @override
+  String get companyProfileApprovalRejectedMessage =>
+      'تم رفع الوثيقة، لكن حساب الشركة لا يزال بحاجة إلى تصحيحات قبل أن يحظى بالاعتماد.';
+
+  @override
+  String get companyProfileApprovalApprovedMessage =>
+      'تم رفع السجل التجاري، وحساب الشركة معتمد.';
+
+  @override
+  String get companyProfileRegisterUploadPrompt =>
+      'ارفع وثيقة محدّثة للحفاظ على اكتمال ملف الشركة وموثوقيته.';
+
+  @override
+  String get companyProfileDocumentUploadedFallback => 'تم رفع الوثيقة';
+
+  @override
+  String get companyProfileEditRegisterAlreadyAttached =>
+      'وثيقة التحقق مُرفقة بالفعل.';
+
+  @override
+  String get companyProfileEditRegisterNeedsAttention =>
+      'السجل التجاري لا يزال بحاجة إلى المعالجة.';
+
+  @override
+  String get companyProfileEditCompanyNameHint => 'اسم شركتك الظاهر للعموم';
+
+  @override
+  String get companyProfileEditCompanyNameValidation => 'اسم الشركة مطلوب.';
+
+  @override
+  String get companyProfileEditSectorHint => 'تقنية، مالية، تصميم، تعليم…';
+
+  @override
+  String get companyProfileEditDescriptionHint =>
+      'ما الذي تبنيه شركتكم؟ ومن هم عملاؤكم؟ وما الذي يمكن للطلاب توقّعه؟';
+
+  @override
+  String get companyProfileEditPhoneHint => 'رقم هاتف الشركة';
+
+  @override
+  String get companyProfileEditLocationHint =>
+      'المدينة أو المنطقة أو المقر الرئيسي';
+
+  @override
+  String get companyProfileEditWebsiteValidationSpaces =>
+      'لا يمكن أن يحتوي عنوان الموقع على مسافات.';
+
+  @override
+  String get companyProfileEditWebsiteValidationInvalid =>
+      'أدخل عنوان موقع إلكتروني صالحًا.';
+
+  @override
+  String get companyProfileEditLogoLiveMessage =>
+      'هوية شركتك البصرية الحالية معروضة للجمهور.';
+
+  @override
+  String get companyProfileEditLogoMissingMessage =>
+      'أضف شعارًا ليبدو ملف شركتك مكتملًا.';
+
+  @override
+  String get companyProfileEditReplaceLogoLabel => 'استبدال الشعار';
+
+  @override
+  String get companyProfileEditUploadLogoLabel => 'رفع الشعار';
+
+  @override
+  String get companyProfileEditLogoRemovedMessage => 'تمت إزالة شعار الشركة.';
+
+  @override
+  String get companyProfileEditLogoRemovedTitle => 'تمت إزالة الشعار';
+
+  @override
+  String get companyProfileEditRegisterRequiredValidation =>
+      'السجل التجاري مطلوب لجميع ملفات الشركات.';
+
+  @override
+  String get companyProfileApprovedCompanyTooltip => 'شركة معتمدة';
+
+  @override
+  String get publishOpportunityDescriptionHelperText =>
+      'اذكر النطاق والتوقعات والمتطلبات، وأبرز الأسباب التي تدفع الطلاب إلى التقديم.';
+
+  @override
+  String get uiCompanyBrandStoryEmptySubtitle =>
+      'أضف بضعة أسطر تشرح ما تبنيه شركتك وما يمكن للطلاب توقّعه من فريقك.';
+
+  @override
+  String get uiDetailsSectionSubtitle =>
+      'المعلومات الأساسية التي يبحث عنها الطلاب والمتقدّمون أوّلاً.';
+
+  @override
+  String get uiVerificationSectionSubtitle =>
+      'حافظ على ثقة الطلاب بشركتك بتقديم سجلّ تجاري مُحدَّث.';
+
+  @override
+  String get uiBuildStrongFirstImpressionSubtitle =>
+      'اصنع انطباعاً أوّل قويّاً بقصّة موجزة عن الشركة وبيانات تواصل واضحة وهويّة بصريّة أنيقة.';
+
+  @override
+  String get uiCouldNotOpenTheWebsite => 'تعذّر فتح الموقع الإلكتروني.';
+
+  @override
+  String get uiCompleteLabel => 'مكتمل';
+
+  @override
+  String get uiProfileIncomplete => 'الملف غير مكتمل';
+
+  @override
+  String get uiCompleteProfileButton => 'إكمال الملف';
+
+  @override
+  String get uiCouldNotOpenEmailRightNow => 'تعذّر فتح البريد الإلكتروني الآن.';
+
+  @override
+  String get uiAddACompanyPhoneNumber => 'أضف رقم هاتف الشركة';
+
+  @override
+  String get uiAddYourCompanyLocation => 'أضف موقع الشركة';
+
+  @override
+  String get uiAddYourWebsite => 'أضف موقعك الإلكتروني';
+
+  @override
+  String get uiAddASectorOrSpecialty => 'أضف القطاع أو التخصّص';
+
+  @override
+  String get uiNotAvailable => 'غير متاح';
+
+  @override
+  String get uiVerificationDocumentAttachedPending =>
+      'الوثيقة المطلوبة مُرفقة وفي انتظار مراجعة المسؤولين.';
+
+  @override
+  String get uiVerificationDocumentAttachedNeedsAttention =>
+      'الوثيقة المطلوبة مُرفقة، لكنّ اعتماد الشركة لا يزال بحاجة إلى مراجعة.';
+
+  @override
+  String get uiVerificationDocumentAttachedApproved =>
+      'الوثيقة المطلوبة مُرفقة، وقد تمّ اعتماد الشركة.';
+
+  @override
+  String get uiApprovalPending => 'قيد الاعتماد';
+
+  @override
+  String get uiApprovalNeedsChanges => 'الاعتماد يتطلّب تعديلات';
+
+  @override
+  String get uiCompanyApproved => 'تمّ اعتماد الشركة';
+
+  @override
+  String get uiYourCommercialRegisterUploadedAdminPending =>
+      'تمّ رفع سجلّك التجاري، ولا يزال فريق الإدارة بحاجة إلى مراجعة حساب الشركة.';
+
+  @override
+  String get uiYourDocumentUploadedNeedsCorrections =>
+      'تمّ رفع الوثيقة، لكنّ حساب الشركة بحاجة إلى تصحيحات قبل اعتماده.';
+
+  @override
+  String get uiYourCommercialRegisterUploadedApproved =>
+      'تمّ رفع سجلّك التجاري واعتماد حساب الشركة.';
+
+  @override
+  String get uiUploadCurrentDocumentSubtitle =>
+      'ارفع وثيقة سارية المفعول لإبقاء ملف الشركة مكتملاً وموثوقاً.';
+
+  @override
+  String get uiDocumentUploaded => 'تمّ رفع الوثيقة';
+
+  @override
+  String uiUploadedOn(Object date) {
+    return 'تاريخ الرفع: $date';
+  }
+
+  @override
+  String get uiFileUnavailable => 'الملف غير متاح.';
+
+  @override
+  String get uiPermissionDeniedOpeningDocument =>
+      'تمّ رفض الإذن أثناء فتح الوثيقة.';
+
+  @override
+  String get uiSavingChangesEllipsis => 'جارٍ حفظ التغييرات...';
+
+  @override
+  String get uiKeepProfileCrispTrustworthyReady =>
+      'اجعل الملف أنيقاً وموثوقاً وجاهزاً ليكتشفه الطلاب.';
+
+  @override
+  String get uiVerificationDocumentAlreadyAttached =>
+      'وثيقة التحقّق مُرفقة بالفعل.';
+
+  @override
+  String get uiCommercialRegisterStillNeedsAttention =>
+      'السجلّ التجاري لا يزال بحاجة إلى المراجعة.';
+
+  @override
+  String get uiShapeFirstImpressionFromYourCompany =>
+      'اصنع الانطباع الأوّل الذي يأخذه الطلاب عن شركتك.';
+
+  @override
+  String get uiYourPublicCompanyName => 'الاسم العلني لشركتك';
+
+  @override
+  String get uiTechnologyFinanceDesignEducationHint =>
+      'تقنية، تمويل، تصميم، تعليم...';
+
+  @override
+  String get uiCompanyDescriptionHint =>
+      'ماذا تبني شركتك، ومن تخدم، وما الذي يمكن للطلاب توقّعه؟';
+
+  @override
+  String get uiMakeItEasyForStudentsToFindYouSubtitle =>
+      'اجعل من السهل على الطلاب معرفة موقع شركتك وكيفيّة الوصول إليها.';
+
+  @override
+  String get uiCompanyPhoneNumberHint => 'رقم هاتف الشركة';
+
+  @override
+  String get uiCityRegionOrHeadquartersHint =>
+      'المدينة أو الولاية أو موقع المقرّ';
+
+  @override
+  String get uiWebsiteHintExample => 'https://www.yourcompany.com';
+
+  @override
+  String get uiWebsiteCannotContainSpaces =>
+      'لا يمكن أن يحتوي الموقع على مسافات.';
+
+  @override
+  String get uiEnterAValidWebsite => 'أدخل عنوان موقع صالح.';
+
+  @override
+  String get uiYourCurrentCompanyVisualIsLive =>
+      'هويّتك البصريّة الحاليّة منشورة.';
+
+  @override
+  String get uiAddALogoToMakeCompanyProfileFeelComplete =>
+      'أضف شعاراً ليبدو ملف شركتك مكتملاً.';
+
+  @override
+  String get uiUploadingEllipsis => 'جارٍ الرفع...';
+
+  @override
+  String get uiReplaceLogo => 'استبدال الشعار';
+
+  @override
+  String get uiUploadLogo => 'رفع الشعار';
+
+  @override
+  String get uiKeepCurrentVerificationDocumentSubtitle =>
+      'أبقِ وثيقة تحقّق سارية مرفقة للحفاظ على ملف شركة موثوق.';
+
+  @override
+  String get uiLogoRemoved => 'تمّت إزالة الشعار';
+
+  @override
+  String get uiCompanyLogoRemoved => 'تمّت إزالة شعار الشركة.';
+
+  @override
+  String get uiCommercialRegisterIsRequired =>
+      'السجلّ التجاري إلزامي لملفّات الشركات.';
+
+  @override
+  String get uiApprovedCompanySubtitle => 'شركة معتمدة';
+
+  @override
+  String get uiCouldNotOpenDocumentRightNow =>
+      'تعذّر فتح الوثيقة في الوقت الحالي.';
+
+  @override
+  String get uiCommercialRegisterReinforcesTrustMessage =>
+      'يعزّز السجلّ التجاري السّاري الثقة في الشركة، ويُبقي ملفّها جاهزاً للمراجعة.';
+
+  @override
+  String get uiOneDetailStillMissingFromCompanyProfile =>
+      'لا تزال هناك معلومة واحدة مفقودة من ملف الشركة.';
+
+  @override
+  String uiCountDetailsStillMissingFromCompanyProfile(Object count) {
+    return 'لا تزال $count معلومات مفقودة من ملف الشركة.';
+  }
+
+  @override
+  String get uiAddWhatIsMissingForClearerCompanyPage =>
+      'أكمل المعلومات الناقصة ليرى الطلاب صفحة شركة أوضح وأكثر موثوقيّة.';
+
+  @override
+  String get uiAcceptedLogoFormatsAndSizeHint =>
+      'الصيغ المقبولة: JPG أو PNG أو WebP. الحدّ الأقصى للحجم: 5 ميغابايت.';
+
+  @override
+  String get uiUploadPdfJpgPngForVerificationHint =>
+      'ارفع وثيقة بصيغة PDF أو JPG أو PNG بحجم لا يتجاوز 10 ميغابايت لاستكمال هذا الجزء من الملف.';
+
+  @override
+  String uiSizeMbSelected(Object size) {
+    return '$size ميغابايت مُختارة';
+  }
+
+  @override
+  String get uiChooseAnImageSmallerThan5Mb =>
+      'اختر صورة بحجم أقلّ من 5 ميغابايت.';
+
+  @override
+  String get uiCompanyFallback => 'شركة';
+
+  @override
+  String get uiStrongLogoMakesProfilePolishedSubtitle =>
+      'يُضفي شعارٌ قويّ أو صورةٌ مميّزة للشركة لمسةً أكثر احترافيّة وتمنح الملف طابعاً أسهل للتذكّر.';
 }
