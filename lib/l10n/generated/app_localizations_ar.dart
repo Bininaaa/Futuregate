@@ -2185,7 +2185,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiKeepVisibilityDecisionsInTheSameStructuredPublishingAreaUsed =>
-      'احتفظ بقرارات الرؤية في نفس منطقة النشر المنظمة المستخدمة عبر تدفقات المحتوى.';
+      'احتفظ بقرارات الرؤية في نفس منطقة النشر المنظمة المستخدمة عبر مسارات المحتوى.';
 
   @override
   String get uiKeepYourCompanyPresenceTrustedWithAnUpToDate =>
@@ -3216,11 +3216,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSearchAndCurateYoutubeLessonsInOneContinuousFlowInstead =>
-      'ابحث عن دروس YouTube ونظمها في تدفق واحد مستمر بدلاً من العمل داخل نوافذ ثابتة منفصلة.';
+      'ابحث عن دروس YouTube ونظمها ضمن تجربة واحدة متكاملة بدلاً من العمل داخل نوافذ ثابتة منفصلة.';
 
   @override
   String get uiSearchAndImportBooksInOneContinuousFlowInsteadOf =>
-      'ابحث عن الكتب واستوردها في تدفق واحد مستمر بدلاً من العمل داخل نوافذ ثابتة منفصلة.';
+      'ابحث عن الكتب واستوردها ضمن تجربة واحدة متكاملة بدلاً من العمل داخل نوافذ ثابتة منفصلة.';
 
   @override
   String get uiSearchBooksForExampleAlgorithms =>
@@ -3922,15 +3922,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiUseGracefulFallbacksWhereDataIsMissingAndKeepEmail =>
-      'استخدم الإجراءات الاحتياطية الملائمة عندما تكون البيانات مفقودة واحتفظ بتغييرات البريد الإلكتروني في تدفق المصادقة الآمن.';
+      'استخدم الإجراءات الاحتياطية الملائمة عندما تكون البيانات مفقودة واحتفظ بتغييرات البريد الإلكتروني ضمن مسار المصادقة الآمن.';
 
   @override
   String get uiUseTheExistingAccountToolsSafelyWithoutAffectingYourCurrent =>
-      'استخدم أدوات الحساب الحالية بأمان دون التأثير على تدفق تسجيل الدخول الحالي.';
+      'استخدم أدوات الحساب الحالية بأمان دون التأثير على مسار تسجيل الدخول الحالي.';
 
   @override
   String get uiUseTheExistingProfileAndSecurityFlowsAlreadyConnectedTo =>
-      'استخدم ملف التعريف الحالي وتدفقات الأمان المرتبطة بالفعل بحسابك.';
+      'استخدم ملف التعريف الحالي ومسارات الأمان المرتبطة بالفعل بحسابك.';
 
   @override
   String get uiUseTheLiveFeedToJumpDirectlyIntoTheRight =>
@@ -5442,7 +5442,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountSecuritySectionSubtitle =>
-      'استخدم أدوات الحساب الحالية بأمان دون التأثير على تدفق تسجيل الدخول.';
+      'استخدم أدوات الحساب الحالية بأمان دون التأثير على مسار تسجيل الدخول.';
 
   @override
   String get addPasswordTitle => 'إضافة كلمة مرور';
@@ -5528,7 +5528,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dataPermissionsSubtitle =>
-      'تُستخدم بيانات الملف الشخصي والسيرة الذاتية والطلبات لتشغيل الفرص وتدفقات مراجعة المُوظفين.';
+      'تُستخدم بيانات الملف الشخصي والسيرة الذاتية والطلبات لتشغيل الفرص ومسارات مراجعة مسؤولي التوظيف.';
 
   @override
   String get dataPermissionsBody =>
@@ -5773,7 +5773,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get helpOpportunityDescription =>
-      'تعرّف على كيفية ظهور الشركات والإعلانات المعتمدة داخل التطبيق لفهم تدفق المنصة من البداية إلى النهاية.';
+      'تعرّف على كيفية ظهور الشركات والإعلانات المعتمدة داخل التطبيق لفهم مسار المنصة من البداية إلى النهاية.';
 
   @override
   String get helpNotificationsCategory => 'التحديثات';
