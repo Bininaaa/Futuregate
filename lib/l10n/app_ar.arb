@@ -3676,5 +3676,1761 @@
   "uiStrongLogoMakesProfilePolishedSubtitle": "يُضفي شعارٌ قويّ أو صورةٌ مميّزة للشركة لمسةً أكثر احترافيّة وتمنح الملف طابعاً أسهل للتذكّر.",
   "@uiStrongLogoMakesProfilePolishedSubtitle": {
     "description": "uiStrongLogoMakesProfilePolishedSubtitle"
+  },
+  "adminOpportunityPublisherHint": "مثال: إدارة FutureGate",
+  "@adminOpportunityPublisherHint": {
+    "description": "adminOpportunityPublisherHint"
+  },
+  "adminOpportunityDescriptionHint": "صِف الدور والنطاق والقيمة المضافة بوضوح",
+  "@adminOpportunityDescriptionHint": {
+    "description": "adminOpportunityDescriptionHint"
+  },
+  "adminOpportunityDescriptionHelper": "أَضِف تفاصيل كافية ليفهم الطلاب النطاق والتوقعات والقيمة.",
+  "@adminOpportunityDescriptionHelper": {
+    "description": "adminOpportunityDescriptionHelper"
+  },
+  "adminOpportunityRequirementHintRule": "اكتب شرط أهلية واحدًا ثم اضغط Enter",
+  "@adminOpportunityRequirementHintRule": {
+    "description": "adminOpportunityRequirementHintRule"
+  },
+  "adminOpportunityRequirementHintItem": "اكتب متطلبًا واحدًا ثم اضغط Enter",
+  "@adminOpportunityRequirementHintItem": {
+    "description": "adminOpportunityRequirementHintItem"
+  },
+  "adminOpportunityDeadlineHint": "اختَر تاريخ الإغلاق",
+  "@adminOpportunityDeadlineHint": {
+    "description": "adminOpportunityDeadlineHint"
+  },
+  "adminOpportunityFundingAmountHint": "مثال: 250000",
+  "@adminOpportunityFundingAmountHint": {
+    "description": "adminOpportunityFundingAmountHint"
+  },
+  "adminOpportunityFundingNoteHint": "تفاصيل دعم اختيارية تظهر للطلاب",
+  "@adminOpportunityFundingNoteHint": {
+    "description": "adminOpportunityFundingNoteHint"
+  },
+  "adminOpportunitySalaryMinHint": "مثال: 60000",
+  "@adminOpportunitySalaryMinHint": {
+    "description": "adminOpportunitySalaryMinHint"
+  },
+  "adminOpportunitySalaryMaxHint": "مثال: 90000",
+  "@adminOpportunitySalaryMaxHint": {
+    "description": "adminOpportunitySalaryMaxHint"
+  },
+  "adminOpportunityDurationHint": "مثال: 3 أشهر",
+  "@adminOpportunityDurationHint": {
+    "description": "adminOpportunityDurationHint"
+  },
+  "adminOpportunityCompensationHint": "ملاحظة اختيارية تظهر في شاشات التفاصيل",
+  "@adminOpportunityCompensationHint": {
+    "description": "adminOpportunityCompensationHint"
+  },
+  "adminOpportunityDatePickerHelp": "حدِّد الموعد النهائي",
+  "@adminOpportunityDatePickerHelp": {
+    "description": "adminOpportunityDatePickerHelp"
+  },
+  "adminOpportunitySnackTitleUpdated": "تم تحديث الفرصة",
+  "@adminOpportunitySnackTitleUpdated": {
+    "description": "adminOpportunitySnackTitleUpdated"
+  },
+  "adminOpportunitySnackTitlePublished": "تم نشر الفرصة",
+  "@adminOpportunitySnackTitlePublished": {
+    "description": "adminOpportunitySnackTitlePublished"
+  },
+  "adminOpportunityUpdatedMessage": "تم تحديث الفرصة الإدارية بنجاح.",
+  "@adminOpportunityUpdatedMessage": {
+    "description": "adminOpportunityUpdatedMessage"
+  },
+  "adminOpportunityPublishedMessage": "تم نشر الفرصة الإدارية بنجاح.",
+  "@adminOpportunityPublishedMessage": {
+    "description": "adminOpportunityPublishedMessage"
+  },
+  "adminOpportunityRequirementsSubtitleEligibility": "أَضِف كل شرط من شروط الأهلية بشكل منفصل ليرى الطلاب قائمة مرتّبة وواضحة.",
+  "@adminOpportunityRequirementsSubtitleEligibility": {
+    "description": "adminOpportunityRequirementsSubtitleEligibility"
+  },
+  "adminOpportunityRequirementsSubtitleRequirement": "أَضِف كل متطلب بشكل منفصل ليرى الطلاب قائمة مرتّبة وواضحة.",
+  "@adminOpportunityRequirementsSubtitleRequirement": {
+    "description": "adminOpportunityRequirementsSubtitleRequirement"
+  },
+  "adminEditorFieldRequired": "{label} مطلوب",
+  "@adminEditorFieldRequired": {
+    "description": "adminEditorFieldRequired",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "Title"
+      }
+    }
+  },
+  "adminEditorFieldNeedsDetail": "{label} يحتاج إلى مزيد من التفاصيل",
+  "@adminEditorFieldNeedsDetail": {
+    "description": "adminEditorFieldNeedsDetail",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "Description"
+      }
+    }
+  },
+  "adminIdeaPublicSubtitle": "عند تفعيل هذا الخيار تظهر الفكرة كفرصة مجتمعيّة عامّة بدل أن تكون ملاحظة داخلية مخفيّة.",
+  "@adminIdeaPublicSubtitle": {
+    "description": "adminIdeaPublicSubtitle"
+  },
+  "adminIdeaTitleHint": "مثال: برنامج شراكة الابتكار الجامعي",
+  "@adminIdeaTitleHint": {
+    "description": "adminIdeaTitleHint"
+  },
+  "adminIdeaTitleValidatorLabel": "العنوان",
+  "@adminIdeaTitleValidatorLabel": {
+    "description": "adminIdeaTitleValidatorLabel"
+  },
+  "adminIdeaTaglineHint": "عبارة جذابة قصيرة للقسم الرئيسي",
+  "@adminIdeaTaglineHint": {
+    "description": "adminIdeaTaglineHint"
+  },
+  "adminIdeaShortDescriptionHint": "ملخّص موجز في فقرة واحدة",
+  "@adminIdeaShortDescriptionHint": {
+    "description": "adminIdeaShortDescriptionHint"
+  },
+  "adminIdeaFullDescriptionHint": "صف الفكرة بوضوح وبتفصيل كافٍ",
+  "@adminIdeaFullDescriptionHint": {
+    "description": "adminIdeaFullDescriptionHint"
+  },
+  "adminIdeaFullDescriptionHelper": "اشرح المشكلة والحل والجمهور المستهدف والأثر المتوقَّع.",
+  "@adminIdeaFullDescriptionHelper": {
+    "description": "adminIdeaFullDescriptionHelper"
+  },
+  "adminIdeaDescriptionValidatorLabel": "الوصف",
+  "@adminIdeaDescriptionValidatorLabel": {
+    "description": "adminIdeaDescriptionValidatorLabel"
+  },
+  "adminIdeaDomainHint": "مثال: تقنيات التعليم، الذكاء الاصطناعي، الاستدامة",
+  "@adminIdeaDomainHint": {
+    "description": "adminIdeaDomainHint"
+  },
+  "adminIdeaDomainValidatorLabel": "المجال",
+  "@adminIdeaDomainValidatorLabel": {
+    "description": "adminIdeaDomainValidatorLabel"
+  },
+  "adminIdeaCategoryHint": "مثال: ابتكار، شركة ناشئة، بحث",
+  "@adminIdeaCategoryHint": {
+    "description": "adminIdeaCategoryHint"
+  },
+  "adminIdeaStageHint": "مثال: فكرة، نموذج أوّلي، تجربة ميدانية",
+  "@adminIdeaStageHint": {
+    "description": "adminIdeaStageHint"
+  },
+  "adminIdeaToolsHint": "مثال: Flutter وFirebase وFigma",
+  "@adminIdeaToolsHint": {
+    "description": "adminIdeaToolsHint"
+  },
+  "adminIdeaToolsValidatorLabel": "الأدوات",
+  "@adminIdeaToolsValidatorLabel": {
+    "description": "adminIdeaToolsValidatorLabel"
+  },
+  "adminIdeaTagsHint": "وسوم مفصولة بفواصل",
+  "@adminIdeaTagsHint": {
+    "description": "adminIdeaTagsHint"
+  },
+  "adminIdeaSkillsHint": "مهارات مفصولة بفواصل",
+  "@adminIdeaSkillsHint": {
+    "description": "adminIdeaSkillsHint"
+  },
+  "adminIdeaTeamHint": "أدوار مفصولة بفواصل",
+  "@adminIdeaTeamHint": {
+    "description": "adminIdeaTeamHint"
+  },
+  "adminIdeaTargetAudienceHint": "من يستفيد أكثر من هذه الفكرة؟",
+  "@adminIdeaTargetAudienceHint": {
+    "description": "adminIdeaTargetAudienceHint"
+  },
+  "adminIdeaProblemHint": "ما التحدّي الذي تعالجه هذه الفكرة؟",
+  "@adminIdeaProblemHint": {
+    "description": "adminIdeaProblemHint"
+  },
+  "adminIdeaSolutionHint": "كيف تحلّ الفكرة هذه المشكلة؟",
+  "@adminIdeaSolutionHint": {
+    "description": "adminIdeaSolutionHint"
+  },
+  "adminIdeaResourcesHint": "ما الدعم أو الشركاء أو الموارد المطلوبة؟",
+  "@adminIdeaResourcesHint": {
+    "description": "adminIdeaResourcesHint"
+  },
+  "adminIdeaBenefitsHint": "ما النتائج التي تجعل هذه الفكرة ذات قيمة؟",
+  "@adminIdeaBenefitsHint": {
+    "description": "adminIdeaBenefitsHint"
+  },
+  "adminIdeaSnackTitleUpdated": "تم تحديث الفكرة",
+  "@adminIdeaSnackTitleUpdated": {
+    "description": "adminIdeaSnackTitleUpdated"
+  },
+  "adminIdeaSnackTitlePublished": "تم نشر الفكرة",
+  "@adminIdeaSnackTitlePublished": {
+    "description": "adminIdeaSnackTitlePublished"
+  },
+  "adminIdeaUpdatedMessage": "تم تحديث الفكرة الإدارية بنجاح.",
+  "@adminIdeaUpdatedMessage": {
+    "description": "adminIdeaUpdatedMessage"
+  },
+  "adminIdeaPublishedMessage": "تم نشر الفكرة الإدارية بنجاح.",
+  "@adminIdeaPublishedMessage": {
+    "description": "adminIdeaPublishedMessage"
+  },
+  "adminScholarshipScreenTitleEdit": "تعديل المنحة",
+  "@adminScholarshipScreenTitleEdit": {
+    "description": "adminScholarshipScreenTitleEdit"
+  },
+  "adminScholarshipScreenTitlePublish": "نشر منحة",
+  "@adminScholarshipScreenTitlePublish": {
+    "description": "adminScholarshipScreenTitlePublish"
+  },
+  "adminScholarshipSubmitEdit": "حفظ تعديلات المنحة",
+  "@adminScholarshipSubmitEdit": {
+    "description": "adminScholarshipSubmitEdit"
+  },
+  "adminScholarshipSubmitPublish": "نشر المنحة",
+  "@adminScholarshipSubmitPublish": {
+    "description": "adminScholarshipSubmitPublish"
+  },
+  "adminScholarshipScreenSubtitle": "أَدِر المنح في التطبيق نفسه الذي يكتشفها فيه الطلاب، مع بنية كافية للحصول على بطاقات أكثر ثراءً وتصفية أكثر فائدة.",
+  "@adminScholarshipScreenSubtitle": {
+    "description": "adminScholarshipScreenSubtitle"
+  },
+  "adminScholarshipPublishingTitle": "النشر",
+  "@adminScholarshipPublishingTitle": {
+    "description": "adminScholarshipPublishingTitle"
+  },
+  "adminScholarshipPublishingSubtitle": "تحظى المنح المميَّزة بحضور أقوى في رحلة الاكتشاف الخاصّة بالطلاب.",
+  "@adminScholarshipPublishingSubtitle": {
+    "description": "adminScholarshipPublishingSubtitle"
+  },
+  "adminScholarshipFeatureToggleTitle": "إبراز هذه المنحة",
+  "@adminScholarshipFeatureToggleTitle": {
+    "description": "adminScholarshipFeatureToggleTitle"
+  },
+  "adminScholarshipFeatureToggleSubtitle": "استخدم هذا الخيار للمنح ذات الأولوية العالية أو القويّة بشكل خاص.",
+  "@adminScholarshipFeatureToggleSubtitle": {
+    "description": "adminScholarshipFeatureToggleSubtitle"
+  },
+  "adminScholarshipBasicInfoSubtitle": "ابدأ بالهويّة الأساسيّة للمنحة حتى تظهر الفرصة بوضوح في البطاقات والتفاصيل.",
+  "@adminScholarshipBasicInfoSubtitle": {
+    "description": "adminScholarshipBasicInfoSubtitle"
+  },
+  "adminScholarshipTitleField": "عنوان المنحة",
+  "@adminScholarshipTitleField": {
+    "description": "adminScholarshipTitleField"
+  },
+  "adminScholarshipTitleHint": "مثال: منحة Future Builders العالمية",
+  "@adminScholarshipTitleHint": {
+    "description": "adminScholarshipTitleHint"
+  },
+  "adminScholarshipTitleValidatorLabel": "العنوان",
+  "@adminScholarshipTitleValidatorLabel": {
+    "description": "adminScholarshipTitleValidatorLabel"
+  },
+  "adminScholarshipProviderField": "الجهة المانحة",
+  "@adminScholarshipProviderField": {
+    "description": "adminScholarshipProviderField"
+  },
+  "adminScholarshipProviderHint": "ما الجهة التي تُقدِّم هذه المنحة؟",
+  "@adminScholarshipProviderHint": {
+    "description": "adminScholarshipProviderHint"
+  },
+  "adminScholarshipProviderValidatorLabel": "الجهة المانحة",
+  "@adminScholarshipProviderValidatorLabel": {
+    "description": "adminScholarshipProviderValidatorLabel"
+  },
+  "adminScholarshipDescriptionTitle": "الوصف",
+  "@adminScholarshipDescriptionTitle": {
+    "description": "adminScholarshipDescriptionTitle"
+  },
+  "adminScholarshipDescriptionHint": "اشرح المنحة وما الذي تُغطّيه",
+  "@adminScholarshipDescriptionHint": {
+    "description": "adminScholarshipDescriptionHint"
+  },
+  "adminScholarshipDescriptionHelper": "اذكر ما تشمله المنحة وشروط الأهلية والوثائق المطلوبة وما يستفيده الطلاب.",
+  "@adminScholarshipDescriptionHelper": {
+    "description": "adminScholarshipDescriptionHelper"
+  },
+  "adminScholarshipDescriptionValidatorLabel": "الوصف",
+  "@adminScholarshipDescriptionValidatorLabel": {
+    "description": "adminScholarshipDescriptionValidatorLabel"
+  },
+  "adminScholarshipEligibilityTitle": "شروط الأهلية",
+  "@adminScholarshipEligibilityTitle": {
+    "description": "adminScholarshipEligibilityTitle"
+  },
+  "adminScholarshipEligibilityHint": "اكتب متطلبًا واحدًا ثم اضغط Enter",
+  "@adminScholarshipEligibilityHint": {
+    "description": "adminScholarshipEligibilityHint"
+  },
+  "adminScholarshipEligibilityEmpty": "حدِّد من يحقّ له التقديم والمستندات المطلوبة والشروط الأكاديمية.",
+  "@adminScholarshipEligibilityEmpty": {
+    "description": "adminScholarshipEligibilityEmpty"
+  },
+  "adminScholarshipLogisticsTitle": "التفاصيل اللوجستية",
+  "@adminScholarshipLogisticsTitle": {
+    "description": "adminScholarshipLogisticsTitle"
+  },
+  "adminScholarshipLogisticsSubtitle": "اجمع المبلغ والموعد النهائي وتفاصيل الوجهة في قسم واحد ومرتّب.",
+  "@adminScholarshipLogisticsSubtitle": {
+    "description": "adminScholarshipLogisticsSubtitle"
+  },
+  "adminScholarshipAmountField": "المبلغ",
+  "@adminScholarshipAmountField": {
+    "description": "adminScholarshipAmountField"
+  },
+  "adminScholarshipAmountHint": "مثال: 250000",
+  "@adminScholarshipAmountHint": {
+    "description": "adminScholarshipAmountHint"
+  },
+  "adminScholarshipDeadlineField": "الموعد النهائي",
+  "@adminScholarshipDeadlineField": {
+    "description": "adminScholarshipDeadlineField"
+  },
+  "adminScholarshipDeadlineHint": "اختَر موعدًا نهائيًا",
+  "@adminScholarshipDeadlineHint": {
+    "description": "adminScholarshipDeadlineHint"
+  },
+  "adminScholarshipCountryField": "الدولة",
+  "@adminScholarshipCountryField": {
+    "description": "adminScholarshipCountryField"
+  },
+  "adminScholarshipCountryHint": "مثال: فرنسا",
+  "@adminScholarshipCountryHint": {
+    "description": "adminScholarshipCountryHint"
+  },
+  "adminScholarshipCityField": "المدينة",
+  "@adminScholarshipCityField": {
+    "description": "adminScholarshipCityField"
+  },
+  "adminScholarshipCityHint": "مثال: باريس",
+  "@adminScholarshipCityHint": {
+    "description": "adminScholarshipCityHint"
+  },
+  "adminScholarshipLocationField": "تسمية الموقع",
+  "@adminScholarshipLocationField": {
+    "description": "adminScholarshipLocationField"
+  },
+  "adminScholarshipLocationHint": "نصّ احتياطي للموقع",
+  "@adminScholarshipLocationHint": {
+    "description": "adminScholarshipLocationHint"
+  },
+  "adminScholarshipAdditionalInfoTitle": "معلومات إضافية",
+  "@adminScholarshipAdditionalInfoTitle": {
+    "description": "adminScholarshipAdditionalInfoTitle"
+  },
+  "adminScholarshipAdditionalInfoSubtitle": "استخدم هذه الحقول الاختياريّة لتحسين الاكتشاف والتصفية ووضوح التقديم الخارجي.",
+  "@adminScholarshipAdditionalInfoSubtitle": {
+    "description": "adminScholarshipAdditionalInfoSubtitle"
+  },
+  "adminScholarshipApplicationLink": "رابط التقديم",
+  "@adminScholarshipApplicationLink": {
+    "description": "adminScholarshipApplicationLink"
+  },
+  "adminScholarshipApplicationLinkHint": "رابط مباشر اختياري",
+  "@adminScholarshipApplicationLinkHint": {
+    "description": "adminScholarshipApplicationLinkHint"
+  },
+  "adminScholarshipFundingTypeField": "نوع التمويل",
+  "@adminScholarshipFundingTypeField": {
+    "description": "adminScholarshipFundingTypeField"
+  },
+  "adminScholarshipFundingTypeHint": "مثال: تمويل كامل، تمويل جزئي",
+  "@adminScholarshipFundingTypeHint": {
+    "description": "adminScholarshipFundingTypeHint"
+  },
+  "adminScholarshipCategoryField": "الفئة",
+  "@adminScholarshipCategoryField": {
+    "description": "adminScholarshipCategoryField"
+  },
+  "adminScholarshipCategoryHint": "مثال: ماستر، بحث، تبادل",
+  "@adminScholarshipCategoryHint": {
+    "description": "adminScholarshipCategoryHint"
+  },
+  "adminScholarshipLevelField": "المستوى",
+  "@adminScholarshipLevelField": {
+    "description": "adminScholarshipLevelField"
+  },
+  "adminScholarshipLevelHint": "مثال: ماستر، دكتوراه",
+  "@adminScholarshipLevelHint": {
+    "description": "adminScholarshipLevelHint"
+  },
+  "adminScholarshipImageUrl": "رابط الصورة",
+  "@adminScholarshipImageUrl": {
+    "description": "adminScholarshipImageUrl"
+  },
+  "adminScholarshipImageUrlHint": "رابط اختياري لصورة الغلاف",
+  "@adminScholarshipImageUrlHint": {
+    "description": "adminScholarshipImageUrlHint"
+  },
+  "adminScholarshipTagsField": "الوسوم",
+  "@adminScholarshipTagsField": {
+    "description": "adminScholarshipTagsField"
+  },
+  "adminScholarshipTagsHint": "وسوم مفصولة بفواصل",
+  "@adminScholarshipTagsHint": {
+    "description": "adminScholarshipTagsHint"
+  },
+  "adminScholarshipDatePickerHelp": "حدِّد الموعد النهائي",
+  "@adminScholarshipDatePickerHelp": {
+    "description": "adminScholarshipDatePickerHelp"
+  },
+  "adminScholarshipAmountInvalid": "أدخل مبلغًا صالحًا",
+  "@adminScholarshipAmountInvalid": {
+    "description": "adminScholarshipAmountInvalid"
+  },
+  "adminScholarshipEligibilityRequired": "أَضِف شرط أهلية واحدًا على الأقل",
+  "@adminScholarshipEligibilityRequired": {
+    "description": "adminScholarshipEligibilityRequired"
+  },
+  "adminScholarshipDeadlineRequired": "الموعد النهائي مطلوب",
+  "@adminScholarshipDeadlineRequired": {
+    "description": "adminScholarshipDeadlineRequired"
+  },
+  "adminScholarshipDeadlineInvalid": "استخدم تاريخًا صالحًا",
+  "@adminScholarshipDeadlineInvalid": {
+    "description": "adminScholarshipDeadlineInvalid"
+  },
+  "adminPreviewName": "الاسم",
+  "@adminPreviewName": {
+    "description": "adminPreviewName"
+  },
+  "adminPreviewAccount": "الحساب",
+  "@adminPreviewAccount": {
+    "description": "adminPreviewAccount"
+  },
+  "adminPreviewUserMetadata": "بيانات المستخدم",
+  "@adminPreviewUserMetadata": {
+    "description": "adminPreviewUserMetadata"
+  },
+  "adminPreviewUserMetadataSubtitle": "سجلّ الحساب المرتبط بهذا النشاط الإداري الأخير.",
+  "@adminPreviewUserMetadataSubtitle": {
+    "description": "adminPreviewUserMetadataSubtitle"
+  },
+  "adminPreviewItemMetadataSubtitle": "تمّ تجميع الحقول المهمّة هنا بتنسيق إداري أكثر قابلية للقراءة.",
+  "@adminPreviewItemMetadataSubtitle": {
+    "description": "adminPreviewItemMetadataSubtitle"
+  },
+  "adminPreviewLocationLogisticsSubtitle": "تساعدك هذه التفاصيل على تقييم كيفية تموضع الفرصة أمام المتقدّمين.",
+  "@adminPreviewLocationLogisticsSubtitle": {
+    "description": "adminPreviewLocationLogisticsSubtitle"
+  },
+  "adminPreviewRequirements": "المتطلّبات",
+  "@adminPreviewRequirements": {
+    "description": "adminPreviewRequirements"
+  },
+  "adminPreviewRequirementsSubtitle": "هذه هي المؤهّلات أو التوقّعات الرئيسية التي تُعرض على المتقدّمين.",
+  "@adminPreviewRequirementsSubtitle": {
+    "description": "adminPreviewRequirementsSubtitle"
+  },
+  "adminPreviewBenefitsSubtitle": "يمنح هذا القسم الإدارة لمحةً عمّا يجعل هذا الدور جذّابًا.",
+  "@adminPreviewBenefitsSubtitle": {
+    "description": "adminPreviewBenefitsSubtitle"
+  },
+  "adminPreviewProviderAccessSubtitle": "تساعدك هذه التفاصيل على مراجعة موقع المنحة وكيف يصل إليها الطلاب.",
+  "@adminPreviewProviderAccessSubtitle": {
+    "description": "adminPreviewProviderAccessSubtitle"
+  },
+  "adminPreviewEligibility": "الأهلية",
+  "@adminPreviewEligibility": {
+    "description": "adminPreviewEligibility"
+  },
+  "adminPreviewProviderDeliverySubtitle": "يساعدك هذا القسم على مراجعة كيفية تقديم التكوين وعرضه على المستخدمين.",
+  "@adminPreviewProviderDeliverySubtitle": {
+    "description": "adminPreviewProviderDeliverySubtitle"
+  },
+  "adminPreviewProblemSolutionImpactSubtitle": "يُبيِّن هذا القسم ما تعالجه الفكرة وكيف تعمل والقيمة التي تسعى إلى تقديمها.",
+  "@adminPreviewProblemSolutionImpactSubtitle": {
+    "description": "adminPreviewProblemSolutionImpactSubtitle"
+  },
+  "adminPreviewAudienceMetadataSubtitle": "تساعدك هذه الحقول على تقدير موقع الفكرة ومدى جاهزيّتها للمراجعة.",
+  "@adminPreviewAudienceMetadataSubtitle": {
+    "description": "adminPreviewAudienceMetadataSubtitle"
+  },
+  "adminPreviewTeamSkillSignalsSubtitle": "استخدم هذه الوسوم لفهم نوع الدعم الذي تحتاجه الفكرة في المرحلة المقبلة.",
+  "@adminPreviewTeamSkillSignalsSubtitle": {
+    "description": "adminPreviewTeamSkillSignalsSubtitle"
+  },
+  "adminPreviewAudience": "الجمهور",
+  "@adminPreviewAudience": {
+    "description": "adminPreviewAudience"
+  },
+  "adminPreviewSubmittedBy": "مقدَّمة من {name}",
+  "@adminPreviewSubmittedBy": {
+    "description": "adminPreviewSubmittedBy",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "John Doe"
+      }
+    }
+  },
+  "adminPreviewPublic": "عام",
+  "@adminPreviewPublic": {
+    "description": "adminPreviewPublic"
+  },
+  "adminPreviewPrivate": "خاص",
+  "@adminPreviewPrivate": {
+    "description": "adminPreviewPrivate"
+  },
+  "adminPreviewWithdrawnFromOpportunity": "تم سحب هذا الطلب من {opportunity}.",
+  "@adminPreviewWithdrawnFromOpportunity": {
+    "description": "adminPreviewWithdrawnFromOpportunity",
+    "placeholders": {
+      "opportunity": {
+        "type": "String",
+        "example": "Mobile Internship"
+      }
+    }
+  },
+  "adminPreviewWithdrawnGeneric": "تمّ سحب هذا الطلب.",
+  "@adminPreviewWithdrawnGeneric": {
+    "description": "adminPreviewWithdrawnGeneric"
+  },
+  "adminPreviewAppliedToOpportunity": "تقدّم إلى {opportunity}.",
+  "@adminPreviewAppliedToOpportunity": {
+    "description": "adminPreviewAppliedToOpportunity",
+    "placeholders": {
+      "opportunity": {
+        "type": "String",
+        "example": "Mobile Internship"
+      }
+    }
+  },
+  "adminPreviewApplicationDetailsFallback": "تفاصيل الطلب",
+  "@adminPreviewApplicationDetailsFallback": {
+    "description": "adminPreviewApplicationDetailsFallback"
+  },
+  "adminPreviewSectionAccountEyebrow": "الحساب",
+  "@adminPreviewSectionAccountEyebrow": {
+    "description": "adminPreviewSectionAccountEyebrow"
+  },
+  "adminPreviewSectionDetailsEyebrow": "التفاصيل",
+  "@adminPreviewSectionDetailsEyebrow": {
+    "description": "adminPreviewSectionDetailsEyebrow"
+  },
+  "adminPreviewSectionScholarshipDetailsEyebrow": "تفاصيل المنحة",
+  "@adminPreviewSectionScholarshipDetailsEyebrow": {
+    "description": "adminPreviewSectionScholarshipDetailsEyebrow"
+  },
+  "adminPreviewSectionResourceDetailsEyebrow": "تفاصيل المورد",
+  "@adminPreviewSectionResourceDetailsEyebrow": {
+    "description": "adminPreviewSectionResourceDetailsEyebrow"
+  },
+  "adminPreviewSectionRoleSetupEyebrow": "إعداد الدور",
+  "@adminPreviewSectionRoleSetupEyebrow": {
+    "description": "adminPreviewSectionRoleSetupEyebrow"
+  },
+  "adminPreviewSectionBuildStoryEyebrow": "قصّة الإنجاز",
+  "@adminPreviewSectionBuildStoryEyebrow": {
+    "description": "adminPreviewSectionBuildStoryEyebrow"
+  },
+  "adminPreviewSectionPositioningEyebrow": "التموضع",
+  "@adminPreviewSectionPositioningEyebrow": {
+    "description": "adminPreviewSectionPositioningEyebrow"
+  },
+  "adminPreviewSectionCollaborationEyebrow": "التعاون",
+  "@adminPreviewSectionCollaborationEyebrow": {
+    "description": "adminPreviewSectionCollaborationEyebrow"
+  },
+  "adminModerateProjectIdeaApprovedMessage": "تم اعتماد فكرة المشروع.",
+  "@adminModerateProjectIdeaApprovedMessage": {
+    "description": "adminModerateProjectIdeaApprovedMessage"
+  },
+  "adminModerateProjectIdeaRejectedMessage": "تم رفض فكرة المشروع.",
+  "@adminModerateProjectIdeaRejectedMessage": {
+    "description": "adminModerateProjectIdeaRejectedMessage"
+  },
+  "adminModerateOpportunityDeletedMessage": "تم حذف الفرصة.",
+  "@adminModerateOpportunityDeletedMessage": {
+    "description": "adminModerateOpportunityDeletedMessage"
+  },
+  "adminModerateScholarshipDeletedMessage": "تم حذف المنحة.",
+  "@adminModerateScholarshipDeletedMessage": {
+    "description": "adminModerateScholarshipDeletedMessage"
+  },
+  "adminModerateScholarshipDeletedTitle": "تم حذف المنحة",
+  "@adminModerateScholarshipDeletedTitle": {
+    "description": "adminModerateScholarshipDeletedTitle"
+  },
+  "adminModerateDeleteOpportunityTitle": "حذف الفرصة",
+  "@adminModerateDeleteOpportunityTitle": {
+    "description": "adminModerateDeleteOpportunityTitle"
+  },
+  "adminModerateDeleteScholarshipTitle": "حذف المنحة",
+  "@adminModerateDeleteScholarshipTitle": {
+    "description": "adminModerateDeleteScholarshipTitle"
+  },
+  "adminModerateDeleteOpportunityMessage": "هل أنت متأكد من حذف \"{title}\"؟",
+  "@adminModerateDeleteOpportunityMessage": {
+    "description": "adminModerateDeleteOpportunityMessage",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Mobile Internship"
+      }
+    }
+  },
+  "adminModerateDeleteScholarshipMessage": "هل أنت متأكد من حذف \"{title}\"؟",
+  "@adminModerateDeleteScholarshipMessage": {
+    "description": "adminModerateDeleteScholarshipMessage",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Master Scholarship"
+      }
+    }
+  },
+  "adminModerateDueLabel": "موعد الاستحقاق: {value}",
+  "@adminModerateDueLabel": {
+    "description": "adminModerateDueLabel",
+    "placeholders": {
+      "value": {
+        "type": "String",
+        "example": "Dec 31"
+      }
+    }
+  },
+  "adminActivityFilterAll": "الكل",
+  "@adminActivityFilterAll": {
+    "description": "adminActivityFilterAll"
+  },
+  "adminActivityFilterReviews": "المراجعات",
+  "@adminActivityFilterReviews": {
+    "description": "adminActivityFilterReviews"
+  },
+  "adminActivityFilterContent": "المحتوى",
+  "@adminActivityFilterContent": {
+    "description": "adminActivityFilterContent"
+  },
+  "adminActivityFilterLibrary": "المكتبة",
+  "@adminActivityFilterLibrary": {
+    "description": "adminActivityFilterLibrary"
+  },
+  "adminActivityFilterAccounts": "الحسابات",
+  "@adminActivityFilterAccounts": {
+    "description": "adminActivityFilterAccounts"
+  },
+  "adminActivityFilterPending": "قيد الانتظار",
+  "@adminActivityFilterPending": {
+    "description": "adminActivityFilterPending"
+  },
+  "adminPillImportedBooksCount": "{count} كتب مستوردة",
+  "@adminPillImportedBooksCount": {
+    "description": "adminPillImportedBooksCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "adminPillImportedVideosCount": "{count} مقاطع فيديو مستوردة",
+  "@adminPillImportedVideosCount": {
+    "description": "adminPillImportedVideosCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "adminPillResultsCount": "{count} نتائج",
+  "@adminPillResultsCount": {
+    "description": "adminPillResultsCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "adminPillResourcesCount": "{count} موارد",
+  "@adminPillResourcesCount": {
+    "description": "adminPillResourcesCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "adminPillFeaturedCount": "{count} مميَّزة",
+  "@adminPillFeaturedCount": {
+    "description": "adminPillFeaturedCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "adminPillBooksCount": "{count} كتب",
+  "@adminPillBooksCount": {
+    "description": "adminPillBooksCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "adminPillVideosCount": "{count} مقاطع فيديو",
+  "@adminPillVideosCount": {
+    "description": "adminPillVideosCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "adminPillOpportunitiesCount": "{count} فرص",
+  "@adminPillOpportunitiesCount": {
+    "description": "adminPillOpportunitiesCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "25"
+      }
+    }
+  },
+  "adminPillApplicationsBadge": "{count} {appsLabel}",
+  "@adminPillApplicationsBadge": {
+    "description": "adminPillApplicationsBadge",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "12"
+      },
+      "appsLabel": {
+        "type": "String",
+        "example": "applications"
+      }
+    }
+  },
+  "adminPillPendingDecisionMessage": "{summary} يحتاج إلى قرار في قسم المحتوى.",
+  "@adminPillPendingDecisionMessage": {
+    "description": "adminPillPendingDecisionMessage",
+    "placeholders": {
+      "summary": {
+        "type": "String",
+        "example": "2 pending ideas and 1 pending application"
+      }
+    }
+  },
+  "adminPendingItemsConjunction": "{first} و{second}",
+  "@adminPendingItemsConjunction": {
+    "description": "adminPendingItemsConjunction",
+    "placeholders": {
+      "first": {
+        "type": "String",
+        "example": "2 pending ideas"
+      },
+      "second": {
+        "type": "String",
+        "example": "1 pending application"
+      }
+    }
+  },
+  "adminPendingReviewBannerTitle": "بانتظار المراجعة",
+  "@adminPendingReviewBannerTitle": {
+    "description": "adminPendingReviewBannerTitle"
+  },
+  "adminContentPendingIdeaWarning": "فكرة معلَّقة. وافِق عليها أو ارفضها قبل أن تظهر كمحتوى تمّت مراجعته.",
+  "@adminContentPendingIdeaWarning": {
+    "description": "adminContentPendingIdeaWarning"
+  },
+  "adminContentIdeaApprovedSnack": "تم اعتماد {title}.",
+  "@adminContentIdeaApprovedSnack": {
+    "description": "adminContentIdeaApprovedSnack",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Campus AI Lab"
+      }
+    }
+  },
+  "adminContentIdeaRejectedSnack": "تم رفض {title}.",
+  "@adminContentIdeaRejectedSnack": {
+    "description": "adminContentIdeaRejectedSnack",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Campus AI Lab"
+      }
+    }
+  },
+  "adminContentProfileUnavailable": "الملف غير متاح",
+  "@adminContentProfileUnavailable": {
+    "description": "adminContentProfileUnavailable"
+  },
+  "adminContentWorkspaceTitleWithType": "{baseTitle} - {typeLabel}",
+  "@adminContentWorkspaceTitleWithType": {
+    "description": "adminContentWorkspaceTitleWithType",
+    "placeholders": {
+      "baseTitle": {
+        "type": "String",
+        "example": "Open opportunities"
+      },
+      "typeLabel": {
+        "type": "String",
+        "example": "Internships"
+      }
+    }
+  },
+  "adminStudentApplicationHistory": "سجلّ الطلبات",
+  "@adminStudentApplicationHistory": {
+    "description": "adminStudentApplicationHistory"
+  },
+  "adminStudentApplicationsSummaryError": "تعذّر تحميل ملخّص الطلبات حاليًا، لكن يمكنك فتح السجلّ الكامل والمحاولة من جديد.",
+  "@adminStudentApplicationsSummaryError": {
+    "description": "adminStudentApplicationsSummaryError"
+  },
+  "adminPreviewUserFallback": "مستخدم",
+  "@adminPreviewUserFallback": {
+    "description": "adminPreviewUserFallback"
+  },
+  "adminPreviewApplicationFallback": "طلب",
+  "@adminPreviewApplicationFallback": {
+    "description": "adminPreviewApplicationFallback"
+  },
+  "adminPreviewOpportunityFallback": "فرصة",
+  "@adminPreviewOpportunityFallback": {
+    "description": "adminPreviewOpportunityFallback"
+  },
+  "adminPreviewScholarshipFallback": "منحة",
+  "@adminPreviewScholarshipFallback": {
+    "description": "adminPreviewScholarshipFallback"
+  },
+  "adminPreviewTrainingFallback": "تكوين",
+  "@adminPreviewTrainingFallback": {
+    "description": "adminPreviewTrainingFallback"
+  },
+  "adminPreviewProjectIdeaFallback": "فكرة مشروع",
+  "@adminPreviewProjectIdeaFallback": {
+    "description": "adminPreviewProjectIdeaFallback"
+  },
+  "adminYoutubeGenericError": "حدث خطأ ما. يُرجى التحقّق من اتصالك والمحاولة مرة أخرى.",
+  "@adminYoutubeGenericError": {
+    "description": "adminYoutubeGenericError"
+  },
+  "adminPendingIdeasSummaryPlural": "{count, plural, zero{لا أفكار معلَّقة} one{فكرة واحدة معلَّقة} two{فكرتان معلَّقتان} few{{count} أفكار معلَّقة} many{{count} فكرة معلَّقة} other{{count} فكرة معلَّقة}}",
+  "@adminPendingIdeasSummaryPlural": {
+    "description": "adminPendingIdeasSummaryPlural",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compactLong"
+      }
+    }
+  },
+  "adminPendingApplicationsSummaryPlural": "{count, plural, zero{لا طلبات معلَّقة} one{طلب واحد معلَّق} two{طلبان معلَّقان} few{{count} طلبات معلَّقة} many{{count} طلبًا معلَّقًا} other{{count} طلب معلَّق}}",
+  "@adminPendingApplicationsSummaryPlural": {
+    "description": "adminPendingApplicationsSummaryPlural",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compactLong"
+      }
+    }
+  },
+  "uiFundingAmount": "مبلغ التمويل",
+  "@uiFundingAmount": {
+    "description": "uiFundingAmount"
+  },
+  "uiFundingCurrency": "عملة التمويل",
+  "@uiFundingCurrency": {
+    "description": "uiFundingCurrency"
+  },
+  "uiFundingNote": "ملاحظة التمويل",
+  "@uiFundingNote": {
+    "description": "uiFundingNote"
+  },
+  "uiSalaryMinimum": "الحد الأدنى للراتب",
+  "@uiSalaryMinimum": {
+    "description": "uiSalaryMinimum"
+  },
+  "uiSalaryMaximum": "الحد الأقصى للراتب",
+  "@uiSalaryMaximum": {
+    "description": "uiSalaryMaximum"
+  },
+  "uiSalaryPeriod": "فترة الراتب",
+  "@uiSalaryPeriod": {
+    "description": "uiSalaryPeriod"
+  },
+  "uiCompensationNote": "ملاحظة بشأن التعويض",
+  "@uiCompensationNote": {
+    "description": "uiCompensationNote"
+  },
+  "uiCountry": "الدولة",
+  "@uiCountry": {
+    "description": "uiCountry"
+  },
+  "uiName": "الاسم",
+  "@uiName": {
+    "description": "uiName"
+  },
+  "uiAccount": "الحساب",
+  "@uiAccount": {
+    "description": "uiAccount"
+  },
+  "uiPublic": "عام",
+  "@uiPublic": {
+    "description": "uiPublic"
+  },
+  "uiPrivate": "خاص",
+  "@uiPrivate": {
+    "description": "uiPrivate"
+  },
+  "uiAudience": "الجمهور",
+  "@uiAudience": {
+    "description": "uiAudience"
+  },
+  "uiRequirements": "المتطلبات",
+  "@uiRequirements": {
+    "description": "uiRequirements"
+  },
+  "uiEligibility": "الأهلية",
+  "@uiEligibility": {
+    "description": "uiEligibility"
+  },
+  "uiPublishingLabel": "النشر",
+  "@uiPublishingLabel": {
+    "description": "uiPublishingLabel"
+  },
+  "uiUserLabel": "مستخدم",
+  "@uiUserLabel": {
+    "description": "uiUserLabel"
+  },
+  "adminScholarshipEditTitle": "تعديل المنحة",
+  "@adminScholarshipEditTitle": {
+    "description": "adminScholarshipEditTitle"
+  },
+  "adminScholarshipPublishTitle": "نشر منحة",
+  "@adminScholarshipPublishTitle": {
+    "description": "adminScholarshipPublishTitle"
+  },
+  "adminScholarshipSaveLabel": "حفظ تغييرات المنحة",
+  "@adminScholarshipSaveLabel": {
+    "description": "adminScholarshipSaveLabel"
+  },
+  "adminScholarshipPublishLabel": "نشر المنحة",
+  "@adminScholarshipPublishLabel": {
+    "description": "adminScholarshipPublishLabel"
+  },
+  "adminScholarshipScaffoldSubtitle": "نسِّق المنح في التطبيق نفسه الذي يكتشفها فيه الطلاب، بهيكلة كافية لبطاقات أغنى وتصفية أكثر فائدة.",
+  "@adminScholarshipScaffoldSubtitle": {
+    "description": "adminScholarshipScaffoldSubtitle"
+  },
+  "adminScholarshipFeatureTitle": "إبراز هذه المنحة",
+  "@adminScholarshipFeatureTitle": {
+    "description": "adminScholarshipFeatureTitle"
+  },
+  "adminScholarshipFeatureSubtitle": "استخدم هذا الخيار للمنح ذات الأولوية العالية أو القوية بوجه خاص.",
+  "@adminScholarshipFeatureSubtitle": {
+    "description": "adminScholarshipFeatureSubtitle"
+  },
+  "adminScholarshipTitleLabel": "عنوان المنحة",
+  "@adminScholarshipTitleLabel": {
+    "description": "adminScholarshipTitleLabel"
+  },
+  "adminScholarshipEligibilityValidator": "أضِف شرط أهلية واحدًا على الأقل",
+  "@adminScholarshipEligibilityValidator": {
+    "description": "adminScholarshipEligibilityValidator"
+  },
+  "adminScholarshipAmountValidator": "أدخِل مبلغًا صالحًا",
+  "@adminScholarshipAmountValidator": {
+    "description": "adminScholarshipAmountValidator"
+  },
+  "adminScholarshipDeadlinePickerHelp": "اختيار التاريخ النهائي",
+  "@adminScholarshipDeadlinePickerHelp": {
+    "description": "adminScholarshipDeadlinePickerHelp"
+  },
+  "adminScholarshipLocationLabelField": "تسمية الموقع",
+  "@adminScholarshipLocationLabelField": {
+    "description": "adminScholarshipLocationLabelField"
+  },
+  "adminScholarshipApplicationLinkLabel": "رابط التقديم",
+  "@adminScholarshipApplicationLinkLabel": {
+    "description": "adminScholarshipApplicationLinkLabel"
+  },
+  "adminScholarshipFundingTypeLabel": "نوع التمويل",
+  "@adminScholarshipFundingTypeLabel": {
+    "description": "adminScholarshipFundingTypeLabel"
+  },
+  "adminScholarshipImageUrlLabel": "رابط الصورة",
+  "@adminScholarshipImageUrlLabel": {
+    "description": "adminScholarshipImageUrlLabel"
+  },
+  "moderateIdeaApprovedSnackTitle": "تمت الموافقة على الفكرة",
+  "@moderateIdeaApprovedSnackTitle": {
+    "description": "moderateIdeaApprovedSnackTitle"
+  },
+  "moderateIdeaApprovedSnackMessage": "تمت الموافقة على فكرة المشروع.",
+  "@moderateIdeaApprovedSnackMessage": {
+    "description": "moderateIdeaApprovedSnackMessage"
+  },
+  "moderateIdeaRejectedSnackTitle": "تم رفض الفكرة",
+  "@moderateIdeaRejectedSnackTitle": {
+    "description": "moderateIdeaRejectedSnackTitle"
+  },
+  "moderateIdeaRejectedSnackMessage": "تم رفض فكرة المشروع.",
+  "@moderateIdeaRejectedSnackMessage": {
+    "description": "moderateIdeaRejectedSnackMessage"
+  },
+  "moderateOpportunityDeletedSnackTitle": "تم حذف الفرصة",
+  "@moderateOpportunityDeletedSnackTitle": {
+    "description": "moderateOpportunityDeletedSnackTitle"
+  },
+  "moderateOpportunityDeletedSnackMessage": "تم حذف الفرصة.",
+  "@moderateOpportunityDeletedSnackMessage": {
+    "description": "moderateOpportunityDeletedSnackMessage"
+  },
+  "moderateScholarshipDeletedSnackTitle": "تم حذف المنحة",
+  "@moderateScholarshipDeletedSnackTitle": {
+    "description": "moderateScholarshipDeletedSnackTitle"
+  },
+  "moderateScholarshipDeletedSnackMessage": "تم حذف المنحة.",
+  "@moderateScholarshipDeletedSnackMessage": {
+    "description": "moderateScholarshipDeletedSnackMessage"
+  },
+  "moderateWorkingLabel": "جارٍ التنفيذ...",
+  "@moderateWorkingLabel": {
+    "description": "moderateWorkingLabel"
+  },
+  "moderateApproveLabel": "موافقة",
+  "@moderateApproveLabel": {
+    "description": "moderateApproveLabel"
+  },
+  "moderateRejectLabel": "رفض",
+  "@moderateRejectLabel": {
+    "description": "moderateRejectLabel"
+  },
+  "moderateNoIdeasReviewYet": "لا توجد أفكار مشاريع للمراجعة بعد",
+  "@moderateNoIdeasReviewYet": {
+    "description": "moderateNoIdeasReviewYet"
+  },
+  "moderateNoOpportunitiesYet": "لم يتم نشر أي فرص بعد",
+  "@moderateNoOpportunitiesYet": {
+    "description": "moderateNoOpportunitiesYet"
+  },
+  "moderateNoScholarshipsYet": "لم يتم نشر أي منح بعد",
+  "@moderateNoScholarshipsYet": {
+    "description": "moderateNoScholarshipsYet"
+  },
+  "moderateNoPendingIdeas": "لا توجد أفكار معلّقة للمراجعة",
+  "@moderateNoPendingIdeas": {
+    "description": "moderateNoPendingIdeas"
+  },
+  "moderatePendingIdeasCount": "الأفكار المعلّقة ({count})",
+  "@moderatePendingIdeasCount": {
+    "description": "moderatePendingIdeasCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderateAllIdeasCount": "جميع الأفكار ({count})",
+  "@moderateAllIdeasCount": {
+    "description": "moderateAllIdeasCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderateShowAllLabel": "إظهار الكل",
+  "@moderateShowAllLabel": {
+    "description": "moderateShowAllLabel"
+  },
+  "moderatePendingOnlyLabel": "المعلّقة فقط",
+  "@moderatePendingOnlyLabel": {
+    "description": "moderatePendingOnlyLabel"
+  },
+  "moderateSubmittedByLabel": "أرسلها: {name}",
+  "@moderateSubmittedByLabel": {
+    "description": "moderateSubmittedByLabel",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateUntitledOpportunity": "فرصة بلا عنوان",
+  "@moderateUntitledOpportunity": {
+    "description": "moderateUntitledOpportunity"
+  },
+  "moderateUnknownCompany": "شركة غير معروفة",
+  "@moderateUnknownCompany": {
+    "description": "moderateUnknownCompany"
+  },
+  "moderateUntitledScholarship": "منحة بلا عنوان",
+  "@moderateUntitledScholarship": {
+    "description": "moderateUntitledScholarship"
+  },
+  "moderateUnknownProvider": "جهة غير معروفة",
+  "@moderateUnknownProvider": {
+    "description": "moderateUnknownProvider"
+  },
+  "moderateAmountWithCurrency": "{amount} د.ج",
+  "@moderateAmountWithCurrency": {
+    "description": "moderateAmountWithCurrency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateDueLabel": "الموعد: {date}",
+  "@moderateDueLabel": {
+    "description": "moderateDueLabel",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateDeleteOpportunityTitle": "حذف الفرصة",
+  "@moderateDeleteOpportunityTitle": {
+    "description": "moderateDeleteOpportunityTitle"
+  },
+  "moderateDeleteOpportunityConfirm": "هل أنت متأكد من حذف \"{title}\"؟",
+  "@moderateDeleteOpportunityConfirm": {
+    "description": "moderateDeleteOpportunityConfirm",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateDeleteScholarshipTitle": "حذف المنحة",
+  "@moderateDeleteScholarshipTitle": {
+    "description": "moderateDeleteScholarshipTitle"
+  },
+  "moderateDeleteScholarshipConfirm": "هل أنت متأكد من حذف \"{title}\"؟",
+  "@moderateDeleteScholarshipConfirm": {
+    "description": "moderateDeleteScholarshipConfirm",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateDeleteAction": "حذف",
+  "@moderateDeleteAction": {
+    "description": "moderateDeleteAction"
+  },
+  "activitySectionAll": "الكل",
+  "@activitySectionAll": {
+    "description": "activitySectionAll"
+  },
+  "activitySectionReviews": "المراجعات",
+  "@activitySectionReviews": {
+    "description": "activitySectionReviews"
+  },
+  "activitySectionContent": "المحتوى",
+  "@activitySectionContent": {
+    "description": "activitySectionContent"
+  },
+  "activitySectionLibrary": "المكتبة",
+  "@activitySectionLibrary": {
+    "description": "activitySectionLibrary"
+  },
+  "activitySectionAccounts": "الحسابات",
+  "@activitySectionAccounts": {
+    "description": "activitySectionAccounts"
+  },
+  "activitySectionPending": "معلّق",
+  "@activitySectionPending": {
+    "description": "activitySectionPending"
+  },
+  "dashboardPendingCompanies": "الشركات",
+  "@dashboardPendingCompanies": {
+    "description": "dashboardPendingCompanies"
+  },
+  "dashboardPendingIdeas": "الأفكار",
+  "@dashboardPendingIdeas": {
+    "description": "dashboardPendingIdeas"
+  },
+  "dashboardPendingApplications": "الطلبات",
+  "@dashboardPendingApplications": {
+    "description": "dashboardPendingApplications"
+  },
+  "contentIdeaApprovedSnackTitle": "تمت الموافقة على الفكرة",
+  "@contentIdeaApprovedSnackTitle": {
+    "description": "contentIdeaApprovedSnackTitle"
+  },
+  "contentIdeaApprovedMessage": "تمت الموافقة على {title}.",
+  "@contentIdeaApprovedMessage": {
+    "description": "contentIdeaApprovedMessage",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "contentIdeaRejectedSnackTitle": "تم رفض الفكرة",
+  "@contentIdeaRejectedSnackTitle": {
+    "description": "contentIdeaRejectedSnackTitle"
+  },
+  "contentIdeaRejectedMessage": "تم رفض {title}.",
+  "@contentIdeaRejectedMessage": {
+    "description": "contentIdeaRejectedMessage",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "contentPendingIdeaInline": "فكرة معلّقة. وافِق عليها أو ارفضها قبل أن تظهر كمحتوى مُراجع.",
+  "@contentPendingIdeaInline": {
+    "description": "contentPendingIdeaInline"
+  },
+  "contentPendingReviewTitle": "بانتظار المراجعة",
+  "@contentPendingReviewTitle": {
+    "description": "contentPendingReviewTitle"
+  },
+  "contentPendingPartsCombined": "{parts} بحاجة إلى قرار في قسم المحتوى.",
+  "@contentPendingPartsCombined": {
+    "description": "contentPendingPartsCombined",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "contentPendingIdeasPart": "{count, plural, =0{لا توجد أفكار معلّقة} =1{فكرة معلّقة واحدة} =2{فكرتان معلّقتان} few{{count} أفكار معلّقة} many{{count} فكرة معلّقة} other{{count} فكرة معلّقة}}",
+  "@contentPendingIdeasPart": {
+    "description": "contentPendingIdeasPart",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPendingApplicationsPart": "{count, plural, =0{لا توجد طلبات معلّقة} =1{طلب معلّق واحد} =2{طلبان معلّقان} few{{count} طلبات معلّقة} many{{count} طلبًا معلّقًا} other{{count} طلب معلّق}}",
+  "@contentPendingApplicationsPart": {
+    "description": "contentPendingApplicationsPart",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPendingPartsJoiner": " و",
+  "@contentPendingPartsJoiner": {
+    "description": "contentPendingPartsJoiner"
+  },
+  "contentProfileUnavailableTitle": "الملف غير متاح",
+  "@contentProfileUnavailableTitle": {
+    "description": "contentProfileUnavailableTitle"
+  },
+  "contentPillIdeasCount": "{count, plural, =0{لا توجد أفكار} =1{فكرة واحدة} =2{فكرتان} few{{count} أفكار} many{{count} فكرة} other{{count} فكرة}}",
+  "@contentPillIdeasCount": {
+    "description": "contentPillIdeasCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillPendingIdeas": "{count, plural, =0{لا توجد أفكار معلّقة} =1{فكرة معلّقة واحدة} =2{فكرتان معلّقتان} few{{count} أفكار معلّقة} many{{count} فكرة معلّقة} other{{count} فكرة معلّقة}}",
+  "@contentPillPendingIdeas": {
+    "description": "contentPillPendingIdeas",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillPendingApps": "{count, plural, =0{لا توجد طلبات معلّقة} =1{طلب معلّق واحد} =2{طلبان معلّقان} few{{count} طلبات معلّقة} many{{count} طلبًا معلّقًا} other{{count} طلب معلّق}}",
+  "@contentPillPendingApps": {
+    "description": "contentPillPendingApps",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillOpportunitiesCount": "{count, plural, =0{لا توجد فرص} =1{فرصة واحدة} =2{فرصتان} few{{count} فرص} many{{count} فرصة} other{{count} فرصة}}",
+  "@contentPillOpportunitiesCount": {
+    "description": "contentPillOpportunitiesCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillScholarshipsCount": "{count, plural, =0{لا توجد منح} =1{منحة واحدة} =2{منحتان} few{{count} منح} many{{count} منحة} other{{count} منحة}}",
+  "@contentPillScholarshipsCount": {
+    "description": "contentPillScholarshipsCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillResourcesCount": "{count, plural, =0{لا توجد موارد} =1{مورد واحد} =2{موردان} few{{count} موارد} many{{count} موردًا} other{{count} مورد}}",
+  "@contentPillResourcesCount": {
+    "description": "contentPillResourcesCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillCountWithLabel": "{count} {label}",
+  "@contentPillCountWithLabel": {
+    "description": "contentPillCountWithLabel",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryPillResourcesCount": "{count, plural, =0{لا توجد موارد} =1{مورد واحد} =2{موردان} few{{count} موارد} many{{count} موردًا} other{{count} مورد}}",
+  "@libraryPillResourcesCount": {
+    "description": "libraryPillResourcesCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillFeaturedCount": "{count, plural, =0{لا شيء مُميَّز} =1{عنصر مُميَّز واحد} =2{عنصران مميَّزان} few{{count} عناصر مميَّزة} many{{count} عنصرًا مميَّزًا} other{{count} عنصر مميَّز}}",
+  "@libraryPillFeaturedCount": {
+    "description": "libraryPillFeaturedCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillBooksCount": "{count, plural, =0{لا توجد كتب} =1{كتاب واحد} =2{كتابان} few{{count} كتب} many{{count} كتابًا} other{{count} كتاب}}",
+  "@libraryPillBooksCount": {
+    "description": "libraryPillBooksCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillVideosCount": "{count, plural, =0{لا توجد مقاطع} =1{مقطع واحد} =2{مقطعان} few{{count} مقاطع} many{{count} مقطعًا} other{{count} مقطع}}",
+  "@libraryPillVideosCount": {
+    "description": "libraryPillVideosCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillImportedBooks": "{count, plural, =0{لا توجد كتب مستوردة} =1{كتاب مستورد واحد} =2{كتابان مستوردان} few{{count} كتب مستوردة} many{{count} كتابًا مستوردًا} other{{count} كتاب مستورد}}",
+  "@libraryPillImportedBooks": {
+    "description": "libraryPillImportedBooks",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillImportedVideos": "{count, plural, =0{لا توجد مقاطع مستوردة} =1{مقطع مستورد واحد} =2{مقطعان مستوردان} few{{count} مقاطع مستوردة} many{{count} مقطعًا مستوردًا} other{{count} مقطع مستورد}}",
+  "@libraryPillImportedVideos": {
+    "description": "libraryPillImportedVideos",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillResultsCount": "{count, plural, =0{لا توجد نتائج} =1{نتيجة واحدة} =2{نتيجتان} few{{count} نتائج} many{{count} نتيجة} other{{count} نتيجة}}",
+  "@libraryPillResultsCount": {
+    "description": "libraryPillResultsCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentProfileApplicationHistory": "سجل الطلبات",
+  "@studentProfileApplicationHistory": {
+    "description": "studentProfileApplicationHistory"
+  },
+  "studentProfileLoadingHistory": "جارٍ تحميل سجل الطلبات...",
+  "@studentProfileLoadingHistory": {
+    "description": "studentProfileLoadingHistory"
+  },
+  "studentProfileHistoryUnavailable": "سجل الطلبات غير متاح حاليًا.",
+  "@studentProfileHistoryUnavailable": {
+    "description": "studentProfileHistoryUnavailable"
+  },
+  "studentProfileNoApplicationsYet": "لم يُقدِّم هذا الطالب أي طلبات بعد.",
+  "@studentProfileNoApplicationsYet": {
+    "description": "studentProfileNoApplicationsYet"
+  },
+  "studentProfileApplicationsCount": "{count, plural, =0{لا توجد طلبات مُقدَّمة} =1{طلب مُقدَّم واحد} =2{طلبان مُقدَّمان} few{{count} طلبات مُقدَّمة} many{{count} طلبًا مُقدَّمًا} other{{count} طلب مُقدَّم}}",
+  "@studentProfileApplicationsCount": {
+    "description": "studentProfileApplicationsCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentProfileSummaryError": "تعذّر تحميل ملخّص الطلبات حاليًا، لكن يمكنك فتح السجل الكامل والمحاولة مرة أخرى.",
+  "@studentProfileSummaryError": {
+    "description": "studentProfileSummaryError"
+  },
+  "studentProfileViewAllAppsCount": "عرض جميع الطلبات ({count})",
+  "@studentProfileViewAllAppsCount": {
+    "description": "studentProfileViewAllAppsCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentProfileNoApplicationsYetTitle": "لا توجد طلبات بعد",
+  "@studentProfileNoApplicationsYetTitle": {
+    "description": "studentProfileNoApplicationsYetTitle"
+  },
+  "studentProfileNoApplicationsMessage": "لم يُقدِّم هذا الطالب أي طلبات حتى الآن.",
+  "@studentProfileNoApplicationsMessage": {
+    "description": "studentProfileNoApplicationsMessage"
+  },
+  "studentProfileFullHistoryUnavailable": "تعذّر تحميل السجل الكامل لطلبات هذا الطالب حاليًا.",
+  "@studentProfileFullHistoryUnavailable": {
+    "description": "studentProfileFullHistoryUnavailable"
+  },
+  "studentProfileOpportunityUnavailable": "الفرصة غير متاحة",
+  "@studentProfileOpportunityUnavailable": {
+    "description": "studentProfileOpportunityUnavailable"
+  },
+  "studentProfileOpportunityHidden": "الفرصة مخفية",
+  "@studentProfileOpportunityHidden": {
+    "description": "studentProfileOpportunityHidden"
+  },
+  "studentProfileOpportunityClosed": "الفرصة مغلقة",
+  "@studentProfileOpportunityClosed": {
+    "description": "studentProfileOpportunityClosed"
+  },
+  "activityPreviewRoleLabel": "الدور",
+  "@activityPreviewRoleLabel": {
+    "description": "activityPreviewRoleLabel"
+  },
+  "activityPreviewAccountLabel": "الحساب",
+  "@activityPreviewAccountLabel": {
+    "description": "activityPreviewAccountLabel"
+  },
+  "activityPreviewCompanyReviewLabel": "مراجعة الشركة",
+  "@activityPreviewCompanyReviewLabel": {
+    "description": "activityPreviewCompanyReviewLabel"
+  },
+  "activityPreviewActivityLabel": "النشاط",
+  "@activityPreviewActivityLabel": {
+    "description": "activityPreviewActivityLabel"
+  },
+  "activityPreviewUserMetadataTitle": "بيانات المستخدم الوصفية",
+  "@activityPreviewUserMetadataTitle": {
+    "description": "activityPreviewUserMetadataTitle"
+  },
+  "activityPreviewUserMetadataSubtitle": "سجل الحساب المرتبط بهذا النشاط الإداري الأخير.",
+  "@activityPreviewUserMetadataSubtitle": {
+    "description": "activityPreviewUserMetadataSubtitle"
+  },
+  "activityPreviewItemMetadataTitle": "بيانات العنصر الوصفية",
+  "@activityPreviewItemMetadataTitle": {
+    "description": "activityPreviewItemMetadataTitle"
+  },
+  "activityPreviewApplicationsLabel": "الطلبات",
+  "@activityPreviewApplicationsLabel": {
+    "description": "activityPreviewApplicationsLabel"
+  },
+  "activityPreviewDeadlineLabel": "الموعد النهائي",
+  "@activityPreviewDeadlineLabel": {
+    "description": "activityPreviewDeadlineLabel"
+  },
+  "activityPreviewCompensationLabel": "التعويض",
+  "@activityPreviewCompensationLabel": {
+    "description": "activityPreviewCompensationLabel"
+  },
+  "activityPreviewWorkSetupLabel": "نمط العمل",
+  "@activityPreviewWorkSetupLabel": {
+    "description": "activityPreviewWorkSetupLabel"
+  },
+  "activityPreviewRoleOverviewTitle": "نظرة عامة على الدور",
+  "@activityPreviewRoleOverviewTitle": {
+    "description": "activityPreviewRoleOverviewTitle"
+  },
+  "activityPreviewLocationLogisticsTitle": "الموقع واللوجستيات",
+  "@activityPreviewLocationLogisticsTitle": {
+    "description": "activityPreviewLocationLogisticsTitle"
+  },
+  "activityPreviewRequirementsTitle": "المتطلبات",
+  "@activityPreviewRequirementsTitle": {
+    "description": "activityPreviewRequirementsTitle"
+  },
+  "activityPreviewBenefitsTitle": "المزايا",
+  "@activityPreviewBenefitsTitle": {
+    "description": "activityPreviewBenefitsTitle"
+  },
+  "activityPreviewAmountLabel": "المبلغ",
+  "@activityPreviewAmountLabel": {
+    "description": "activityPreviewAmountLabel"
+  },
+  "activityPreviewProviderLabel": "الجهة المقدِّمة",
+  "@activityPreviewProviderLabel": {
+    "description": "activityPreviewProviderLabel"
+  },
+  "activityPreviewAccessLabel": "الوصول",
+  "@activityPreviewAccessLabel": {
+    "description": "activityPreviewAccessLabel"
+  },
+  "activityPreviewScholarshipOverviewTitle": "نظرة عامة على المنحة",
+  "@activityPreviewScholarshipOverviewTitle": {
+    "description": "activityPreviewScholarshipOverviewTitle"
+  },
+  "activityPreviewEligibilityTitle": "الأهلية",
+  "@activityPreviewEligibilityTitle": {
+    "description": "activityPreviewEligibilityTitle"
+  },
+  "activityPreviewProviderAccessTitle": "الجهة المقدِّمة والوصول",
+  "@activityPreviewProviderAccessTitle": {
+    "description": "activityPreviewProviderAccessTitle"
+  },
+  "activityPreviewDurationLabel": "المدة",
+  "@activityPreviewDurationLabel": {
+    "description": "activityPreviewDurationLabel"
+  },
+  "activityPreviewLearnersLabel": "المتعلمون",
+  "@activityPreviewLearnersLabel": {
+    "description": "activityPreviewLearnersLabel"
+  },
+  "activityPreviewRatingLabel": "التقييم",
+  "@activityPreviewRatingLabel": {
+    "description": "activityPreviewRatingLabel"
+  },
+  "activityPreviewStatusLabel": "الحالة",
+  "@activityPreviewStatusLabel": {
+    "description": "activityPreviewStatusLabel"
+  },
+  "activityPreviewTrainingOverviewTitle": "نظرة عامة على التدريب",
+  "@activityPreviewTrainingOverviewTitle": {
+    "description": "activityPreviewTrainingOverviewTitle"
+  },
+  "activityPreviewProviderDeliverySetupTitle": "الجهة المقدِّمة وإعداد التقديم",
+  "@activityPreviewProviderDeliverySetupTitle": {
+    "description": "activityPreviewProviderDeliverySetupTitle"
+  },
+  "activityPreviewInterestedLabel": "المهتمون",
+  "@activityPreviewInterestedLabel": {
+    "description": "activityPreviewInterestedLabel"
+  },
+  "activityPreviewProblemSolutionImpactTitle": "المشكلة والحل والأثر",
+  "@activityPreviewProblemSolutionImpactTitle": {
+    "description": "activityPreviewProblemSolutionImpactTitle"
+  },
+  "activityPreviewProblemStatementTitle": "صياغة المشكلة",
+  "@activityPreviewProblemStatementTitle": {
+    "description": "activityPreviewProblemStatementTitle"
+  },
+  "activityPreviewProposedSolutionTitle": "الحل المقترح",
+  "@activityPreviewProposedSolutionTitle": {
+    "description": "activityPreviewProposedSolutionTitle"
+  },
+  "activityPreviewExpectedBenefitsTitle": "المزايا المتوقعة",
+  "@activityPreviewExpectedBenefitsTitle": {
+    "description": "activityPreviewExpectedBenefitsTitle"
+  },
+  "activityPreviewAudienceMetadataTitle": "الجمهور والبيانات الوصفية",
+  "@activityPreviewAudienceMetadataTitle": {
+    "description": "activityPreviewAudienceMetadataTitle"
+  },
+  "activityPreviewTeamSkillSignalsTitle": "المؤشرات الخاصة بالفريق والمهارات",
+  "@activityPreviewTeamSkillSignalsTitle": {
+    "description": "activityPreviewTeamSkillSignalsTitle"
+  },
+  "activityPreviewUpdatedRecently": "تم التحديث مؤخرًا",
+  "@activityPreviewUpdatedRecently": {
+    "description": "activityPreviewUpdatedRecently"
+  },
+  "activityPreviewUpdatedMinutes": "{count, plural, =0{تم التحديث الآن} =1{تم التحديث قبل دقيقة} =2{تم التحديث قبل دقيقتين} few{تم التحديث قبل {count} دقائق} many{تم التحديث قبل {count} دقيقة} other{تم التحديث قبل {count} دقيقة}}",
+  "@activityPreviewUpdatedMinutes": {
+    "description": "activityPreviewUpdatedMinutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activityPreviewUpdatedHours": "{count, plural, =0{تم التحديث الآن} =1{تم التحديث قبل ساعة} =2{تم التحديث قبل ساعتين} few{تم التحديث قبل {count} ساعات} many{تم التحديث قبل {count} ساعة} other{تم التحديث قبل {count} ساعة}}",
+  "@activityPreviewUpdatedHours": {
+    "description": "activityPreviewUpdatedHours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activityPreviewUpdatedDays": "{count, plural, =0{تم التحديث اليوم} =1{تم التحديث منذ يوم} =2{تم التحديث منذ يومين} few{تم التحديث منذ {count} أيام} many{تم التحديث منذ {count} يومًا} other{تم التحديث منذ {count} يوم}}",
+  "@activityPreviewUpdatedDays": {
+    "description": "activityPreviewUpdatedDays",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activityPreviewUpdatedDate": "تم التحديث في {date}",
+  "@activityPreviewUpdatedDate": {
+    "description": "activityPreviewUpdatedDate",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPreviewDateUnknown": "التاريخ غير معروف",
+  "@activityPreviewDateUnknown": {
+    "description": "activityPreviewDateUnknown"
+  },
+  "activityPreviewUnknownTime": "الوقت غير معروف",
+  "@activityPreviewUnknownTime": {
+    "description": "activityPreviewUnknownTime"
+  },
+  "studentProfileNoSubmittedApps": "لا توجد طلبات مُقدَّمة بعد.",
+  "@studentProfileNoSubmittedApps": {
+    "description": "studentProfileNoSubmittedApps"
+  },
+  "studentProfileSubmittedAvailable": "{count, plural, =0{لا توجد طلبات مُقدَّمة للمراجعة} =1{طلب واحد مُقدَّم متاح للمراجعة} =2{طلبان مُقدَّمان متاحان للمراجعة} few{{count} طلبات مُقدَّمة متاحة للمراجعة} many{{count} طلبًا مُقدَّمًا متاحًا للمراجعة} other{{count} طلب مُقدَّم متاح للمراجعة}}",
+  "@studentProfileSubmittedAvailable": {
+    "description": "studentProfileSubmittedAvailable",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiUser": "مستخدم",
+  "@uiUser": {
+    "description": "uiUser"
+  },
+  "activityPreviewBuildStoryEyebrow": "قصة البناء",
+  "@activityPreviewBuildStoryEyebrow": {
+    "description": "activityPreviewBuildStoryEyebrow"
+  },
+  "activityPreviewPositioningEyebrow": "التموضع",
+  "@activityPreviewPositioningEyebrow": {
+    "description": "activityPreviewPositioningEyebrow"
+  },
+  "activityPreviewCollaborationEyebrow": "التعاون",
+  "@activityPreviewCollaborationEyebrow": {
+    "description": "activityPreviewCollaborationEyebrow"
+  },
+  "activityPreviewResourceDetailsEyebrow": "تفاصيل المورد",
+  "@activityPreviewResourceDetailsEyebrow": {
+    "description": "activityPreviewResourceDetailsEyebrow"
+  },
+  "activityPreviewSkillsNeededTitle": "المهارات المطلوبة",
+  "@activityPreviewSkillsNeededTitle": {
+    "description": "activityPreviewSkillsNeededTitle"
+  },
+  "activityPreviewTeamNeededTitle": "الفريق المطلوب",
+  "@activityPreviewTeamNeededTitle": {
+    "description": "activityPreviewTeamNeededTitle"
+  },
+  "activityPreviewItemMetadataSubtitle": "تم تجميع الحقول المهمة هنا في تخطيط إداري أكثر قابلية للقراءة.",
+  "@activityPreviewItemMetadataSubtitle": {
+    "description": "activityPreviewItemMetadataSubtitle"
+  },
+  "activityPreviewLocationLogisticsSubtitle": "تساعدك هذه التفاصيل على تقييم كيفية تقديم الفرصة للمتقدمين.",
+  "@activityPreviewLocationLogisticsSubtitle": {
+    "description": "activityPreviewLocationLogisticsSubtitle"
+  },
+  "activityPreviewRequirementsSubtitle": "هذه هي المؤهلات أو التوقعات الرئيسية المعروضة على المتقدمين.",
+  "@activityPreviewRequirementsSubtitle": {
+    "description": "activityPreviewRequirementsSubtitle"
+  },
+  "activityPreviewBenefitsSubtitle": "هذا يمنح المسؤول رؤية لما يجعل الدور جذابًا.",
+  "@activityPreviewBenefitsSubtitle": {
+    "description": "activityPreviewBenefitsSubtitle"
+  },
+  "activityPreviewProviderAccessSubtitle": "تساعدك هذه التفاصيل على مراجعة موقع المنحة وكيفية وصول الطلاب إليها.",
+  "@activityPreviewProviderAccessSubtitle": {
+    "description": "activityPreviewProviderAccessSubtitle"
+  },
+  "activityPreviewProviderDeliverySetupSubtitle": "يساعدك هذا القسم على مراجعة كيفية تجهيز التدريب وتقديمه للمستخدمين.",
+  "@activityPreviewProviderDeliverySetupSubtitle": {
+    "description": "activityPreviewProviderDeliverySetupSubtitle"
+  },
+  "activityPreviewProblemSolutionSubtitle": "يوضح هذا القسم ما تحله الفكرة وكيف تعمل والقيمة التي تهدف إلى تحقيقها.",
+  "@activityPreviewProblemSolutionSubtitle": {
+    "description": "activityPreviewProblemSolutionSubtitle"
+  },
+  "activityPreviewAudienceMetadataSubtitle": "تساعدك هذه الحقول على تقييم مكان الفكرة ومدى جاهزيتها للمراجعة.",
+  "@activityPreviewAudienceMetadataSubtitle": {
+    "description": "activityPreviewAudienceMetadataSubtitle"
+  },
+  "activityPreviewTeamSkillSignalsSubtitle": "استخدم هذه الوسوم لفهم الدعم الذي تحتاجه الفكرة لاحقًا.",
+  "@activityPreviewTeamSkillSignalsSubtitle": {
+    "description": "activityPreviewTeamSkillSignalsSubtitle"
+  },
+  "activityPreviewWithdrawnFromOpportunity": "تم سحب هذا الطلب من {opportunity}.",
+  "@activityPreviewWithdrawnFromOpportunity": {
+    "description": "activityPreviewWithdrawnFromOpportunity",
+    "placeholders": {
+      "opportunity": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPreviewWithdrawnGeneric": "تم سحب هذا الطلب.",
+  "@activityPreviewWithdrawnGeneric": {
+    "description": "activityPreviewWithdrawnGeneric"
+  },
+  "activityPreviewAppliedToOpportunity": "تم التقديم على {opportunity}.",
+  "@activityPreviewAppliedToOpportunity": {
+    "description": "activityPreviewAppliedToOpportunity",
+    "placeholders": {
+      "opportunity": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPreviewProjectIdeaFallback": "فكرة مشروع",
+  "@activityPreviewProjectIdeaFallback": {
+    "description": "activityPreviewProjectIdeaFallback"
+  },
+  "activityPreviewScholarshipFallback": "منحة",
+  "@activityPreviewScholarshipFallback": {
+    "description": "activityPreviewScholarshipFallback"
+  },
+  "activityPreviewSubmittedByPrefix": "مقدّم من {name}",
+  "@activityPreviewSubmittedByPrefix": {
+    "description": "activityPreviewSubmittedByPrefix",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPreviewDetailsUnavailableTitle": "التفاصيل غير متاحة",
+  "@activityPreviewDetailsUnavailableTitle": {
+    "description": "activityPreviewDetailsUnavailableTitle"
+  },
+  "activityPreviewDetailsUnavailableMessage": "تعذّر علينا تحميل سجل {recordType} المرتبط في الوقت الحالي.",
+  "@activityPreviewDetailsUnavailableMessage": {
+    "description": "activityPreviewDetailsUnavailableMessage",
+    "placeholders": {
+      "recordType": {
+        "type": "String"
+      }
+    }
   }
 }

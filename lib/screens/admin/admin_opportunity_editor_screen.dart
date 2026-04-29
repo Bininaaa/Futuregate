@@ -190,9 +190,9 @@ class _AdminOpportunityEditorScreenState
                 children: [
                   AdminEditorField(
                     controller: _publisherController,
-                    label: 'Publisher name',
-                    hint: 'e.g. FutureGate Admin',
-                    validator: adminRequiredMin('Publisher name', min: 3),
+                    label: l10n.uiPublisherName,
+                    hint: l10n.adminOpportunityPublisherHint,
+                    validator: adminRequiredMin(l10n.uiPublisherName, min: 3),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -279,24 +279,23 @@ class _AdminOpportunityEditorScreenState
               title: l10n.descriptionSectionTitle,
               child: AdminEditorField(
                 controller: _descriptionController,
-                label: 'Description',
-                hint: 'Describe the role, scope, and value clearly',
+                label: l10n.uiDescription,
+                hint: l10n.adminOpportunityDescriptionHint,
                 maxLines: 6,
                 minLength: 60,
-                helperText:
-                    'Add enough detail for students to understand scope, expectations, and value.',
-                validator: adminRequiredMin('Description', min: 60),
+                helperText: l10n.adminOpportunityDescriptionHelper,
+                validator: adminRequiredMin(l10n.uiDescription, min: 60),
               ),
             ),
             const SizedBox(height: 12),
             AdminEditorSection(
               title: OpportunityType.requirementsLabel(_type, l10n),
-              subtitle: _requirementsSectionSubtitle(),
+              subtitle: _requirementsSectionSubtitle(l10n),
               child: AdminEditorListField(
                 label: '',
                 hint: _type == OpportunityType.sponsoring
-                    ? 'Type one eligibility rule, then press Enter'
-                    : 'Type one requirement, then press Enter',
+                    ? l10n.adminOpportunityRequirementHintRule
+                    : l10n.adminOpportunityRequirementHintItem,
                 values: _requirementItems,
                 onChanged: (items) => setState(() => _requirementItems = items),
                 listController: _requirementsListController,
@@ -312,8 +311,8 @@ class _AdminOpportunityEditorScreenState
                 children: [
                   AdminEditorField(
                     controller: _deadlineController,
-                    label: 'Application deadline',
-                    hint: 'Select a closing date',
+                    label: l10n.uiApplicationDeadline,
+                    hint: l10n.adminOpportunityDeadlineHint,
                     readOnly: true,
                     suffixIcon: const Icon(Icons.calendar_today_rounded),
                     onTap: _pickDeadline,
@@ -326,8 +325,8 @@ class _AdminOpportunityEditorScreenState
                         Expanded(
                           child: AdminEditorField(
                             controller: _fundingAmountController,
-                            label: 'Funding amount',
-                            hint: 'e.g. 250000',
+                            label: l10n.uiFundingAmount,
+                            hint: l10n.adminOpportunityFundingAmountHint,
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
@@ -338,7 +337,7 @@ class _AdminOpportunityEditorScreenState
                         Expanded(
                           child: AdminEditorDropdown<String>(
                             value: _fundingCurrency,
-                            label: 'Funding currency',
+                            label: l10n.uiFundingCurrency,
                             items: OpportunityMetadata.supportedCurrencies
                                 .map(
                                   (item) => DropdownMenuItem(
@@ -356,8 +355,8 @@ class _AdminOpportunityEditorScreenState
                     const SizedBox(height: 12),
                     AdminEditorField(
                       controller: _fundingNoteController,
-                      label: 'Funding note',
-                      hint: 'Optional support details shown to students',
+                      label: l10n.uiFundingNote,
+                      hint: l10n.adminOpportunityFundingNoteHint,
                       maxLines: 2,
                       validator: _validateFundingNote,
                     ),
@@ -369,8 +368,8 @@ class _AdminOpportunityEditorScreenState
                         Expanded(
                           child: AdminEditorField(
                             controller: _salaryMinController,
-                            label: 'Salary minimum',
-                            hint: 'e.g. 60000',
+                            label: l10n.uiSalaryMinimum,
+                            hint: l10n.adminOpportunitySalaryMinHint,
                             keyboardType: TextInputType.number,
                             validator: _validateSalaryMin,
                           ),
@@ -379,8 +378,8 @@ class _AdminOpportunityEditorScreenState
                         Expanded(
                           child: AdminEditorField(
                             controller: _salaryMaxController,
-                            label: 'Salary maximum',
-                            hint: 'e.g. 90000',
+                            label: l10n.uiSalaryMaximum,
+                            hint: l10n.adminOpportunitySalaryMaxHint,
                             keyboardType: TextInputType.number,
                             validator: _validateSalaryMax,
                           ),
@@ -393,7 +392,7 @@ class _AdminOpportunityEditorScreenState
                         Expanded(
                           child: AdminEditorDropdown<String>(
                             value: _salaryCurrency,
-                            label: 'Currency',
+                            label: l10n.uiCurrency,
                             items: OpportunityMetadata.supportedCurrencies
                                 .map(
                                   (item) => DropdownMenuItem(
@@ -410,7 +409,7 @@ class _AdminOpportunityEditorScreenState
                         Expanded(
                           child: AdminEditorDropdown<String>(
                             value: _salaryPeriod,
-                            label: 'Salary period',
+                            label: l10n.uiSalaryPeriod,
                             items: OpportunityMetadata.salaryPeriods
                                 .map(
                                   (item) => DropdownMenuItem(
@@ -431,7 +430,7 @@ class _AdminOpportunityEditorScreenState
                         Expanded(
                           child: AdminEditorDropdown<String>(
                             value: _employmentType,
-                            label: 'Employment type',
+                            label: l10n.uiEmploymentType,
                             items: _employmentTypeOptions
                                 .map(
                                   (item) => DropdownMenuItem(
@@ -450,7 +449,7 @@ class _AdminOpportunityEditorScreenState
                         Expanded(
                           child: AdminEditorDropdown<String>(
                             value: _workMode,
-                            label: 'Work mode',
+                            label: l10n.uiWorkMode,
                             items: OpportunityMetadata.workModes
                                 .map(
                                   (item) => DropdownMenuItem(
@@ -473,7 +472,7 @@ class _AdminOpportunityEditorScreenState
                     const SizedBox(height: 12),
                     AdminEditorDropdown<bool>(
                       value: _isPaid,
-                      label: 'Paid status',
+                      label: l10n.uiPaidStatus,
                       items: [
                         DropdownMenuItem(
                           value: true,
@@ -490,15 +489,15 @@ class _AdminOpportunityEditorScreenState
                       const SizedBox(height: 12),
                       AdminEditorField(
                         controller: _durationController,
-                        label: 'Duration',
-                        hint: 'e.g. 3 months',
+                        label: l10n.uiDuration,
+                        hint: l10n.adminOpportunityDurationHint,
                       ),
                     ],
                     const SizedBox(height: 12),
                     AdminEditorField(
                       controller: _compensationTextController,
-                      label: 'Compensation note',
-                      hint: 'Optional note shown on detail screens',
+                      label: l10n.uiCompensationNote,
+                      hint: l10n.adminOpportunityCompensationHint,
                       maxLines: 2,
                     ),
                   ],
@@ -523,7 +522,7 @@ class _AdminOpportunityEditorScreenState
       initialDate: initialDate.isBefore(today) ? today : initialDate,
       firstDate: today,
       lastDate: DateTime(2035),
-      helpText: 'Select deadline',
+      helpText: AppLocalizations.of(context)!.adminOpportunityDatePickerHelp,
     );
     if (picked == null) return;
 
@@ -629,10 +628,13 @@ class _AdminOpportunityEditorScreenState
     if (!mounted) return;
     setState(() => _isSubmitting = false);
 
+    final l10n = AppLocalizations.of(context)!;
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: _isEditing ? 'Update unavailable' : 'Publish unavailable',
+        title: _isEditing
+            ? l10n.updateUnavailableTitle
+            : l10n.publishUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
@@ -640,9 +642,11 @@ class _AdminOpportunityEditorScreenState
 
     context.showAppSnackBar(
       _isEditing
-          ? 'Admin opportunity updated successfully.'
-          : 'Admin opportunity published successfully.',
-      title: _isEditing ? 'Opportunity updated' : 'Opportunity published',
+          ? l10n.adminOpportunityUpdatedMessage
+          : l10n.adminOpportunityPublishedMessage,
+      title: _isEditing
+          ? l10n.adminOpportunitySnackTitleUpdated
+          : l10n.adminOpportunitySnackTitlePublished,
       type: _status == 'closed'
           ? AppFeedbackType.removed
           : AppFeedbackType.success,
@@ -691,10 +695,10 @@ class _AdminOpportunityEditorScreenState
     }
   }
 
-  String _requirementsSectionSubtitle() {
+  String _requirementsSectionSubtitle(AppLocalizations l10n) {
     return _isSponsoring
-        ? 'Add each eligibility point separately so students see a clean checklist.'
-        : 'Add each requirement separately so students see a clean checklist.';
+        ? l10n.adminOpportunityRequirementsSubtitleEligibility
+        : l10n.adminOpportunityRequirementsSubtitleRequirement;
   }
 
   String _titleHintForType(AppLocalizations l10n) {

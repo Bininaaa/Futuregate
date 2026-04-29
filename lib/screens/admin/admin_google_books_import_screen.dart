@@ -701,13 +701,14 @@ class _AdminGoogleBooksImportScreenState
                   runSpacing: 10,
                   children: [
                     AdminPill(
-                      label: '${books.length} imported books',
+                      label: _l10n.libraryPillImportedBooks(books.length),
                       color: AdminPalette.info,
                       icon: Icons.menu_book_rounded,
                     ),
                     AdminPill(
-                      label:
-                          '${books.where((book) => book.isFeatured).length} featured',
+                      label: _l10n.libraryPillFeaturedCount(
+                        books.where((book) => book.isFeatured).length,
+                      ),
                       color: AdminPalette.accent,
                       icon: Icons.star_rounded,
                     ),
@@ -1045,7 +1046,9 @@ class _AdminGoogleBooksImportScreenState
                         runSpacing: 10,
                         children: [
                           AdminPill(
-                            label: '${_results.length} results',
+                            label: _l10n.libraryPillResultsCount(
+                              _results.length,
+                            ),
                             color: AdminPalette.info,
                             icon: Icons.manage_search_rounded,
                           ),

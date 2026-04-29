@@ -134,8 +134,8 @@ class _AdminProjectIdeaEditorScreenState
                     children: [
                       Expanded(
                         child: AdminEditorChoiceCard(
-                          label: 'Visible',
-                          subtitle: 'Show this idea to users',
+                          label: l10n.uiVisible,
+                          subtitle: l10n.uiShowThisIdeaToUsers,
                           selected: !_isHidden,
                           color: AdminPalette.success,
                           icon: Icons.visibility_outlined,
@@ -148,8 +148,8 @@ class _AdminProjectIdeaEditorScreenState
                       const SizedBox(width: 10),
                       Expanded(
                         child: AdminEditorChoiceCard(
-                          label: 'Hidden',
-                          subtitle: 'Keep it out of discovery',
+                          label: l10n.uiHidden,
+                          subtitle: l10n.uiKeepItOutOfDiscovery,
                           selected: _isHidden,
                           color: AdminPalette.danger,
                           icon: Icons.visibility_off_outlined,
@@ -166,8 +166,7 @@ class _AdminProjectIdeaEditorScreenState
                     value: _isPublic,
                     onChanged: (value) => setState(() => _isPublic = value),
                     title: l10n.uiPublicCollaborationAllowed,
-                    subtitle:
-                        'When enabled, the idea reads like a public community opportunity instead of a hidden internal note.',
+                    subtitle: l10n.adminIdeaPublicSubtitle,
                   ),
                 ],
               ),
@@ -180,33 +179,38 @@ class _AdminProjectIdeaEditorScreenState
                 children: [
                   AdminEditorField(
                     controller: _titleController,
-                    label: 'Idea title',
-                    hint: 'e.g. Campus Innovation Partner Program',
-                    validator: adminRequiredMin('Title', min: 4),
+                    label: l10n.uiIdeaTitle,
+                    hint: l10n.adminIdeaTitleHint,
+                    validator: adminRequiredMin(
+                      l10n.adminIdeaTitleValidatorLabel,
+                      min: 4,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _taglineController,
-                    label: 'Tagline',
-                    hint: 'Short hook for the hero section',
+                    label: l10n.uiTagline,
+                    hint: l10n.adminIdeaTaglineHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _shortDescriptionController,
-                    label: 'Short description',
-                    hint: 'A tight one-paragraph summary',
+                    label: l10n.uiShortDescription,
+                    hint: l10n.adminIdeaShortDescriptionHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _descriptionController,
-                    label: 'Full description',
-                    hint: 'Describe the idea clearly and with enough depth',
+                    label: l10n.uiFullDescription,
+                    hint: l10n.adminIdeaFullDescriptionHint,
                     maxLines: 6,
                     minLength: 60,
-                    helperText:
-                        'Describe the problem, solution, audience, and expected impact.',
-                    validator: adminRequiredMin('Description', min: 60),
+                    helperText: l10n.adminIdeaFullDescriptionHelper,
+                    validator: adminRequiredMin(
+                      l10n.adminIdeaDescriptionValidatorLabel,
+                      min: 60,
+                    ),
                   ),
                 ],
               ),
@@ -220,14 +224,16 @@ class _AdminProjectIdeaEditorScreenState
                 children: [
                   AdminEditorField(
                     controller: _domainController,
-                    label: 'Domain',
-                    hint: 'e.g. EdTech, AI, Sustainability',
-                    validator: adminRequiredMin('Domain'),
+                    label: l10n.uiDomain,
+                    hint: l10n.adminIdeaDomainHint,
+                    validator: adminRequiredMin(
+                      l10n.adminIdeaDomainValidatorLabel,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   AdminEditorDropdown<String>(
                     value: _level,
-                    label: 'Academic level',
+                    label: l10n.uiAcademicLevel,
                     items: [
                       DropdownMenuItem(value: 'bac', child: Text(l10n.uiBac)),
                       DropdownMenuItem(
@@ -274,73 +280,75 @@ class _AdminProjectIdeaEditorScreenState
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _categoryController,
-                    label: 'Category',
-                    hint: 'e.g. Innovation, Startup, Research',
+                    label: l10n.uiCategory,
+                    hint: l10n.adminIdeaCategoryHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _stageController,
-                    label: 'Stage',
-                    hint: 'e.g. Concept, Prototype, Pilot',
+                    label: l10n.uiStage,
+                    hint: l10n.adminIdeaStageHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _toolsController,
-                    label: 'Tools or stack',
-                    hint: 'e.g. Flutter, Firebase, Figma',
-                    validator: adminRequiredMin('Tools'),
+                    label: l10n.uiToolsOrStack,
+                    hint: l10n.adminIdeaToolsHint,
+                    validator: adminRequiredMin(
+                      l10n.adminIdeaToolsValidatorLabel,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _tagsController,
-                    label: 'Tags',
-                    hint: 'Comma-separated tags',
+                    label: l10n.uiTags,
+                    hint: l10n.adminIdeaTagsHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _skillsController,
-                    label: 'Skills needed',
-                    hint: 'Comma-separated skills',
+                    label: l10n.uiSkillsNeeded,
+                    hint: l10n.adminIdeaSkillsHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _teamController,
-                    label: 'Team roles needed',
-                    hint: 'Comma-separated roles',
+                    label: l10n.uiTeamRolesNeeded,
+                    hint: l10n.adminIdeaTeamHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _targetAudienceController,
-                    label: 'Target audience',
-                    hint: 'Who benefits most from this idea?',
+                    label: l10n.uiTargetAudience,
+                    hint: l10n.adminIdeaTargetAudienceHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _problemController,
-                    label: 'Problem statement',
-                    hint: 'What challenge does this solve?',
+                    label: l10n.uiProblemStatement,
+                    hint: l10n.adminIdeaProblemHint,
                     maxLines: 4,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _solutionController,
-                    label: 'Solution',
-                    hint: 'How does the idea solve the problem?',
+                    label: l10n.uiSolution,
+                    hint: l10n.adminIdeaSolutionHint,
                     maxLines: 4,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _resourcesController,
-                    label: 'Resources needed',
-                    hint: 'What support, partners, or assets are required?',
+                    label: l10n.uiResourcesNeeded,
+                    hint: l10n.adminIdeaResourcesHint,
                     maxLines: 3,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _benefitsController,
-                    label: 'Benefits or impact',
-                    hint: 'What outcomes make this valuable?',
+                    label: l10n.uiBenefitsOrImpact,
+                    hint: l10n.adminIdeaBenefitsHint,
                     maxLines: 3,
                   ),
                 ],
@@ -398,10 +406,13 @@ class _AdminProjectIdeaEditorScreenState
     if (!mounted) return;
     setState(() => _isSubmitting = false);
 
+    final l10n = AppLocalizations.of(context)!;
     if (error != null) {
       context.showAppSnackBar(
         error,
-        title: _isEditing ? 'Update unavailable' : 'Publish unavailable',
+        title: _isEditing
+            ? l10n.updateUnavailableTitle
+            : l10n.publishUnavailableTitle,
         type: AppFeedbackType.error,
       );
       return;
@@ -409,9 +420,11 @@ class _AdminProjectIdeaEditorScreenState
 
     context.showAppSnackBar(
       _isEditing
-          ? 'Admin idea updated successfully.'
-          : 'Admin idea published successfully.',
-      title: _isEditing ? 'Idea updated' : 'Idea published',
+          ? l10n.adminIdeaUpdatedMessage
+          : l10n.adminIdeaPublishedMessage,
+      title: _isEditing
+          ? l10n.adminIdeaSnackTitleUpdated
+          : l10n.adminIdeaSnackTitlePublished,
       type: _isHidden ? AppFeedbackType.removed : AppFeedbackType.success,
       icon: _isHidden ? Icons.visibility_off_outlined : null,
     );

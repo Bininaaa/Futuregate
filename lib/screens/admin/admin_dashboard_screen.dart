@@ -2669,10 +2669,11 @@ class _PendingAdminAlert extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final items = [
       if (pendingCompanies > 0)
         _PendingAlertItem(
-          label: 'Companies',
+          label: l10n.dashboardPendingCompanies,
           count: pendingCompanies,
           icon: Icons.business_center_outlined,
           color: AdminPalette.warning,
@@ -2680,7 +2681,7 @@ class _PendingAdminAlert extends StatelessWidget {
         ),
       if (pendingIdeas > 0)
         _PendingAlertItem(
-          label: 'Ideas',
+          label: l10n.dashboardPendingIdeas,
           count: pendingIdeas,
           icon: Icons.lightbulb_outline_rounded,
           color: Colors.amber.shade700,
@@ -2688,7 +2689,7 @@ class _PendingAdminAlert extends StatelessWidget {
         ),
       if (pendingApplications > 0)
         _PendingAlertItem(
-          label: 'Applications',
+          label: l10n.dashboardPendingApplications,
           count: pendingApplications,
           icon: Icons.assignment_late_outlined,
           color: AdminPalette.activity,

@@ -407,6 +407,7 @@ class _ActivitySectionChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final filters = _ActivitySectionFilter.values;
+    final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -414,7 +415,7 @@ class _ActivitySectionChips extends StatelessWidget {
         children: [
           for (final filter in filters) ...[
             AdminFilterChip(
-              label: _label(filter),
+              label: _label(filter, l10n),
               selected: selected == filter,
               icon: _icon(filter),
               badgeCount: _count(filter),
@@ -462,14 +463,14 @@ class _ActivitySectionChips extends StatelessWidget {
     };
   }
 
-  String _label(_ActivitySectionFilter filter) {
+  String _label(_ActivitySectionFilter filter, AppLocalizations l10n) {
     return switch (filter) {
-      _ActivitySectionFilter.all => 'All',
-      _ActivitySectionFilter.reviews => 'Reviews',
-      _ActivitySectionFilter.content => 'Content',
-      _ActivitySectionFilter.library => 'Library',
-      _ActivitySectionFilter.accounts => 'Accounts',
-      _ActivitySectionFilter.pending => 'Pending',
+      _ActivitySectionFilter.all => l10n.activitySectionAll,
+      _ActivitySectionFilter.reviews => l10n.activitySectionReviews,
+      _ActivitySectionFilter.content => l10n.activitySectionContent,
+      _ActivitySectionFilter.library => l10n.activitySectionLibrary,
+      _ActivitySectionFilter.accounts => l10n.activitySectionAccounts,
+      _ActivitySectionFilter.pending => l10n.activitySectionPending,
     };
   }
 }

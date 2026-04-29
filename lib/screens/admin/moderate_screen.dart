@@ -158,7 +158,7 @@ class _ModerateScreenState extends State<ModerateScreen>
     if (allIdeas.isEmpty) {
       return _buildEmptyState(
         Icons.lightbulb_outline,
-        'No project ideas to review yet',
+        AppLocalizations.of(context)!.moderateNoIdeasReviewYet,
       );
     }
 
@@ -177,8 +177,12 @@ class _ModerateScreenState extends State<ModerateScreen>
                 children: [
                   Text(
                     _showPendingOnly
-                        ? 'Pending Ideas (${ideas.length})'
-                        : 'All Ideas (${ideas.length})',
+                        ? AppLocalizations.of(
+                            context,
+                          )!.moderatePendingIdeasCount(ideas.length)
+                        : AppLocalizations.of(
+                            context,
+                          )!.moderateAllIdeasCount(ideas.length),
                     style: AppTypography.product(
                       fontWeight: FontWeight.w600,
                       color: AdminPalette.textPrimary,
@@ -198,7 +202,11 @@ class _ModerateScreenState extends State<ModerateScreen>
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        _showPendingOnly ? 'Show All' : 'Pending Only',
+                        _showPendingOnly
+                            ? AppLocalizations.of(context)!.moderateShowAllLabel
+                            : AppLocalizations.of(
+                                context,
+                              )!.moderatePendingOnlyLabel,
                         style: AppTypography.product(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -214,7 +222,7 @@ class _ModerateScreenState extends State<ModerateScreen>
           if (ideas.isEmpty) {
             return _buildEmptyState(
               Icons.check_circle,
-              'No pending ideas to review',
+              AppLocalizations.of(context)!.moderateNoPendingIdeas,
             );
           }
           final idea = ideas[index - 1];
@@ -310,7 +318,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Submitted by: ${idea.submittedBy}',
+                    AppLocalizations.of(
+                      context,
+                    )!.moderateSubmittedByLabel(idea.submittedBy),
                     style: AppTypography.product(
                       fontSize: 11,
                       color: AdminPalette.textMuted,
@@ -342,14 +352,26 @@ class _ModerateScreenState extends State<ModerateScreen>
                                     }
                                     if (context.mounted) {
                                       context.showAppSnackBar(
-                                        'Project idea approved.',
-                                        title: 'Idea approved',
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.moderateIdeaApprovedSnackMessage,
+                                        title: AppLocalizations.of(
+                                          context,
+                                        )!.moderateIdeaApprovedSnackTitle,
                                         type: AppFeedbackType.success,
                                       );
                                     }
                                   },
                             icon: const Icon(Icons.check, size: 18),
-                            label: Text(isIdeaBusy ? 'Working...' : 'Approve'),
+                            label: Text(
+                              isIdeaBusy
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.moderateWorkingLabel
+                                  : AppLocalizations.of(
+                                      context,
+                                    )!.moderateApproveLabel,
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AdminPalette.success,
                               foregroundColor: Colors.white,
@@ -383,15 +405,27 @@ class _ModerateScreenState extends State<ModerateScreen>
                                     }
                                     if (context.mounted) {
                                       context.showAppSnackBar(
-                                        'Project idea rejected.',
-                                        title: 'Idea rejected',
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.moderateIdeaRejectedSnackMessage,
+                                        title: AppLocalizations.of(
+                                          context,
+                                        )!.moderateIdeaRejectedSnackTitle,
                                         type: AppFeedbackType.removed,
                                         icon: Icons.block_outlined,
                                       );
                                     }
                                   },
                             icon: const Icon(Icons.close, size: 18),
-                            label: Text(isIdeaBusy ? 'Working...' : 'Reject'),
+                            label: Text(
+                              isIdeaBusy
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.moderateWorkingLabel
+                                  : AppLocalizations.of(
+                                      context,
+                                    )!.moderateRejectLabel,
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AdminPalette.danger,
                               foregroundColor: Colors.white,
@@ -420,7 +454,7 @@ class _ModerateScreenState extends State<ModerateScreen>
     if (opportunities.isEmpty) {
       return _buildEmptyState(
         Icons.work_outline,
-        'No opportunities published yet',
+        AppLocalizations.of(context)!.moderateNoOpportunitiesYet,
       );
     }
 
@@ -457,7 +491,8 @@ class _ModerateScreenState extends State<ModerateScreen>
                 child: Icon(Icons.work, color: AdminPalette.accent, size: 22),
               ),
               title: Text(
-                opp['title'] ?? 'Untitled opportunity',
+                opp['title'] ??
+                    AppLocalizations.of(context)!.moderateUntitledOpportunity,
                 style: AppTypography.product(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
@@ -468,7 +503,8 @@ class _ModerateScreenState extends State<ModerateScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    opp['companyName'] ?? 'Unknown company',
+                    opp['companyName'] ??
+                        AppLocalizations.of(context)!.moderateUnknownCompany,
                     style: AppTypography.product(
                       fontSize: 12,
                       color: AdminPalette.textMuted,
@@ -537,8 +573,13 @@ class _ModerateScreenState extends State<ModerateScreen>
                   size: 22,
                 ),
                 onPressed: () => _showDeleteDialog(
-                  'Delete Opportunity',
-                  'Are you sure you want to delete "${opp['title']}"?',
+                  AppLocalizations.of(context)!.moderateDeleteOpportunityTitle,
+                  AppLocalizations.of(context)!.moderateDeleteOpportunityConfirm(
+                    opp['title']?.toString() ??
+                        AppLocalizations.of(
+                          context,
+                        )!.moderateUntitledOpportunity,
+                  ),
                   () async {
                     final error = await provider.deleteOpportunity(opp['id']);
                     if (error != null && context.mounted) {
@@ -553,8 +594,12 @@ class _ModerateScreenState extends State<ModerateScreen>
                     }
                     if (context.mounted) {
                       context.showAppSnackBar(
-                        'Opportunity deleted.',
-                        title: 'Opportunity deleted',
+                        AppLocalizations.of(
+                          context,
+                        )!.moderateOpportunityDeletedSnackMessage,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.moderateOpportunityDeletedSnackTitle,
                         type: AppFeedbackType.removed,
                         icon: Icons.delete_outline_rounded,
                       );
@@ -575,7 +620,7 @@ class _ModerateScreenState extends State<ModerateScreen>
     if (scholarships.isEmpty) {
       return _buildEmptyState(
         Icons.card_giftcard,
-        'No scholarships published yet',
+        AppLocalizations.of(context)!.moderateNoScholarshipsYet,
       );
     }
 
@@ -613,7 +658,8 @@ class _ModerateScreenState extends State<ModerateScreen>
                 ),
               ),
               title: Text(
-                sch['title'] ?? 'Untitled scholarship',
+                sch['title'] ??
+                    AppLocalizations.of(context)!.moderateUntitledScholarship,
                 style: AppTypography.product(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
@@ -624,7 +670,8 @@ class _ModerateScreenState extends State<ModerateScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    sch['provider'] ?? 'Unknown provider',
+                    sch['provider'] ??
+                        AppLocalizations.of(context)!.moderateUnknownProvider,
                     style: AppTypography.product(
                       fontSize: 12,
                       color: AdminPalette.textMuted,
@@ -646,7 +693,11 @@ class _ModerateScreenState extends State<ModerateScreen>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '${sch['amount']} DA',
+                            AppLocalizations.of(
+                              context,
+                            )!.moderateAmountWithCurrency(
+                              sch['amount'].toString(),
+                            ),
                             style: AppTypography.product(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -665,7 +716,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Due: ${sch['deadline']}',
+                            AppLocalizations.of(context)!.moderateDueLabel(
+                              sch['deadline'].toString(),
+                            ),
                             style: AppTypography.product(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -684,8 +737,13 @@ class _ModerateScreenState extends State<ModerateScreen>
                   size: 22,
                 ),
                 onPressed: () => _showDeleteDialog(
-                  'Delete Scholarship',
-                  'Are you sure you want to delete "${sch['title']}"?',
+                  AppLocalizations.of(context)!.moderateDeleteScholarshipTitle,
+                  AppLocalizations.of(context)!.moderateDeleteScholarshipConfirm(
+                    sch['title']?.toString() ??
+                        AppLocalizations.of(
+                          context,
+                        )!.moderateUntitledScholarship,
+                  ),
                   () async {
                     final error = await provider.deleteScholarship(sch['id']);
                     if (error != null && context.mounted) {
@@ -700,8 +758,12 @@ class _ModerateScreenState extends State<ModerateScreen>
                     }
                     if (context.mounted) {
                       context.showAppSnackBar(
-                        'Scholarship deleted.',
-                        title: 'Scholarship deleted',
+                        AppLocalizations.of(
+                          context,
+                        )!.moderateScholarshipDeletedSnackMessage,
+                        title: AppLocalizations.of(
+                          context,
+                        )!.moderateScholarshipDeletedSnackTitle,
                         type: AppFeedbackType.removed,
                         icon: Icons.delete_outline_rounded,
                       );
@@ -780,7 +842,7 @@ class _ModerateScreenState extends State<ModerateScreen>
             },
             style: TextButton.styleFrom(foregroundColor: AdminPalette.danger),
             child: Text(
-              'Delete',
+              AppLocalizations.of(ctx)!.moderateDeleteAction,
               style: AppTypography.product(fontWeight: FontWeight.bold),
             ),
           ),

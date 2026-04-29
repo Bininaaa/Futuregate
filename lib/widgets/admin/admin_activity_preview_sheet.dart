@@ -146,6 +146,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
   }
 
   List<Widget> _buildUserSections(AdminActivityPreviewModel preview) {
+    final l10n = AppLocalizations.of(context)!;
     final user = UserModel.fromMap({
       ...preview.data,
       'uid': preview.documentId,
@@ -156,7 +157,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         ? user.fullName.trim()
         : user.email.trim().isNotEmpty
         ? user.email.trim()
-        : 'User';
+        : l10n.uiUser;
     final roleLabel = DisplayText.capitalizeLeadingLabel(user.role);
     final approvalStatus = user.normalizedApprovalStatus;
     final approvalLabel = DisplayText.capitalizeLeadingLabel(approvalStatus);
@@ -174,7 +175,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         chips: [
           if (roleLabel.isNotEmpty) _buildHeroChip(roleLabel, Icons.badge),
           _buildHeroChip(
-            user.isActive ? 'Active' : 'Blocked',
+            user.isActive ? l10n.uiActive : l10n.uiBlocked,
             user.isActive
                 ? Icons.check_circle_outline_rounded
                 : Icons.block_outlined,
@@ -187,23 +188,23 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       _buildDetailHighlightsGrid([
         _PreviewHighlightItem(
           icon: Icons.person_outline_rounded,
-          label: 'Role',
-          value: roleLabel.isNotEmpty ? roleLabel : 'User',
+          label: l10n.activityPreviewRoleLabel,
+          value: roleLabel.isNotEmpty ? roleLabel : l10n.uiUser,
           color: AdminPalette.info,
         ),
         _PreviewHighlightItem(
           icon: user.isActive
               ? Icons.check_circle_outline_rounded
               : Icons.block_outlined,
-          label: 'Account',
-          value: user.isActive ? 'Active' : 'Blocked',
+          label: l10n.activityPreviewAccountLabel,
+          value: user.isActive ? l10n.uiActive : l10n.uiBlocked,
           color: user.isActive ? AdminPalette.success : AdminPalette.danger,
         ),
         if (user.role == 'company')
           _PreviewHighlightItem(
             icon: Icons.verified_user_outlined,
-            label: 'Company Review',
-            value: approvalLabel.isNotEmpty ? approvalLabel : 'Approved',
+            label: l10n.activityPreviewCompanyReviewLabel,
+            value: approvalLabel.isNotEmpty ? approvalLabel : l10n.uiApproved,
             color: user.isCompanyRejected
                 ? AdminPalette.danger
                 : user.isCompanyPendingApproval
@@ -212,51 +213,51 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           ),
         _PreviewHighlightItem(
           icon: Icons.schedule_rounded,
-          label: 'Activity',
-          value: _formatShortDate(widget.activity.createdAt),
+          label: l10n.activityPreviewActivityLabel,
+          value: _formatShortDate(widget.activity.createdAt, l10n),
           color: AdminPalette.primary,
         ),
       ]),
       const SizedBox(height: 14),
-      const AdminSectionHeader(
-        eyebrow: 'Account',
-        title: 'User Metadata',
-        subtitle: 'The account record linked to this recent admin activity.',
+      AdminSectionHeader(
+        eyebrow: l10n.activityPreviewAccountLabel,
+        title: l10n.activityPreviewUserMetadataTitle,
+        subtitle: l10n.activityPreviewUserMetadataSubtitle,
       ),
       const SizedBox(height: 12),
       _buildMetadataGrid([
         _PreviewDetailItem(
-          'Name',
+          l10n.uiName,
           displayName,
           icon: Icons.person_outline_rounded,
           color: AdminPalette.info,
         ),
         _PreviewDetailItem(
-          'Email',
+          l10n.uiEmail,
           user.email,
           icon: Icons.email_outlined,
           color: AdminPalette.primary,
         ),
         _PreviewDetailItem(
-          'Phone',
+          l10n.uiPhone,
           user.phone,
           icon: Icons.phone_outlined,
           color: AdminPalette.secondary,
         ),
         _PreviewDetailItem(
-          'Location',
+          l10n.locationLabel,
           user.location,
           icon: Icons.location_on_outlined,
           color: AdminPalette.accent,
         ),
         _PreviewDetailItem(
-          'Company',
+          l10n.uiCompany,
           user.companyName ?? '',
           icon: Icons.business_outlined,
           color: AdminPalette.secondary,
         ),
         _PreviewDetailItem(
-          'Academic Level',
+          l10n.uiAcademicLevel,
           user.academicLevel ?? '',
           icon: Icons.school_outlined,
           color: AdminPalette.activity,
@@ -266,6 +267,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
   }
 
   List<Widget> _buildApplicationSections(AdminActivityPreviewModel preview) {
+    final l10n = AppLocalizations.of(context)!;
     final application = ApplicationModel.fromMap(preview.data);
     final relatedOpportunity = preview.relatedData ?? const <String, dynamic>{};
     final studentName = DisplayText.capitalizeLeadingLabel(
@@ -280,10 +282,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       (relatedOpportunity['companyName'] ?? '').toString(),
     );
     final normalizedStatus = ApplicationStatus.parse(application.status);
-    final statusLabel = ApplicationStatus.label(
-      application.status,
-      AppLocalizations.of(context)!,
-    );
+    final statusLabel = ApplicationStatus.label(application.status, l10n);
     final statusIcon = switch (normalizedStatus) {
       ApplicationStatus.accepted => Icons.verified_outlined,
       ApplicationStatus.rejected => Icons.block_outlined,
@@ -293,25 +292,25 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     final description = switch (normalizedStatus) {
       ApplicationStatus.withdrawn =>
         opportunityTitle.isNotEmpty
-            ? 'This application was withdrawn from $opportunityTitle.'
-            : 'This application was withdrawn.',
+            ? l10n.activityPreviewWithdrawnFromOpportunity(opportunityTitle)
+            : l10n.activityPreviewWithdrawnGeneric,
       _ =>
         opportunityTitle.isNotEmpty
-            ? 'Applied to $opportunityTitle.'
-            : 'Application details',
+            ? l10n.activityPreviewAppliedToOpportunity(opportunityTitle)
+            : l10n.uiApplicationDetails,
     };
 
     return [
       _buildDetailHeroCard(
-        title: studentName.isNotEmpty ? studentName : 'Application',
-        subtitle: companyName.isNotEmpty ? companyName : 'Application',
+        title: studentName.isNotEmpty ? studentName : l10n.uiApplication,
+        subtitle: companyName.isNotEmpty ? companyName : l10n.uiApplication,
         icon: Icons.assignment_outlined,
         accentColor: AdminPalette.activity,
         chips: [
           _buildHeroChip(statusLabel, statusIcon),
           if (application.appliedAt != null)
             _buildHeroChip(
-              _formatShortDate(application.appliedAt),
+              _formatShortDate(application.appliedAt, l10n),
               Icons.event_outlined,
             ),
         ],
@@ -324,7 +323,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Description',
+              l10n.uiDescription,
               style: AppTypography.product(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -344,29 +343,29 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         ),
       ),
       const SizedBox(height: 14),
-      const AdminSectionHeader(
-        eyebrow: 'Details',
-        title: 'Item Metadata',
-        subtitle:
-            'Important fields are grouped here in a more readable admin detail layout.',
+      AdminSectionHeader(
+        eyebrow: l10n.uiDetails,
+        title: l10n.activityPreviewItemMetadataTitle,
+        subtitle: l10n.activityPreviewItemMetadataSubtitle,
       ),
       const SizedBox(height: 12),
       ..._buildDetailLineWidgets([
-        _PreviewDetailLine('Opportunity', opportunityTitle),
-        _PreviewDetailLine('Company', companyName),
-        _PreviewDetailLine('Status', statusLabel),
-        _PreviewDetailLine('Applied', _formatTimestamp(application.appliedAt)),
+        _PreviewDetailLine(l10n.uiOpportunity, opportunityTitle),
+        _PreviewDetailLine(l10n.uiCompany, companyName),
+        _PreviewDetailLine(l10n.uiStatus, statusLabel),
+        _PreviewDetailLine(
+          l10n.uiApplied,
+          _formatTimestamp(application.appliedAt, l10n),
+        ),
       ]),
     ];
   }
 
   List<Widget> _buildOpportunitySections(AdminActivityPreviewModel preview) {
+    final l10n = AppLocalizations.of(context)!;
     final opportunity = OpportunityModel.fromMap(preview.data);
     final opportunityType = OpportunityType.parse(opportunity.type);
-    final typeLabel = OpportunityType.label(
-      opportunityType,
-      AppLocalizations.of(context)!,
-    );
+    final typeLabel = OpportunityType.label(opportunityType, l10n);
     final typeColor = OpportunityType.color(opportunityType);
     final description = DisplayText.capitalizeLeadingLabel(
       opportunity.description,
@@ -414,10 +413,10 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       _buildDetailHeroCard(
         title: opportunity.title.trim().isNotEmpty
             ? opportunity.title
-            : 'Opportunity',
+            : l10n.uiOpportunity,
         subtitle: opportunity.companyName.trim().isNotEmpty
             ? opportunity.companyName
-            : 'Unknown company',
+            : l10n.uiUnknownCompany,
         icon: Icons.work_outline_rounded,
         accentColor: typeColor,
         chips: [
@@ -427,34 +426,34 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           if (workModeLabel.isNotEmpty)
             _buildHeroChip(workModeLabel, Icons.lan_outlined),
           if (opportunity.isFeatured)
-            _buildHeroChip('Featured', Icons.workspace_premium_outlined),
+            _buildHeroChip(l10n.uiFeatured, Icons.workspace_premium_outlined),
         ],
       ),
       const SizedBox(height: 14),
       _buildDetailHighlightsGrid([
         _PreviewHighlightItem(
           icon: Icons.assignment_outlined,
-          label: 'Applications',
+          label: l10n.activityPreviewApplicationsLabel,
           value: '$applicationsCount',
           color: AdminPalette.activity,
         ),
         if (opportunity.deadlineLabel.trim().isNotEmpty)
           _PreviewHighlightItem(
             icon: Icons.event_outlined,
-            label: 'Deadline',
+            label: l10n.activityPreviewDeadlineLabel,
             value: opportunity.deadlineLabel,
             color: AdminPalette.primary,
           ),
         if ((compensationLabel ?? '').trim().isNotEmpty)
           _PreviewHighlightItem(
             icon: Icons.payments_outlined,
-            label: 'Compensation',
+            label: l10n.activityPreviewCompensationLabel,
             value: compensationLabel!,
             color: AdminPalette.success,
           ),
         _PreviewHighlightItem(
           icon: Icons.badge_outlined,
-          label: 'Work Setup',
+          label: l10n.activityPreviewWorkSetupLabel,
           value: workModeLabel.isNotEmpty
               ? workModeLabel
               : employmentLabel.isNotEmpty
@@ -466,77 +465,76 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       if (description.trim().isNotEmpty) ...[
         const SizedBox(height: 14),
         _buildIdeaNarrativeCard(
-          title: 'Role Overview',
+          title: l10n.activityPreviewRoleOverviewTitle,
           value: description,
           icon: Icons.description_outlined,
           color: typeColor,
         ),
       ],
       const SizedBox(height: 14),
-      const AdminSectionHeader(
-        eyebrow: 'Role Setup',
-        title: 'Location And Logistics',
-        subtitle:
-            'These details help you evaluate how the opportunity is positioned for applicants.',
+      AdminSectionHeader(
+        eyebrow: l10n.uiRoleSetup,
+        title: l10n.activityPreviewLocationLogisticsTitle,
+        subtitle: l10n.activityPreviewLocationLogisticsSubtitle,
       ),
       const SizedBox(height: 12),
       _buildMetadataGrid([
         _PreviewDetailItem(
-          'Company',
+          l10n.uiCompany,
           opportunity.companyName,
           icon: Icons.business_outlined,
           color: typeColor,
         ),
         _PreviewDetailItem(
-          'Location',
+          l10n.uiLocation,
           opportunity.location,
           icon: Icons.location_on_outlined,
           color: AdminPalette.info,
         ),
         _PreviewDetailItem(
-          'Type',
+          l10n.uiType,
           typeLabel,
           icon: Icons.work_outline_rounded,
           color: typeColor,
         ),
         _PreviewDetailItem(
-          'Status',
+          l10n.uiStatus,
           statusLabel,
           icon: _ideaStatusIcon(opportunity.status),
           color: _statusColor(opportunity.status),
         ),
         _PreviewDetailItem(
-          'Employment',
+          l10n.uiEmployment,
           employmentLabel,
           icon: Icons.badge_outlined,
           color: AdminPalette.primary,
         ),
         _PreviewDetailItem(
-          'Work Mode',
+          l10n.uiWorkMode,
           workModeLabel,
           icon: Icons.lan_outlined,
           color: AdminPalette.secondary,
         ),
         _PreviewDetailItem(
-          'Paid Status',
+          l10n.uiPaidStatus,
           paidLabel,
           icon: Icons.account_balance_wallet_outlined,
           color: AdminPalette.success,
         ),
         _PreviewDetailItem(
-          'Duration',
+          l10n.uiDuration,
           opportunity.duration ?? '',
           icon: Icons.schedule_outlined,
           color: AdminPalette.textMuted,
         ),
         _PreviewDetailItem(
-          'Deadline',
+          l10n.activityPreviewDeadlineLabel,
           opportunity.deadlineLabel,
           icon: Icons.event_outlined,
           color: AdminPalette.primary,
         ),
         _PreviewDetailItem(
-          'Compensation',
+          l10n.uiCompensation,
           compensationLabel ?? '',
           icon: Icons.payments_outlined,
           color: AdminPalette.success,
@@ -545,9 +543,8 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       if (requirements.isNotEmpty) ...[
         const SizedBox(height: 14),
         _buildDetailListCard(
-          title: 'Requirements',
-          subtitle:
-              'These are the main qualifications or expectations shown to applicants.',
+          title: l10n.activityPreviewRequirementsTitle,
+          subtitle: l10n.activityPreviewRequirementsSubtitle,
           items: requirements,
           icon: Icons.checklist_rounded,
           color: typeColor,
@@ -556,9 +553,8 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       if (benefits.isNotEmpty) ...[
         const SizedBox(height: 14),
         _buildDetailListCard(
-          title: 'Benefits',
-          subtitle:
-              'This gives the admin view of what makes the role attractive.',
+          title: l10n.activityPreviewBenefitsTitle,
+          subtitle: l10n.activityPreviewBenefitsSubtitle,
           items: benefits,
           icon: Icons.star_outline_rounded,
           color: AdminPalette.success,
@@ -573,7 +569,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Tags',
+                l10n.uiTags,
                 style: AppTypography.product(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -581,7 +577,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildTagSection('Opportunity Tags', tags, typeColor),
+              _buildTagSection(l10n.uiOpportunityTags, tags, typeColor),
             ],
           ),
         ),
@@ -590,9 +586,11 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
   }
 
   List<Widget> _buildScholarshipSections(AdminActivityPreviewModel preview) {
+    final l10n = AppLocalizations.of(context)!;
     final scholarship = preview.data;
-    final title = (scholarship['title'] ?? 'Scholarship').toString();
-    final providerName = (scholarship['provider'] ?? 'Unknown provider')
+    final title = (scholarship['title'] ?? l10n.activityPreviewScholarshipFallback)
+        .toString();
+    final providerName = (scholarship['provider'] ?? l10n.uiUnknownProvider)
         .toString();
     final description = DisplayText.capitalizeLeadingLabel(
       (scholarship['description'] ?? '').toString(),
@@ -639,11 +637,11 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         accentColor: Colors.pink,
         chips: [
           if (amountText.isNotEmpty)
-            _buildHeroChip('Funding', Icons.savings_outlined),
+            _buildHeroChip(l10n.uiFunding, Icons.savings_outlined),
           if (deadlineText.isNotEmpty)
-            _buildHeroChip('Deadline Set', Icons.event_outlined),
+            _buildHeroChip(l10n.uiDeadlineSet, Icons.event_outlined),
           if (link.isNotEmpty)
-            _buildHeroChip('External Link', Icons.open_in_new_rounded),
+            _buildHeroChip(l10n.uiExternalLink, Icons.open_in_new_rounded),
         ],
       ),
       const SizedBox(height: 14),
@@ -651,34 +649,36 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         if (amountText.isNotEmpty)
           _PreviewHighlightItem(
             icon: Icons.payments_outlined,
-            label: 'Amount',
+            label: l10n.activityPreviewAmountLabel,
             value: amountText,
             color: AdminPalette.success,
           ),
         if (deadlineText.isNotEmpty)
           _PreviewHighlightItem(
             icon: Icons.event_outlined,
-            label: 'Deadline',
+            label: l10n.activityPreviewDeadlineLabel,
             value: deadlineText,
             color: Colors.pink,
           ),
         _PreviewHighlightItem(
           icon: Icons.business_outlined,
-          label: 'Provider',
+          label: l10n.activityPreviewProviderLabel,
           value: providerName,
           color: Colors.pink,
         ),
         _PreviewHighlightItem(
           icon: link.isNotEmpty ? Icons.link_rounded : Icons.link_off_rounded,
-          label: 'Access',
-          value: link.isNotEmpty ? 'Application Link Ready' : 'Link not added',
+          label: l10n.activityPreviewAccessLabel,
+          value: link.isNotEmpty
+              ? l10n.uiApplicationLinkReady
+              : l10n.uiLinkNotAdded,
           color: link.isNotEmpty ? AdminPalette.info : AdminPalette.textMuted,
         ),
       ]),
       if (description.trim().isNotEmpty) ...[
         const SizedBox(height: 14),
         _buildIdeaNarrativeCard(
-          title: 'Scholarship Overview',
+          title: l10n.activityPreviewScholarshipOverviewTitle,
           value: description,
           icon: Icons.description_outlined,
           color: Colors.pink,
@@ -687,60 +687,61 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       if (eligibility.trim().isNotEmpty) ...[
         const SizedBox(height: 14),
         _buildIdeaNarrativeCard(
-          title: 'Eligibility',
+          title: l10n.activityPreviewEligibilityTitle,
           value: eligibility,
           icon: Icons.verified_user_outlined,
           color: Colors.orange,
         ),
       ],
       const SizedBox(height: 14),
-      const AdminSectionHeader(
-        eyebrow: 'Scholarship Details',
-        title: 'Provider And Access',
-        subtitle:
-            'These details help you review where the scholarship fits and how students will reach it.',
+      AdminSectionHeader(
+        eyebrow: l10n.uiScholarshipDetails,
+        title: l10n.activityPreviewProviderAccessTitle,
+        subtitle: l10n.activityPreviewProviderAccessSubtitle,
       ),
       const SizedBox(height: 12),
       _buildMetadataGrid([
         _PreviewDetailItem(
-          'Provider',
+          l10n.activityPreviewProviderLabel,
           providerName,
           icon: Icons.business_outlined,
           color: Colors.pink,
         ),
         _PreviewDetailItem(
-          'Amount',
+          l10n.activityPreviewAmountLabel,
           amountText,
           icon: Icons.payments_outlined,
           color: AdminPalette.success,
         ),
         _PreviewDetailItem(
-          'Deadline',
+          l10n.activityPreviewDeadlineLabel,
           deadlineText,
           icon: Icons.event_outlined,
           color: Colors.pink,
         ),
         _PreviewDetailItem(
-          'Category',
+          l10n.uiCategory,
           DisplayText.capitalizeWords(categoryText),
           icon: Icons.category_outlined,
           color: AdminPalette.info,
         ),
         _PreviewDetailItem(
-          'Level',
+          l10n.uiLevel,
           DisplayText.capitalizeWords(levelText),
           icon: Icons.school_outlined,
           color: AdminPalette.primary,
         ),
         _PreviewDetailItem(
-          'Location',
+          l10n.uiLocation,
           DisplayText.capitalizeLeadingLabel(locationText),
           icon: Icons.public_rounded,
           color: AdminPalette.secondary,
         ),
         _PreviewDetailItem(
-          'Access',
-          link.isNotEmpty ? 'External Link Available' : 'Link unavailable',
+          l10n.activityPreviewAccessLabel,
+          link.isNotEmpty
+              ? l10n.uiExternalLinkAvailable
+              : l10n.uiLinkUnavailable,
           icon: link.isNotEmpty
               ? Icons.open_in_new_rounded
               : Icons.link_off_rounded,
@@ -752,13 +753,14 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         AdminSurface(
           radius: 20,
           padding: _largePanelPadding(context),
-          child: _buildTagSection('Scholarship Tags', tags, Colors.pink),
+          child: _buildTagSection(l10n.uiScholarshipTags, tags, Colors.pink),
         ),
       ],
     ];
   }
 
   List<Widget> _buildTrainingSections(AdminActivityPreviewModel preview) {
+    final l10n = AppLocalizations.of(context)!;
     final training = TrainingModel.fromMap(preview.data);
     final description = DisplayText.capitalizeLeadingLabel(
       training.description,
@@ -766,7 +768,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     final trainingAccentColor = _trainingAccentColor(training.type);
     final providerName = training.provider.isNotEmpty
         ? training.provider
-        : 'Training';
+        : l10n.uiTraining;
     final typeLabel = DisplayText.capitalizeWords(training.type);
     final domainLabel = DisplayText.capitalizeWords(training.domain);
     final levelLabel = DisplayText.capitalizeWords(training.level);
@@ -774,13 +776,13 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     final accessLabel = training.isFree == null
         ? ''
         : training.isFree!
-        ? 'Free'
-        : 'Paid';
+        ? l10n.uiFree
+        : l10n.uiPaid;
     final certificateLabel = training.hasCertificate == null
         ? ''
         : training.hasCertificate!
-        ? 'Certificate Available'
-        : 'Certificate not included';
+        ? l10n.uiCertificateAvailable
+        : l10n.uiCertificateNotIncluded;
     final learnerLabel = training.learnerCountLabel.trim().isNotEmpty
         ? training.learnerCountLabel.trim()
         : training.learnerCount?.toString() ?? '';
@@ -794,7 +796,9 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
 
     return [
       _buildDetailHeroCard(
-        title: training.title.trim().isNotEmpty ? training.title : 'Training',
+        title: training.title.trim().isNotEmpty
+            ? training.title
+            : l10n.uiTraining,
         subtitle: providerName,
         icon: _trainingIcon(training.type),
         accentColor: trainingAccentColor,
@@ -805,7 +809,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           if (levelLabel.isNotEmpty)
             _buildHeroChip(levelLabel, Icons.timeline_outlined),
           if (training.isFeatured)
-            _buildHeroChip('Featured', Icons.workspace_premium_outlined),
+            _buildHeroChip(l10n.uiFeatured, Icons.workspace_premium_outlined),
         ],
       ),
       const SizedBox(height: 14),
@@ -813,21 +817,21 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         if (training.duration.trim().isNotEmpty)
           _PreviewHighlightItem(
             icon: Icons.schedule_outlined,
-            label: 'Duration',
+            label: l10n.activityPreviewDurationLabel,
             value: training.duration,
             color: trainingAccentColor,
           ),
         if (learnerLabel.isNotEmpty)
           _PreviewHighlightItem(
             icon: Icons.groups_rounded,
-            label: 'Learners',
+            label: l10n.activityPreviewLearnersLabel,
             value: learnerLabel,
             color: AdminPalette.info,
           ),
         if (ratingLabel.isNotEmpty)
           _PreviewHighlightItem(
             icon: Icons.star_outline_rounded,
-            label: 'Rating',
+            label: l10n.activityPreviewRatingLabel,
             value: ratingLabel,
             color: AdminPalette.primary,
           ),
@@ -835,8 +839,8 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           icon: training.isApproved
               ? Icons.check_circle_outline_rounded
               : Icons.hourglass_top_rounded,
-          label: 'Status',
-          value: training.isApproved ? 'Approved' : 'Pending Review',
+          label: l10n.activityPreviewStatusLabel,
+          value: training.isApproved ? l10n.uiApproved : l10n.uiPendingReview,
           color: training.isApproved
               ? AdminPalette.success
               : AdminPalette.warning,
@@ -845,59 +849,58 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       if (description.trim().isNotEmpty) ...[
         const SizedBox(height: 14),
         _buildIdeaNarrativeCard(
-          title: 'Training Overview',
+          title: l10n.activityPreviewTrainingOverviewTitle,
           value: description,
           icon: Icons.description_outlined,
           color: trainingAccentColor,
         ),
       ],
       const SizedBox(height: 14),
-      const AdminSectionHeader(
-        eyebrow: 'Resource Details',
-        title: 'Provider And Delivery Setup',
-        subtitle:
-            'This section helps you review how the training is packaged and presented to users.',
+      AdminSectionHeader(
+        eyebrow: l10n.activityPreviewResourceDetailsEyebrow,
+        title: l10n.activityPreviewProviderDeliverySetupTitle,
+        subtitle: l10n.activityPreviewProviderDeliverySetupSubtitle,
       ),
       const SizedBox(height: 12),
       _buildMetadataGrid([
         _PreviewDetailItem(
-          'Provider',
+          l10n.activityPreviewProviderLabel,
           providerName,
           icon: Icons.business_outlined,
           color: trainingAccentColor,
         ),
         _PreviewDetailItem(
-          'Type',
+          l10n.uiType,
           typeLabel,
           icon: _trainingIcon(training.type),
           color: trainingAccentColor,
         ),
         _PreviewDetailItem(
-          'Source',
+          l10n.uiSource,
           sourceLabel,
           icon: Icons.cloud_outlined,
           color: AdminPalette.secondary,
         ),
         _PreviewDetailItem(
-          'Domain',
+          l10n.uiDomain,
           domainLabel,
           icon: Icons.category_outlined,
           color: AdminPalette.info,
         ),
         _PreviewDetailItem(
-          'Level',
+          l10n.uiLevel,
           levelLabel,
           icon: Icons.timeline_outlined,
           color: AdminPalette.primary,
         ),
         _PreviewDetailItem(
-          'Language',
+          l10n.uiLanguage,
           DisplayText.capitalizeWords(training.language),
           icon: Icons.translate_rounded,
           color: AdminPalette.activity,
         ),
         _PreviewDetailItem(
-          'Access',
+          l10n.activityPreviewAccessLabel,
           accessLabel,
           icon: Icons.payments_outlined,
           color: training.isFree == true
@@ -905,7 +908,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
               : AdminPalette.warning,
         ),
         _PreviewDetailItem(
-          'Certificate',
+          l10n.uiCertificate,
           certificateLabel,
           icon: Icons.verified_outlined,
           color: AdminPalette.success,
@@ -916,20 +919,26 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         AdminSurface(
           radius: 20,
           padding: _largePanelPadding(context),
-          child: _buildTagSection('Authors', authors, trainingAccentColor),
+          child: _buildTagSection(
+            l10n.uiAuthors,
+            authors,
+            trainingAccentColor,
+          ),
         ),
       ],
     ];
   }
 
   List<Widget> _buildProjectIdeaSections(AdminActivityPreviewModel preview) {
+    final l10n = AppLocalizations.of(context)!;
     final idea = ProjectIdeaModel.fromMap(preview.data);
     final submitterLabel = idea.submittedByName.trim().isNotEmpty
         ? idea.submittedByName
         : idea.submittedBy;
     final title = _formatIdeaTitle(idea.title);
-    final subtitle =
-        'Submitted By ${DisplayText.capitalizeLeadingLabel(submitterLabel)}';
+    final subtitle = l10n.activityPreviewSubmittedByPrefix(
+      DisplayText.capitalizeLeadingLabel(submitterLabel),
+    );
     final summary = _formatIdeaDescription(idea.featuredSummary);
     final tagline = _formatIdeaDescription(idea.tagline);
     final targetAudience = _formatIdeaDescription(idea.targetAudience);
@@ -952,7 +961,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
 
     return [
       _buildDetailHeroCard(
-        title: title.isNotEmpty ? title : 'Project Idea',
+        title: title.isNotEmpty ? title : l10n.uiProjectIdea,
         subtitle: subtitle,
         icon: Icons.lightbulb_outline_rounded,
         accentColor: AdminPalette.warning,
@@ -970,7 +979,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             Icons.timeline_outlined,
           ),
           _buildHeroChip(
-            idea.isPublic ? 'Public' : 'Private',
+            idea.isPublic ? l10n.uiPublic : l10n.uiPrivate,
             idea.isPublic ? Icons.public_rounded : Icons.lock_outline_rounded,
           ),
         ],
@@ -979,13 +988,13 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
       _buildDetailHighlightsGrid([
         _PreviewHighlightItem(
           icon: _ideaStatusIcon(idea.status),
-          label: 'Status',
+          label: l10n.activityPreviewStatusLabel,
           value: _formatIdeaBadgeValue(idea.status),
           color: statusColor,
         ),
         _PreviewHighlightItem(
           icon: Icons.groups_rounded,
-          label: 'Interested',
+          label: l10n.activityPreviewInterestedLabel,
           value: '${idea.interestedCount}',
           color: AdminPalette.info,
         ),
@@ -999,7 +1008,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Overview',
+                l10n.uiOverview,
                 style: AppTypography.product(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -1043,16 +1052,15 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           solutionText.trim().isNotEmpty ||
           benefitsText.trim().isNotEmpty) ...[
         const SizedBox(height: 14),
-        const AdminSectionHeader(
-          eyebrow: 'Build Story',
-          title: 'Problem, Solution, And Impact',
-          subtitle:
-              'This section shows what the idea is solving, how it works, and the value it aims to create.',
+        AdminSectionHeader(
+          eyebrow: l10n.activityPreviewBuildStoryEyebrow,
+          title: l10n.activityPreviewProblemSolutionImpactTitle,
+          subtitle: l10n.activityPreviewProblemSolutionSubtitle,
         ),
         const SizedBox(height: 12),
         if (problemText.trim().isNotEmpty) ...[
           _buildIdeaNarrativeCard(
-            title: 'Problem Statement',
+            title: l10n.activityPreviewProblemStatementTitle,
             value: problemText,
             icon: Icons.report_problem_outlined,
             color: Colors.orange,
@@ -1061,7 +1069,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         ],
         if (solutionText.trim().isNotEmpty) ...[
           _buildIdeaNarrativeCard(
-            title: 'Proposed Solution',
+            title: l10n.activityPreviewProposedSolutionTitle,
             value: solutionText,
             icon: Icons.auto_fix_high_outlined,
             color: AdminPalette.warning,
@@ -1070,68 +1078,67 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         ],
         if (benefitsText.trim().isNotEmpty)
           _buildIdeaNarrativeCard(
-            title: 'Expected Benefits',
+            title: l10n.activityPreviewExpectedBenefitsTitle,
             value: benefitsText,
             icon: Icons.trending_up_rounded,
             color: AdminPalette.success,
           ),
       ],
       const SizedBox(height: 14),
-      const AdminSectionHeader(
-        eyebrow: 'Positioning',
-        title: 'Audience And Metadata',
-        subtitle:
-            'These fields help you judge where the idea fits and how ready it is for review.',
+      AdminSectionHeader(
+        eyebrow: l10n.activityPreviewPositioningEyebrow,
+        title: l10n.activityPreviewAudienceMetadataTitle,
+        subtitle: l10n.activityPreviewAudienceMetadataSubtitle,
       ),
       const SizedBox(height: 12),
       _buildMetadataGrid([
         _PreviewDetailItem(
-          'Category',
+          l10n.uiCategory,
           _formatIdeaBadgeValue(idea.displayCategory),
           icon: Icons.category_outlined,
           color: AdminPalette.info,
         ),
         _PreviewDetailItem(
-          'Stage',
+          l10n.uiStage,
           _formatIdeaBadgeValue(idea.displayStage),
           icon: Icons.timeline_outlined,
           color: AdminPalette.activity,
         ),
         _PreviewDetailItem(
-          'Level',
+          l10n.uiLevel,
           _formatIdeaBadgeValue(idea.level),
           icon: Icons.school_outlined,
           color: AdminPalette.primary,
         ),
         _PreviewDetailItem(
-          'Status',
+          l10n.uiStatus,
           _formatIdeaBadgeValue(idea.status),
           icon: _ideaStatusIcon(idea.status),
           color: statusColor,
         ),
         _PreviewDetailItem(
-          'Audience',
+          l10n.uiAudience,
           targetAudience,
           icon: Icons.groups_2_outlined,
           color: AdminPalette.secondary,
         ),
         _PreviewDetailItem(
-          'Visibility',
-          idea.isPublic ? 'Public Idea' : 'Private Idea',
+          l10n.uiVisibility,
+          idea.isPublic ? l10n.uiPublicIdea : l10n.uiPrivateIdea,
           icon: idea.isPublic
               ? Icons.public_rounded
               : Icons.lock_outline_rounded,
           color: idea.isPublic ? AdminPalette.success : AdminPalette.textMuted,
         ),
         _PreviewDetailItem(
-          'Submitted',
-          _formatTimestamp(idea.createdAt),
+          l10n.uiSubmitted,
+          _formatTimestamp(idea.createdAt, l10n),
           icon: Icons.event_outlined,
           color: AdminPalette.textMuted,
         ),
         _PreviewDetailItem(
-          'Last Updated',
-          _buildIdeaUpdatedLabel(idea),
+          l10n.uiLastUpdated,
+          _buildIdeaUpdatedLabel(idea, l10n),
           icon: Icons.update_rounded,
           color: AdminPalette.warning,
         ),
@@ -1144,23 +1151,30 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AdminSectionHeader(
-                eyebrow: 'Collaboration',
-                title: 'Team And Skill Signals',
-                subtitle:
-                    'Use these tags to understand what support the idea needs next.',
+              AdminSectionHeader(
+                eyebrow: l10n.activityPreviewCollaborationEyebrow,
+                title: l10n.activityPreviewTeamSkillSignalsTitle,
+                subtitle: l10n.activityPreviewTeamSkillSignalsSubtitle,
               ),
               if (skills.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                _buildTagSection('Skills Needed', skills, AdminPalette.warning),
+                _buildTagSection(
+                  l10n.activityPreviewSkillsNeededTitle,
+                  skills,
+                  AdminPalette.warning,
+                ),
               ],
               if (teamNeeded.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                _buildTagSection('Team Needed', teamNeeded, AdminPalette.info),
+                _buildTagSection(
+                  l10n.activityPreviewTeamNeededTitle,
+                  teamNeeded,
+                  AdminPalette.info,
+                ),
               ],
               if (tags.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                _buildTagSection('Tags', tags, AdminPalette.activity),
+                _buildTagSection(l10n.uiTags, tags, AdminPalette.activity),
               ],
             ],
           ),
@@ -1587,6 +1601,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
   }
 
   Widget _buildDetailLine(String label, String value) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminSurface(
       padding: _detailLinePadding(context),
       radius: 18,
@@ -1605,7 +1620,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
             ),
             const SizedBox(height: 6),
             Text(
-              value.trim().isEmpty ? 'Not available' : value,
+              value.trim().isEmpty ? l10n.uiNotAvailable : value,
               style: AppTypography.product(
                 fontSize: 13.5,
                 height: 1.45,
@@ -1666,28 +1681,33 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     return DisplayText.capitalizeWords(text);
   }
 
-  static String _buildIdeaUpdatedLabel(ProjectIdeaModel idea) {
+  static String _buildIdeaUpdatedLabel(
+    ProjectIdeaModel idea,
+    AppLocalizations l10n,
+  ) {
     final timestamp = idea.updatedAt ?? idea.createdAt;
     if (timestamp == null) {
-      return 'Updated recently';
+      return l10n.activityPreviewUpdatedRecently;
     }
 
     final date = timestamp.toDate();
     final difference = DateTime.now().difference(date);
     if (difference.inMinutes < 60) {
       final minutes = difference.inMinutes <= 1 ? 1 : difference.inMinutes;
-      return 'Updated $minutes min ago';
+      return l10n.activityPreviewUpdatedMinutes(minutes);
     }
     if (difference.inHours < 24) {
       final hours = difference.inHours <= 1 ? 1 : difference.inHours;
-      return 'Updated $hours hr ago';
+      return l10n.activityPreviewUpdatedHours(hours);
     }
     if (difference.inDays < 7) {
       final days = difference.inDays <= 1 ? 1 : difference.inDays;
-      return 'Updated $days day${days == 1 ? '' : 's'} ago';
+      return l10n.activityPreviewUpdatedDays(days);
     }
 
-    return 'Updated ${DateFormat('MMM d, yyyy').format(date)}';
+    return l10n.activityPreviewUpdatedDate(
+      DateFormat('MMM d, yyyy').format(date),
+    );
   }
 
   static IconData _ideaStatusIcon(String status) {
@@ -1790,16 +1810,16 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     }
   }
 
-  static String _formatShortDate(Timestamp? timestamp) {
+  static String _formatShortDate(Timestamp? timestamp, AppLocalizations l10n) {
     if (timestamp == null) {
-      return 'Date unknown';
+      return l10n.activityPreviewDateUnknown;
     }
     return DateFormat('MMM d, yyyy').format(timestamp.toDate());
   }
 
-  static String _formatTimestamp(Timestamp? timestamp) {
+  static String _formatTimestamp(Timestamp? timestamp, AppLocalizations l10n) {
     if (timestamp == null) {
-      return 'Unknown time';
+      return l10n.activityPreviewUnknownTime;
     }
     return DateFormat('MMM d, yyyy - HH:mm').format(timestamp.toDate());
   }
@@ -1829,6 +1849,7 @@ class _UnavailableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final accentColor = _AdminActivityPreviewSheetState._accentColor(
       activity.type,
     );
@@ -1852,7 +1873,7 @@ class _UnavailableCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'Details unavailable',
+            l10n.activityPreviewDetailsUnavailableTitle,
             style: AppTypography.product(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -1861,7 +1882,9 @@ class _UnavailableCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'We couldn\'t load the linked ${activity.type.replaceAll('_', ' ')} record right now.',
+            l10n.activityPreviewDetailsUnavailableMessage(
+              activity.type.replaceAll('_', ' '),
+            ),
             textAlign: TextAlign.center,
             style: AppTypography.product(
               fontSize: 13,

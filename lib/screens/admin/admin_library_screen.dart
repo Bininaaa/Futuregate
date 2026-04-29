@@ -1127,22 +1127,22 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
                   runSpacing: 10,
                   children: [
                     AdminPill(
-                      label: '${trainings.length} resources',
+                      label: l10n.libraryPillResourcesCount(trainings.length),
                       color: AdminPalette.primary,
                       icon: Icons.library_books_outlined,
                     ),
                     AdminPill(
-                      label: '$featuredCount featured',
+                      label: l10n.libraryPillFeaturedCount(featuredCount),
                       color: AdminPalette.textSecondary,
                       icon: Icons.star_outline_rounded,
                     ),
                     AdminPill(
-                      label: '$bookCount books',
+                      label: l10n.libraryPillBooksCount(bookCount),
                       color: AdminPalette.secondary,
                       icon: Icons.menu_book_rounded,
                     ),
                     AdminPill(
-                      label: '$videoCount videos',
+                      label: l10n.libraryPillVideosCount(videoCount),
                       color: AdminPalette.textSecondary,
                       icon: Icons.ondemand_video_rounded,
                     ),

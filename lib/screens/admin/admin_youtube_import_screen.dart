@@ -712,13 +712,14 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                   runSpacing: 10,
                   children: [
                     AdminPill(
-                      label: '${videos.length} imported videos',
+                      label: _l10n.libraryPillImportedVideos(videos.length),
                       color: AdminPalette.danger,
                       icon: Icons.ondemand_video_rounded,
                     ),
                     AdminPill(
-                      label:
-                          '${videos.where((video) => video.isFeatured).length} featured',
+                      label: _l10n.libraryPillFeaturedCount(
+                        videos.where((video) => video.isFeatured).length,
+                      ),
                       color: AdminPalette.accent,
                       icon: Icons.star_rounded,
                     ),
@@ -1052,7 +1053,9 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
                         runSpacing: 10,
                         children: [
                           AdminPill(
-                            label: '${_results.length} results',
+                            label: _l10n.libraryPillResultsCount(
+                              _results.length,
+                            ),
                             color: AdminPalette.danger,
                             icon: Icons.ondemand_video_rounded,
                           ),

@@ -17646,6 +17646,2124 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A strong logo or company photo makes the profile feel more polished and recognizable.'**
   String get uiStrongLogoMakesProfilePolishedSubtitle;
+
+  /// adminOpportunityPublisherHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. FutureGate Admin'**
+  String get adminOpportunityPublisherHint;
+
+  /// adminOpportunityDescriptionHint
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the role, scope, and value clearly'**
+  String get adminOpportunityDescriptionHint;
+
+  /// adminOpportunityDescriptionHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Add enough detail for students to understand scope, expectations, and value.'**
+  String get adminOpportunityDescriptionHelper;
+
+  /// adminOpportunityRequirementHintRule
+  ///
+  /// In en, this message translates to:
+  /// **'Type one eligibility rule, then press Enter'**
+  String get adminOpportunityRequirementHintRule;
+
+  /// adminOpportunityRequirementHintItem
+  ///
+  /// In en, this message translates to:
+  /// **'Type one requirement, then press Enter'**
+  String get adminOpportunityRequirementHintItem;
+
+  /// adminOpportunityDeadlineHint
+  ///
+  /// In en, this message translates to:
+  /// **'Select a closing date'**
+  String get adminOpportunityDeadlineHint;
+
+  /// adminOpportunityFundingAmountHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 250000'**
+  String get adminOpportunityFundingAmountHint;
+
+  /// adminOpportunityFundingNoteHint
+  ///
+  /// In en, this message translates to:
+  /// **'Optional support details shown to students'**
+  String get adminOpportunityFundingNoteHint;
+
+  /// adminOpportunitySalaryMinHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 60000'**
+  String get adminOpportunitySalaryMinHint;
+
+  /// adminOpportunitySalaryMaxHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 90000'**
+  String get adminOpportunitySalaryMaxHint;
+
+  /// adminOpportunityDurationHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 3 months'**
+  String get adminOpportunityDurationHint;
+
+  /// adminOpportunityCompensationHint
+  ///
+  /// In en, this message translates to:
+  /// **'Optional note shown on detail screens'**
+  String get adminOpportunityCompensationHint;
+
+  /// adminOpportunityDatePickerHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Select deadline'**
+  String get adminOpportunityDatePickerHelp;
+
+  /// adminOpportunitySnackTitleUpdated
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity updated'**
+  String get adminOpportunitySnackTitleUpdated;
+
+  /// adminOpportunitySnackTitlePublished
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity published'**
+  String get adminOpportunitySnackTitlePublished;
+
+  /// adminOpportunityUpdatedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Admin opportunity updated successfully.'**
+  String get adminOpportunityUpdatedMessage;
+
+  /// adminOpportunityPublishedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Admin opportunity published successfully.'**
+  String get adminOpportunityPublishedMessage;
+
+  /// adminOpportunityRequirementsSubtitleEligibility
+  ///
+  /// In en, this message translates to:
+  /// **'Add each eligibility point separately so students see a clean checklist.'**
+  String get adminOpportunityRequirementsSubtitleEligibility;
+
+  /// adminOpportunityRequirementsSubtitleRequirement
+  ///
+  /// In en, this message translates to:
+  /// **'Add each requirement separately so students see a clean checklist.'**
+  String get adminOpportunityRequirementsSubtitleRequirement;
+
+  /// adminEditorFieldRequired
+  ///
+  /// In en, this message translates to:
+  /// **'{label} is required'**
+  String adminEditorFieldRequired(String label);
+
+  /// adminEditorFieldNeedsDetail
+  ///
+  /// In en, this message translates to:
+  /// **'{label} needs a bit more detail'**
+  String adminEditorFieldNeedsDetail(String label);
+
+  /// adminIdeaPublicSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled, the idea reads like a public community opportunity instead of a hidden internal note.'**
+  String get adminIdeaPublicSubtitle;
+
+  /// adminIdeaTitleHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Campus Innovation Partner Program'**
+  String get adminIdeaTitleHint;
+
+  /// adminIdeaTitleValidatorLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get adminIdeaTitleValidatorLabel;
+
+  /// adminIdeaTaglineHint
+  ///
+  /// In en, this message translates to:
+  /// **'Short hook for the hero section'**
+  String get adminIdeaTaglineHint;
+
+  /// adminIdeaShortDescriptionHint
+  ///
+  /// In en, this message translates to:
+  /// **'A tight one-paragraph summary'**
+  String get adminIdeaShortDescriptionHint;
+
+  /// adminIdeaFullDescriptionHint
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the idea clearly and with enough depth'**
+  String get adminIdeaFullDescriptionHint;
+
+  /// adminIdeaFullDescriptionHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the problem, solution, audience, and expected impact.'**
+  String get adminIdeaFullDescriptionHelper;
+
+  /// adminIdeaDescriptionValidatorLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get adminIdeaDescriptionValidatorLabel;
+
+  /// adminIdeaDomainHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. EdTech, AI, Sustainability'**
+  String get adminIdeaDomainHint;
+
+  /// adminIdeaDomainValidatorLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Domain'**
+  String get adminIdeaDomainValidatorLabel;
+
+  /// adminIdeaCategoryHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Innovation, Startup, Research'**
+  String get adminIdeaCategoryHint;
+
+  /// adminIdeaStageHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Concept, Prototype, Pilot'**
+  String get adminIdeaStageHint;
+
+  /// adminIdeaToolsHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Flutter, Firebase, Figma'**
+  String get adminIdeaToolsHint;
+
+  /// adminIdeaToolsValidatorLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get adminIdeaToolsValidatorLabel;
+
+  /// adminIdeaTagsHint
+  ///
+  /// In en, this message translates to:
+  /// **'Comma-separated tags'**
+  String get adminIdeaTagsHint;
+
+  /// adminIdeaSkillsHint
+  ///
+  /// In en, this message translates to:
+  /// **'Comma-separated skills'**
+  String get adminIdeaSkillsHint;
+
+  /// adminIdeaTeamHint
+  ///
+  /// In en, this message translates to:
+  /// **'Comma-separated roles'**
+  String get adminIdeaTeamHint;
+
+  /// adminIdeaTargetAudienceHint
+  ///
+  /// In en, this message translates to:
+  /// **'Who benefits most from this idea?'**
+  String get adminIdeaTargetAudienceHint;
+
+  /// adminIdeaProblemHint
+  ///
+  /// In en, this message translates to:
+  /// **'What challenge does this solve?'**
+  String get adminIdeaProblemHint;
+
+  /// adminIdeaSolutionHint
+  ///
+  /// In en, this message translates to:
+  /// **'How does the idea solve the problem?'**
+  String get adminIdeaSolutionHint;
+
+  /// adminIdeaResourcesHint
+  ///
+  /// In en, this message translates to:
+  /// **'What support, partners, or assets are required?'**
+  String get adminIdeaResourcesHint;
+
+  /// adminIdeaBenefitsHint
+  ///
+  /// In en, this message translates to:
+  /// **'What outcomes make this valuable?'**
+  String get adminIdeaBenefitsHint;
+
+  /// adminIdeaSnackTitleUpdated
+  ///
+  /// In en, this message translates to:
+  /// **'Idea updated'**
+  String get adminIdeaSnackTitleUpdated;
+
+  /// adminIdeaSnackTitlePublished
+  ///
+  /// In en, this message translates to:
+  /// **'Idea published'**
+  String get adminIdeaSnackTitlePublished;
+
+  /// adminIdeaUpdatedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Admin idea updated successfully.'**
+  String get adminIdeaUpdatedMessage;
+
+  /// adminIdeaPublishedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Admin idea published successfully.'**
+  String get adminIdeaPublishedMessage;
+
+  /// adminScholarshipScreenTitleEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Scholarship'**
+  String get adminScholarshipScreenTitleEdit;
+
+  /// adminScholarshipScreenTitlePublish
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Scholarship'**
+  String get adminScholarshipScreenTitlePublish;
+
+  /// adminScholarshipSubmitEdit
+  ///
+  /// In en, this message translates to:
+  /// **'Save Scholarship Changes'**
+  String get adminScholarshipSubmitEdit;
+
+  /// adminScholarshipSubmitPublish
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Scholarship'**
+  String get adminScholarshipSubmitPublish;
+
+  /// adminScholarshipScreenSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Curate scholarships in the same app where students discover them, with enough structure for richer cards and more useful filtering.'**
+  String get adminScholarshipScreenSubtitle;
+
+  /// adminScholarshipPublishingTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing'**
+  String get adminScholarshipPublishingTitle;
+
+  /// adminScholarshipPublishingSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Featured scholarships get stronger presence in the student discovery flow.'**
+  String get adminScholarshipPublishingSubtitle;
+
+  /// adminScholarshipFeatureToggleTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Feature this scholarship'**
+  String get adminScholarshipFeatureToggleTitle;
+
+  /// adminScholarshipFeatureToggleSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Use this for high-priority or especially strong scholarship opportunities.'**
+  String get adminScholarshipFeatureToggleSubtitle;
+
+  /// adminScholarshipBasicInfoSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the core scholarship identity so the opportunity reads clearly across cards and details.'**
+  String get adminScholarshipBasicInfoSubtitle;
+
+  /// adminScholarshipTitleField
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship title'**
+  String get adminScholarshipTitleField;
+
+  /// adminScholarshipTitleHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Future Builders Global Scholarship'**
+  String get adminScholarshipTitleHint;
+
+  /// adminScholarshipTitleValidatorLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get adminScholarshipTitleValidatorLabel;
+
+  /// adminScholarshipProviderField
+  ///
+  /// In en, this message translates to:
+  /// **'Provider'**
+  String get adminScholarshipProviderField;
+
+  /// adminScholarshipProviderHint
+  ///
+  /// In en, this message translates to:
+  /// **'Who offers this scholarship?'**
+  String get adminScholarshipProviderHint;
+
+  /// adminScholarshipProviderValidatorLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Provider'**
+  String get adminScholarshipProviderValidatorLabel;
+
+  /// adminScholarshipDescriptionTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get adminScholarshipDescriptionTitle;
+
+  /// adminScholarshipDescriptionHint
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the scholarship and what it supports'**
+  String get adminScholarshipDescriptionHint;
+
+  /// adminScholarshipDescriptionHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Include coverage, eligibility, documents, and what students gain.'**
+  String get adminScholarshipDescriptionHelper;
+
+  /// adminScholarshipDescriptionValidatorLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get adminScholarshipDescriptionValidatorLabel;
+
+  /// adminScholarshipEligibilityTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility Requirements'**
+  String get adminScholarshipEligibilityTitle;
+
+  /// adminScholarshipEligibilityHint
+  ///
+  /// In en, this message translates to:
+  /// **'Type one requirement, then press Enter'**
+  String get adminScholarshipEligibilityHint;
+
+  /// adminScholarshipEligibilityEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Add who can apply, required documents, or academic conditions.'**
+  String get adminScholarshipEligibilityEmpty;
+
+  /// adminScholarshipLogisticsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Logistics'**
+  String get adminScholarshipLogisticsTitle;
+
+  /// adminScholarshipLogisticsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the amount, deadline, and destination details in one predictable section.'**
+  String get adminScholarshipLogisticsSubtitle;
+
+  /// adminScholarshipAmountField
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get adminScholarshipAmountField;
+
+  /// adminScholarshipAmountHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 250000'**
+  String get adminScholarshipAmountHint;
+
+  /// adminScholarshipDeadlineField
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get adminScholarshipDeadlineField;
+
+  /// adminScholarshipDeadlineHint
+  ///
+  /// In en, this message translates to:
+  /// **'Select a deadline'**
+  String get adminScholarshipDeadlineHint;
+
+  /// adminScholarshipCountryField
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get adminScholarshipCountryField;
+
+  /// adminScholarshipCountryHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. France'**
+  String get adminScholarshipCountryHint;
+
+  /// adminScholarshipCityField
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get adminScholarshipCityField;
+
+  /// adminScholarshipCityHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Paris'**
+  String get adminScholarshipCityHint;
+
+  /// adminScholarshipLocationField
+  ///
+  /// In en, this message translates to:
+  /// **'Location label'**
+  String get adminScholarshipLocationField;
+
+  /// adminScholarshipLocationHint
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback location text'**
+  String get adminScholarshipLocationHint;
+
+  /// adminScholarshipAdditionalInfoTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Information'**
+  String get adminScholarshipAdditionalInfoTitle;
+
+  /// adminScholarshipAdditionalInfoSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Use these optional fields to improve discovery, filtering, and outbound application clarity.'**
+  String get adminScholarshipAdditionalInfoSubtitle;
+
+  /// adminScholarshipApplicationLink
+  ///
+  /// In en, this message translates to:
+  /// **'Application link'**
+  String get adminScholarshipApplicationLink;
+
+  /// adminScholarshipApplicationLinkHint
+  ///
+  /// In en, this message translates to:
+  /// **'Optional direct link'**
+  String get adminScholarshipApplicationLinkHint;
+
+  /// adminScholarshipFundingTypeField
+  ///
+  /// In en, this message translates to:
+  /// **'Funding type'**
+  String get adminScholarshipFundingTypeField;
+
+  /// adminScholarshipFundingTypeHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Fully funded, Partial funding'**
+  String get adminScholarshipFundingTypeHint;
+
+  /// adminScholarshipCategoryField
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get adminScholarshipCategoryField;
+
+  /// adminScholarshipCategoryHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Masters, Research, Exchange'**
+  String get adminScholarshipCategoryHint;
+
+  /// adminScholarshipLevelField
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get adminScholarshipLevelField;
+
+  /// adminScholarshipLevelHint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Master, PhD'**
+  String get adminScholarshipLevelHint;
+
+  /// adminScholarshipImageUrl
+  ///
+  /// In en, this message translates to:
+  /// **'Image URL'**
+  String get adminScholarshipImageUrl;
+
+  /// adminScholarshipImageUrlHint
+  ///
+  /// In en, this message translates to:
+  /// **'Optional cover image URL'**
+  String get adminScholarshipImageUrlHint;
+
+  /// adminScholarshipTagsField
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get adminScholarshipTagsField;
+
+  /// adminScholarshipTagsHint
+  ///
+  /// In en, this message translates to:
+  /// **'Comma-separated tags'**
+  String get adminScholarshipTagsHint;
+
+  /// adminScholarshipDatePickerHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Select deadline'**
+  String get adminScholarshipDatePickerHelp;
+
+  /// adminScholarshipAmountInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount'**
+  String get adminScholarshipAmountInvalid;
+
+  /// adminScholarshipEligibilityRequired
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one eligibility item'**
+  String get adminScholarshipEligibilityRequired;
+
+  /// adminScholarshipDeadlineRequired
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline is required'**
+  String get adminScholarshipDeadlineRequired;
+
+  /// adminScholarshipDeadlineInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Use a valid date'**
+  String get adminScholarshipDeadlineInvalid;
+
+  /// adminPreviewName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get adminPreviewName;
+
+  /// adminPreviewAccount
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get adminPreviewAccount;
+
+  /// adminPreviewUserMetadata
+  ///
+  /// In en, this message translates to:
+  /// **'User Metadata'**
+  String get adminPreviewUserMetadata;
+
+  /// adminPreviewUserMetadataSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'The account record linked to this recent admin activity.'**
+  String get adminPreviewUserMetadataSubtitle;
+
+  /// adminPreviewItemMetadataSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Important fields are grouped here in a more readable admin detail layout.'**
+  String get adminPreviewItemMetadataSubtitle;
+
+  /// adminPreviewLocationLogisticsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These details help you evaluate how the opportunity is positioned for applicants.'**
+  String get adminPreviewLocationLogisticsSubtitle;
+
+  /// adminPreviewRequirements
+  ///
+  /// In en, this message translates to:
+  /// **'Requirements'**
+  String get adminPreviewRequirements;
+
+  /// adminPreviewRequirementsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These are the main qualifications or expectations shown to applicants.'**
+  String get adminPreviewRequirementsSubtitle;
+
+  /// adminPreviewBenefitsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'This gives the admin view of what makes the role attractive.'**
+  String get adminPreviewBenefitsSubtitle;
+
+  /// adminPreviewProviderAccessSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These details help you review where the scholarship fits and how students will reach it.'**
+  String get adminPreviewProviderAccessSubtitle;
+
+  /// adminPreviewEligibility
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility'**
+  String get adminPreviewEligibility;
+
+  /// adminPreviewProviderDeliverySubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'This section helps you review how the training is packaged and presented to users.'**
+  String get adminPreviewProviderDeliverySubtitle;
+
+  /// adminPreviewProblemSolutionImpactSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'This section shows what the idea is solving, how it works, and the value it aims to create.'**
+  String get adminPreviewProblemSolutionImpactSubtitle;
+
+  /// adminPreviewAudienceMetadataSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These fields help you judge where the idea fits and how ready it is for review.'**
+  String get adminPreviewAudienceMetadataSubtitle;
+
+  /// adminPreviewTeamSkillSignalsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Use these tags to understand what support the idea needs next.'**
+  String get adminPreviewTeamSkillSignalsSubtitle;
+
+  /// adminPreviewAudience
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get adminPreviewAudience;
+
+  /// adminPreviewSubmittedBy
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted by {name}'**
+  String adminPreviewSubmittedBy(String name);
+
+  /// adminPreviewPublic
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get adminPreviewPublic;
+
+  /// adminPreviewPrivate
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get adminPreviewPrivate;
+
+  /// adminPreviewWithdrawnFromOpportunity
+  ///
+  /// In en, this message translates to:
+  /// **'This application was withdrawn from {opportunity}.'**
+  String adminPreviewWithdrawnFromOpportunity(String opportunity);
+
+  /// adminPreviewWithdrawnGeneric
+  ///
+  /// In en, this message translates to:
+  /// **'This application was withdrawn.'**
+  String get adminPreviewWithdrawnGeneric;
+
+  /// adminPreviewAppliedToOpportunity
+  ///
+  /// In en, this message translates to:
+  /// **'Applied to {opportunity}.'**
+  String adminPreviewAppliedToOpportunity(String opportunity);
+
+  /// adminPreviewApplicationDetailsFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Application details'**
+  String get adminPreviewApplicationDetailsFallback;
+
+  /// adminPreviewSectionAccountEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get adminPreviewSectionAccountEyebrow;
+
+  /// adminPreviewSectionDetailsEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get adminPreviewSectionDetailsEyebrow;
+
+  /// adminPreviewSectionScholarshipDetailsEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship Details'**
+  String get adminPreviewSectionScholarshipDetailsEyebrow;
+
+  /// adminPreviewSectionResourceDetailsEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Resource Details'**
+  String get adminPreviewSectionResourceDetailsEyebrow;
+
+  /// adminPreviewSectionRoleSetupEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Role Setup'**
+  String get adminPreviewSectionRoleSetupEyebrow;
+
+  /// adminPreviewSectionBuildStoryEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Build Story'**
+  String get adminPreviewSectionBuildStoryEyebrow;
+
+  /// adminPreviewSectionPositioningEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Positioning'**
+  String get adminPreviewSectionPositioningEyebrow;
+
+  /// adminPreviewSectionCollaborationEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Collaboration'**
+  String get adminPreviewSectionCollaborationEyebrow;
+
+  /// adminModerateProjectIdeaApprovedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Project idea approved.'**
+  String get adminModerateProjectIdeaApprovedMessage;
+
+  /// adminModerateProjectIdeaRejectedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Project idea rejected.'**
+  String get adminModerateProjectIdeaRejectedMessage;
+
+  /// adminModerateOpportunityDeletedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity deleted.'**
+  String get adminModerateOpportunityDeletedMessage;
+
+  /// adminModerateScholarshipDeletedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship deleted.'**
+  String get adminModerateScholarshipDeletedMessage;
+
+  /// adminModerateScholarshipDeletedTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship deleted'**
+  String get adminModerateScholarshipDeletedTitle;
+
+  /// adminModerateDeleteOpportunityTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Opportunity'**
+  String get adminModerateDeleteOpportunityTitle;
+
+  /// adminModerateDeleteScholarshipTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Scholarship'**
+  String get adminModerateDeleteScholarshipTitle;
+
+  /// adminModerateDeleteOpportunityMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{title}\"?'**
+  String adminModerateDeleteOpportunityMessage(String title);
+
+  /// adminModerateDeleteScholarshipMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{title}\"?'**
+  String adminModerateDeleteScholarshipMessage(String title);
+
+  /// adminModerateDueLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Due: {value}'**
+  String adminModerateDueLabel(String value);
+
+  /// adminActivityFilterAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get adminActivityFilterAll;
+
+  /// adminActivityFilterReviews
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get adminActivityFilterReviews;
+
+  /// adminActivityFilterContent
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get adminActivityFilterContent;
+
+  /// adminActivityFilterLibrary
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get adminActivityFilterLibrary;
+
+  /// adminActivityFilterAccounts
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts'**
+  String get adminActivityFilterAccounts;
+
+  /// adminActivityFilterPending
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get adminActivityFilterPending;
+
+  /// adminPillImportedBooksCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} imported books'**
+  String adminPillImportedBooksCount(int count);
+
+  /// adminPillImportedVideosCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} imported videos'**
+  String adminPillImportedVideosCount(int count);
+
+  /// adminPillResultsCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} results'**
+  String adminPillResultsCount(int count);
+
+  /// adminPillResourcesCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} resources'**
+  String adminPillResourcesCount(int count);
+
+  /// adminPillFeaturedCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} featured'**
+  String adminPillFeaturedCount(int count);
+
+  /// adminPillBooksCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} books'**
+  String adminPillBooksCount(int count);
+
+  /// adminPillVideosCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} videos'**
+  String adminPillVideosCount(int count);
+
+  /// adminPillOpportunitiesCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count} opportunities'**
+  String adminPillOpportunitiesCount(int count);
+
+  /// adminPillApplicationsBadge
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {appsLabel}'**
+  String adminPillApplicationsBadge(int count, String appsLabel);
+
+  /// adminPillPendingDecisionMessage
+  ///
+  /// In en, this message translates to:
+  /// **'{summary} need a decision in Content.'**
+  String adminPillPendingDecisionMessage(String summary);
+
+  /// adminPendingItemsConjunction
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second}'**
+  String adminPendingItemsConjunction(String first, String second);
+
+  /// adminPendingReviewBannerTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get adminPendingReviewBannerTitle;
+
+  /// adminContentPendingIdeaWarning
+  ///
+  /// In en, this message translates to:
+  /// **'Pending idea. Approve or reject it before it appears as reviewed content.'**
+  String get adminContentPendingIdeaWarning;
+
+  /// adminContentIdeaApprovedSnack
+  ///
+  /// In en, this message translates to:
+  /// **'{title} approved.'**
+  String adminContentIdeaApprovedSnack(String title);
+
+  /// adminContentIdeaRejectedSnack
+  ///
+  /// In en, this message translates to:
+  /// **'{title} rejected.'**
+  String adminContentIdeaRejectedSnack(String title);
+
+  /// adminContentProfileUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Profile unavailable'**
+  String get adminContentProfileUnavailable;
+
+  /// adminContentWorkspaceTitleWithType
+  ///
+  /// In en, this message translates to:
+  /// **'{baseTitle} - {typeLabel}'**
+  String adminContentWorkspaceTitleWithType(String baseTitle, String typeLabel);
+
+  /// adminStudentApplicationHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Application history'**
+  String get adminStudentApplicationHistory;
+
+  /// adminStudentApplicationsSummaryError
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load the application summary right now, but you can still open the full history and try again.'**
+  String get adminStudentApplicationsSummaryError;
+
+  /// adminPreviewUserFallback
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get adminPreviewUserFallback;
+
+  /// adminPreviewApplicationFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get adminPreviewApplicationFallback;
+
+  /// adminPreviewOpportunityFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity'**
+  String get adminPreviewOpportunityFallback;
+
+  /// adminPreviewScholarshipFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship'**
+  String get adminPreviewScholarshipFallback;
+
+  /// adminPreviewTrainingFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Training'**
+  String get adminPreviewTrainingFallback;
+
+  /// adminPreviewProjectIdeaFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Project Idea'**
+  String get adminPreviewProjectIdeaFallback;
+
+  /// adminYoutubeGenericError
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please check your connection and try again.'**
+  String get adminYoutubeGenericError;
+
+  /// adminPendingIdeasSummaryPlural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending idea} other{{count} pending ideas}}'**
+  String adminPendingIdeasSummaryPlural(num count);
+
+  /// adminPendingApplicationsSummaryPlural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending application} other{{count} pending applications}}'**
+  String adminPendingApplicationsSummaryPlural(num count);
+
+  /// uiFundingAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Funding amount'**
+  String get uiFundingAmount;
+
+  /// uiFundingCurrency
+  ///
+  /// In en, this message translates to:
+  /// **'Funding currency'**
+  String get uiFundingCurrency;
+
+  /// uiFundingNote
+  ///
+  /// In en, this message translates to:
+  /// **'Funding note'**
+  String get uiFundingNote;
+
+  /// uiSalaryMinimum
+  ///
+  /// In en, this message translates to:
+  /// **'Salary minimum'**
+  String get uiSalaryMinimum;
+
+  /// uiSalaryMaximum
+  ///
+  /// In en, this message translates to:
+  /// **'Salary maximum'**
+  String get uiSalaryMaximum;
+
+  /// uiSalaryPeriod
+  ///
+  /// In en, this message translates to:
+  /// **'Salary period'**
+  String get uiSalaryPeriod;
+
+  /// uiCompensationNote
+  ///
+  /// In en, this message translates to:
+  /// **'Compensation note'**
+  String get uiCompensationNote;
+
+  /// uiCountry
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get uiCountry;
+
+  /// uiName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get uiName;
+
+  /// uiAccount
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get uiAccount;
+
+  /// uiPublic
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get uiPublic;
+
+  /// uiPrivate
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get uiPrivate;
+
+  /// uiAudience
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get uiAudience;
+
+  /// uiRequirements
+  ///
+  /// In en, this message translates to:
+  /// **'Requirements'**
+  String get uiRequirements;
+
+  /// uiEligibility
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility'**
+  String get uiEligibility;
+
+  /// uiPublishingLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing'**
+  String get uiPublishingLabel;
+
+  /// uiUserLabel
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get uiUserLabel;
+
+  /// adminScholarshipEditTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Scholarship'**
+  String get adminScholarshipEditTitle;
+
+  /// adminScholarshipPublishTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Scholarship'**
+  String get adminScholarshipPublishTitle;
+
+  /// adminScholarshipSaveLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Save Scholarship Changes'**
+  String get adminScholarshipSaveLabel;
+
+  /// adminScholarshipPublishLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Scholarship'**
+  String get adminScholarshipPublishLabel;
+
+  /// adminScholarshipScaffoldSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Curate scholarships in the same app where students discover them, with enough structure for richer cards and more useful filtering.'**
+  String get adminScholarshipScaffoldSubtitle;
+
+  /// adminScholarshipFeatureTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Feature this scholarship'**
+  String get adminScholarshipFeatureTitle;
+
+  /// adminScholarshipFeatureSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Use this for high-priority or especially strong scholarship opportunities.'**
+  String get adminScholarshipFeatureSubtitle;
+
+  /// adminScholarshipTitleLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship title'**
+  String get adminScholarshipTitleLabel;
+
+  /// adminScholarshipEligibilityValidator
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one eligibility item'**
+  String get adminScholarshipEligibilityValidator;
+
+  /// adminScholarshipAmountValidator
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount'**
+  String get adminScholarshipAmountValidator;
+
+  /// adminScholarshipDeadlinePickerHelp
+  ///
+  /// In en, this message translates to:
+  /// **'Select deadline'**
+  String get adminScholarshipDeadlinePickerHelp;
+
+  /// adminScholarshipLocationLabelField
+  ///
+  /// In en, this message translates to:
+  /// **'Location label'**
+  String get adminScholarshipLocationLabelField;
+
+  /// adminScholarshipApplicationLinkLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Application link'**
+  String get adminScholarshipApplicationLinkLabel;
+
+  /// adminScholarshipFundingTypeLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Funding type'**
+  String get adminScholarshipFundingTypeLabel;
+
+  /// adminScholarshipImageUrlLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Image URL'**
+  String get adminScholarshipImageUrlLabel;
+
+  /// moderateIdeaApprovedSnackTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Idea approved'**
+  String get moderateIdeaApprovedSnackTitle;
+
+  /// moderateIdeaApprovedSnackMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Project idea approved.'**
+  String get moderateIdeaApprovedSnackMessage;
+
+  /// moderateIdeaRejectedSnackTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Idea rejected'**
+  String get moderateIdeaRejectedSnackTitle;
+
+  /// moderateIdeaRejectedSnackMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Project idea rejected.'**
+  String get moderateIdeaRejectedSnackMessage;
+
+  /// moderateOpportunityDeletedSnackTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity deleted'**
+  String get moderateOpportunityDeletedSnackTitle;
+
+  /// moderateOpportunityDeletedSnackMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity deleted.'**
+  String get moderateOpportunityDeletedSnackMessage;
+
+  /// moderateScholarshipDeletedSnackTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship deleted'**
+  String get moderateScholarshipDeletedSnackTitle;
+
+  /// moderateScholarshipDeletedSnackMessage
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship deleted.'**
+  String get moderateScholarshipDeletedSnackMessage;
+
+  /// moderateWorkingLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Working...'**
+  String get moderateWorkingLabel;
+
+  /// moderateApproveLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get moderateApproveLabel;
+
+  /// moderateRejectLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get moderateRejectLabel;
+
+  /// moderateNoIdeasReviewYet
+  ///
+  /// In en, this message translates to:
+  /// **'No project ideas to review yet'**
+  String get moderateNoIdeasReviewYet;
+
+  /// moderateNoOpportunitiesYet
+  ///
+  /// In en, this message translates to:
+  /// **'No opportunities published yet'**
+  String get moderateNoOpportunitiesYet;
+
+  /// moderateNoScholarshipsYet
+  ///
+  /// In en, this message translates to:
+  /// **'No scholarships published yet'**
+  String get moderateNoScholarshipsYet;
+
+  /// moderateNoPendingIdeas
+  ///
+  /// In en, this message translates to:
+  /// **'No pending ideas to review'**
+  String get moderateNoPendingIdeas;
+
+  /// moderatePendingIdeasCount
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Ideas ({count})'**
+  String moderatePendingIdeasCount(int count);
+
+  /// moderateAllIdeasCount
+  ///
+  /// In en, this message translates to:
+  /// **'All Ideas ({count})'**
+  String moderateAllIdeasCount(int count);
+
+  /// moderateShowAllLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Show All'**
+  String get moderateShowAllLabel;
+
+  /// moderatePendingOnlyLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Only'**
+  String get moderatePendingOnlyLabel;
+
+  /// moderateSubmittedByLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted by: {name}'**
+  String moderateSubmittedByLabel(String name);
+
+  /// moderateUntitledOpportunity
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled opportunity'**
+  String get moderateUntitledOpportunity;
+
+  /// moderateUnknownCompany
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown company'**
+  String get moderateUnknownCompany;
+
+  /// moderateUntitledScholarship
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled scholarship'**
+  String get moderateUntitledScholarship;
+
+  /// moderateUnknownProvider
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown provider'**
+  String get moderateUnknownProvider;
+
+  /// moderateAmountWithCurrency
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} DA'**
+  String moderateAmountWithCurrency(String amount);
+
+  /// moderateDueLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Due: {date}'**
+  String moderateDueLabel(String date);
+
+  /// moderateDeleteOpportunityTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Opportunity'**
+  String get moderateDeleteOpportunityTitle;
+
+  /// moderateDeleteOpportunityConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{title}\"?'**
+  String moderateDeleteOpportunityConfirm(String title);
+
+  /// moderateDeleteScholarshipTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Scholarship'**
+  String get moderateDeleteScholarshipTitle;
+
+  /// moderateDeleteScholarshipConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{title}\"?'**
+  String moderateDeleteScholarshipConfirm(String title);
+
+  /// moderateDeleteAction
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get moderateDeleteAction;
+
+  /// activitySectionAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get activitySectionAll;
+
+  /// activitySectionReviews
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get activitySectionReviews;
+
+  /// activitySectionContent
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get activitySectionContent;
+
+  /// activitySectionLibrary
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get activitySectionLibrary;
+
+  /// activitySectionAccounts
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts'**
+  String get activitySectionAccounts;
+
+  /// activitySectionPending
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get activitySectionPending;
+
+  /// dashboardPendingCompanies
+  ///
+  /// In en, this message translates to:
+  /// **'Companies'**
+  String get dashboardPendingCompanies;
+
+  /// dashboardPendingIdeas
+  ///
+  /// In en, this message translates to:
+  /// **'Ideas'**
+  String get dashboardPendingIdeas;
+
+  /// dashboardPendingApplications
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get dashboardPendingApplications;
+
+  /// contentIdeaApprovedSnackTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Idea approved'**
+  String get contentIdeaApprovedSnackTitle;
+
+  /// contentIdeaApprovedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'{title} approved.'**
+  String contentIdeaApprovedMessage(String title);
+
+  /// contentIdeaRejectedSnackTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Idea rejected'**
+  String get contentIdeaRejectedSnackTitle;
+
+  /// contentIdeaRejectedMessage
+  ///
+  /// In en, this message translates to:
+  /// **'{title} rejected.'**
+  String contentIdeaRejectedMessage(String title);
+
+  /// contentPendingIdeaInline
+  ///
+  /// In en, this message translates to:
+  /// **'Pending idea. Approve or reject it before it appears as reviewed content.'**
+  String get contentPendingIdeaInline;
+
+  /// contentPendingReviewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get contentPendingReviewTitle;
+
+  /// contentPendingPartsCombined
+  ///
+  /// In en, this message translates to:
+  /// **'{parts} need a decision in Content.'**
+  String contentPendingPartsCombined(String parts);
+
+  /// contentPendingIdeasPart
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending idea} other{{count} pending ideas}}'**
+  String contentPendingIdeasPart(int count);
+
+  /// contentPendingApplicationsPart
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending application} other{{count} pending applications}}'**
+  String contentPendingApplicationsPart(int count);
+
+  /// contentPendingPartsJoiner
+  ///
+  /// In en, this message translates to:
+  /// **' and '**
+  String get contentPendingPartsJoiner;
+
+  /// contentProfileUnavailableTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Profile unavailable'**
+  String get contentProfileUnavailableTitle;
+
+  /// contentPillIdeasCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 idea} other{{count} ideas}}'**
+  String contentPillIdeasCount(int count);
+
+  /// contentPillPendingIdeas
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending idea} other{{count} pending ideas}}'**
+  String contentPillPendingIdeas(int count);
+
+  /// contentPillPendingApps
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending app} other{{count} pending apps}}'**
+  String contentPillPendingApps(int count);
+
+  /// contentPillOpportunitiesCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 opportunity} other{{count} opportunities}}'**
+  String contentPillOpportunitiesCount(int count);
+
+  /// contentPillScholarshipsCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 scholarship} other{{count} scholarships}}'**
+  String contentPillScholarshipsCount(int count);
+
+  /// contentPillResourcesCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 resource} other{{count} resources}}'**
+  String contentPillResourcesCount(int count);
+
+  /// contentPillCountWithLabel
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {label}'**
+  String contentPillCountWithLabel(int count, String label);
+
+  /// libraryPillResourcesCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 resource} other{{count} resources}}'**
+  String libraryPillResourcesCount(int count);
+
+  /// libraryPillFeaturedCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 featured} other{{count} featured}}'**
+  String libraryPillFeaturedCount(int count);
+
+  /// libraryPillBooksCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 book} other{{count} books}}'**
+  String libraryPillBooksCount(int count);
+
+  /// libraryPillVideosCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 video} other{{count} videos}}'**
+  String libraryPillVideosCount(int count);
+
+  /// libraryPillImportedBooks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 imported book} other{{count} imported books}}'**
+  String libraryPillImportedBooks(int count);
+
+  /// libraryPillImportedVideos
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 imported video} other{{count} imported videos}}'**
+  String libraryPillImportedVideos(int count);
+
+  /// libraryPillResultsCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 result} other{{count} results}}'**
+  String libraryPillResultsCount(int count);
+
+  /// studentProfileApplicationHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Application history'**
+  String get studentProfileApplicationHistory;
+
+  /// studentProfileLoadingHistory
+  ///
+  /// In en, this message translates to:
+  /// **'Loading application history...'**
+  String get studentProfileLoadingHistory;
+
+  /// studentProfileHistoryUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Application history is unavailable right now.'**
+  String get studentProfileHistoryUnavailable;
+
+  /// studentProfileNoApplicationsYet
+  ///
+  /// In en, this message translates to:
+  /// **'No applications have been submitted by this student yet.'**
+  String get studentProfileNoApplicationsYet;
+
+  /// studentProfileApplicationsCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 submitted application} other{{count} submitted applications}}'**
+  String studentProfileApplicationsCount(int count);
+
+  /// studentProfileSummaryError
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load the application summary right now, but you can still open the full history and try again.'**
+  String get studentProfileSummaryError;
+
+  /// studentProfileViewAllAppsCount
+  ///
+  /// In en, this message translates to:
+  /// **'View All Apps ({count})'**
+  String studentProfileViewAllAppsCount(int count);
+
+  /// studentProfileNoApplicationsYetTitle
+  ///
+  /// In en, this message translates to:
+  /// **'No applications yet'**
+  String get studentProfileNoApplicationsYetTitle;
+
+  /// studentProfileNoApplicationsMessage
+  ///
+  /// In en, this message translates to:
+  /// **'This student has not submitted any applications yet.'**
+  String get studentProfileNoApplicationsMessage;
+
+  /// studentProfileFullHistoryUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load this student\'s full application history right now.'**
+  String get studentProfileFullHistoryUnavailable;
+
+  /// studentProfileOpportunityUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity unavailable'**
+  String get studentProfileOpportunityUnavailable;
+
+  /// studentProfileOpportunityHidden
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity hidden'**
+  String get studentProfileOpportunityHidden;
+
+  /// studentProfileOpportunityClosed
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity closed'**
+  String get studentProfileOpportunityClosed;
+
+  /// activityPreviewRoleLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get activityPreviewRoleLabel;
+
+  /// activityPreviewAccountLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get activityPreviewAccountLabel;
+
+  /// activityPreviewCompanyReviewLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Company Review'**
+  String get activityPreviewCompanyReviewLabel;
+
+  /// activityPreviewActivityLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityPreviewActivityLabel;
+
+  /// activityPreviewUserMetadataTitle
+  ///
+  /// In en, this message translates to:
+  /// **'User Metadata'**
+  String get activityPreviewUserMetadataTitle;
+
+  /// activityPreviewUserMetadataSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'The account record linked to this recent admin activity.'**
+  String get activityPreviewUserMetadataSubtitle;
+
+  /// activityPreviewItemMetadataTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Item Metadata'**
+  String get activityPreviewItemMetadataTitle;
+
+  /// activityPreviewApplicationsLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get activityPreviewApplicationsLabel;
+
+  /// activityPreviewDeadlineLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get activityPreviewDeadlineLabel;
+
+  /// activityPreviewCompensationLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Compensation'**
+  String get activityPreviewCompensationLabel;
+
+  /// activityPreviewWorkSetupLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Work Setup'**
+  String get activityPreviewWorkSetupLabel;
+
+  /// activityPreviewRoleOverviewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Role Overview'**
+  String get activityPreviewRoleOverviewTitle;
+
+  /// activityPreviewLocationLogisticsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Location And Logistics'**
+  String get activityPreviewLocationLogisticsTitle;
+
+  /// activityPreviewRequirementsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Requirements'**
+  String get activityPreviewRequirementsTitle;
+
+  /// activityPreviewBenefitsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits'**
+  String get activityPreviewBenefitsTitle;
+
+  /// activityPreviewAmountLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get activityPreviewAmountLabel;
+
+  /// activityPreviewProviderLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Provider'**
+  String get activityPreviewProviderLabel;
+
+  /// activityPreviewAccessLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Access'**
+  String get activityPreviewAccessLabel;
+
+  /// activityPreviewScholarshipOverviewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship Overview'**
+  String get activityPreviewScholarshipOverviewTitle;
+
+  /// activityPreviewEligibilityTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility'**
+  String get activityPreviewEligibilityTitle;
+
+  /// activityPreviewProviderAccessTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Provider And Access'**
+  String get activityPreviewProviderAccessTitle;
+
+  /// activityPreviewDurationLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get activityPreviewDurationLabel;
+
+  /// activityPreviewLearnersLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Learners'**
+  String get activityPreviewLearnersLabel;
+
+  /// activityPreviewRatingLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get activityPreviewRatingLabel;
+
+  /// activityPreviewStatusLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get activityPreviewStatusLabel;
+
+  /// activityPreviewTrainingOverviewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Training Overview'**
+  String get activityPreviewTrainingOverviewTitle;
+
+  /// activityPreviewProviderDeliverySetupTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Provider And Delivery Setup'**
+  String get activityPreviewProviderDeliverySetupTitle;
+
+  /// activityPreviewInterestedLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Interested'**
+  String get activityPreviewInterestedLabel;
+
+  /// activityPreviewProblemSolutionImpactTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Problem, Solution, And Impact'**
+  String get activityPreviewProblemSolutionImpactTitle;
+
+  /// activityPreviewProblemStatementTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Problem Statement'**
+  String get activityPreviewProblemStatementTitle;
+
+  /// activityPreviewProposedSolutionTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed Solution'**
+  String get activityPreviewProposedSolutionTitle;
+
+  /// activityPreviewExpectedBenefitsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Benefits'**
+  String get activityPreviewExpectedBenefitsTitle;
+
+  /// activityPreviewAudienceMetadataTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Audience And Metadata'**
+  String get activityPreviewAudienceMetadataTitle;
+
+  /// activityPreviewTeamSkillSignalsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Team And Skill Signals'**
+  String get activityPreviewTeamSkillSignalsTitle;
+
+  /// activityPreviewUpdatedRecently
+  ///
+  /// In en, this message translates to:
+  /// **'Updated recently'**
+  String get activityPreviewUpdatedRecently;
+
+  /// activityPreviewUpdatedMinutes
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Updated 1 min ago} other{Updated {count} min ago}}'**
+  String activityPreviewUpdatedMinutes(int count);
+
+  /// activityPreviewUpdatedHours
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Updated 1 hr ago} other{Updated {count} hr ago}}'**
+  String activityPreviewUpdatedHours(int count);
+
+  /// activityPreviewUpdatedDays
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Updated 1 day ago} other{Updated {count} days ago}}'**
+  String activityPreviewUpdatedDays(int count);
+
+  /// activityPreviewUpdatedDate
+  ///
+  /// In en, this message translates to:
+  /// **'Updated {date}'**
+  String activityPreviewUpdatedDate(String date);
+
+  /// activityPreviewDateUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'Date unknown'**
+  String get activityPreviewDateUnknown;
+
+  /// activityPreviewUnknownTime
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown time'**
+  String get activityPreviewUnknownTime;
+
+  /// studentProfileNoSubmittedApps
+  ///
+  /// In en, this message translates to:
+  /// **'No submitted applications yet.'**
+  String get studentProfileNoSubmittedApps;
+
+  /// studentProfileSubmittedAvailable
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 submitted application available for review} other{{count} submitted applications available for review}}'**
+  String studentProfileSubmittedAvailable(int count);
+
+  /// uiUser
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get uiUser;
+
+  /// activityPreviewBuildStoryEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Build Story'**
+  String get activityPreviewBuildStoryEyebrow;
+
+  /// activityPreviewPositioningEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Positioning'**
+  String get activityPreviewPositioningEyebrow;
+
+  /// activityPreviewCollaborationEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Collaboration'**
+  String get activityPreviewCollaborationEyebrow;
+
+  /// activityPreviewResourceDetailsEyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'Resource Details'**
+  String get activityPreviewResourceDetailsEyebrow;
+
+  /// activityPreviewSkillsNeededTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Skills Needed'**
+  String get activityPreviewSkillsNeededTitle;
+
+  /// activityPreviewTeamNeededTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Team Needed'**
+  String get activityPreviewTeamNeededTitle;
+
+  /// activityPreviewItemMetadataSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Important fields are grouped here in a more readable admin detail layout.'**
+  String get activityPreviewItemMetadataSubtitle;
+
+  /// activityPreviewLocationLogisticsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These details help you evaluate how the opportunity is positioned for applicants.'**
+  String get activityPreviewLocationLogisticsSubtitle;
+
+  /// activityPreviewRequirementsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These are the main qualifications or expectations shown to applicants.'**
+  String get activityPreviewRequirementsSubtitle;
+
+  /// activityPreviewBenefitsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'This gives the admin view of what makes the role attractive.'**
+  String get activityPreviewBenefitsSubtitle;
+
+  /// activityPreviewProviderAccessSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These details help you review where the scholarship fits and how students will reach it.'**
+  String get activityPreviewProviderAccessSubtitle;
+
+  /// activityPreviewProviderDeliverySetupSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'This section helps you review how the training is packaged and presented to users.'**
+  String get activityPreviewProviderDeliverySetupSubtitle;
+
+  /// activityPreviewProblemSolutionSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'This section shows what the idea is solving, how it works, and the value it aims to create.'**
+  String get activityPreviewProblemSolutionSubtitle;
+
+  /// activityPreviewAudienceMetadataSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These fields help you judge where the idea fits and how ready it is for review.'**
+  String get activityPreviewAudienceMetadataSubtitle;
+
+  /// activityPreviewTeamSkillSignalsSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Use these tags to understand what support the idea needs next.'**
+  String get activityPreviewTeamSkillSignalsSubtitle;
+
+  /// activityPreviewWithdrawnFromOpportunity
+  ///
+  /// In en, this message translates to:
+  /// **'This application was withdrawn from {opportunity}.'**
+  String activityPreviewWithdrawnFromOpportunity(String opportunity);
+
+  /// activityPreviewWithdrawnGeneric
+  ///
+  /// In en, this message translates to:
+  /// **'This application was withdrawn.'**
+  String get activityPreviewWithdrawnGeneric;
+
+  /// activityPreviewAppliedToOpportunity
+  ///
+  /// In en, this message translates to:
+  /// **'Applied to {opportunity}.'**
+  String activityPreviewAppliedToOpportunity(String opportunity);
+
+  /// activityPreviewProjectIdeaFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Project Idea'**
+  String get activityPreviewProjectIdeaFallback;
+
+  /// activityPreviewScholarshipFallback
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship'**
+  String get activityPreviewScholarshipFallback;
+
+  /// activityPreviewSubmittedByPrefix
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted By {name}'**
+  String activityPreviewSubmittedByPrefix(String name);
+
+  /// activityPreviewDetailsUnavailableTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Details unavailable'**
+  String get activityPreviewDetailsUnavailableTitle;
+
+  /// activityPreviewDetailsUnavailableMessage
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load the linked {recordType} record right now.'**
+  String activityPreviewDetailsUnavailableMessage(String recordType);
 }
 
 class _AppLocalizationsDelegate

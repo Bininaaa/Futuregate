@@ -293,13 +293,10 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
   ) {
     final items = snapshot.data ?? const <StudentApplicationItemModel>[];
     final countLabel = switch (snapshot.connectionState) {
-      ConnectionState.waiting => 'Loading application history...',
-      _ when snapshot.hasError =>
-        'Application history is unavailable right now.',
-      _ when items.isEmpty =>
-        'No applications have been submitted by this student yet.',
-      _ when items.length == 1 => '1 submitted application',
-      _ => '${items.length} submitted applications',
+      ConnectionState.waiting => _l10n.studentProfileLoadingHistory,
+      _ when snapshot.hasError => _l10n.studentProfileHistoryUnavailable,
+      _ when items.isEmpty => _l10n.studentProfileNoApplicationsYet,
+      _ => _l10n.studentProfileApplicationsCount(items.length),
     };
 
     return AdminSurface(
@@ -311,11 +308,14 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
         children: [
           AdminSectionHeader(title: _l10n.uiStudentApplications),
           const SizedBox(height: 14),
-          _SectionCopy(title: 'Application history', value: countLabel),
+          _SectionCopy(
+            title: _l10n.studentProfileApplicationHistory,
+            value: countLabel,
+          ),
           if (snapshot.hasError) ...[
             const SizedBox(height: 10),
             Text(
-              'We could not load the application summary right now, but you can still open the full history and try again.',
+              _l10n.studentProfileSummaryError,
               style: AppTypography.product(
                 fontSize: 12,
                 height: 1.45,
@@ -330,7 +330,7 @@ class _AdminStudentProfileSheetState extends State<_AdminStudentProfileSheet> {
             child: _DocumentButton(
               label: items.isEmpty
                   ? _l10n.uiViewAllApps
-                  : 'View All Apps (${items.length})',
+                  : _l10n.studentProfileViewAllAppsCount(items.length),
               icon: Icons.assignment_outlined,
               onPressed: () => showAdminStudentApplicationsSheet(
                 context,
@@ -453,7 +453,7 @@ class _AdminStudentApplicationsSheetState
     final appliedLabel = item.appliedAt == null
         ? l10n.uiAppliedDateUnavailable
         : DateFormat('MMM d, yyyy').format(item.appliedAt!);
-    final opportunityStateLabel = _opportunityStateLabel(item);
+    final opportunityStateLabel = _opportunityStateLabel(item, l10n);
     final opportunityStateColor = _opportunityStateColor(item);
     final description = (opportunity?.description.trim() ?? '').isEmpty
         ? ''
@@ -696,12 +696,12 @@ class _AdminStudentApplicationsSheetState
                           const SizedBox(height: 4),
                           Text(
                             snapshot.connectionState == ConnectionState.waiting
-                                ? 'Loading application history...'
+                                ? l10n.studentProfileLoadingHistory
                                 : items.isEmpty
-                                ? 'No submitted applications yet.'
-                                : items.length == 1
-                                ? '1 submitted application available for review'
-                                : '${items.length} submitted applications available for review',
+                                ? l10n.studentProfileNoSubmittedApps
+                                : l10n.studentProfileSubmittedAvailable(
+                                    items.length,
+                                  ),
                             style: AppTypography.product(
                               fontSize: 12.5,
                               color: Colors.white70,
@@ -720,8 +720,7 @@ class _AdminStudentApplicationsSheetState
                       AdminEmptyState(
                         icon: Icons.assignment_late_outlined,
                         title: l10n.uiApplicationHistoryUnavailable,
-                        message:
-                            'We could not load this student\'s full application history right now.',
+                        message: l10n.studentProfileFullHistoryUnavailable,
                         action: FilledButton.icon(
                           onPressed: _retry,
                           icon: const Icon(Icons.refresh_rounded),
@@ -729,11 +728,10 @@ class _AdminStudentApplicationsSheetState
                         ),
                       )
                     else if (items.isEmpty)
-                      const AdminEmptyState(
+                      AdminEmptyState(
                         icon: Icons.assignment_turned_in_outlined,
-                        title: 'No applications yet',
-                        message:
-                            'This student has not submitted any applications yet.',
+                        title: l10n.studentProfileNoApplicationsYetTitle,
+                        message: l10n.studentProfileNoApplicationsMessage,
                       )
                     else
                       ...items.map(_buildApplicationCard),
@@ -750,7 +748,7 @@ class _AdminStudentApplicationsSheetState
   Widget _buildApplicationCard(StudentApplicationItemModel item) {
     final l10n = AppLocalizations.of(context)!;
     final statusColor = _statusColor(item.status);
-    final opportunityStateLabel = _opportunityStateLabel(item);
+    final opportunityStateLabel = _opportunityStateLabel(item, l10n);
     final opportunityStateColor = _opportunityStateColor(item);
     final appliedLabel = item.appliedAt == null
         ? l10n.uiAppliedDateUnavailable
@@ -1365,16 +1363,19 @@ Color _statusColor(String status) {
   }
 }
 
-String? _opportunityStateLabel(StudentApplicationItemModel item) {
+String? _opportunityStateLabel(
+  StudentApplicationItemModel item,
+  AppLocalizations l10n,
+) {
   final opportunity = item.opportunity;
   if (opportunity == null) {
-    return 'Opportunity unavailable';
+    return l10n.studentProfileOpportunityUnavailable;
   }
   if (opportunity.isHidden) {
-    return 'Opportunity hidden';
+    return l10n.studentProfileOpportunityHidden;
   }
   if (opportunity.effectiveStatus() == 'closed') {
-    return 'Opportunity closed';
+    return l10n.studentProfileOpportunityClosed;
   }
 
   return null;

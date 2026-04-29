@@ -3676,5 +3676,1761 @@
   "uiStrongLogoMakesProfilePolishedSubtitle": "Un logo fort ou une photo soignée de l’entreprise rend le profil plus abouti et plus reconnaissable.",
   "@uiStrongLogoMakesProfilePolishedSubtitle": {
     "description": "uiStrongLogoMakesProfilePolishedSubtitle"
+  },
+  "adminOpportunityPublisherHint": "p. ex. Administration FutureGate",
+  "@adminOpportunityPublisherHint": {
+    "description": "adminOpportunityPublisherHint"
+  },
+  "adminOpportunityDescriptionHint": "Décrivez clairement le poste, son périmètre et la valeur apportée",
+  "@adminOpportunityDescriptionHint": {
+    "description": "adminOpportunityDescriptionHint"
+  },
+  "adminOpportunityDescriptionHelper": "Ajoutez suffisamment de détails pour que les étudiants saisissent le périmètre, les attentes et la valeur.",
+  "@adminOpportunityDescriptionHelper": {
+    "description": "adminOpportunityDescriptionHelper"
+  },
+  "adminOpportunityRequirementHintRule": "Saisissez une condition d’éligibilité, puis appuyez sur Entrée",
+  "@adminOpportunityRequirementHintRule": {
+    "description": "adminOpportunityRequirementHintRule"
+  },
+  "adminOpportunityRequirementHintItem": "Saisissez une exigence, puis appuyez sur Entrée",
+  "@adminOpportunityRequirementHintItem": {
+    "description": "adminOpportunityRequirementHintItem"
+  },
+  "adminOpportunityDeadlineHint": "Sélectionnez une date de clôture",
+  "@adminOpportunityDeadlineHint": {
+    "description": "adminOpportunityDeadlineHint"
+  },
+  "adminOpportunityFundingAmountHint": "p. ex. 250 000",
+  "@adminOpportunityFundingAmountHint": {
+    "description": "adminOpportunityFundingAmountHint"
+  },
+  "adminOpportunityFundingNoteHint": "Détails de soutien facultatifs présentés aux étudiants",
+  "@adminOpportunityFundingNoteHint": {
+    "description": "adminOpportunityFundingNoteHint"
+  },
+  "adminOpportunitySalaryMinHint": "p. ex. 60 000",
+  "@adminOpportunitySalaryMinHint": {
+    "description": "adminOpportunitySalaryMinHint"
+  },
+  "adminOpportunitySalaryMaxHint": "p. ex. 90 000",
+  "@adminOpportunitySalaryMaxHint": {
+    "description": "adminOpportunitySalaryMaxHint"
+  },
+  "adminOpportunityDurationHint": "p. ex. 3 mois",
+  "@adminOpportunityDurationHint": {
+    "description": "adminOpportunityDurationHint"
+  },
+  "adminOpportunityCompensationHint": "Note facultative affichée sur les écrans de détail",
+  "@adminOpportunityCompensationHint": {
+    "description": "adminOpportunityCompensationHint"
+  },
+  "adminOpportunityDatePickerHelp": "Sélectionnez la date limite",
+  "@adminOpportunityDatePickerHelp": {
+    "description": "adminOpportunityDatePickerHelp"
+  },
+  "adminOpportunitySnackTitleUpdated": "Offre mise à jour",
+  "@adminOpportunitySnackTitleUpdated": {
+    "description": "adminOpportunitySnackTitleUpdated"
+  },
+  "adminOpportunitySnackTitlePublished": "Offre publiée",
+  "@adminOpportunitySnackTitlePublished": {
+    "description": "adminOpportunitySnackTitlePublished"
+  },
+  "adminOpportunityUpdatedMessage": "L’offre administrative a été mise à jour avec succès.",
+  "@adminOpportunityUpdatedMessage": {
+    "description": "adminOpportunityUpdatedMessage"
+  },
+  "adminOpportunityPublishedMessage": "L’offre administrative a été publiée avec succès.",
+  "@adminOpportunityPublishedMessage": {
+    "description": "adminOpportunityPublishedMessage"
+  },
+  "adminOpportunityRequirementsSubtitleEligibility": "Ajoutez chaque condition d’éligibilité séparément afin que les étudiants disposent d’une liste claire.",
+  "@adminOpportunityRequirementsSubtitleEligibility": {
+    "description": "adminOpportunityRequirementsSubtitleEligibility"
+  },
+  "adminOpportunityRequirementsSubtitleRequirement": "Ajoutez chaque exigence séparément afin que les étudiants disposent d’une liste claire.",
+  "@adminOpportunityRequirementsSubtitleRequirement": {
+    "description": "adminOpportunityRequirementsSubtitleRequirement"
+  },
+  "adminEditorFieldRequired": "{label} est obligatoire",
+  "@adminEditorFieldRequired": {
+    "description": "adminEditorFieldRequired",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "Title"
+      }
+    }
+  },
+  "adminEditorFieldNeedsDetail": "{label} doit contenir un peu plus de détails",
+  "@adminEditorFieldNeedsDetail": {
+    "description": "adminEditorFieldNeedsDetail",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "Description"
+      }
+    }
+  },
+  "adminIdeaPublicSubtitle": "Lorsque cette option est activée, l’idée apparaît comme une opportunité communautaire publique plutôt que comme une note interne masquée.",
+  "@adminIdeaPublicSubtitle": {
+    "description": "adminIdeaPublicSubtitle"
+  },
+  "adminIdeaTitleHint": "p. ex. Programme de Partenariat Innovation Campus",
+  "@adminIdeaTitleHint": {
+    "description": "adminIdeaTitleHint"
+  },
+  "adminIdeaTitleValidatorLabel": "Titre",
+  "@adminIdeaTitleValidatorLabel": {
+    "description": "adminIdeaTitleValidatorLabel"
+  },
+  "adminIdeaTaglineHint": "Accroche courte pour la section principale",
+  "@adminIdeaTaglineHint": {
+    "description": "adminIdeaTaglineHint"
+  },
+  "adminIdeaShortDescriptionHint": "Un résumé concis en un paragraphe",
+  "@adminIdeaShortDescriptionHint": {
+    "description": "adminIdeaShortDescriptionHint"
+  },
+  "adminIdeaFullDescriptionHint": "Décrivez l’idée clairement et avec suffisamment de profondeur",
+  "@adminIdeaFullDescriptionHint": {
+    "description": "adminIdeaFullDescriptionHint"
+  },
+  "adminIdeaFullDescriptionHelper": "Décrivez le problème, la solution, le public visé et l’impact attendu.",
+  "@adminIdeaFullDescriptionHelper": {
+    "description": "adminIdeaFullDescriptionHelper"
+  },
+  "adminIdeaDescriptionValidatorLabel": "Description",
+  "@adminIdeaDescriptionValidatorLabel": {
+    "description": "adminIdeaDescriptionValidatorLabel"
+  },
+  "adminIdeaDomainHint": "p. ex. EdTech, IA, durabilité",
+  "@adminIdeaDomainHint": {
+    "description": "adminIdeaDomainHint"
+  },
+  "adminIdeaDomainValidatorLabel": "Domaine",
+  "@adminIdeaDomainValidatorLabel": {
+    "description": "adminIdeaDomainValidatorLabel"
+  },
+  "adminIdeaCategoryHint": "p. ex. Innovation, startup, recherche",
+  "@adminIdeaCategoryHint": {
+    "description": "adminIdeaCategoryHint"
+  },
+  "adminIdeaStageHint": "p. ex. Concept, prototype, pilote",
+  "@adminIdeaStageHint": {
+    "description": "adminIdeaStageHint"
+  },
+  "adminIdeaToolsHint": "p. ex. Flutter, Firebase, Figma",
+  "@adminIdeaToolsHint": {
+    "description": "adminIdeaToolsHint"
+  },
+  "adminIdeaToolsValidatorLabel": "Outils",
+  "@adminIdeaToolsValidatorLabel": {
+    "description": "adminIdeaToolsValidatorLabel"
+  },
+  "adminIdeaTagsHint": "Étiquettes séparées par des virgules",
+  "@adminIdeaTagsHint": {
+    "description": "adminIdeaTagsHint"
+  },
+  "adminIdeaSkillsHint": "Compétences séparées par des virgules",
+  "@adminIdeaSkillsHint": {
+    "description": "adminIdeaSkillsHint"
+  },
+  "adminIdeaTeamHint": "Rôles séparés par des virgules",
+  "@adminIdeaTeamHint": {
+    "description": "adminIdeaTeamHint"
+  },
+  "adminIdeaTargetAudienceHint": "À qui cette idée profite-t-elle le plus ?",
+  "@adminIdeaTargetAudienceHint": {
+    "description": "adminIdeaTargetAudienceHint"
+  },
+  "adminIdeaProblemHint": "Quel défi cette idée résout-elle ?",
+  "@adminIdeaProblemHint": {
+    "description": "adminIdeaProblemHint"
+  },
+  "adminIdeaSolutionHint": "Comment l’idée résout-elle le problème ?",
+  "@adminIdeaSolutionHint": {
+    "description": "adminIdeaSolutionHint"
+  },
+  "adminIdeaResourcesHint": "Quels soutiens, partenaires ou ressources sont nécessaires ?",
+  "@adminIdeaResourcesHint": {
+    "description": "adminIdeaResourcesHint"
+  },
+  "adminIdeaBenefitsHint": "Quels résultats donnent toute sa valeur à cette idée ?",
+  "@adminIdeaBenefitsHint": {
+    "description": "adminIdeaBenefitsHint"
+  },
+  "adminIdeaSnackTitleUpdated": "Idée mise à jour",
+  "@adminIdeaSnackTitleUpdated": {
+    "description": "adminIdeaSnackTitleUpdated"
+  },
+  "adminIdeaSnackTitlePublished": "Idée publiée",
+  "@adminIdeaSnackTitlePublished": {
+    "description": "adminIdeaSnackTitlePublished"
+  },
+  "adminIdeaUpdatedMessage": "L’idée administrative a été mise à jour avec succès.",
+  "@adminIdeaUpdatedMessage": {
+    "description": "adminIdeaUpdatedMessage"
+  },
+  "adminIdeaPublishedMessage": "L’idée administrative a été publiée avec succès.",
+  "@adminIdeaPublishedMessage": {
+    "description": "adminIdeaPublishedMessage"
+  },
+  "adminScholarshipScreenTitleEdit": "Modifier la bourse",
+  "@adminScholarshipScreenTitleEdit": {
+    "description": "adminScholarshipScreenTitleEdit"
+  },
+  "adminScholarshipScreenTitlePublish": "Publier une bourse",
+  "@adminScholarshipScreenTitlePublish": {
+    "description": "adminScholarshipScreenTitlePublish"
+  },
+  "adminScholarshipSubmitEdit": "Enregistrer les modifications de la bourse",
+  "@adminScholarshipSubmitEdit": {
+    "description": "adminScholarshipSubmitEdit"
+  },
+  "adminScholarshipSubmitPublish": "Publier la bourse",
+  "@adminScholarshipSubmitPublish": {
+    "description": "adminScholarshipSubmitPublish"
+  },
+  "adminScholarshipScreenSubtitle": "Gérez les bourses dans la même application où les étudiants les découvrent, avec une structure suffisante pour des fiches plus riches et un filtrage plus utile.",
+  "@adminScholarshipScreenSubtitle": {
+    "description": "adminScholarshipScreenSubtitle"
+  },
+  "adminScholarshipPublishingTitle": "Publication",
+  "@adminScholarshipPublishingTitle": {
+    "description": "adminScholarshipPublishingTitle"
+  },
+  "adminScholarshipPublishingSubtitle": "Les bourses mises en avant bénéficient d’une présence plus forte dans le parcours de découverte des étudiants.",
+  "@adminScholarshipPublishingSubtitle": {
+    "description": "adminScholarshipPublishingSubtitle"
+  },
+  "adminScholarshipFeatureToggleTitle": "Mettre cette bourse en avant",
+  "@adminScholarshipFeatureToggleTitle": {
+    "description": "adminScholarshipFeatureToggleTitle"
+  },
+  "adminScholarshipFeatureToggleSubtitle": "À utiliser pour les bourses prioritaires ou particulièrement intéressantes.",
+  "@adminScholarshipFeatureToggleSubtitle": {
+    "description": "adminScholarshipFeatureToggleSubtitle"
+  },
+  "adminScholarshipBasicInfoSubtitle": "Commencez par l’identité essentielle de la bourse afin que l’offre soit claire dans les fiches et les détails.",
+  "@adminScholarshipBasicInfoSubtitle": {
+    "description": "adminScholarshipBasicInfoSubtitle"
+  },
+  "adminScholarshipTitleField": "Intitulé de la bourse",
+  "@adminScholarshipTitleField": {
+    "description": "adminScholarshipTitleField"
+  },
+  "adminScholarshipTitleHint": "p. ex. Bourse internationale Future Builders",
+  "@adminScholarshipTitleHint": {
+    "description": "adminScholarshipTitleHint"
+  },
+  "adminScholarshipTitleValidatorLabel": "Titre",
+  "@adminScholarshipTitleValidatorLabel": {
+    "description": "adminScholarshipTitleValidatorLabel"
+  },
+  "adminScholarshipProviderField": "Organisme",
+  "@adminScholarshipProviderField": {
+    "description": "adminScholarshipProviderField"
+  },
+  "adminScholarshipProviderHint": "Qui propose cette bourse ?",
+  "@adminScholarshipProviderHint": {
+    "description": "adminScholarshipProviderHint"
+  },
+  "adminScholarshipProviderValidatorLabel": "Organisme",
+  "@adminScholarshipProviderValidatorLabel": {
+    "description": "adminScholarshipProviderValidatorLabel"
+  },
+  "adminScholarshipDescriptionTitle": "Description",
+  "@adminScholarshipDescriptionTitle": {
+    "description": "adminScholarshipDescriptionTitle"
+  },
+  "adminScholarshipDescriptionHint": "Expliquez la bourse et ce qu’elle prend en charge",
+  "@adminScholarshipDescriptionHint": {
+    "description": "adminScholarshipDescriptionHint"
+  },
+  "adminScholarshipDescriptionHelper": "Précisez la couverture, l’éligibilité, les documents requis et ce que les étudiants y gagnent.",
+  "@adminScholarshipDescriptionHelper": {
+    "description": "adminScholarshipDescriptionHelper"
+  },
+  "adminScholarshipDescriptionValidatorLabel": "Description",
+  "@adminScholarshipDescriptionValidatorLabel": {
+    "description": "adminScholarshipDescriptionValidatorLabel"
+  },
+  "adminScholarshipEligibilityTitle": "Conditions d’éligibilité",
+  "@adminScholarshipEligibilityTitle": {
+    "description": "adminScholarshipEligibilityTitle"
+  },
+  "adminScholarshipEligibilityHint": "Saisissez une exigence, puis appuyez sur Entrée",
+  "@adminScholarshipEligibilityHint": {
+    "description": "adminScholarshipEligibilityHint"
+  },
+  "adminScholarshipEligibilityEmpty": "Indiquez qui peut postuler, les documents demandés ou les conditions académiques.",
+  "@adminScholarshipEligibilityEmpty": {
+    "description": "adminScholarshipEligibilityEmpty"
+  },
+  "adminScholarshipLogisticsTitle": "Aspects pratiques",
+  "@adminScholarshipLogisticsTitle": {
+    "description": "adminScholarshipLogisticsTitle"
+  },
+  "adminScholarshipLogisticsSubtitle": "Regroupez le montant, l’échéance et la destination dans une même section structurée.",
+  "@adminScholarshipLogisticsSubtitle": {
+    "description": "adminScholarshipLogisticsSubtitle"
+  },
+  "adminScholarshipAmountField": "Montant",
+  "@adminScholarshipAmountField": {
+    "description": "adminScholarshipAmountField"
+  },
+  "adminScholarshipAmountHint": "p. ex. 250 000",
+  "@adminScholarshipAmountHint": {
+    "description": "adminScholarshipAmountHint"
+  },
+  "adminScholarshipDeadlineField": "Date limite",
+  "@adminScholarshipDeadlineField": {
+    "description": "adminScholarshipDeadlineField"
+  },
+  "adminScholarshipDeadlineHint": "Sélectionnez une date limite",
+  "@adminScholarshipDeadlineHint": {
+    "description": "adminScholarshipDeadlineHint"
+  },
+  "adminScholarshipCountryField": "Pays",
+  "@adminScholarshipCountryField": {
+    "description": "adminScholarshipCountryField"
+  },
+  "adminScholarshipCountryHint": "p. ex. France",
+  "@adminScholarshipCountryHint": {
+    "description": "adminScholarshipCountryHint"
+  },
+  "adminScholarshipCityField": "Ville",
+  "@adminScholarshipCityField": {
+    "description": "adminScholarshipCityField"
+  },
+  "adminScholarshipCityHint": "p. ex. Paris",
+  "@adminScholarshipCityHint": {
+    "description": "adminScholarshipCityHint"
+  },
+  "adminScholarshipLocationField": "Libellé du lieu",
+  "@adminScholarshipLocationField": {
+    "description": "adminScholarshipLocationField"
+  },
+  "adminScholarshipLocationHint": "Texte de secours pour le lieu",
+  "@adminScholarshipLocationHint": {
+    "description": "adminScholarshipLocationHint"
+  },
+  "adminScholarshipAdditionalInfoTitle": "Informations complémentaires",
+  "@adminScholarshipAdditionalInfoTitle": {
+    "description": "adminScholarshipAdditionalInfoTitle"
+  },
+  "adminScholarshipAdditionalInfoSubtitle": "Utilisez ces champs facultatifs pour améliorer la découverte, le filtrage et la clarté du dépôt de candidature.",
+  "@adminScholarshipAdditionalInfoSubtitle": {
+    "description": "adminScholarshipAdditionalInfoSubtitle"
+  },
+  "adminScholarshipApplicationLink": "Lien de candidature",
+  "@adminScholarshipApplicationLink": {
+    "description": "adminScholarshipApplicationLink"
+  },
+  "adminScholarshipApplicationLinkHint": "Lien direct facultatif",
+  "@adminScholarshipApplicationLinkHint": {
+    "description": "adminScholarshipApplicationLinkHint"
+  },
+  "adminScholarshipFundingTypeField": "Type de financement",
+  "@adminScholarshipFundingTypeField": {
+    "description": "adminScholarshipFundingTypeField"
+  },
+  "adminScholarshipFundingTypeHint": "p. ex. Financement intégral, financement partiel",
+  "@adminScholarshipFundingTypeHint": {
+    "description": "adminScholarshipFundingTypeHint"
+  },
+  "adminScholarshipCategoryField": "Catégorie",
+  "@adminScholarshipCategoryField": {
+    "description": "adminScholarshipCategoryField"
+  },
+  "adminScholarshipCategoryHint": "p. ex. Master, recherche, échange",
+  "@adminScholarshipCategoryHint": {
+    "description": "adminScholarshipCategoryHint"
+  },
+  "adminScholarshipLevelField": "Niveau",
+  "@adminScholarshipLevelField": {
+    "description": "adminScholarshipLevelField"
+  },
+  "adminScholarshipLevelHint": "p. ex. Master, doctorat",
+  "@adminScholarshipLevelHint": {
+    "description": "adminScholarshipLevelHint"
+  },
+  "adminScholarshipImageUrl": "URL de l’image",
+  "@adminScholarshipImageUrl": {
+    "description": "adminScholarshipImageUrl"
+  },
+  "adminScholarshipImageUrlHint": "URL facultatif d’image de couverture",
+  "@adminScholarshipImageUrlHint": {
+    "description": "adminScholarshipImageUrlHint"
+  },
+  "adminScholarshipTagsField": "Étiquettes",
+  "@adminScholarshipTagsField": {
+    "description": "adminScholarshipTagsField"
+  },
+  "adminScholarshipTagsHint": "Étiquettes séparées par des virgules",
+  "@adminScholarshipTagsHint": {
+    "description": "adminScholarshipTagsHint"
+  },
+  "adminScholarshipDatePickerHelp": "Sélectionnez la date limite",
+  "@adminScholarshipDatePickerHelp": {
+    "description": "adminScholarshipDatePickerHelp"
+  },
+  "adminScholarshipAmountInvalid": "Saisissez un montant valide",
+  "@adminScholarshipAmountInvalid": {
+    "description": "adminScholarshipAmountInvalid"
+  },
+  "adminScholarshipEligibilityRequired": "Ajoutez au moins une condition d’éligibilité",
+  "@adminScholarshipEligibilityRequired": {
+    "description": "adminScholarshipEligibilityRequired"
+  },
+  "adminScholarshipDeadlineRequired": "La date limite est obligatoire",
+  "@adminScholarshipDeadlineRequired": {
+    "description": "adminScholarshipDeadlineRequired"
+  },
+  "adminScholarshipDeadlineInvalid": "Utilisez une date valide",
+  "@adminScholarshipDeadlineInvalid": {
+    "description": "adminScholarshipDeadlineInvalid"
+  },
+  "adminPreviewName": "Nom",
+  "@adminPreviewName": {
+    "description": "adminPreviewName"
+  },
+  "adminPreviewAccount": "Compte",
+  "@adminPreviewAccount": {
+    "description": "adminPreviewAccount"
+  },
+  "adminPreviewUserMetadata": "Métadonnées utilisateur",
+  "@adminPreviewUserMetadata": {
+    "description": "adminPreviewUserMetadata"
+  },
+  "adminPreviewUserMetadataSubtitle": "L’enregistrement de compte lié à cette activité administrative récente.",
+  "@adminPreviewUserMetadataSubtitle": {
+    "description": "adminPreviewUserMetadataSubtitle"
+  },
+  "adminPreviewItemMetadataSubtitle": "Les champs importants sont regroupés ici dans une mise en page d’administration plus lisible.",
+  "@adminPreviewItemMetadataSubtitle": {
+    "description": "adminPreviewItemMetadataSubtitle"
+  },
+  "adminPreviewLocationLogisticsSubtitle": "Ces informations vous aident à évaluer la manière dont l’offre est positionnée pour les candidats.",
+  "@adminPreviewLocationLogisticsSubtitle": {
+    "description": "adminPreviewLocationLogisticsSubtitle"
+  },
+  "adminPreviewRequirements": "Prérequis",
+  "@adminPreviewRequirements": {
+    "description": "adminPreviewRequirements"
+  },
+  "adminPreviewRequirementsSubtitle": "Voici les principales qualifications ou attentes présentées aux candidats.",
+  "@adminPreviewRequirementsSubtitle": {
+    "description": "adminPreviewRequirementsSubtitle"
+  },
+  "adminPreviewBenefitsSubtitle": "Ceci offre à l’administration une vue de ce qui rend le poste attractif.",
+  "@adminPreviewBenefitsSubtitle": {
+    "description": "adminPreviewBenefitsSubtitle"
+  },
+  "adminPreviewProviderAccessSubtitle": "Ces informations vous aident à examiner la pertinence de la bourse et la manière dont les étudiants y accéderont.",
+  "@adminPreviewProviderAccessSubtitle": {
+    "description": "adminPreviewProviderAccessSubtitle"
+  },
+  "adminPreviewEligibility": "Éligibilité",
+  "@adminPreviewEligibility": {
+    "description": "adminPreviewEligibility"
+  },
+  "adminPreviewProviderDeliverySubtitle": "Cette section vous permet d’examiner la façon dont la formation est conçue et présentée aux utilisateurs.",
+  "@adminPreviewProviderDeliverySubtitle": {
+    "description": "adminPreviewProviderDeliverySubtitle"
+  },
+  "adminPreviewProblemSolutionImpactSubtitle": "Cette section montre ce que l’idée résout, comment elle fonctionne et la valeur qu’elle vise à créer.",
+  "@adminPreviewProblemSolutionImpactSubtitle": {
+    "description": "adminPreviewProblemSolutionImpactSubtitle"
+  },
+  "adminPreviewAudienceMetadataSubtitle": "Ces champs vous aident à juger où l’idée s’inscrit et son degré de maturité pour la revue.",
+  "@adminPreviewAudienceMetadataSubtitle": {
+    "description": "adminPreviewAudienceMetadataSubtitle"
+  },
+  "adminPreviewTeamSkillSignalsSubtitle": "Utilisez ces étiquettes pour comprendre le soutien dont l’idée a besoin par la suite.",
+  "@adminPreviewTeamSkillSignalsSubtitle": {
+    "description": "adminPreviewTeamSkillSignalsSubtitle"
+  },
+  "adminPreviewAudience": "Public",
+  "@adminPreviewAudience": {
+    "description": "adminPreviewAudience"
+  },
+  "adminPreviewSubmittedBy": "Soumis par {name}",
+  "@adminPreviewSubmittedBy": {
+    "description": "adminPreviewSubmittedBy",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "John Doe"
+      }
+    }
+  },
+  "adminPreviewPublic": "Public",
+  "@adminPreviewPublic": {
+    "description": "adminPreviewPublic"
+  },
+  "adminPreviewPrivate": "Privé",
+  "@adminPreviewPrivate": {
+    "description": "adminPreviewPrivate"
+  },
+  "adminPreviewWithdrawnFromOpportunity": "Cette candidature a été retirée de {opportunity}.",
+  "@adminPreviewWithdrawnFromOpportunity": {
+    "description": "adminPreviewWithdrawnFromOpportunity",
+    "placeholders": {
+      "opportunity": {
+        "type": "String",
+        "example": "Mobile Internship"
+      }
+    }
+  },
+  "adminPreviewWithdrawnGeneric": "Cette candidature a été retirée.",
+  "@adminPreviewWithdrawnGeneric": {
+    "description": "adminPreviewWithdrawnGeneric"
+  },
+  "adminPreviewAppliedToOpportunity": "A postulé à {opportunity}.",
+  "@adminPreviewAppliedToOpportunity": {
+    "description": "adminPreviewAppliedToOpportunity",
+    "placeholders": {
+      "opportunity": {
+        "type": "String",
+        "example": "Mobile Internship"
+      }
+    }
+  },
+  "adminPreviewApplicationDetailsFallback": "Détails de la candidature",
+  "@adminPreviewApplicationDetailsFallback": {
+    "description": "adminPreviewApplicationDetailsFallback"
+  },
+  "adminPreviewSectionAccountEyebrow": "Compte",
+  "@adminPreviewSectionAccountEyebrow": {
+    "description": "adminPreviewSectionAccountEyebrow"
+  },
+  "adminPreviewSectionDetailsEyebrow": "Détails",
+  "@adminPreviewSectionDetailsEyebrow": {
+    "description": "adminPreviewSectionDetailsEyebrow"
+  },
+  "adminPreviewSectionScholarshipDetailsEyebrow": "Détails de la bourse",
+  "@adminPreviewSectionScholarshipDetailsEyebrow": {
+    "description": "adminPreviewSectionScholarshipDetailsEyebrow"
+  },
+  "adminPreviewSectionResourceDetailsEyebrow": "Détails de la ressource",
+  "@adminPreviewSectionResourceDetailsEyebrow": {
+    "description": "adminPreviewSectionResourceDetailsEyebrow"
+  },
+  "adminPreviewSectionRoleSetupEyebrow": "Configuration du poste",
+  "@adminPreviewSectionRoleSetupEyebrow": {
+    "description": "adminPreviewSectionRoleSetupEyebrow"
+  },
+  "adminPreviewSectionBuildStoryEyebrow": "Récit de construction",
+  "@adminPreviewSectionBuildStoryEyebrow": {
+    "description": "adminPreviewSectionBuildStoryEyebrow"
+  },
+  "adminPreviewSectionPositioningEyebrow": "Positionnement",
+  "@adminPreviewSectionPositioningEyebrow": {
+    "description": "adminPreviewSectionPositioningEyebrow"
+  },
+  "adminPreviewSectionCollaborationEyebrow": "Collaboration",
+  "@adminPreviewSectionCollaborationEyebrow": {
+    "description": "adminPreviewSectionCollaborationEyebrow"
+  },
+  "adminModerateProjectIdeaApprovedMessage": "Idée de projet approuvée.",
+  "@adminModerateProjectIdeaApprovedMessage": {
+    "description": "adminModerateProjectIdeaApprovedMessage"
+  },
+  "adminModerateProjectIdeaRejectedMessage": "Idée de projet refusée.",
+  "@adminModerateProjectIdeaRejectedMessage": {
+    "description": "adminModerateProjectIdeaRejectedMessage"
+  },
+  "adminModerateOpportunityDeletedMessage": "Offre supprimée.",
+  "@adminModerateOpportunityDeletedMessage": {
+    "description": "adminModerateOpportunityDeletedMessage"
+  },
+  "adminModerateScholarshipDeletedMessage": "Bourse supprimée.",
+  "@adminModerateScholarshipDeletedMessage": {
+    "description": "adminModerateScholarshipDeletedMessage"
+  },
+  "adminModerateScholarshipDeletedTitle": "Bourse supprimée",
+  "@adminModerateScholarshipDeletedTitle": {
+    "description": "adminModerateScholarshipDeletedTitle"
+  },
+  "adminModerateDeleteOpportunityTitle": "Supprimer l’offre",
+  "@adminModerateDeleteOpportunityTitle": {
+    "description": "adminModerateDeleteOpportunityTitle"
+  },
+  "adminModerateDeleteScholarshipTitle": "Supprimer la bourse",
+  "@adminModerateDeleteScholarshipTitle": {
+    "description": "adminModerateDeleteScholarshipTitle"
+  },
+  "adminModerateDeleteOpportunityMessage": "Êtes-vous sûr·e de vouloir supprimer « {title} » ?",
+  "@adminModerateDeleteOpportunityMessage": {
+    "description": "adminModerateDeleteOpportunityMessage",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Mobile Internship"
+      }
+    }
+  },
+  "adminModerateDeleteScholarshipMessage": "Êtes-vous sûr·e de vouloir supprimer « {title} » ?",
+  "@adminModerateDeleteScholarshipMessage": {
+    "description": "adminModerateDeleteScholarshipMessage",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Master Scholarship"
+      }
+    }
+  },
+  "adminModerateDueLabel": "Échéance : {value}",
+  "@adminModerateDueLabel": {
+    "description": "adminModerateDueLabel",
+    "placeholders": {
+      "value": {
+        "type": "String",
+        "example": "Dec 31"
+      }
+    }
+  },
+  "adminActivityFilterAll": "Tout",
+  "@adminActivityFilterAll": {
+    "description": "adminActivityFilterAll"
+  },
+  "adminActivityFilterReviews": "Revues",
+  "@adminActivityFilterReviews": {
+    "description": "adminActivityFilterReviews"
+  },
+  "adminActivityFilterContent": "Contenu",
+  "@adminActivityFilterContent": {
+    "description": "adminActivityFilterContent"
+  },
+  "adminActivityFilterLibrary": "Bibliothèque",
+  "@adminActivityFilterLibrary": {
+    "description": "adminActivityFilterLibrary"
+  },
+  "adminActivityFilterAccounts": "Comptes",
+  "@adminActivityFilterAccounts": {
+    "description": "adminActivityFilterAccounts"
+  },
+  "adminActivityFilterPending": "En attente",
+  "@adminActivityFilterPending": {
+    "description": "adminActivityFilterPending"
+  },
+  "adminPillImportedBooksCount": "{count} livres importés",
+  "@adminPillImportedBooksCount": {
+    "description": "adminPillImportedBooksCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "adminPillImportedVideosCount": "{count} vidéos importées",
+  "@adminPillImportedVideosCount": {
+    "description": "adminPillImportedVideosCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "adminPillResultsCount": "{count} résultats",
+  "@adminPillResultsCount": {
+    "description": "adminPillResultsCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "adminPillResourcesCount": "{count} ressources",
+  "@adminPillResourcesCount": {
+    "description": "adminPillResourcesCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "adminPillFeaturedCount": "{count} mis en avant",
+  "@adminPillFeaturedCount": {
+    "description": "adminPillFeaturedCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "adminPillBooksCount": "{count} livres",
+  "@adminPillBooksCount": {
+    "description": "adminPillBooksCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "adminPillVideosCount": "{count} vidéos",
+  "@adminPillVideosCount": {
+    "description": "adminPillVideosCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "adminPillOpportunitiesCount": "{count} offres",
+  "@adminPillOpportunitiesCount": {
+    "description": "adminPillOpportunitiesCount",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "25"
+      }
+    }
+  },
+  "adminPillApplicationsBadge": "{count} {appsLabel}",
+  "@adminPillApplicationsBadge": {
+    "description": "adminPillApplicationsBadge",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "12"
+      },
+      "appsLabel": {
+        "type": "String",
+        "example": "applications"
+      }
+    }
+  },
+  "adminPillPendingDecisionMessage": "{summary} nécessite(nt) une décision dans Contenu.",
+  "@adminPillPendingDecisionMessage": {
+    "description": "adminPillPendingDecisionMessage",
+    "placeholders": {
+      "summary": {
+        "type": "String",
+        "example": "2 pending ideas and 1 pending application"
+      }
+    }
+  },
+  "adminPendingItemsConjunction": "{first} et {second}",
+  "@adminPendingItemsConjunction": {
+    "description": "adminPendingItemsConjunction",
+    "placeholders": {
+      "first": {
+        "type": "String",
+        "example": "2 pending ideas"
+      },
+      "second": {
+        "type": "String",
+        "example": "1 pending application"
+      }
+    }
+  },
+  "adminPendingReviewBannerTitle": "En attente de revue",
+  "@adminPendingReviewBannerTitle": {
+    "description": "adminPendingReviewBannerTitle"
+  },
+  "adminContentPendingIdeaWarning": "Idée en attente. Approuvez-la ou refusez-la avant qu’elle n’apparaisse comme contenu validé.",
+  "@adminContentPendingIdeaWarning": {
+    "description": "adminContentPendingIdeaWarning"
+  },
+  "adminContentIdeaApprovedSnack": "{title} approuvée.",
+  "@adminContentIdeaApprovedSnack": {
+    "description": "adminContentIdeaApprovedSnack",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Campus AI Lab"
+      }
+    }
+  },
+  "adminContentIdeaRejectedSnack": "{title} refusée.",
+  "@adminContentIdeaRejectedSnack": {
+    "description": "adminContentIdeaRejectedSnack",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Campus AI Lab"
+      }
+    }
+  },
+  "adminContentProfileUnavailable": "Profil indisponible",
+  "@adminContentProfileUnavailable": {
+    "description": "adminContentProfileUnavailable"
+  },
+  "adminContentWorkspaceTitleWithType": "{baseTitle} – {typeLabel}",
+  "@adminContentWorkspaceTitleWithType": {
+    "description": "adminContentWorkspaceTitleWithType",
+    "placeholders": {
+      "baseTitle": {
+        "type": "String",
+        "example": "Open opportunities"
+      },
+      "typeLabel": {
+        "type": "String",
+        "example": "Internships"
+      }
+    }
+  },
+  "adminStudentApplicationHistory": "Historique des candidatures",
+  "@adminStudentApplicationHistory": {
+    "description": "adminStudentApplicationHistory"
+  },
+  "adminStudentApplicationsSummaryError": "Le résumé des candidatures n’a pas pu être chargé pour le moment, mais vous pouvez tout de même ouvrir l’historique complet et réessayer.",
+  "@adminStudentApplicationsSummaryError": {
+    "description": "adminStudentApplicationsSummaryError"
+  },
+  "adminPreviewUserFallback": "Utilisateur",
+  "@adminPreviewUserFallback": {
+    "description": "adminPreviewUserFallback"
+  },
+  "adminPreviewApplicationFallback": "Candidature",
+  "@adminPreviewApplicationFallback": {
+    "description": "adminPreviewApplicationFallback"
+  },
+  "adminPreviewOpportunityFallback": "Offre",
+  "@adminPreviewOpportunityFallback": {
+    "description": "adminPreviewOpportunityFallback"
+  },
+  "adminPreviewScholarshipFallback": "Bourse",
+  "@adminPreviewScholarshipFallback": {
+    "description": "adminPreviewScholarshipFallback"
+  },
+  "adminPreviewTrainingFallback": "Formation",
+  "@adminPreviewTrainingFallback": {
+    "description": "adminPreviewTrainingFallback"
+  },
+  "adminPreviewProjectIdeaFallback": "Idée de projet",
+  "@adminPreviewProjectIdeaFallback": {
+    "description": "adminPreviewProjectIdeaFallback"
+  },
+  "adminYoutubeGenericError": "Une erreur s’est produite. Veuillez vérifier votre connexion et réessayer.",
+  "@adminYoutubeGenericError": {
+    "description": "adminYoutubeGenericError"
+  },
+  "adminPendingIdeasSummaryPlural": "{count, plural, =1{1 idée en attente} other{{count} idées en attente}}",
+  "@adminPendingIdeasSummaryPlural": {
+    "description": "adminPendingIdeasSummaryPlural",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compactLong"
+      }
+    }
+  },
+  "adminPendingApplicationsSummaryPlural": "{count, plural, =1{1 candidature en attente} other{{count} candidatures en attente}}",
+  "@adminPendingApplicationsSummaryPlural": {
+    "description": "adminPendingApplicationsSummaryPlural",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compactLong"
+      }
+    }
+  },
+  "uiFundingAmount": "Montant du financement",
+  "@uiFundingAmount": {
+    "description": "uiFundingAmount"
+  },
+  "uiFundingCurrency": "Devise du financement",
+  "@uiFundingCurrency": {
+    "description": "uiFundingCurrency"
+  },
+  "uiFundingNote": "Note sur le financement",
+  "@uiFundingNote": {
+    "description": "uiFundingNote"
+  },
+  "uiSalaryMinimum": "Salaire minimum",
+  "@uiSalaryMinimum": {
+    "description": "uiSalaryMinimum"
+  },
+  "uiSalaryMaximum": "Salaire maximum",
+  "@uiSalaryMaximum": {
+    "description": "uiSalaryMaximum"
+  },
+  "uiSalaryPeriod": "Périodicité du salaire",
+  "@uiSalaryPeriod": {
+    "description": "uiSalaryPeriod"
+  },
+  "uiCompensationNote": "Note de rémunération",
+  "@uiCompensationNote": {
+    "description": "uiCompensationNote"
+  },
+  "uiCountry": "Pays",
+  "@uiCountry": {
+    "description": "uiCountry"
+  },
+  "uiName": "Nom",
+  "@uiName": {
+    "description": "uiName"
+  },
+  "uiAccount": "Compte",
+  "@uiAccount": {
+    "description": "uiAccount"
+  },
+  "uiPublic": "Public",
+  "@uiPublic": {
+    "description": "uiPublic"
+  },
+  "uiPrivate": "Privé",
+  "@uiPrivate": {
+    "description": "uiPrivate"
+  },
+  "uiAudience": "Public",
+  "@uiAudience": {
+    "description": "uiAudience"
+  },
+  "uiRequirements": "Prérequis",
+  "@uiRequirements": {
+    "description": "uiRequirements"
+  },
+  "uiEligibility": "Éligibilité",
+  "@uiEligibility": {
+    "description": "uiEligibility"
+  },
+  "uiPublishingLabel": "Publication",
+  "@uiPublishingLabel": {
+    "description": "uiPublishingLabel"
+  },
+  "uiUserLabel": "Utilisateur",
+  "@uiUserLabel": {
+    "description": "uiUserLabel"
+  },
+  "adminScholarshipEditTitle": "Modifier la bourse",
+  "@adminScholarshipEditTitle": {
+    "description": "adminScholarshipEditTitle"
+  },
+  "adminScholarshipPublishTitle": "Publier une bourse",
+  "@adminScholarshipPublishTitle": {
+    "description": "adminScholarshipPublishTitle"
+  },
+  "adminScholarshipSaveLabel": "Enregistrer les modifications de la bourse",
+  "@adminScholarshipSaveLabel": {
+    "description": "adminScholarshipSaveLabel"
+  },
+  "adminScholarshipPublishLabel": "Publier la bourse",
+  "@adminScholarshipPublishLabel": {
+    "description": "adminScholarshipPublishLabel"
+  },
+  "adminScholarshipScaffoldSubtitle": "Curatez les bourses dans la même application où les étudiants les découvrent, avec une structure adaptée pour des fiches plus riches et un filtrage plus utile.",
+  "@adminScholarshipScaffoldSubtitle": {
+    "description": "adminScholarshipScaffoldSubtitle"
+  },
+  "adminScholarshipFeatureTitle": "Mettre cette bourse en avant",
+  "@adminScholarshipFeatureTitle": {
+    "description": "adminScholarshipFeatureTitle"
+  },
+  "adminScholarshipFeatureSubtitle": "Utilisez cette option pour des bourses prioritaires ou particulièrement attractives.",
+  "@adminScholarshipFeatureSubtitle": {
+    "description": "adminScholarshipFeatureSubtitle"
+  },
+  "adminScholarshipTitleLabel": "Intitulé de la bourse",
+  "@adminScholarshipTitleLabel": {
+    "description": "adminScholarshipTitleLabel"
+  },
+  "adminScholarshipEligibilityValidator": "Ajoutez au moins une condition d’éligibilité",
+  "@adminScholarshipEligibilityValidator": {
+    "description": "adminScholarshipEligibilityValidator"
+  },
+  "adminScholarshipAmountValidator": "Saisissez un montant valide",
+  "@adminScholarshipAmountValidator": {
+    "description": "adminScholarshipAmountValidator"
+  },
+  "adminScholarshipDeadlinePickerHelp": "Sélectionner la date limite",
+  "@adminScholarshipDeadlinePickerHelp": {
+    "description": "adminScholarshipDeadlinePickerHelp"
+  },
+  "adminScholarshipLocationLabelField": "Libellé de localisation",
+  "@adminScholarshipLocationLabelField": {
+    "description": "adminScholarshipLocationLabelField"
+  },
+  "adminScholarshipApplicationLinkLabel": "Lien de candidature",
+  "@adminScholarshipApplicationLinkLabel": {
+    "description": "adminScholarshipApplicationLinkLabel"
+  },
+  "adminScholarshipFundingTypeLabel": "Type de financement",
+  "@adminScholarshipFundingTypeLabel": {
+    "description": "adminScholarshipFundingTypeLabel"
+  },
+  "adminScholarshipImageUrlLabel": "URL de l’image",
+  "@adminScholarshipImageUrlLabel": {
+    "description": "adminScholarshipImageUrlLabel"
+  },
+  "moderateIdeaApprovedSnackTitle": "Idée approuvée",
+  "@moderateIdeaApprovedSnackTitle": {
+    "description": "moderateIdeaApprovedSnackTitle"
+  },
+  "moderateIdeaApprovedSnackMessage": "Idée de projet approuvée.",
+  "@moderateIdeaApprovedSnackMessage": {
+    "description": "moderateIdeaApprovedSnackMessage"
+  },
+  "moderateIdeaRejectedSnackTitle": "Idée rejetée",
+  "@moderateIdeaRejectedSnackTitle": {
+    "description": "moderateIdeaRejectedSnackTitle"
+  },
+  "moderateIdeaRejectedSnackMessage": "Idée de projet rejetée.",
+  "@moderateIdeaRejectedSnackMessage": {
+    "description": "moderateIdeaRejectedSnackMessage"
+  },
+  "moderateOpportunityDeletedSnackTitle": "Offre supprimée",
+  "@moderateOpportunityDeletedSnackTitle": {
+    "description": "moderateOpportunityDeletedSnackTitle"
+  },
+  "moderateOpportunityDeletedSnackMessage": "Offre supprimée.",
+  "@moderateOpportunityDeletedSnackMessage": {
+    "description": "moderateOpportunityDeletedSnackMessage"
+  },
+  "moderateScholarshipDeletedSnackTitle": "Bourse supprimée",
+  "@moderateScholarshipDeletedSnackTitle": {
+    "description": "moderateScholarshipDeletedSnackTitle"
+  },
+  "moderateScholarshipDeletedSnackMessage": "Bourse supprimée.",
+  "@moderateScholarshipDeletedSnackMessage": {
+    "description": "moderateScholarshipDeletedSnackMessage"
+  },
+  "moderateWorkingLabel": "En cours...",
+  "@moderateWorkingLabel": {
+    "description": "moderateWorkingLabel"
+  },
+  "moderateApproveLabel": "Approuver",
+  "@moderateApproveLabel": {
+    "description": "moderateApproveLabel"
+  },
+  "moderateRejectLabel": "Rejeter",
+  "@moderateRejectLabel": {
+    "description": "moderateRejectLabel"
+  },
+  "moderateNoIdeasReviewYet": "Aucune idée de projet à examiner pour le moment",
+  "@moderateNoIdeasReviewYet": {
+    "description": "moderateNoIdeasReviewYet"
+  },
+  "moderateNoOpportunitiesYet": "Aucune offre publiée pour le moment",
+  "@moderateNoOpportunitiesYet": {
+    "description": "moderateNoOpportunitiesYet"
+  },
+  "moderateNoScholarshipsYet": "Aucune bourse publiée pour le moment",
+  "@moderateNoScholarshipsYet": {
+    "description": "moderateNoScholarshipsYet"
+  },
+  "moderateNoPendingIdeas": "Aucune idée en attente à examiner",
+  "@moderateNoPendingIdeas": {
+    "description": "moderateNoPendingIdeas"
+  },
+  "moderatePendingIdeasCount": "Idées en attente ({count})",
+  "@moderatePendingIdeasCount": {
+    "description": "moderatePendingIdeasCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderateAllIdeasCount": "Toutes les idées ({count})",
+  "@moderateAllIdeasCount": {
+    "description": "moderateAllIdeasCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderateShowAllLabel": "Tout afficher",
+  "@moderateShowAllLabel": {
+    "description": "moderateShowAllLabel"
+  },
+  "moderatePendingOnlyLabel": "En attente seulement",
+  "@moderatePendingOnlyLabel": {
+    "description": "moderatePendingOnlyLabel"
+  },
+  "moderateSubmittedByLabel": "Soumis par : {name}",
+  "@moderateSubmittedByLabel": {
+    "description": "moderateSubmittedByLabel",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateUntitledOpportunity": "Offre sans titre",
+  "@moderateUntitledOpportunity": {
+    "description": "moderateUntitledOpportunity"
+  },
+  "moderateUnknownCompany": "Entreprise inconnue",
+  "@moderateUnknownCompany": {
+    "description": "moderateUnknownCompany"
+  },
+  "moderateUntitledScholarship": "Bourse sans titre",
+  "@moderateUntitledScholarship": {
+    "description": "moderateUntitledScholarship"
+  },
+  "moderateUnknownProvider": "Organisme inconnu",
+  "@moderateUnknownProvider": {
+    "description": "moderateUnknownProvider"
+  },
+  "moderateAmountWithCurrency": "{amount} DA",
+  "@moderateAmountWithCurrency": {
+    "description": "moderateAmountWithCurrency",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateDueLabel": "Échéance : {date}",
+  "@moderateDueLabel": {
+    "description": "moderateDueLabel",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateDeleteOpportunityTitle": "Supprimer l’offre",
+  "@moderateDeleteOpportunityTitle": {
+    "description": "moderateDeleteOpportunityTitle"
+  },
+  "moderateDeleteOpportunityConfirm": "Voulez-vous vraiment supprimer « {title} » ?",
+  "@moderateDeleteOpportunityConfirm": {
+    "description": "moderateDeleteOpportunityConfirm",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateDeleteScholarshipTitle": "Supprimer la bourse",
+  "@moderateDeleteScholarshipTitle": {
+    "description": "moderateDeleteScholarshipTitle"
+  },
+  "moderateDeleteScholarshipConfirm": "Voulez-vous vraiment supprimer « {title} » ?",
+  "@moderateDeleteScholarshipConfirm": {
+    "description": "moderateDeleteScholarshipConfirm",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "moderateDeleteAction": "Supprimer",
+  "@moderateDeleteAction": {
+    "description": "moderateDeleteAction"
+  },
+  "activitySectionAll": "Tout",
+  "@activitySectionAll": {
+    "description": "activitySectionAll"
+  },
+  "activitySectionReviews": "Évaluations",
+  "@activitySectionReviews": {
+    "description": "activitySectionReviews"
+  },
+  "activitySectionContent": "Contenu",
+  "@activitySectionContent": {
+    "description": "activitySectionContent"
+  },
+  "activitySectionLibrary": "Bibliothèque",
+  "@activitySectionLibrary": {
+    "description": "activitySectionLibrary"
+  },
+  "activitySectionAccounts": "Comptes",
+  "@activitySectionAccounts": {
+    "description": "activitySectionAccounts"
+  },
+  "activitySectionPending": "En attente",
+  "@activitySectionPending": {
+    "description": "activitySectionPending"
+  },
+  "dashboardPendingCompanies": "Entreprises",
+  "@dashboardPendingCompanies": {
+    "description": "dashboardPendingCompanies"
+  },
+  "dashboardPendingIdeas": "Idées",
+  "@dashboardPendingIdeas": {
+    "description": "dashboardPendingIdeas"
+  },
+  "dashboardPendingApplications": "Candidatures",
+  "@dashboardPendingApplications": {
+    "description": "dashboardPendingApplications"
+  },
+  "contentIdeaApprovedSnackTitle": "Idée approuvée",
+  "@contentIdeaApprovedSnackTitle": {
+    "description": "contentIdeaApprovedSnackTitle"
+  },
+  "contentIdeaApprovedMessage": "{title} approuvée.",
+  "@contentIdeaApprovedMessage": {
+    "description": "contentIdeaApprovedMessage",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "contentIdeaRejectedSnackTitle": "Idée rejetée",
+  "@contentIdeaRejectedSnackTitle": {
+    "description": "contentIdeaRejectedSnackTitle"
+  },
+  "contentIdeaRejectedMessage": "{title} rejetée.",
+  "@contentIdeaRejectedMessage": {
+    "description": "contentIdeaRejectedMessage",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "contentPendingIdeaInline": "Idée en attente. Approuvez-la ou rejetez-la avant qu’elle apparaisse comme contenu validé.",
+  "@contentPendingIdeaInline": {
+    "description": "contentPendingIdeaInline"
+  },
+  "contentPendingReviewTitle": "En attente de révision",
+  "@contentPendingReviewTitle": {
+    "description": "contentPendingReviewTitle"
+  },
+  "contentPendingPartsCombined": "{parts} nécessitent une décision dans Contenu.",
+  "@contentPendingPartsCombined": {
+    "description": "contentPendingPartsCombined",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "contentPendingIdeasPart": "{count, plural, =1{1 idée en attente} other{{count} idées en attente}}",
+  "@contentPendingIdeasPart": {
+    "description": "contentPendingIdeasPart",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPendingApplicationsPart": "{count, plural, =1{1 candidature en attente} other{{count} candidatures en attente}}",
+  "@contentPendingApplicationsPart": {
+    "description": "contentPendingApplicationsPart",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPendingPartsJoiner": " et ",
+  "@contentPendingPartsJoiner": {
+    "description": "contentPendingPartsJoiner"
+  },
+  "contentProfileUnavailableTitle": "Profil indisponible",
+  "@contentProfileUnavailableTitle": {
+    "description": "contentProfileUnavailableTitle"
+  },
+  "contentPillIdeasCount": "{count, plural, =1{1 idée} other{{count} idées}}",
+  "@contentPillIdeasCount": {
+    "description": "contentPillIdeasCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillPendingIdeas": "{count, plural, =1{1 idée en attente} other{{count} idées en attente}}",
+  "@contentPillPendingIdeas": {
+    "description": "contentPillPendingIdeas",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillPendingApps": "{count, plural, =1{1 candidature en attente} other{{count} candidatures en attente}}",
+  "@contentPillPendingApps": {
+    "description": "contentPillPendingApps",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillOpportunitiesCount": "{count, plural, =1{1 offre} other{{count} offres}}",
+  "@contentPillOpportunitiesCount": {
+    "description": "contentPillOpportunitiesCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillScholarshipsCount": "{count, plural, =1{1 bourse} other{{count} bourses}}",
+  "@contentPillScholarshipsCount": {
+    "description": "contentPillScholarshipsCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillResourcesCount": "{count, plural, =1{1 ressource} other{{count} ressources}}",
+  "@contentPillResourcesCount": {
+    "description": "contentPillResourcesCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentPillCountWithLabel": "{count} {label}",
+  "@contentPillCountWithLabel": {
+    "description": "contentPillCountWithLabel",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryPillResourcesCount": "{count, plural, =1{1 ressource} other{{count} ressources}}",
+  "@libraryPillResourcesCount": {
+    "description": "libraryPillResourcesCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillFeaturedCount": "{count, plural, =1{1 mise en avant} other{{count} mises en avant}}",
+  "@libraryPillFeaturedCount": {
+    "description": "libraryPillFeaturedCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillBooksCount": "{count, plural, =1{1 livre} other{{count} livres}}",
+  "@libraryPillBooksCount": {
+    "description": "libraryPillBooksCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillVideosCount": "{count, plural, =1{1 vidéo} other{{count} vidéos}}",
+  "@libraryPillVideosCount": {
+    "description": "libraryPillVideosCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillImportedBooks": "{count, plural, =1{1 livre importé} other{{count} livres importés}}",
+  "@libraryPillImportedBooks": {
+    "description": "libraryPillImportedBooks",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillImportedVideos": "{count, plural, =1{1 vidéo importée} other{{count} vidéos importées}}",
+  "@libraryPillImportedVideos": {
+    "description": "libraryPillImportedVideos",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryPillResultsCount": "{count, plural, =1{1 résultat} other{{count} résultats}}",
+  "@libraryPillResultsCount": {
+    "description": "libraryPillResultsCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentProfileApplicationHistory": "Historique des candidatures",
+  "@studentProfileApplicationHistory": {
+    "description": "studentProfileApplicationHistory"
+  },
+  "studentProfileLoadingHistory": "Chargement de l’historique des candidatures...",
+  "@studentProfileLoadingHistory": {
+    "description": "studentProfileLoadingHistory"
+  },
+  "studentProfileHistoryUnavailable": "L’historique des candidatures est momentanément indisponible.",
+  "@studentProfileHistoryUnavailable": {
+    "description": "studentProfileHistoryUnavailable"
+  },
+  "studentProfileNoApplicationsYet": "Cet étudiant n’a encore soumis aucune candidature.",
+  "@studentProfileNoApplicationsYet": {
+    "description": "studentProfileNoApplicationsYet"
+  },
+  "studentProfileApplicationsCount": "{count, plural, =1{1 candidature soumise} other{{count} candidatures soumises}}",
+  "@studentProfileApplicationsCount": {
+    "description": "studentProfileApplicationsCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentProfileSummaryError": "Le résumé des candidatures est indisponible pour l’instant, mais vous pouvez ouvrir l’historique complet et réessayer.",
+  "@studentProfileSummaryError": {
+    "description": "studentProfileSummaryError"
+  },
+  "studentProfileViewAllAppsCount": "Voir toutes les candidatures ({count})",
+  "@studentProfileViewAllAppsCount": {
+    "description": "studentProfileViewAllAppsCount",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentProfileNoApplicationsYetTitle": "Aucune candidature pour l’instant",
+  "@studentProfileNoApplicationsYetTitle": {
+    "description": "studentProfileNoApplicationsYetTitle"
+  },
+  "studentProfileNoApplicationsMessage": "Cet étudiant n’a soumis aucune candidature pour l’instant.",
+  "@studentProfileNoApplicationsMessage": {
+    "description": "studentProfileNoApplicationsMessage"
+  },
+  "studentProfileFullHistoryUnavailable": "Nous n’avons pas pu charger l’historique complet des candidatures de cet étudiant pour le moment.",
+  "@studentProfileFullHistoryUnavailable": {
+    "description": "studentProfileFullHistoryUnavailable"
+  },
+  "studentProfileOpportunityUnavailable": "Offre indisponible",
+  "@studentProfileOpportunityUnavailable": {
+    "description": "studentProfileOpportunityUnavailable"
+  },
+  "studentProfileOpportunityHidden": "Offre masquée",
+  "@studentProfileOpportunityHidden": {
+    "description": "studentProfileOpportunityHidden"
+  },
+  "studentProfileOpportunityClosed": "Offre clôturée",
+  "@studentProfileOpportunityClosed": {
+    "description": "studentProfileOpportunityClosed"
+  },
+  "activityPreviewRoleLabel": "Rôle",
+  "@activityPreviewRoleLabel": {
+    "description": "activityPreviewRoleLabel"
+  },
+  "activityPreviewAccountLabel": "Compte",
+  "@activityPreviewAccountLabel": {
+    "description": "activityPreviewAccountLabel"
+  },
+  "activityPreviewCompanyReviewLabel": "Revue d’entreprise",
+  "@activityPreviewCompanyReviewLabel": {
+    "description": "activityPreviewCompanyReviewLabel"
+  },
+  "activityPreviewActivityLabel": "Activité",
+  "@activityPreviewActivityLabel": {
+    "description": "activityPreviewActivityLabel"
+  },
+  "activityPreviewUserMetadataTitle": "Métadonnées de l’utilisateur",
+  "@activityPreviewUserMetadataTitle": {
+    "description": "activityPreviewUserMetadataTitle"
+  },
+  "activityPreviewUserMetadataSubtitle": "L’enregistrement du compte lié à cette activité administrative récente.",
+  "@activityPreviewUserMetadataSubtitle": {
+    "description": "activityPreviewUserMetadataSubtitle"
+  },
+  "activityPreviewItemMetadataTitle": "Métadonnées de l’élément",
+  "@activityPreviewItemMetadataTitle": {
+    "description": "activityPreviewItemMetadataTitle"
+  },
+  "activityPreviewApplicationsLabel": "Candidatures",
+  "@activityPreviewApplicationsLabel": {
+    "description": "activityPreviewApplicationsLabel"
+  },
+  "activityPreviewDeadlineLabel": "Date limite",
+  "@activityPreviewDeadlineLabel": {
+    "description": "activityPreviewDeadlineLabel"
+  },
+  "activityPreviewCompensationLabel": "Rémunération",
+  "@activityPreviewCompensationLabel": {
+    "description": "activityPreviewCompensationLabel"
+  },
+  "activityPreviewWorkSetupLabel": "Configuration de travail",
+  "@activityPreviewWorkSetupLabel": {
+    "description": "activityPreviewWorkSetupLabel"
+  },
+  "activityPreviewRoleOverviewTitle": "Aperçu du poste",
+  "@activityPreviewRoleOverviewTitle": {
+    "description": "activityPreviewRoleOverviewTitle"
+  },
+  "activityPreviewLocationLogisticsTitle": "Localisation et logistique",
+  "@activityPreviewLocationLogisticsTitle": {
+    "description": "activityPreviewLocationLogisticsTitle"
+  },
+  "activityPreviewRequirementsTitle": "Prérequis",
+  "@activityPreviewRequirementsTitle": {
+    "description": "activityPreviewRequirementsTitle"
+  },
+  "activityPreviewBenefitsTitle": "Avantages",
+  "@activityPreviewBenefitsTitle": {
+    "description": "activityPreviewBenefitsTitle"
+  },
+  "activityPreviewAmountLabel": "Montant",
+  "@activityPreviewAmountLabel": {
+    "description": "activityPreviewAmountLabel"
+  },
+  "activityPreviewProviderLabel": "Organisme",
+  "@activityPreviewProviderLabel": {
+    "description": "activityPreviewProviderLabel"
+  },
+  "activityPreviewAccessLabel": "Accès",
+  "@activityPreviewAccessLabel": {
+    "description": "activityPreviewAccessLabel"
+  },
+  "activityPreviewScholarshipOverviewTitle": "Aperçu de la bourse",
+  "@activityPreviewScholarshipOverviewTitle": {
+    "description": "activityPreviewScholarshipOverviewTitle"
+  },
+  "activityPreviewEligibilityTitle": "Éligibilité",
+  "@activityPreviewEligibilityTitle": {
+    "description": "activityPreviewEligibilityTitle"
+  },
+  "activityPreviewProviderAccessTitle": "Organisme et accès",
+  "@activityPreviewProviderAccessTitle": {
+    "description": "activityPreviewProviderAccessTitle"
+  },
+  "activityPreviewDurationLabel": "Durée",
+  "@activityPreviewDurationLabel": {
+    "description": "activityPreviewDurationLabel"
+  },
+  "activityPreviewLearnersLabel": "Apprenants",
+  "@activityPreviewLearnersLabel": {
+    "description": "activityPreviewLearnersLabel"
+  },
+  "activityPreviewRatingLabel": "Note",
+  "@activityPreviewRatingLabel": {
+    "description": "activityPreviewRatingLabel"
+  },
+  "activityPreviewStatusLabel": "Statut",
+  "@activityPreviewStatusLabel": {
+    "description": "activityPreviewStatusLabel"
+  },
+  "activityPreviewTrainingOverviewTitle": "Aperçu de la formation",
+  "@activityPreviewTrainingOverviewTitle": {
+    "description": "activityPreviewTrainingOverviewTitle"
+  },
+  "activityPreviewProviderDeliverySetupTitle": "Organisme et modalités de livraison",
+  "@activityPreviewProviderDeliverySetupTitle": {
+    "description": "activityPreviewProviderDeliverySetupTitle"
+  },
+  "activityPreviewInterestedLabel": "Intéressés",
+  "@activityPreviewInterestedLabel": {
+    "description": "activityPreviewInterestedLabel"
+  },
+  "activityPreviewProblemSolutionImpactTitle": "Problème, solution et impact",
+  "@activityPreviewProblemSolutionImpactTitle": {
+    "description": "activityPreviewProblemSolutionImpactTitle"
+  },
+  "activityPreviewProblemStatementTitle": "Énoncé du problème",
+  "@activityPreviewProblemStatementTitle": {
+    "description": "activityPreviewProblemStatementTitle"
+  },
+  "activityPreviewProposedSolutionTitle": "Solution proposée",
+  "@activityPreviewProposedSolutionTitle": {
+    "description": "activityPreviewProposedSolutionTitle"
+  },
+  "activityPreviewExpectedBenefitsTitle": "Bénéfices attendus",
+  "@activityPreviewExpectedBenefitsTitle": {
+    "description": "activityPreviewExpectedBenefitsTitle"
+  },
+  "activityPreviewAudienceMetadataTitle": "Public et métadonnées",
+  "@activityPreviewAudienceMetadataTitle": {
+    "description": "activityPreviewAudienceMetadataTitle"
+  },
+  "activityPreviewTeamSkillSignalsTitle": "Équipe et compétences",
+  "@activityPreviewTeamSkillSignalsTitle": {
+    "description": "activityPreviewTeamSkillSignalsTitle"
+  },
+  "activityPreviewUpdatedRecently": "Mis à jour récemment",
+  "@activityPreviewUpdatedRecently": {
+    "description": "activityPreviewUpdatedRecently"
+  },
+  "activityPreviewUpdatedMinutes": "{count, plural, =1{Mis à jour il y a 1 min} other{Mis à jour il y a {count} min}}",
+  "@activityPreviewUpdatedMinutes": {
+    "description": "activityPreviewUpdatedMinutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activityPreviewUpdatedHours": "{count, plural, =1{Mis à jour il y a 1 h} other{Mis à jour il y a {count} h}}",
+  "@activityPreviewUpdatedHours": {
+    "description": "activityPreviewUpdatedHours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activityPreviewUpdatedDays": "{count, plural, =1{Mis à jour il y a 1 jour} other{Mis à jour il y a {count} jours}}",
+  "@activityPreviewUpdatedDays": {
+    "description": "activityPreviewUpdatedDays",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activityPreviewUpdatedDate": "Mis à jour le {date}",
+  "@activityPreviewUpdatedDate": {
+    "description": "activityPreviewUpdatedDate",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPreviewDateUnknown": "Date inconnue",
+  "@activityPreviewDateUnknown": {
+    "description": "activityPreviewDateUnknown"
+  },
+  "activityPreviewUnknownTime": "Heure inconnue",
+  "@activityPreviewUnknownTime": {
+    "description": "activityPreviewUnknownTime"
+  },
+  "studentProfileNoSubmittedApps": "Aucune candidature soumise pour l’instant.",
+  "@studentProfileNoSubmittedApps": {
+    "description": "studentProfileNoSubmittedApps"
+  },
+  "studentProfileSubmittedAvailable": "{count, plural, =1{1 candidature soumise disponible pour révision} other{{count} candidatures soumises disponibles pour révision}}",
+  "@studentProfileSubmittedAvailable": {
+    "description": "studentProfileSubmittedAvailable",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiUser": "Utilisateur",
+  "@uiUser": {
+    "description": "uiUser"
+  },
+  "activityPreviewBuildStoryEyebrow": "Récit du projet",
+  "@activityPreviewBuildStoryEyebrow": {
+    "description": "activityPreviewBuildStoryEyebrow"
+  },
+  "activityPreviewPositioningEyebrow": "Positionnement",
+  "@activityPreviewPositioningEyebrow": {
+    "description": "activityPreviewPositioningEyebrow"
+  },
+  "activityPreviewCollaborationEyebrow": "Collaboration",
+  "@activityPreviewCollaborationEyebrow": {
+    "description": "activityPreviewCollaborationEyebrow"
+  },
+  "activityPreviewResourceDetailsEyebrow": "Détails de la ressource",
+  "@activityPreviewResourceDetailsEyebrow": {
+    "description": "activityPreviewResourceDetailsEyebrow"
+  },
+  "activityPreviewSkillsNeededTitle": "Compétences requises",
+  "@activityPreviewSkillsNeededTitle": {
+    "description": "activityPreviewSkillsNeededTitle"
+  },
+  "activityPreviewTeamNeededTitle": "Équipe recherchée",
+  "@activityPreviewTeamNeededTitle": {
+    "description": "activityPreviewTeamNeededTitle"
+  },
+  "activityPreviewItemMetadataSubtitle": "Les champs importants sont regroupés ici dans une mise en page d’administration plus lisible.",
+  "@activityPreviewItemMetadataSubtitle": {
+    "description": "activityPreviewItemMetadataSubtitle"
+  },
+  "activityPreviewLocationLogisticsSubtitle": "Ces détails vous aident à évaluer comment l’opportunité est positionnée auprès des candidats.",
+  "@activityPreviewLocationLogisticsSubtitle": {
+    "description": "activityPreviewLocationLogisticsSubtitle"
+  },
+  "activityPreviewRequirementsSubtitle": "Ce sont les principales qualifications ou attentes présentées aux candidats.",
+  "@activityPreviewRequirementsSubtitle": {
+    "description": "activityPreviewRequirementsSubtitle"
+  },
+  "activityPreviewBenefitsSubtitle": "Cela donne à l’administrateur un aperçu de ce qui rend le poste attractif.",
+  "@activityPreviewBenefitsSubtitle": {
+    "description": "activityPreviewBenefitsSubtitle"
+  },
+  "activityPreviewProviderAccessSubtitle": "Ces détails vous aident à examiner la place de la bourse et la manière dont les étudiants y accèdent.",
+  "@activityPreviewProviderAccessSubtitle": {
+    "description": "activityPreviewProviderAccessSubtitle"
+  },
+  "activityPreviewProviderDeliverySetupSubtitle": "Cette section vous aide à examiner comment la formation est conçue et présentée aux utilisateurs.",
+  "@activityPreviewProviderDeliverySetupSubtitle": {
+    "description": "activityPreviewProviderDeliverySetupSubtitle"
+  },
+  "activityPreviewProblemSolutionSubtitle": "Cette section montre ce que l’idée résout, comment elle fonctionne et la valeur qu’elle vise à créer.",
+  "@activityPreviewProblemSolutionSubtitle": {
+    "description": "activityPreviewProblemSolutionSubtitle"
+  },
+  "activityPreviewAudienceMetadataSubtitle": "Ces champs vous aident à juger où l’idée s’inscrit et dans quelle mesure elle est prête à être examinée.",
+  "@activityPreviewAudienceMetadataSubtitle": {
+    "description": "activityPreviewAudienceMetadataSubtitle"
+  },
+  "activityPreviewTeamSkillSignalsSubtitle": "Utilisez ces étiquettes pour comprendre le soutien dont l’idée a besoin par la suite.",
+  "@activityPreviewTeamSkillSignalsSubtitle": {
+    "description": "activityPreviewTeamSkillSignalsSubtitle"
+  },
+  "activityPreviewWithdrawnFromOpportunity": "Cette candidature a été retirée de {opportunity}.",
+  "@activityPreviewWithdrawnFromOpportunity": {
+    "description": "activityPreviewWithdrawnFromOpportunity",
+    "placeholders": {
+      "opportunity": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPreviewWithdrawnGeneric": "Cette candidature a été retirée.",
+  "@activityPreviewWithdrawnGeneric": {
+    "description": "activityPreviewWithdrawnGeneric"
+  },
+  "activityPreviewAppliedToOpportunity": "Candidature à {opportunity}.",
+  "@activityPreviewAppliedToOpportunity": {
+    "description": "activityPreviewAppliedToOpportunity",
+    "placeholders": {
+      "opportunity": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPreviewProjectIdeaFallback": "Idée de projet",
+  "@activityPreviewProjectIdeaFallback": {
+    "description": "activityPreviewProjectIdeaFallback"
+  },
+  "activityPreviewScholarshipFallback": "Bourse",
+  "@activityPreviewScholarshipFallback": {
+    "description": "activityPreviewScholarshipFallback"
+  },
+  "activityPreviewSubmittedByPrefix": "Soumis par {name}",
+  "@activityPreviewSubmittedByPrefix": {
+    "description": "activityPreviewSubmittedByPrefix",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityPreviewDetailsUnavailableTitle": "Détails indisponibles",
+  "@activityPreviewDetailsUnavailableTitle": {
+    "description": "activityPreviewDetailsUnavailableTitle"
+  },
+  "activityPreviewDetailsUnavailableMessage": "Nous n’avons pas pu charger l’enregistrement {recordType} associé pour le moment.",
+  "@activityPreviewDetailsUnavailableMessage": {
+    "description": "activityPreviewDetailsUnavailableMessage",
+    "placeholders": {
+      "recordType": {
+        "type": "String"
+      }
+    }
   }
 }

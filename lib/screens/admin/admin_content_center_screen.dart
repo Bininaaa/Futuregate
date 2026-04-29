@@ -234,38 +234,46 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                             runSpacing: 10,
                             children: [
                               AdminPill(
-                                label:
-                                    '${provider.allProjectIdeas.length} ideas',
+                                label: l10n.contentPillIdeasCount(
+                                  provider.allProjectIdeas.length,
+                                ),
                                 color: _ideaAccentColor,
                                 icon: Icons.lightbulb_outline_rounded,
                               ),
                               if (pendingIdeas > 0)
                                 AdminPill(
-                                  label: '$pendingIdeas pending ideas',
+                                  label: l10n.contentPillPendingIdeas(
+                                    pendingIdeas,
+                                  ),
                                   color: _ideaAccentColor,
                                   icon: Icons.hourglass_top_rounded,
                                 ),
                               if (pendingApplications > 0)
                                 AdminPill(
-                                  label: '$pendingApplications pending apps',
+                                  label: l10n.contentPillPendingApps(
+                                    pendingApplications,
+                                  ),
                                   color: AdminPalette.danger,
                                   icon: Icons.assignment_late_outlined,
                                 ),
                               AdminPill(
-                                label:
-                                    '${provider.allOpportunities.length} opportunities',
+                                label: l10n.contentPillOpportunitiesCount(
+                                  provider.allOpportunities.length,
+                                ),
                                 color: AdminPalette.primary,
                                 icon: Icons.work_outline_rounded,
                               ),
                               AdminPill(
-                                label:
-                                    '${provider.allScholarships.length} scholarships',
+                                label: l10n.contentPillScholarshipsCount(
+                                  provider.allScholarships.length,
+                                ),
                                 color: _scholarshipAccentColor,
                                 icon: Icons.card_giftcard_rounded,
                               ),
                               AdminPill(
-                                label:
-                                    '${provider.allTrainings.length} resources',
+                                label: l10n.contentPillResourcesCount(
+                                  provider.allTrainings.length,
+                                ),
                                 color: AdminPalette.secondary,
                                 icon: Icons.cast_for_education_outlined,
                               ),
@@ -627,9 +635,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
           final isPending =
               _normalizedIdeaStatus(idea.status) == _ideaFilterPending;
           final pendingIdeaWarning = isPending
-              ? _buildInlinePendingWarning(
-                  'Pending idea. Approve or reject it before it appears as reviewed content.',
-                )
+              ? _buildInlinePendingWarning(l10n.contentPendingIdeaInline)
               : null;
           final ideaFooterButtons = <Widget>[
             if (isPending)
@@ -651,8 +657,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         }
                         if (context.mounted) {
                           context.showAppSnackBar(
-                            '${idea.title} approved.',
-                            title: 'Idea approved',
+                            l10n.contentIdeaApprovedMessage(idea.title),
+                            title: l10n.contentIdeaApprovedSnackTitle,
                             type: AppFeedbackType.success,
                           );
                         }
@@ -680,8 +686,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         }
                         if (context.mounted) {
                           context.showAppSnackBar(
-                            '${idea.title} rejected.',
-                            title: 'Idea rejected',
+                            l10n.contentIdeaRejectedMessage(idea.title),
+                            title: l10n.contentIdeaRejectedSnackTitle,
                             type: AppFeedbackType.removed,
                             icon: Icons.block_outlined,
                           );
@@ -867,16 +873,18 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required int pendingIdeas,
     required int pendingApplications,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final pendingParts = <String>[
-      if (pendingIdeas > 0)
-        '$pendingIdeas pending idea${pendingIdeas == 1 ? '' : 's'}',
+      if (pendingIdeas > 0) l10n.contentPendingIdeasPart(pendingIdeas),
       if (pendingApplications > 0)
-        '$pendingApplications pending application${pendingApplications == 1 ? '' : 's'}',
+        l10n.contentPendingApplicationsPart(pendingApplications),
     ];
 
     return _buildInlinePendingWarning(
-      '${pendingParts.join(' and ')} need a decision in Content.',
-      title: 'Pending review',
+      l10n.contentPendingPartsCombined(
+        pendingParts.join(l10n.contentPendingPartsJoiner),
+      ),
+      title: l10n.contentPendingReviewTitle,
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
     );
   }
@@ -2598,7 +2606,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     if (normalizedUserId.isEmpty) {
       context.showAppSnackBar(
         AppLocalizations.of(context)!.ideaNotAvailable,
-        title: 'Profile unavailable',
+        title: AppLocalizations.of(context)!.contentProfileUnavailableTitle,
         type: AppFeedbackType.warning,
       );
       return;

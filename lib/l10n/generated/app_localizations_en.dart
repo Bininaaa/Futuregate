@@ -10462,4 +10462,1395 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get uiStrongLogoMakesProfilePolishedSubtitle =>
       'A strong logo or company photo makes the profile feel more polished and recognizable.';
+
+  @override
+  String get adminOpportunityPublisherHint => 'e.g. FutureGate Admin';
+
+  @override
+  String get adminOpportunityDescriptionHint =>
+      'Describe the role, scope, and value clearly';
+
+  @override
+  String get adminOpportunityDescriptionHelper =>
+      'Add enough detail for students to understand scope, expectations, and value.';
+
+  @override
+  String get adminOpportunityRequirementHintRule =>
+      'Type one eligibility rule, then press Enter';
+
+  @override
+  String get adminOpportunityRequirementHintItem =>
+      'Type one requirement, then press Enter';
+
+  @override
+  String get adminOpportunityDeadlineHint => 'Select a closing date';
+
+  @override
+  String get adminOpportunityFundingAmountHint => 'e.g. 250000';
+
+  @override
+  String get adminOpportunityFundingNoteHint =>
+      'Optional support details shown to students';
+
+  @override
+  String get adminOpportunitySalaryMinHint => 'e.g. 60000';
+
+  @override
+  String get adminOpportunitySalaryMaxHint => 'e.g. 90000';
+
+  @override
+  String get adminOpportunityDurationHint => 'e.g. 3 months';
+
+  @override
+  String get adminOpportunityCompensationHint =>
+      'Optional note shown on detail screens';
+
+  @override
+  String get adminOpportunityDatePickerHelp => 'Select deadline';
+
+  @override
+  String get adminOpportunitySnackTitleUpdated => 'Opportunity updated';
+
+  @override
+  String get adminOpportunitySnackTitlePublished => 'Opportunity published';
+
+  @override
+  String get adminOpportunityUpdatedMessage =>
+      'Admin opportunity updated successfully.';
+
+  @override
+  String get adminOpportunityPublishedMessage =>
+      'Admin opportunity published successfully.';
+
+  @override
+  String get adminOpportunityRequirementsSubtitleEligibility =>
+      'Add each eligibility point separately so students see a clean checklist.';
+
+  @override
+  String get adminOpportunityRequirementsSubtitleRequirement =>
+      'Add each requirement separately so students see a clean checklist.';
+
+  @override
+  String adminEditorFieldRequired(String label) {
+    return '$label is required';
+  }
+
+  @override
+  String adminEditorFieldNeedsDetail(String label) {
+    return '$label needs a bit more detail';
+  }
+
+  @override
+  String get adminIdeaPublicSubtitle =>
+      'When enabled, the idea reads like a public community opportunity instead of a hidden internal note.';
+
+  @override
+  String get adminIdeaTitleHint => 'e.g. Campus Innovation Partner Program';
+
+  @override
+  String get adminIdeaTitleValidatorLabel => 'Title';
+
+  @override
+  String get adminIdeaTaglineHint => 'Short hook for the hero section';
+
+  @override
+  String get adminIdeaShortDescriptionHint => 'A tight one-paragraph summary';
+
+  @override
+  String get adminIdeaFullDescriptionHint =>
+      'Describe the idea clearly and with enough depth';
+
+  @override
+  String get adminIdeaFullDescriptionHelper =>
+      'Describe the problem, solution, audience, and expected impact.';
+
+  @override
+  String get adminIdeaDescriptionValidatorLabel => 'Description';
+
+  @override
+  String get adminIdeaDomainHint => 'e.g. EdTech, AI, Sustainability';
+
+  @override
+  String get adminIdeaDomainValidatorLabel => 'Domain';
+
+  @override
+  String get adminIdeaCategoryHint => 'e.g. Innovation, Startup, Research';
+
+  @override
+  String get adminIdeaStageHint => 'e.g. Concept, Prototype, Pilot';
+
+  @override
+  String get adminIdeaToolsHint => 'e.g. Flutter, Firebase, Figma';
+
+  @override
+  String get adminIdeaToolsValidatorLabel => 'Tools';
+
+  @override
+  String get adminIdeaTagsHint => 'Comma-separated tags';
+
+  @override
+  String get adminIdeaSkillsHint => 'Comma-separated skills';
+
+  @override
+  String get adminIdeaTeamHint => 'Comma-separated roles';
+
+  @override
+  String get adminIdeaTargetAudienceHint => 'Who benefits most from this idea?';
+
+  @override
+  String get adminIdeaProblemHint => 'What challenge does this solve?';
+
+  @override
+  String get adminIdeaSolutionHint => 'How does the idea solve the problem?';
+
+  @override
+  String get adminIdeaResourcesHint =>
+      'What support, partners, or assets are required?';
+
+  @override
+  String get adminIdeaBenefitsHint => 'What outcomes make this valuable?';
+
+  @override
+  String get adminIdeaSnackTitleUpdated => 'Idea updated';
+
+  @override
+  String get adminIdeaSnackTitlePublished => 'Idea published';
+
+  @override
+  String get adminIdeaUpdatedMessage => 'Admin idea updated successfully.';
+
+  @override
+  String get adminIdeaPublishedMessage => 'Admin idea published successfully.';
+
+  @override
+  String get adminScholarshipScreenTitleEdit => 'Edit Scholarship';
+
+  @override
+  String get adminScholarshipScreenTitlePublish => 'Publish Scholarship';
+
+  @override
+  String get adminScholarshipSubmitEdit => 'Save Scholarship Changes';
+
+  @override
+  String get adminScholarshipSubmitPublish => 'Publish Scholarship';
+
+  @override
+  String get adminScholarshipScreenSubtitle =>
+      'Curate scholarships in the same app where students discover them, with enough structure for richer cards and more useful filtering.';
+
+  @override
+  String get adminScholarshipPublishingTitle => 'Publishing';
+
+  @override
+  String get adminScholarshipPublishingSubtitle =>
+      'Featured scholarships get stronger presence in the student discovery flow.';
+
+  @override
+  String get adminScholarshipFeatureToggleTitle => 'Feature this scholarship';
+
+  @override
+  String get adminScholarshipFeatureToggleSubtitle =>
+      'Use this for high-priority or especially strong scholarship opportunities.';
+
+  @override
+  String get adminScholarshipBasicInfoSubtitle =>
+      'Start with the core scholarship identity so the opportunity reads clearly across cards and details.';
+
+  @override
+  String get adminScholarshipTitleField => 'Scholarship title';
+
+  @override
+  String get adminScholarshipTitleHint =>
+      'e.g. Future Builders Global Scholarship';
+
+  @override
+  String get adminScholarshipTitleValidatorLabel => 'Title';
+
+  @override
+  String get adminScholarshipProviderField => 'Provider';
+
+  @override
+  String get adminScholarshipProviderHint => 'Who offers this scholarship?';
+
+  @override
+  String get adminScholarshipProviderValidatorLabel => 'Provider';
+
+  @override
+  String get adminScholarshipDescriptionTitle => 'Description';
+
+  @override
+  String get adminScholarshipDescriptionHint =>
+      'Explain the scholarship and what it supports';
+
+  @override
+  String get adminScholarshipDescriptionHelper =>
+      'Include coverage, eligibility, documents, and what students gain.';
+
+  @override
+  String get adminScholarshipDescriptionValidatorLabel => 'Description';
+
+  @override
+  String get adminScholarshipEligibilityTitle => 'Eligibility Requirements';
+
+  @override
+  String get adminScholarshipEligibilityHint =>
+      'Type one requirement, then press Enter';
+
+  @override
+  String get adminScholarshipEligibilityEmpty =>
+      'Add who can apply, required documents, or academic conditions.';
+
+  @override
+  String get adminScholarshipLogisticsTitle => 'Logistics';
+
+  @override
+  String get adminScholarshipLogisticsSubtitle =>
+      'Keep the amount, deadline, and destination details in one predictable section.';
+
+  @override
+  String get adminScholarshipAmountField => 'Amount';
+
+  @override
+  String get adminScholarshipAmountHint => 'e.g. 250000';
+
+  @override
+  String get adminScholarshipDeadlineField => 'Deadline';
+
+  @override
+  String get adminScholarshipDeadlineHint => 'Select a deadline';
+
+  @override
+  String get adminScholarshipCountryField => 'Country';
+
+  @override
+  String get adminScholarshipCountryHint => 'e.g. France';
+
+  @override
+  String get adminScholarshipCityField => 'City';
+
+  @override
+  String get adminScholarshipCityHint => 'e.g. Paris';
+
+  @override
+  String get adminScholarshipLocationField => 'Location label';
+
+  @override
+  String get adminScholarshipLocationHint => 'Fallback location text';
+
+  @override
+  String get adminScholarshipAdditionalInfoTitle => 'Additional Information';
+
+  @override
+  String get adminScholarshipAdditionalInfoSubtitle =>
+      'Use these optional fields to improve discovery, filtering, and outbound application clarity.';
+
+  @override
+  String get adminScholarshipApplicationLink => 'Application link';
+
+  @override
+  String get adminScholarshipApplicationLinkHint => 'Optional direct link';
+
+  @override
+  String get adminScholarshipFundingTypeField => 'Funding type';
+
+  @override
+  String get adminScholarshipFundingTypeHint =>
+      'e.g. Fully funded, Partial funding';
+
+  @override
+  String get adminScholarshipCategoryField => 'Category';
+
+  @override
+  String get adminScholarshipCategoryHint => 'e.g. Masters, Research, Exchange';
+
+  @override
+  String get adminScholarshipLevelField => 'Level';
+
+  @override
+  String get adminScholarshipLevelHint => 'e.g. Master, PhD';
+
+  @override
+  String get adminScholarshipImageUrl => 'Image URL';
+
+  @override
+  String get adminScholarshipImageUrlHint => 'Optional cover image URL';
+
+  @override
+  String get adminScholarshipTagsField => 'Tags';
+
+  @override
+  String get adminScholarshipTagsHint => 'Comma-separated tags';
+
+  @override
+  String get adminScholarshipDatePickerHelp => 'Select deadline';
+
+  @override
+  String get adminScholarshipAmountInvalid => 'Enter a valid amount';
+
+  @override
+  String get adminScholarshipEligibilityRequired =>
+      'Add at least one eligibility item';
+
+  @override
+  String get adminScholarshipDeadlineRequired => 'Deadline is required';
+
+  @override
+  String get adminScholarshipDeadlineInvalid => 'Use a valid date';
+
+  @override
+  String get adminPreviewName => 'Name';
+
+  @override
+  String get adminPreviewAccount => 'Account';
+
+  @override
+  String get adminPreviewUserMetadata => 'User Metadata';
+
+  @override
+  String get adminPreviewUserMetadataSubtitle =>
+      'The account record linked to this recent admin activity.';
+
+  @override
+  String get adminPreviewItemMetadataSubtitle =>
+      'Important fields are grouped here in a more readable admin detail layout.';
+
+  @override
+  String get adminPreviewLocationLogisticsSubtitle =>
+      'These details help you evaluate how the opportunity is positioned for applicants.';
+
+  @override
+  String get adminPreviewRequirements => 'Requirements';
+
+  @override
+  String get adminPreviewRequirementsSubtitle =>
+      'These are the main qualifications or expectations shown to applicants.';
+
+  @override
+  String get adminPreviewBenefitsSubtitle =>
+      'This gives the admin view of what makes the role attractive.';
+
+  @override
+  String get adminPreviewProviderAccessSubtitle =>
+      'These details help you review where the scholarship fits and how students will reach it.';
+
+  @override
+  String get adminPreviewEligibility => 'Eligibility';
+
+  @override
+  String get adminPreviewProviderDeliverySubtitle =>
+      'This section helps you review how the training is packaged and presented to users.';
+
+  @override
+  String get adminPreviewProblemSolutionImpactSubtitle =>
+      'This section shows what the idea is solving, how it works, and the value it aims to create.';
+
+  @override
+  String get adminPreviewAudienceMetadataSubtitle =>
+      'These fields help you judge where the idea fits and how ready it is for review.';
+
+  @override
+  String get adminPreviewTeamSkillSignalsSubtitle =>
+      'Use these tags to understand what support the idea needs next.';
+
+  @override
+  String get adminPreviewAudience => 'Audience';
+
+  @override
+  String adminPreviewSubmittedBy(String name) {
+    return 'Submitted by $name';
+  }
+
+  @override
+  String get adminPreviewPublic => 'Public';
+
+  @override
+  String get adminPreviewPrivate => 'Private';
+
+  @override
+  String adminPreviewWithdrawnFromOpportunity(String opportunity) {
+    return 'This application was withdrawn from $opportunity.';
+  }
+
+  @override
+  String get adminPreviewWithdrawnGeneric => 'This application was withdrawn.';
+
+  @override
+  String adminPreviewAppliedToOpportunity(String opportunity) {
+    return 'Applied to $opportunity.';
+  }
+
+  @override
+  String get adminPreviewApplicationDetailsFallback => 'Application details';
+
+  @override
+  String get adminPreviewSectionAccountEyebrow => 'Account';
+
+  @override
+  String get adminPreviewSectionDetailsEyebrow => 'Details';
+
+  @override
+  String get adminPreviewSectionScholarshipDetailsEyebrow =>
+      'Scholarship Details';
+
+  @override
+  String get adminPreviewSectionResourceDetailsEyebrow => 'Resource Details';
+
+  @override
+  String get adminPreviewSectionRoleSetupEyebrow => 'Role Setup';
+
+  @override
+  String get adminPreviewSectionBuildStoryEyebrow => 'Build Story';
+
+  @override
+  String get adminPreviewSectionPositioningEyebrow => 'Positioning';
+
+  @override
+  String get adminPreviewSectionCollaborationEyebrow => 'Collaboration';
+
+  @override
+  String get adminModerateProjectIdeaApprovedMessage =>
+      'Project idea approved.';
+
+  @override
+  String get adminModerateProjectIdeaRejectedMessage =>
+      'Project idea rejected.';
+
+  @override
+  String get adminModerateOpportunityDeletedMessage => 'Opportunity deleted.';
+
+  @override
+  String get adminModerateScholarshipDeletedMessage => 'Scholarship deleted.';
+
+  @override
+  String get adminModerateScholarshipDeletedTitle => 'Scholarship deleted';
+
+  @override
+  String get adminModerateDeleteOpportunityTitle => 'Delete Opportunity';
+
+  @override
+  String get adminModerateDeleteScholarshipTitle => 'Delete Scholarship';
+
+  @override
+  String adminModerateDeleteOpportunityMessage(String title) {
+    return 'Are you sure you want to delete \"$title\"?';
+  }
+
+  @override
+  String adminModerateDeleteScholarshipMessage(String title) {
+    return 'Are you sure you want to delete \"$title\"?';
+  }
+
+  @override
+  String adminModerateDueLabel(String value) {
+    return 'Due: $value';
+  }
+
+  @override
+  String get adminActivityFilterAll => 'All';
+
+  @override
+  String get adminActivityFilterReviews => 'Reviews';
+
+  @override
+  String get adminActivityFilterContent => 'Content';
+
+  @override
+  String get adminActivityFilterLibrary => 'Library';
+
+  @override
+  String get adminActivityFilterAccounts => 'Accounts';
+
+  @override
+  String get adminActivityFilterPending => 'Pending';
+
+  @override
+  String adminPillImportedBooksCount(int count) {
+    return '$count imported books';
+  }
+
+  @override
+  String adminPillImportedVideosCount(int count) {
+    return '$count imported videos';
+  }
+
+  @override
+  String adminPillResultsCount(int count) {
+    return '$count results';
+  }
+
+  @override
+  String adminPillResourcesCount(int count) {
+    return '$count resources';
+  }
+
+  @override
+  String adminPillFeaturedCount(int count) {
+    return '$count featured';
+  }
+
+  @override
+  String adminPillBooksCount(int count) {
+    return '$count books';
+  }
+
+  @override
+  String adminPillVideosCount(int count) {
+    return '$count videos';
+  }
+
+  @override
+  String adminPillOpportunitiesCount(int count) {
+    return '$count opportunities';
+  }
+
+  @override
+  String adminPillApplicationsBadge(int count, String appsLabel) {
+    return '$count $appsLabel';
+  }
+
+  @override
+  String adminPillPendingDecisionMessage(String summary) {
+    return '$summary need a decision in Content.';
+  }
+
+  @override
+  String adminPendingItemsConjunction(String first, String second) {
+    return '$first and $second';
+  }
+
+  @override
+  String get adminPendingReviewBannerTitle => 'Pending review';
+
+  @override
+  String get adminContentPendingIdeaWarning =>
+      'Pending idea. Approve or reject it before it appears as reviewed content.';
+
+  @override
+  String adminContentIdeaApprovedSnack(String title) {
+    return '$title approved.';
+  }
+
+  @override
+  String adminContentIdeaRejectedSnack(String title) {
+    return '$title rejected.';
+  }
+
+  @override
+  String get adminContentProfileUnavailable => 'Profile unavailable';
+
+  @override
+  String adminContentWorkspaceTitleWithType(
+    String baseTitle,
+    String typeLabel,
+  ) {
+    return '$baseTitle - $typeLabel';
+  }
+
+  @override
+  String get adminStudentApplicationHistory => 'Application history';
+
+  @override
+  String get adminStudentApplicationsSummaryError =>
+      'We could not load the application summary right now, but you can still open the full history and try again.';
+
+  @override
+  String get adminPreviewUserFallback => 'User';
+
+  @override
+  String get adminPreviewApplicationFallback => 'Application';
+
+  @override
+  String get adminPreviewOpportunityFallback => 'Opportunity';
+
+  @override
+  String get adminPreviewScholarshipFallback => 'Scholarship';
+
+  @override
+  String get adminPreviewTrainingFallback => 'Training';
+
+  @override
+  String get adminPreviewProjectIdeaFallback => 'Project Idea';
+
+  @override
+  String get adminYoutubeGenericError =>
+      'Something went wrong. Please check your connection and try again.';
+
+  @override
+  String adminPendingIdeasSummaryPlural(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compactLong(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString pending ideas',
+      one: '1 pending idea',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminPendingApplicationsSummaryPlural(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compactLong(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString pending applications',
+      one: '1 pending application',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get uiFundingAmount => 'Funding amount';
+
+  @override
+  String get uiFundingCurrency => 'Funding currency';
+
+  @override
+  String get uiFundingNote => 'Funding note';
+
+  @override
+  String get uiSalaryMinimum => 'Salary minimum';
+
+  @override
+  String get uiSalaryMaximum => 'Salary maximum';
+
+  @override
+  String get uiSalaryPeriod => 'Salary period';
+
+  @override
+  String get uiCompensationNote => 'Compensation note';
+
+  @override
+  String get uiCountry => 'Country';
+
+  @override
+  String get uiName => 'Name';
+
+  @override
+  String get uiAccount => 'Account';
+
+  @override
+  String get uiPublic => 'Public';
+
+  @override
+  String get uiPrivate => 'Private';
+
+  @override
+  String get uiAudience => 'Audience';
+
+  @override
+  String get uiRequirements => 'Requirements';
+
+  @override
+  String get uiEligibility => 'Eligibility';
+
+  @override
+  String get uiPublishingLabel => 'Publishing';
+
+  @override
+  String get uiUserLabel => 'User';
+
+  @override
+  String get adminScholarshipEditTitle => 'Edit Scholarship';
+
+  @override
+  String get adminScholarshipPublishTitle => 'Publish Scholarship';
+
+  @override
+  String get adminScholarshipSaveLabel => 'Save Scholarship Changes';
+
+  @override
+  String get adminScholarshipPublishLabel => 'Publish Scholarship';
+
+  @override
+  String get adminScholarshipScaffoldSubtitle =>
+      'Curate scholarships in the same app where students discover them, with enough structure for richer cards and more useful filtering.';
+
+  @override
+  String get adminScholarshipFeatureTitle => 'Feature this scholarship';
+
+  @override
+  String get adminScholarshipFeatureSubtitle =>
+      'Use this for high-priority or especially strong scholarship opportunities.';
+
+  @override
+  String get adminScholarshipTitleLabel => 'Scholarship title';
+
+  @override
+  String get adminScholarshipEligibilityValidator =>
+      'Add at least one eligibility item';
+
+  @override
+  String get adminScholarshipAmountValidator => 'Enter a valid amount';
+
+  @override
+  String get adminScholarshipDeadlinePickerHelp => 'Select deadline';
+
+  @override
+  String get adminScholarshipLocationLabelField => 'Location label';
+
+  @override
+  String get adminScholarshipApplicationLinkLabel => 'Application link';
+
+  @override
+  String get adminScholarshipFundingTypeLabel => 'Funding type';
+
+  @override
+  String get adminScholarshipImageUrlLabel => 'Image URL';
+
+  @override
+  String get moderateIdeaApprovedSnackTitle => 'Idea approved';
+
+  @override
+  String get moderateIdeaApprovedSnackMessage => 'Project idea approved.';
+
+  @override
+  String get moderateIdeaRejectedSnackTitle => 'Idea rejected';
+
+  @override
+  String get moderateIdeaRejectedSnackMessage => 'Project idea rejected.';
+
+  @override
+  String get moderateOpportunityDeletedSnackTitle => 'Opportunity deleted';
+
+  @override
+  String get moderateOpportunityDeletedSnackMessage => 'Opportunity deleted.';
+
+  @override
+  String get moderateScholarshipDeletedSnackTitle => 'Scholarship deleted';
+
+  @override
+  String get moderateScholarshipDeletedSnackMessage => 'Scholarship deleted.';
+
+  @override
+  String get moderateWorkingLabel => 'Working...';
+
+  @override
+  String get moderateApproveLabel => 'Approve';
+
+  @override
+  String get moderateRejectLabel => 'Reject';
+
+  @override
+  String get moderateNoIdeasReviewYet => 'No project ideas to review yet';
+
+  @override
+  String get moderateNoOpportunitiesYet => 'No opportunities published yet';
+
+  @override
+  String get moderateNoScholarshipsYet => 'No scholarships published yet';
+
+  @override
+  String get moderateNoPendingIdeas => 'No pending ideas to review';
+
+  @override
+  String moderatePendingIdeasCount(int count) {
+    return 'Pending Ideas ($count)';
+  }
+
+  @override
+  String moderateAllIdeasCount(int count) {
+    return 'All Ideas ($count)';
+  }
+
+  @override
+  String get moderateShowAllLabel => 'Show All';
+
+  @override
+  String get moderatePendingOnlyLabel => 'Pending Only';
+
+  @override
+  String moderateSubmittedByLabel(String name) {
+    return 'Submitted by: $name';
+  }
+
+  @override
+  String get moderateUntitledOpportunity => 'Untitled opportunity';
+
+  @override
+  String get moderateUnknownCompany => 'Unknown company';
+
+  @override
+  String get moderateUntitledScholarship => 'Untitled scholarship';
+
+  @override
+  String get moderateUnknownProvider => 'Unknown provider';
+
+  @override
+  String moderateAmountWithCurrency(String amount) {
+    return '$amount DA';
+  }
+
+  @override
+  String moderateDueLabel(String date) {
+    return 'Due: $date';
+  }
+
+  @override
+  String get moderateDeleteOpportunityTitle => 'Delete Opportunity';
+
+  @override
+  String moderateDeleteOpportunityConfirm(String title) {
+    return 'Are you sure you want to delete \"$title\"?';
+  }
+
+  @override
+  String get moderateDeleteScholarshipTitle => 'Delete Scholarship';
+
+  @override
+  String moderateDeleteScholarshipConfirm(String title) {
+    return 'Are you sure you want to delete \"$title\"?';
+  }
+
+  @override
+  String get moderateDeleteAction => 'Delete';
+
+  @override
+  String get activitySectionAll => 'All';
+
+  @override
+  String get activitySectionReviews => 'Reviews';
+
+  @override
+  String get activitySectionContent => 'Content';
+
+  @override
+  String get activitySectionLibrary => 'Library';
+
+  @override
+  String get activitySectionAccounts => 'Accounts';
+
+  @override
+  String get activitySectionPending => 'Pending';
+
+  @override
+  String get dashboardPendingCompanies => 'Companies';
+
+  @override
+  String get dashboardPendingIdeas => 'Ideas';
+
+  @override
+  String get dashboardPendingApplications => 'Applications';
+
+  @override
+  String get contentIdeaApprovedSnackTitle => 'Idea approved';
+
+  @override
+  String contentIdeaApprovedMessage(String title) {
+    return '$title approved.';
+  }
+
+  @override
+  String get contentIdeaRejectedSnackTitle => 'Idea rejected';
+
+  @override
+  String contentIdeaRejectedMessage(String title) {
+    return '$title rejected.';
+  }
+
+  @override
+  String get contentPendingIdeaInline =>
+      'Pending idea. Approve or reject it before it appears as reviewed content.';
+
+  @override
+  String get contentPendingReviewTitle => 'Pending review';
+
+  @override
+  String contentPendingPartsCombined(String parts) {
+    return '$parts need a decision in Content.';
+  }
+
+  @override
+  String contentPendingIdeasPart(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending ideas',
+      one: '1 pending idea',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPendingApplicationsPart(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending applications',
+      one: '1 pending application',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get contentPendingPartsJoiner => ' and ';
+
+  @override
+  String get contentProfileUnavailableTitle => 'Profile unavailable';
+
+  @override
+  String contentPillIdeasCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ideas',
+      one: '1 idea',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillPendingIdeas(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending ideas',
+      one: '1 pending idea',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillPendingApps(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending apps',
+      one: '1 pending app',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillOpportunitiesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count opportunities',
+      one: '1 opportunity',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillScholarshipsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count scholarships',
+      one: '1 scholarship',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillResourcesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count resources',
+      one: '1 resource',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillCountWithLabel(int count, String label) {
+    return '$count $label';
+  }
+
+  @override
+  String libraryPillResourcesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count resources',
+      one: '1 resource',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillFeaturedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count featured',
+      one: '1 featured',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillBooksCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count books',
+      one: '1 book',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillVideosCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count videos',
+      one: '1 video',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillImportedBooks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count imported books',
+      one: '1 imported book',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillImportedVideos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count imported videos',
+      one: '1 imported video',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studentProfileApplicationHistory => 'Application history';
+
+  @override
+  String get studentProfileLoadingHistory => 'Loading application history...';
+
+  @override
+  String get studentProfileHistoryUnavailable =>
+      'Application history is unavailable right now.';
+
+  @override
+  String get studentProfileNoApplicationsYet =>
+      'No applications have been submitted by this student yet.';
+
+  @override
+  String studentProfileApplicationsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count submitted applications',
+      one: '1 submitted application',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studentProfileSummaryError =>
+      'We could not load the application summary right now, but you can still open the full history and try again.';
+
+  @override
+  String studentProfileViewAllAppsCount(int count) {
+    return 'View All Apps ($count)';
+  }
+
+  @override
+  String get studentProfileNoApplicationsYetTitle => 'No applications yet';
+
+  @override
+  String get studentProfileNoApplicationsMessage =>
+      'This student has not submitted any applications yet.';
+
+  @override
+  String get studentProfileFullHistoryUnavailable =>
+      'We could not load this student\'s full application history right now.';
+
+  @override
+  String get studentProfileOpportunityUnavailable => 'Opportunity unavailable';
+
+  @override
+  String get studentProfileOpportunityHidden => 'Opportunity hidden';
+
+  @override
+  String get studentProfileOpportunityClosed => 'Opportunity closed';
+
+  @override
+  String get activityPreviewRoleLabel => 'Role';
+
+  @override
+  String get activityPreviewAccountLabel => 'Account';
+
+  @override
+  String get activityPreviewCompanyReviewLabel => 'Company Review';
+
+  @override
+  String get activityPreviewActivityLabel => 'Activity';
+
+  @override
+  String get activityPreviewUserMetadataTitle => 'User Metadata';
+
+  @override
+  String get activityPreviewUserMetadataSubtitle =>
+      'The account record linked to this recent admin activity.';
+
+  @override
+  String get activityPreviewItemMetadataTitle => 'Item Metadata';
+
+  @override
+  String get activityPreviewApplicationsLabel => 'Applications';
+
+  @override
+  String get activityPreviewDeadlineLabel => 'Deadline';
+
+  @override
+  String get activityPreviewCompensationLabel => 'Compensation';
+
+  @override
+  String get activityPreviewWorkSetupLabel => 'Work Setup';
+
+  @override
+  String get activityPreviewRoleOverviewTitle => 'Role Overview';
+
+  @override
+  String get activityPreviewLocationLogisticsTitle => 'Location And Logistics';
+
+  @override
+  String get activityPreviewRequirementsTitle => 'Requirements';
+
+  @override
+  String get activityPreviewBenefitsTitle => 'Benefits';
+
+  @override
+  String get activityPreviewAmountLabel => 'Amount';
+
+  @override
+  String get activityPreviewProviderLabel => 'Provider';
+
+  @override
+  String get activityPreviewAccessLabel => 'Access';
+
+  @override
+  String get activityPreviewScholarshipOverviewTitle => 'Scholarship Overview';
+
+  @override
+  String get activityPreviewEligibilityTitle => 'Eligibility';
+
+  @override
+  String get activityPreviewProviderAccessTitle => 'Provider And Access';
+
+  @override
+  String get activityPreviewDurationLabel => 'Duration';
+
+  @override
+  String get activityPreviewLearnersLabel => 'Learners';
+
+  @override
+  String get activityPreviewRatingLabel => 'Rating';
+
+  @override
+  String get activityPreviewStatusLabel => 'Status';
+
+  @override
+  String get activityPreviewTrainingOverviewTitle => 'Training Overview';
+
+  @override
+  String get activityPreviewProviderDeliverySetupTitle =>
+      'Provider And Delivery Setup';
+
+  @override
+  String get activityPreviewInterestedLabel => 'Interested';
+
+  @override
+  String get activityPreviewProblemSolutionImpactTitle =>
+      'Problem, Solution, And Impact';
+
+  @override
+  String get activityPreviewProblemStatementTitle => 'Problem Statement';
+
+  @override
+  String get activityPreviewProposedSolutionTitle => 'Proposed Solution';
+
+  @override
+  String get activityPreviewExpectedBenefitsTitle => 'Expected Benefits';
+
+  @override
+  String get activityPreviewAudienceMetadataTitle => 'Audience And Metadata';
+
+  @override
+  String get activityPreviewTeamSkillSignalsTitle => 'Team And Skill Signals';
+
+  @override
+  String get activityPreviewUpdatedRecently => 'Updated recently';
+
+  @override
+  String activityPreviewUpdatedMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Updated $count min ago',
+      one: 'Updated 1 min ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String activityPreviewUpdatedHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Updated $count hr ago',
+      one: 'Updated 1 hr ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String activityPreviewUpdatedDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Updated $count days ago',
+      one: 'Updated 1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String activityPreviewUpdatedDate(String date) {
+    return 'Updated $date';
+  }
+
+  @override
+  String get activityPreviewDateUnknown => 'Date unknown';
+
+  @override
+  String get activityPreviewUnknownTime => 'Unknown time';
+
+  @override
+  String get studentProfileNoSubmittedApps => 'No submitted applications yet.';
+
+  @override
+  String studentProfileSubmittedAvailable(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count submitted applications available for review',
+      one: '1 submitted application available for review',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get uiUser => 'User';
+
+  @override
+  String get activityPreviewBuildStoryEyebrow => 'Build Story';
+
+  @override
+  String get activityPreviewPositioningEyebrow => 'Positioning';
+
+  @override
+  String get activityPreviewCollaborationEyebrow => 'Collaboration';
+
+  @override
+  String get activityPreviewResourceDetailsEyebrow => 'Resource Details';
+
+  @override
+  String get activityPreviewSkillsNeededTitle => 'Skills Needed';
+
+  @override
+  String get activityPreviewTeamNeededTitle => 'Team Needed';
+
+  @override
+  String get activityPreviewItemMetadataSubtitle =>
+      'Important fields are grouped here in a more readable admin detail layout.';
+
+  @override
+  String get activityPreviewLocationLogisticsSubtitle =>
+      'These details help you evaluate how the opportunity is positioned for applicants.';
+
+  @override
+  String get activityPreviewRequirementsSubtitle =>
+      'These are the main qualifications or expectations shown to applicants.';
+
+  @override
+  String get activityPreviewBenefitsSubtitle =>
+      'This gives the admin view of what makes the role attractive.';
+
+  @override
+  String get activityPreviewProviderAccessSubtitle =>
+      'These details help you review where the scholarship fits and how students will reach it.';
+
+  @override
+  String get activityPreviewProviderDeliverySetupSubtitle =>
+      'This section helps you review how the training is packaged and presented to users.';
+
+  @override
+  String get activityPreviewProblemSolutionSubtitle =>
+      'This section shows what the idea is solving, how it works, and the value it aims to create.';
+
+  @override
+  String get activityPreviewAudienceMetadataSubtitle =>
+      'These fields help you judge where the idea fits and how ready it is for review.';
+
+  @override
+  String get activityPreviewTeamSkillSignalsSubtitle =>
+      'Use these tags to understand what support the idea needs next.';
+
+  @override
+  String activityPreviewWithdrawnFromOpportunity(String opportunity) {
+    return 'This application was withdrawn from $opportunity.';
+  }
+
+  @override
+  String get activityPreviewWithdrawnGeneric =>
+      'This application was withdrawn.';
+
+  @override
+  String activityPreviewAppliedToOpportunity(String opportunity) {
+    return 'Applied to $opportunity.';
+  }
+
+  @override
+  String get activityPreviewProjectIdeaFallback => 'Project Idea';
+
+  @override
+  String get activityPreviewScholarshipFallback => 'Scholarship';
+
+  @override
+  String activityPreviewSubmittedByPrefix(String name) {
+    return 'Submitted By $name';
+  }
+
+  @override
+  String get activityPreviewDetailsUnavailableTitle => 'Details unavailable';
+
+  @override
+  String activityPreviewDetailsUnavailableMessage(String recordType) {
+    return 'We couldn’t load the linked $recordType record right now.';
+  }
 }

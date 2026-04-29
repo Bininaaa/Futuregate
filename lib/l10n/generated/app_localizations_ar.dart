@@ -10507,4 +10507,1481 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get uiStrongLogoMakesProfilePolishedSubtitle =>
       'يُضفي شعارٌ قويّ أو صورةٌ مميّزة للشركة لمسةً أكثر احترافيّة وتمنح الملف طابعاً أسهل للتذكّر.';
+
+  @override
+  String get adminOpportunityPublisherHint => 'مثال: إدارة FutureGate';
+
+  @override
+  String get adminOpportunityDescriptionHint =>
+      'صِف الدور والنطاق والقيمة المضافة بوضوح';
+
+  @override
+  String get adminOpportunityDescriptionHelper =>
+      'أَضِف تفاصيل كافية ليفهم الطلاب النطاق والتوقعات والقيمة.';
+
+  @override
+  String get adminOpportunityRequirementHintRule =>
+      'اكتب شرط أهلية واحدًا ثم اضغط Enter';
+
+  @override
+  String get adminOpportunityRequirementHintItem =>
+      'اكتب متطلبًا واحدًا ثم اضغط Enter';
+
+  @override
+  String get adminOpportunityDeadlineHint => 'اختَر تاريخ الإغلاق';
+
+  @override
+  String get adminOpportunityFundingAmountHint => 'مثال: 250000';
+
+  @override
+  String get adminOpportunityFundingNoteHint =>
+      'تفاصيل دعم اختيارية تظهر للطلاب';
+
+  @override
+  String get adminOpportunitySalaryMinHint => 'مثال: 60000';
+
+  @override
+  String get adminOpportunitySalaryMaxHint => 'مثال: 90000';
+
+  @override
+  String get adminOpportunityDurationHint => 'مثال: 3 أشهر';
+
+  @override
+  String get adminOpportunityCompensationHint =>
+      'ملاحظة اختيارية تظهر في شاشات التفاصيل';
+
+  @override
+  String get adminOpportunityDatePickerHelp => 'حدِّد الموعد النهائي';
+
+  @override
+  String get adminOpportunitySnackTitleUpdated => 'تم تحديث الفرصة';
+
+  @override
+  String get adminOpportunitySnackTitlePublished => 'تم نشر الفرصة';
+
+  @override
+  String get adminOpportunityUpdatedMessage =>
+      'تم تحديث الفرصة الإدارية بنجاح.';
+
+  @override
+  String get adminOpportunityPublishedMessage =>
+      'تم نشر الفرصة الإدارية بنجاح.';
+
+  @override
+  String get adminOpportunityRequirementsSubtitleEligibility =>
+      'أَضِف كل شرط من شروط الأهلية بشكل منفصل ليرى الطلاب قائمة مرتّبة وواضحة.';
+
+  @override
+  String get adminOpportunityRequirementsSubtitleRequirement =>
+      'أَضِف كل متطلب بشكل منفصل ليرى الطلاب قائمة مرتّبة وواضحة.';
+
+  @override
+  String adminEditorFieldRequired(String label) {
+    return '$label مطلوب';
+  }
+
+  @override
+  String adminEditorFieldNeedsDetail(String label) {
+    return '$label يحتاج إلى مزيد من التفاصيل';
+  }
+
+  @override
+  String get adminIdeaPublicSubtitle =>
+      'عند تفعيل هذا الخيار تظهر الفكرة كفرصة مجتمعيّة عامّة بدل أن تكون ملاحظة داخلية مخفيّة.';
+
+  @override
+  String get adminIdeaTitleHint => 'مثال: برنامج شراكة الابتكار الجامعي';
+
+  @override
+  String get adminIdeaTitleValidatorLabel => 'العنوان';
+
+  @override
+  String get adminIdeaTaglineHint => 'عبارة جذابة قصيرة للقسم الرئيسي';
+
+  @override
+  String get adminIdeaShortDescriptionHint => 'ملخّص موجز في فقرة واحدة';
+
+  @override
+  String get adminIdeaFullDescriptionHint => 'صف الفكرة بوضوح وبتفصيل كافٍ';
+
+  @override
+  String get adminIdeaFullDescriptionHelper =>
+      'اشرح المشكلة والحل والجمهور المستهدف والأثر المتوقَّع.';
+
+  @override
+  String get adminIdeaDescriptionValidatorLabel => 'الوصف';
+
+  @override
+  String get adminIdeaDomainHint =>
+      'مثال: تقنيات التعليم، الذكاء الاصطناعي، الاستدامة';
+
+  @override
+  String get adminIdeaDomainValidatorLabel => 'المجال';
+
+  @override
+  String get adminIdeaCategoryHint => 'مثال: ابتكار، شركة ناشئة، بحث';
+
+  @override
+  String get adminIdeaStageHint => 'مثال: فكرة، نموذج أوّلي، تجربة ميدانية';
+
+  @override
+  String get adminIdeaToolsHint => 'مثال: Flutter وFirebase وFigma';
+
+  @override
+  String get adminIdeaToolsValidatorLabel => 'الأدوات';
+
+  @override
+  String get adminIdeaTagsHint => 'وسوم مفصولة بفواصل';
+
+  @override
+  String get adminIdeaSkillsHint => 'مهارات مفصولة بفواصل';
+
+  @override
+  String get adminIdeaTeamHint => 'أدوار مفصولة بفواصل';
+
+  @override
+  String get adminIdeaTargetAudienceHint => 'من يستفيد أكثر من هذه الفكرة؟';
+
+  @override
+  String get adminIdeaProblemHint => 'ما التحدّي الذي تعالجه هذه الفكرة؟';
+
+  @override
+  String get adminIdeaSolutionHint => 'كيف تحلّ الفكرة هذه المشكلة؟';
+
+  @override
+  String get adminIdeaResourcesHint =>
+      'ما الدعم أو الشركاء أو الموارد المطلوبة؟';
+
+  @override
+  String get adminIdeaBenefitsHint =>
+      'ما النتائج التي تجعل هذه الفكرة ذات قيمة؟';
+
+  @override
+  String get adminIdeaSnackTitleUpdated => 'تم تحديث الفكرة';
+
+  @override
+  String get adminIdeaSnackTitlePublished => 'تم نشر الفكرة';
+
+  @override
+  String get adminIdeaUpdatedMessage => 'تم تحديث الفكرة الإدارية بنجاح.';
+
+  @override
+  String get adminIdeaPublishedMessage => 'تم نشر الفكرة الإدارية بنجاح.';
+
+  @override
+  String get adminScholarshipScreenTitleEdit => 'تعديل المنحة';
+
+  @override
+  String get adminScholarshipScreenTitlePublish => 'نشر منحة';
+
+  @override
+  String get adminScholarshipSubmitEdit => 'حفظ تعديلات المنحة';
+
+  @override
+  String get adminScholarshipSubmitPublish => 'نشر المنحة';
+
+  @override
+  String get adminScholarshipScreenSubtitle =>
+      'أَدِر المنح في التطبيق نفسه الذي يكتشفها فيه الطلاب، مع بنية كافية للحصول على بطاقات أكثر ثراءً وتصفية أكثر فائدة.';
+
+  @override
+  String get adminScholarshipPublishingTitle => 'النشر';
+
+  @override
+  String get adminScholarshipPublishingSubtitle =>
+      'تحظى المنح المميَّزة بحضور أقوى في رحلة الاكتشاف الخاصّة بالطلاب.';
+
+  @override
+  String get adminScholarshipFeatureToggleTitle => 'إبراز هذه المنحة';
+
+  @override
+  String get adminScholarshipFeatureToggleSubtitle =>
+      'استخدم هذا الخيار للمنح ذات الأولوية العالية أو القويّة بشكل خاص.';
+
+  @override
+  String get adminScholarshipBasicInfoSubtitle =>
+      'ابدأ بالهويّة الأساسيّة للمنحة حتى تظهر الفرصة بوضوح في البطاقات والتفاصيل.';
+
+  @override
+  String get adminScholarshipTitleField => 'عنوان المنحة';
+
+  @override
+  String get adminScholarshipTitleHint => 'مثال: منحة Future Builders العالمية';
+
+  @override
+  String get adminScholarshipTitleValidatorLabel => 'العنوان';
+
+  @override
+  String get adminScholarshipProviderField => 'الجهة المانحة';
+
+  @override
+  String get adminScholarshipProviderHint =>
+      'ما الجهة التي تُقدِّم هذه المنحة؟';
+
+  @override
+  String get adminScholarshipProviderValidatorLabel => 'الجهة المانحة';
+
+  @override
+  String get adminScholarshipDescriptionTitle => 'الوصف';
+
+  @override
+  String get adminScholarshipDescriptionHint => 'اشرح المنحة وما الذي تُغطّيه';
+
+  @override
+  String get adminScholarshipDescriptionHelper =>
+      'اذكر ما تشمله المنحة وشروط الأهلية والوثائق المطلوبة وما يستفيده الطلاب.';
+
+  @override
+  String get adminScholarshipDescriptionValidatorLabel => 'الوصف';
+
+  @override
+  String get adminScholarshipEligibilityTitle => 'شروط الأهلية';
+
+  @override
+  String get adminScholarshipEligibilityHint =>
+      'اكتب متطلبًا واحدًا ثم اضغط Enter';
+
+  @override
+  String get adminScholarshipEligibilityEmpty =>
+      'حدِّد من يحقّ له التقديم والمستندات المطلوبة والشروط الأكاديمية.';
+
+  @override
+  String get adminScholarshipLogisticsTitle => 'التفاصيل اللوجستية';
+
+  @override
+  String get adminScholarshipLogisticsSubtitle =>
+      'اجمع المبلغ والموعد النهائي وتفاصيل الوجهة في قسم واحد ومرتّب.';
+
+  @override
+  String get adminScholarshipAmountField => 'المبلغ';
+
+  @override
+  String get adminScholarshipAmountHint => 'مثال: 250000';
+
+  @override
+  String get adminScholarshipDeadlineField => 'الموعد النهائي';
+
+  @override
+  String get adminScholarshipDeadlineHint => 'اختَر موعدًا نهائيًا';
+
+  @override
+  String get adminScholarshipCountryField => 'الدولة';
+
+  @override
+  String get adminScholarshipCountryHint => 'مثال: فرنسا';
+
+  @override
+  String get adminScholarshipCityField => 'المدينة';
+
+  @override
+  String get adminScholarshipCityHint => 'مثال: باريس';
+
+  @override
+  String get adminScholarshipLocationField => 'تسمية الموقع';
+
+  @override
+  String get adminScholarshipLocationHint => 'نصّ احتياطي للموقع';
+
+  @override
+  String get adminScholarshipAdditionalInfoTitle => 'معلومات إضافية';
+
+  @override
+  String get adminScholarshipAdditionalInfoSubtitle =>
+      'استخدم هذه الحقول الاختياريّة لتحسين الاكتشاف والتصفية ووضوح التقديم الخارجي.';
+
+  @override
+  String get adminScholarshipApplicationLink => 'رابط التقديم';
+
+  @override
+  String get adminScholarshipApplicationLinkHint => 'رابط مباشر اختياري';
+
+  @override
+  String get adminScholarshipFundingTypeField => 'نوع التمويل';
+
+  @override
+  String get adminScholarshipFundingTypeHint => 'مثال: تمويل كامل، تمويل جزئي';
+
+  @override
+  String get adminScholarshipCategoryField => 'الفئة';
+
+  @override
+  String get adminScholarshipCategoryHint => 'مثال: ماستر، بحث، تبادل';
+
+  @override
+  String get adminScholarshipLevelField => 'المستوى';
+
+  @override
+  String get adminScholarshipLevelHint => 'مثال: ماستر، دكتوراه';
+
+  @override
+  String get adminScholarshipImageUrl => 'رابط الصورة';
+
+  @override
+  String get adminScholarshipImageUrlHint => 'رابط اختياري لصورة الغلاف';
+
+  @override
+  String get adminScholarshipTagsField => 'الوسوم';
+
+  @override
+  String get adminScholarshipTagsHint => 'وسوم مفصولة بفواصل';
+
+  @override
+  String get adminScholarshipDatePickerHelp => 'حدِّد الموعد النهائي';
+
+  @override
+  String get adminScholarshipAmountInvalid => 'أدخل مبلغًا صالحًا';
+
+  @override
+  String get adminScholarshipEligibilityRequired =>
+      'أَضِف شرط أهلية واحدًا على الأقل';
+
+  @override
+  String get adminScholarshipDeadlineRequired => 'الموعد النهائي مطلوب';
+
+  @override
+  String get adminScholarshipDeadlineInvalid => 'استخدم تاريخًا صالحًا';
+
+  @override
+  String get adminPreviewName => 'الاسم';
+
+  @override
+  String get adminPreviewAccount => 'الحساب';
+
+  @override
+  String get adminPreviewUserMetadata => 'بيانات المستخدم';
+
+  @override
+  String get adminPreviewUserMetadataSubtitle =>
+      'سجلّ الحساب المرتبط بهذا النشاط الإداري الأخير.';
+
+  @override
+  String get adminPreviewItemMetadataSubtitle =>
+      'تمّ تجميع الحقول المهمّة هنا بتنسيق إداري أكثر قابلية للقراءة.';
+
+  @override
+  String get adminPreviewLocationLogisticsSubtitle =>
+      'تساعدك هذه التفاصيل على تقييم كيفية تموضع الفرصة أمام المتقدّمين.';
+
+  @override
+  String get adminPreviewRequirements => 'المتطلّبات';
+
+  @override
+  String get adminPreviewRequirementsSubtitle =>
+      'هذه هي المؤهّلات أو التوقّعات الرئيسية التي تُعرض على المتقدّمين.';
+
+  @override
+  String get adminPreviewBenefitsSubtitle =>
+      'يمنح هذا القسم الإدارة لمحةً عمّا يجعل هذا الدور جذّابًا.';
+
+  @override
+  String get adminPreviewProviderAccessSubtitle =>
+      'تساعدك هذه التفاصيل على مراجعة موقع المنحة وكيف يصل إليها الطلاب.';
+
+  @override
+  String get adminPreviewEligibility => 'الأهلية';
+
+  @override
+  String get adminPreviewProviderDeliverySubtitle =>
+      'يساعدك هذا القسم على مراجعة كيفية تقديم التكوين وعرضه على المستخدمين.';
+
+  @override
+  String get adminPreviewProblemSolutionImpactSubtitle =>
+      'يُبيِّن هذا القسم ما تعالجه الفكرة وكيف تعمل والقيمة التي تسعى إلى تقديمها.';
+
+  @override
+  String get adminPreviewAudienceMetadataSubtitle =>
+      'تساعدك هذه الحقول على تقدير موقع الفكرة ومدى جاهزيّتها للمراجعة.';
+
+  @override
+  String get adminPreviewTeamSkillSignalsSubtitle =>
+      'استخدم هذه الوسوم لفهم نوع الدعم الذي تحتاجه الفكرة في المرحلة المقبلة.';
+
+  @override
+  String get adminPreviewAudience => 'الجمهور';
+
+  @override
+  String adminPreviewSubmittedBy(String name) {
+    return 'مقدَّمة من $name';
+  }
+
+  @override
+  String get adminPreviewPublic => 'عام';
+
+  @override
+  String get adminPreviewPrivate => 'خاص';
+
+  @override
+  String adminPreviewWithdrawnFromOpportunity(String opportunity) {
+    return 'تم سحب هذا الطلب من $opportunity.';
+  }
+
+  @override
+  String get adminPreviewWithdrawnGeneric => 'تمّ سحب هذا الطلب.';
+
+  @override
+  String adminPreviewAppliedToOpportunity(String opportunity) {
+    return 'تقدّم إلى $opportunity.';
+  }
+
+  @override
+  String get adminPreviewApplicationDetailsFallback => 'تفاصيل الطلب';
+
+  @override
+  String get adminPreviewSectionAccountEyebrow => 'الحساب';
+
+  @override
+  String get adminPreviewSectionDetailsEyebrow => 'التفاصيل';
+
+  @override
+  String get adminPreviewSectionScholarshipDetailsEyebrow => 'تفاصيل المنحة';
+
+  @override
+  String get adminPreviewSectionResourceDetailsEyebrow => 'تفاصيل المورد';
+
+  @override
+  String get adminPreviewSectionRoleSetupEyebrow => 'إعداد الدور';
+
+  @override
+  String get adminPreviewSectionBuildStoryEyebrow => 'قصّة الإنجاز';
+
+  @override
+  String get adminPreviewSectionPositioningEyebrow => 'التموضع';
+
+  @override
+  String get adminPreviewSectionCollaborationEyebrow => 'التعاون';
+
+  @override
+  String get adminModerateProjectIdeaApprovedMessage =>
+      'تم اعتماد فكرة المشروع.';
+
+  @override
+  String get adminModerateProjectIdeaRejectedMessage => 'تم رفض فكرة المشروع.';
+
+  @override
+  String get adminModerateOpportunityDeletedMessage => 'تم حذف الفرصة.';
+
+  @override
+  String get adminModerateScholarshipDeletedMessage => 'تم حذف المنحة.';
+
+  @override
+  String get adminModerateScholarshipDeletedTitle => 'تم حذف المنحة';
+
+  @override
+  String get adminModerateDeleteOpportunityTitle => 'حذف الفرصة';
+
+  @override
+  String get adminModerateDeleteScholarshipTitle => 'حذف المنحة';
+
+  @override
+  String adminModerateDeleteOpportunityMessage(String title) {
+    return 'هل أنت متأكد من حذف \"$title\"؟';
+  }
+
+  @override
+  String adminModerateDeleteScholarshipMessage(String title) {
+    return 'هل أنت متأكد من حذف \"$title\"؟';
+  }
+
+  @override
+  String adminModerateDueLabel(String value) {
+    return 'موعد الاستحقاق: $value';
+  }
+
+  @override
+  String get adminActivityFilterAll => 'الكل';
+
+  @override
+  String get adminActivityFilterReviews => 'المراجعات';
+
+  @override
+  String get adminActivityFilterContent => 'المحتوى';
+
+  @override
+  String get adminActivityFilterLibrary => 'المكتبة';
+
+  @override
+  String get adminActivityFilterAccounts => 'الحسابات';
+
+  @override
+  String get adminActivityFilterPending => 'قيد الانتظار';
+
+  @override
+  String adminPillImportedBooksCount(int count) {
+    return '$count كتب مستوردة';
+  }
+
+  @override
+  String adminPillImportedVideosCount(int count) {
+    return '$count مقاطع فيديو مستوردة';
+  }
+
+  @override
+  String adminPillResultsCount(int count) {
+    return '$count نتائج';
+  }
+
+  @override
+  String adminPillResourcesCount(int count) {
+    return '$count موارد';
+  }
+
+  @override
+  String adminPillFeaturedCount(int count) {
+    return '$count مميَّزة';
+  }
+
+  @override
+  String adminPillBooksCount(int count) {
+    return '$count كتب';
+  }
+
+  @override
+  String adminPillVideosCount(int count) {
+    return '$count مقاطع فيديو';
+  }
+
+  @override
+  String adminPillOpportunitiesCount(int count) {
+    return '$count فرص';
+  }
+
+  @override
+  String adminPillApplicationsBadge(int count, String appsLabel) {
+    return '$count $appsLabel';
+  }
+
+  @override
+  String adminPillPendingDecisionMessage(String summary) {
+    return '$summary يحتاج إلى قرار في قسم المحتوى.';
+  }
+
+  @override
+  String adminPendingItemsConjunction(String first, String second) {
+    return '$first و$second';
+  }
+
+  @override
+  String get adminPendingReviewBannerTitle => 'بانتظار المراجعة';
+
+  @override
+  String get adminContentPendingIdeaWarning =>
+      'فكرة معلَّقة. وافِق عليها أو ارفضها قبل أن تظهر كمحتوى تمّت مراجعته.';
+
+  @override
+  String adminContentIdeaApprovedSnack(String title) {
+    return 'تم اعتماد $title.';
+  }
+
+  @override
+  String adminContentIdeaRejectedSnack(String title) {
+    return 'تم رفض $title.';
+  }
+
+  @override
+  String get adminContentProfileUnavailable => 'الملف غير متاح';
+
+  @override
+  String adminContentWorkspaceTitleWithType(
+    String baseTitle,
+    String typeLabel,
+  ) {
+    return '$baseTitle - $typeLabel';
+  }
+
+  @override
+  String get adminStudentApplicationHistory => 'سجلّ الطلبات';
+
+  @override
+  String get adminStudentApplicationsSummaryError =>
+      'تعذّر تحميل ملخّص الطلبات حاليًا، لكن يمكنك فتح السجلّ الكامل والمحاولة من جديد.';
+
+  @override
+  String get adminPreviewUserFallback => 'مستخدم';
+
+  @override
+  String get adminPreviewApplicationFallback => 'طلب';
+
+  @override
+  String get adminPreviewOpportunityFallback => 'فرصة';
+
+  @override
+  String get adminPreviewScholarshipFallback => 'منحة';
+
+  @override
+  String get adminPreviewTrainingFallback => 'تكوين';
+
+  @override
+  String get adminPreviewProjectIdeaFallback => 'فكرة مشروع';
+
+  @override
+  String get adminYoutubeGenericError =>
+      'حدث خطأ ما. يُرجى التحقّق من اتصالك والمحاولة مرة أخرى.';
+
+  @override
+  String adminPendingIdeasSummaryPlural(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compactLong(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString فكرة معلَّقة',
+      many: '$countString فكرة معلَّقة',
+      few: '$countString أفكار معلَّقة',
+      two: 'فكرتان معلَّقتان',
+      one: 'فكرة واحدة معلَّقة',
+      zero: 'لا أفكار معلَّقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminPendingApplicationsSummaryPlural(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compactLong(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString طلب معلَّق',
+      many: '$countString طلبًا معلَّقًا',
+      few: '$countString طلبات معلَّقة',
+      two: 'طلبان معلَّقان',
+      one: 'طلب واحد معلَّق',
+      zero: 'لا طلبات معلَّقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get uiFundingAmount => 'مبلغ التمويل';
+
+  @override
+  String get uiFundingCurrency => 'عملة التمويل';
+
+  @override
+  String get uiFundingNote => 'ملاحظة التمويل';
+
+  @override
+  String get uiSalaryMinimum => 'الحد الأدنى للراتب';
+
+  @override
+  String get uiSalaryMaximum => 'الحد الأقصى للراتب';
+
+  @override
+  String get uiSalaryPeriod => 'فترة الراتب';
+
+  @override
+  String get uiCompensationNote => 'ملاحظة بشأن التعويض';
+
+  @override
+  String get uiCountry => 'الدولة';
+
+  @override
+  String get uiName => 'الاسم';
+
+  @override
+  String get uiAccount => 'الحساب';
+
+  @override
+  String get uiPublic => 'عام';
+
+  @override
+  String get uiPrivate => 'خاص';
+
+  @override
+  String get uiAudience => 'الجمهور';
+
+  @override
+  String get uiRequirements => 'المتطلبات';
+
+  @override
+  String get uiEligibility => 'الأهلية';
+
+  @override
+  String get uiPublishingLabel => 'النشر';
+
+  @override
+  String get uiUserLabel => 'مستخدم';
+
+  @override
+  String get adminScholarshipEditTitle => 'تعديل المنحة';
+
+  @override
+  String get adminScholarshipPublishTitle => 'نشر منحة';
+
+  @override
+  String get adminScholarshipSaveLabel => 'حفظ تغييرات المنحة';
+
+  @override
+  String get adminScholarshipPublishLabel => 'نشر المنحة';
+
+  @override
+  String get adminScholarshipScaffoldSubtitle =>
+      'نسِّق المنح في التطبيق نفسه الذي يكتشفها فيه الطلاب، بهيكلة كافية لبطاقات أغنى وتصفية أكثر فائدة.';
+
+  @override
+  String get adminScholarshipFeatureTitle => 'إبراز هذه المنحة';
+
+  @override
+  String get adminScholarshipFeatureSubtitle =>
+      'استخدم هذا الخيار للمنح ذات الأولوية العالية أو القوية بوجه خاص.';
+
+  @override
+  String get adminScholarshipTitleLabel => 'عنوان المنحة';
+
+  @override
+  String get adminScholarshipEligibilityValidator =>
+      'أضِف شرط أهلية واحدًا على الأقل';
+
+  @override
+  String get adminScholarshipAmountValidator => 'أدخِل مبلغًا صالحًا';
+
+  @override
+  String get adminScholarshipDeadlinePickerHelp => 'اختيار التاريخ النهائي';
+
+  @override
+  String get adminScholarshipLocationLabelField => 'تسمية الموقع';
+
+  @override
+  String get adminScholarshipApplicationLinkLabel => 'رابط التقديم';
+
+  @override
+  String get adminScholarshipFundingTypeLabel => 'نوع التمويل';
+
+  @override
+  String get adminScholarshipImageUrlLabel => 'رابط الصورة';
+
+  @override
+  String get moderateIdeaApprovedSnackTitle => 'تمت الموافقة على الفكرة';
+
+  @override
+  String get moderateIdeaApprovedSnackMessage =>
+      'تمت الموافقة على فكرة المشروع.';
+
+  @override
+  String get moderateIdeaRejectedSnackTitle => 'تم رفض الفكرة';
+
+  @override
+  String get moderateIdeaRejectedSnackMessage => 'تم رفض فكرة المشروع.';
+
+  @override
+  String get moderateOpportunityDeletedSnackTitle => 'تم حذف الفرصة';
+
+  @override
+  String get moderateOpportunityDeletedSnackMessage => 'تم حذف الفرصة.';
+
+  @override
+  String get moderateScholarshipDeletedSnackTitle => 'تم حذف المنحة';
+
+  @override
+  String get moderateScholarshipDeletedSnackMessage => 'تم حذف المنحة.';
+
+  @override
+  String get moderateWorkingLabel => 'جارٍ التنفيذ...';
+
+  @override
+  String get moderateApproveLabel => 'موافقة';
+
+  @override
+  String get moderateRejectLabel => 'رفض';
+
+  @override
+  String get moderateNoIdeasReviewYet => 'لا توجد أفكار مشاريع للمراجعة بعد';
+
+  @override
+  String get moderateNoOpportunitiesYet => 'لم يتم نشر أي فرص بعد';
+
+  @override
+  String get moderateNoScholarshipsYet => 'لم يتم نشر أي منح بعد';
+
+  @override
+  String get moderateNoPendingIdeas => 'لا توجد أفكار معلّقة للمراجعة';
+
+  @override
+  String moderatePendingIdeasCount(int count) {
+    return 'الأفكار المعلّقة ($count)';
+  }
+
+  @override
+  String moderateAllIdeasCount(int count) {
+    return 'جميع الأفكار ($count)';
+  }
+
+  @override
+  String get moderateShowAllLabel => 'إظهار الكل';
+
+  @override
+  String get moderatePendingOnlyLabel => 'المعلّقة فقط';
+
+  @override
+  String moderateSubmittedByLabel(String name) {
+    return 'أرسلها: $name';
+  }
+
+  @override
+  String get moderateUntitledOpportunity => 'فرصة بلا عنوان';
+
+  @override
+  String get moderateUnknownCompany => 'شركة غير معروفة';
+
+  @override
+  String get moderateUntitledScholarship => 'منحة بلا عنوان';
+
+  @override
+  String get moderateUnknownProvider => 'جهة غير معروفة';
+
+  @override
+  String moderateAmountWithCurrency(String amount) {
+    return '$amount د.ج';
+  }
+
+  @override
+  String moderateDueLabel(String date) {
+    return 'الموعد: $date';
+  }
+
+  @override
+  String get moderateDeleteOpportunityTitle => 'حذف الفرصة';
+
+  @override
+  String moderateDeleteOpportunityConfirm(String title) {
+    return 'هل أنت متأكد من حذف \"$title\"؟';
+  }
+
+  @override
+  String get moderateDeleteScholarshipTitle => 'حذف المنحة';
+
+  @override
+  String moderateDeleteScholarshipConfirm(String title) {
+    return 'هل أنت متأكد من حذف \"$title\"؟';
+  }
+
+  @override
+  String get moderateDeleteAction => 'حذف';
+
+  @override
+  String get activitySectionAll => 'الكل';
+
+  @override
+  String get activitySectionReviews => 'المراجعات';
+
+  @override
+  String get activitySectionContent => 'المحتوى';
+
+  @override
+  String get activitySectionLibrary => 'المكتبة';
+
+  @override
+  String get activitySectionAccounts => 'الحسابات';
+
+  @override
+  String get activitySectionPending => 'معلّق';
+
+  @override
+  String get dashboardPendingCompanies => 'الشركات';
+
+  @override
+  String get dashboardPendingIdeas => 'الأفكار';
+
+  @override
+  String get dashboardPendingApplications => 'الطلبات';
+
+  @override
+  String get contentIdeaApprovedSnackTitle => 'تمت الموافقة على الفكرة';
+
+  @override
+  String contentIdeaApprovedMessage(String title) {
+    return 'تمت الموافقة على $title.';
+  }
+
+  @override
+  String get contentIdeaRejectedSnackTitle => 'تم رفض الفكرة';
+
+  @override
+  String contentIdeaRejectedMessage(String title) {
+    return 'تم رفض $title.';
+  }
+
+  @override
+  String get contentPendingIdeaInline =>
+      'فكرة معلّقة. وافِق عليها أو ارفضها قبل أن تظهر كمحتوى مُراجع.';
+
+  @override
+  String get contentPendingReviewTitle => 'بانتظار المراجعة';
+
+  @override
+  String contentPendingPartsCombined(String parts) {
+    return '$parts بحاجة إلى قرار في قسم المحتوى.';
+  }
+
+  @override
+  String contentPendingIdeasPart(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فكرة معلّقة',
+      many: '$count فكرة معلّقة',
+      few: '$count أفكار معلّقة',
+      two: 'فكرتان معلّقتان',
+      one: 'فكرة معلّقة واحدة',
+      zero: 'لا توجد أفكار معلّقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPendingApplicationsPart(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count طلب معلّق',
+      many: '$count طلبًا معلّقًا',
+      few: '$count طلبات معلّقة',
+      two: 'طلبان معلّقان',
+      one: 'طلب معلّق واحد',
+      zero: 'لا توجد طلبات معلّقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get contentPendingPartsJoiner => ' و';
+
+  @override
+  String get contentProfileUnavailableTitle => 'الملف غير متاح';
+
+  @override
+  String contentPillIdeasCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فكرة',
+      many: '$count فكرة',
+      few: '$count أفكار',
+      two: 'فكرتان',
+      one: 'فكرة واحدة',
+      zero: 'لا توجد أفكار',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillPendingIdeas(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فكرة معلّقة',
+      many: '$count فكرة معلّقة',
+      few: '$count أفكار معلّقة',
+      two: 'فكرتان معلّقتان',
+      one: 'فكرة معلّقة واحدة',
+      zero: 'لا توجد أفكار معلّقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillPendingApps(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count طلب معلّق',
+      many: '$count طلبًا معلّقًا',
+      few: '$count طلبات معلّقة',
+      two: 'طلبان معلّقان',
+      one: 'طلب معلّق واحد',
+      zero: 'لا توجد طلبات معلّقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillOpportunitiesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فرصة',
+      many: '$count فرصة',
+      few: '$count فرص',
+      two: 'فرصتان',
+      one: 'فرصة واحدة',
+      zero: 'لا توجد فرص',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillScholarshipsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count منحة',
+      many: '$count منحة',
+      few: '$count منح',
+      two: 'منحتان',
+      one: 'منحة واحدة',
+      zero: 'لا توجد منح',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillResourcesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مورد',
+      many: '$count موردًا',
+      few: '$count موارد',
+      two: 'موردان',
+      one: 'مورد واحد',
+      zero: 'لا توجد موارد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillCountWithLabel(int count, String label) {
+    return '$count $label';
+  }
+
+  @override
+  String libraryPillResourcesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مورد',
+      many: '$count موردًا',
+      few: '$count موارد',
+      two: 'موردان',
+      one: 'مورد واحد',
+      zero: 'لا توجد موارد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillFeaturedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصر مميَّز',
+      many: '$count عنصرًا مميَّزًا',
+      few: '$count عناصر مميَّزة',
+      two: 'عنصران مميَّزان',
+      one: 'عنصر مُميَّز واحد',
+      zero: 'لا شيء مُميَّز',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillBooksCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count كتاب',
+      many: '$count كتابًا',
+      few: '$count كتب',
+      two: 'كتابان',
+      one: 'كتاب واحد',
+      zero: 'لا توجد كتب',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillVideosCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مقطع',
+      many: '$count مقطعًا',
+      few: '$count مقاطع',
+      two: 'مقطعان',
+      one: 'مقطع واحد',
+      zero: 'لا توجد مقاطع',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillImportedBooks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count كتاب مستورد',
+      many: '$count كتابًا مستوردًا',
+      few: '$count كتب مستوردة',
+      two: 'كتابان مستوردان',
+      one: 'كتاب مستورد واحد',
+      zero: 'لا توجد كتب مستوردة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillImportedVideos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مقطع مستورد',
+      many: '$count مقطعًا مستوردًا',
+      few: '$count مقاطع مستوردة',
+      two: 'مقطعان مستوردان',
+      one: 'مقطع مستورد واحد',
+      zero: 'لا توجد مقاطع مستوردة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String libraryPillResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نتيجة',
+      many: '$count نتيجة',
+      few: '$count نتائج',
+      two: 'نتيجتان',
+      one: 'نتيجة واحدة',
+      zero: 'لا توجد نتائج',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studentProfileApplicationHistory => 'سجل الطلبات';
+
+  @override
+  String get studentProfileLoadingHistory => 'جارٍ تحميل سجل الطلبات...';
+
+  @override
+  String get studentProfileHistoryUnavailable => 'سجل الطلبات غير متاح حاليًا.';
+
+  @override
+  String get studentProfileNoApplicationsYet =>
+      'لم يُقدِّم هذا الطالب أي طلبات بعد.';
+
+  @override
+  String studentProfileApplicationsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count طلب مُقدَّم',
+      many: '$count طلبًا مُقدَّمًا',
+      few: '$count طلبات مُقدَّمة',
+      two: 'طلبان مُقدَّمان',
+      one: 'طلب مُقدَّم واحد',
+      zero: 'لا توجد طلبات مُقدَّمة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studentProfileSummaryError =>
+      'تعذّر تحميل ملخّص الطلبات حاليًا، لكن يمكنك فتح السجل الكامل والمحاولة مرة أخرى.';
+
+  @override
+  String studentProfileViewAllAppsCount(int count) {
+    return 'عرض جميع الطلبات ($count)';
+  }
+
+  @override
+  String get studentProfileNoApplicationsYetTitle => 'لا توجد طلبات بعد';
+
+  @override
+  String get studentProfileNoApplicationsMessage =>
+      'لم يُقدِّم هذا الطالب أي طلبات حتى الآن.';
+
+  @override
+  String get studentProfileFullHistoryUnavailable =>
+      'تعذّر تحميل السجل الكامل لطلبات هذا الطالب حاليًا.';
+
+  @override
+  String get studentProfileOpportunityUnavailable => 'الفرصة غير متاحة';
+
+  @override
+  String get studentProfileOpportunityHidden => 'الفرصة مخفية';
+
+  @override
+  String get studentProfileOpportunityClosed => 'الفرصة مغلقة';
+
+  @override
+  String get activityPreviewRoleLabel => 'الدور';
+
+  @override
+  String get activityPreviewAccountLabel => 'الحساب';
+
+  @override
+  String get activityPreviewCompanyReviewLabel => 'مراجعة الشركة';
+
+  @override
+  String get activityPreviewActivityLabel => 'النشاط';
+
+  @override
+  String get activityPreviewUserMetadataTitle => 'بيانات المستخدم الوصفية';
+
+  @override
+  String get activityPreviewUserMetadataSubtitle =>
+      'سجل الحساب المرتبط بهذا النشاط الإداري الأخير.';
+
+  @override
+  String get activityPreviewItemMetadataTitle => 'بيانات العنصر الوصفية';
+
+  @override
+  String get activityPreviewApplicationsLabel => 'الطلبات';
+
+  @override
+  String get activityPreviewDeadlineLabel => 'الموعد النهائي';
+
+  @override
+  String get activityPreviewCompensationLabel => 'التعويض';
+
+  @override
+  String get activityPreviewWorkSetupLabel => 'نمط العمل';
+
+  @override
+  String get activityPreviewRoleOverviewTitle => 'نظرة عامة على الدور';
+
+  @override
+  String get activityPreviewLocationLogisticsTitle => 'الموقع واللوجستيات';
+
+  @override
+  String get activityPreviewRequirementsTitle => 'المتطلبات';
+
+  @override
+  String get activityPreviewBenefitsTitle => 'المزايا';
+
+  @override
+  String get activityPreviewAmountLabel => 'المبلغ';
+
+  @override
+  String get activityPreviewProviderLabel => 'الجهة المقدِّمة';
+
+  @override
+  String get activityPreviewAccessLabel => 'الوصول';
+
+  @override
+  String get activityPreviewScholarshipOverviewTitle => 'نظرة عامة على المنحة';
+
+  @override
+  String get activityPreviewEligibilityTitle => 'الأهلية';
+
+  @override
+  String get activityPreviewProviderAccessTitle => 'الجهة المقدِّمة والوصول';
+
+  @override
+  String get activityPreviewDurationLabel => 'المدة';
+
+  @override
+  String get activityPreviewLearnersLabel => 'المتعلمون';
+
+  @override
+  String get activityPreviewRatingLabel => 'التقييم';
+
+  @override
+  String get activityPreviewStatusLabel => 'الحالة';
+
+  @override
+  String get activityPreviewTrainingOverviewTitle => 'نظرة عامة على التدريب';
+
+  @override
+  String get activityPreviewProviderDeliverySetupTitle =>
+      'الجهة المقدِّمة وإعداد التقديم';
+
+  @override
+  String get activityPreviewInterestedLabel => 'المهتمون';
+
+  @override
+  String get activityPreviewProblemSolutionImpactTitle =>
+      'المشكلة والحل والأثر';
+
+  @override
+  String get activityPreviewProblemStatementTitle => 'صياغة المشكلة';
+
+  @override
+  String get activityPreviewProposedSolutionTitle => 'الحل المقترح';
+
+  @override
+  String get activityPreviewExpectedBenefitsTitle => 'المزايا المتوقعة';
+
+  @override
+  String get activityPreviewAudienceMetadataTitle =>
+      'الجمهور والبيانات الوصفية';
+
+  @override
+  String get activityPreviewTeamSkillSignalsTitle =>
+      'المؤشرات الخاصة بالفريق والمهارات';
+
+  @override
+  String get activityPreviewUpdatedRecently => 'تم التحديث مؤخرًا';
+
+  @override
+  String activityPreviewUpdatedMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم التحديث قبل $count دقيقة',
+      many: 'تم التحديث قبل $count دقيقة',
+      few: 'تم التحديث قبل $count دقائق',
+      two: 'تم التحديث قبل دقيقتين',
+      one: 'تم التحديث قبل دقيقة',
+      zero: 'تم التحديث الآن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String activityPreviewUpdatedHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم التحديث قبل $count ساعة',
+      many: 'تم التحديث قبل $count ساعة',
+      few: 'تم التحديث قبل $count ساعات',
+      two: 'تم التحديث قبل ساعتين',
+      one: 'تم التحديث قبل ساعة',
+      zero: 'تم التحديث الآن',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String activityPreviewUpdatedDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'تم التحديث منذ $count يوم',
+      many: 'تم التحديث منذ $count يومًا',
+      few: 'تم التحديث منذ $count أيام',
+      two: 'تم التحديث منذ يومين',
+      one: 'تم التحديث منذ يوم',
+      zero: 'تم التحديث اليوم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String activityPreviewUpdatedDate(String date) {
+    return 'تم التحديث في $date';
+  }
+
+  @override
+  String get activityPreviewDateUnknown => 'التاريخ غير معروف';
+
+  @override
+  String get activityPreviewUnknownTime => 'الوقت غير معروف';
+
+  @override
+  String get studentProfileNoSubmittedApps => 'لا توجد طلبات مُقدَّمة بعد.';
+
+  @override
+  String studentProfileSubmittedAvailable(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count طلب مُقدَّم متاح للمراجعة',
+      many: '$count طلبًا مُقدَّمًا متاحًا للمراجعة',
+      few: '$count طلبات مُقدَّمة متاحة للمراجعة',
+      two: 'طلبان مُقدَّمان متاحان للمراجعة',
+      one: 'طلب واحد مُقدَّم متاح للمراجعة',
+      zero: 'لا توجد طلبات مُقدَّمة للمراجعة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get uiUser => 'مستخدم';
+
+  @override
+  String get activityPreviewBuildStoryEyebrow => 'قصة البناء';
+
+  @override
+  String get activityPreviewPositioningEyebrow => 'التموضع';
+
+  @override
+  String get activityPreviewCollaborationEyebrow => 'التعاون';
+
+  @override
+  String get activityPreviewResourceDetailsEyebrow => 'تفاصيل المورد';
+
+  @override
+  String get activityPreviewSkillsNeededTitle => 'المهارات المطلوبة';
+
+  @override
+  String get activityPreviewTeamNeededTitle => 'الفريق المطلوب';
+
+  @override
+  String get activityPreviewItemMetadataSubtitle =>
+      'تم تجميع الحقول المهمة هنا في تخطيط إداري أكثر قابلية للقراءة.';
+
+  @override
+  String get activityPreviewLocationLogisticsSubtitle =>
+      'تساعدك هذه التفاصيل على تقييم كيفية تقديم الفرصة للمتقدمين.';
+
+  @override
+  String get activityPreviewRequirementsSubtitle =>
+      'هذه هي المؤهلات أو التوقعات الرئيسية المعروضة على المتقدمين.';
+
+  @override
+  String get activityPreviewBenefitsSubtitle =>
+      'هذا يمنح المسؤول رؤية لما يجعل الدور جذابًا.';
+
+  @override
+  String get activityPreviewProviderAccessSubtitle =>
+      'تساعدك هذه التفاصيل على مراجعة موقع المنحة وكيفية وصول الطلاب إليها.';
+
+  @override
+  String get activityPreviewProviderDeliverySetupSubtitle =>
+      'يساعدك هذا القسم على مراجعة كيفية تجهيز التدريب وتقديمه للمستخدمين.';
+
+  @override
+  String get activityPreviewProblemSolutionSubtitle =>
+      'يوضح هذا القسم ما تحله الفكرة وكيف تعمل والقيمة التي تهدف إلى تحقيقها.';
+
+  @override
+  String get activityPreviewAudienceMetadataSubtitle =>
+      'تساعدك هذه الحقول على تقييم مكان الفكرة ومدى جاهزيتها للمراجعة.';
+
+  @override
+  String get activityPreviewTeamSkillSignalsSubtitle =>
+      'استخدم هذه الوسوم لفهم الدعم الذي تحتاجه الفكرة لاحقًا.';
+
+  @override
+  String activityPreviewWithdrawnFromOpportunity(String opportunity) {
+    return 'تم سحب هذا الطلب من $opportunity.';
+  }
+
+  @override
+  String get activityPreviewWithdrawnGeneric => 'تم سحب هذا الطلب.';
+
+  @override
+  String activityPreviewAppliedToOpportunity(String opportunity) {
+    return 'تم التقديم على $opportunity.';
+  }
+
+  @override
+  String get activityPreviewProjectIdeaFallback => 'فكرة مشروع';
+
+  @override
+  String get activityPreviewScholarshipFallback => 'منحة';
+
+  @override
+  String activityPreviewSubmittedByPrefix(String name) {
+    return 'مقدّم من $name';
+  }
+
+  @override
+  String get activityPreviewDetailsUnavailableTitle => 'التفاصيل غير متاحة';
+
+  @override
+  String activityPreviewDetailsUnavailableMessage(String recordType) {
+    return 'تعذّر علينا تحميل سجل $recordType المرتبط في الوقت الحالي.';
+  }
 }

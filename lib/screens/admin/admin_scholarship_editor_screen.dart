@@ -128,15 +128,17 @@ class _AdminScholarshipEditorScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminEditorScaffold(
-      title: _isEditing ? 'Edit Scholarship' : 'Publish Scholarship',
+      title: _isEditing
+          ? l10n.adminScholarshipEditTitle
+          : l10n.adminScholarshipPublishTitle,
       submitLabel: _isEditing
-          ? 'Save Scholarship Changes'
-          : 'Publish Scholarship',
+          ? l10n.adminScholarshipSaveLabel
+          : l10n.adminScholarshipPublishLabel,
       icon: Icons.card_giftcard_rounded,
       accentColor: Colors.pink,
-      subtitle:
-          'Curate scholarships in the same app where students discover them, with enough structure for richer cards and more useful filtering.',
+      subtitle: l10n.adminScholarshipScaffoldSubtitle,
       isSubmitting: _isSubmitting,
       onSubmit: _submit,
       child: Form(
@@ -145,36 +147,39 @@ class _AdminScholarshipEditorScreenState
         child: Column(
           children: [
             AdminEditorSection(
-              title: 'Publishing',
-              subtitle:
-                  'Featured scholarships get stronger presence in the student discovery flow.',
+              title: l10n.uiPublishingLabel,
+              subtitle: l10n.adminScholarshipPublishingSubtitle,
               child: AdminEditorToggleCard(
                 value: _featured,
                 onChanged: (value) => setState(() => _featured = value),
-                title: 'Feature this scholarship',
-                subtitle:
-                    'Use this for high-priority or especially strong scholarship opportunities.',
+                title: l10n.adminScholarshipFeatureTitle,
+                subtitle: l10n.adminScholarshipFeatureSubtitle,
               ),
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Basic Information',
-              subtitle:
-                  'Start with the core scholarship identity so the opportunity reads clearly across cards and details.',
+              title: l10n.uiBasicInformation,
+              subtitle: l10n.adminScholarshipBasicInfoSubtitle,
               child: Column(
                 children: [
                   AdminEditorField(
                     controller: _titleController,
-                    label: 'Scholarship title',
-                    hint: 'e.g. Future Builders Global Scholarship',
-                    validator: adminRequiredMin('Title', min: 4),
+                    label: l10n.adminScholarshipTitleLabel,
+                    hint: l10n.adminScholarshipTitleHint,
+                    validator: adminRequiredMin(
+                      l10n.adminScholarshipTitleValidatorLabel,
+                      min: 4,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _providerController,
-                    label: 'Provider',
-                    hint: 'Who offers this scholarship?',
-                    validator: adminRequiredMin('Provider', min: 2),
+                    label: l10n.uiProvider,
+                    hint: l10n.adminScholarshipProviderHint,
+                    validator: adminRequiredMin(
+                      l10n.adminScholarshipProviderValidatorLabel,
+                      min: 2,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   AdminEditorDropdown<String>(
@@ -213,60 +218,60 @@ class _AdminScholarshipEditorScreenState
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Description',
+              title: l10n.descriptionSectionTitle,
               child: Column(
                 children: [
                   AdminEditorField(
                     controller: _descriptionController,
                     label: '',
-                    hint: 'Explain the scholarship and what it supports',
+                    hint: l10n.adminScholarshipDescriptionHint,
                     maxLines: 5,
                     minLength: 60,
-                    helperText:
-                        'Include coverage, eligibility, documents, and what students gain.',
-                    validator: adminRequiredMin('Description', min: 60),
+                    helperText: l10n.adminScholarshipDescriptionHelper,
+                    validator: adminRequiredMin(
+                      l10n.adminScholarshipDescriptionValidatorLabel,
+                      min: 60,
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Eligibility Requirements',
+              title: l10n.adminScholarshipEligibilityTitle,
               child: Column(
                 children: [
                   AdminEditorListField(
                     label: '',
-                    hint: 'Type one requirement, then press Enter',
+                    hint: l10n.adminScholarshipEligibilityHint,
                     values: _eligibilityItems,
                     onChanged: (items) =>
                         setState(() => _eligibilityItems = items),
                     listController: _eligibilityListController,
                     validator: _validateEligibilityItems,
-                    emptyText:
-                        'Add who can apply, required documents, or academic conditions.',
+                    emptyText: l10n.adminScholarshipEligibilityEmpty,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Logistics',
-              subtitle:
-                  'Keep the amount, deadline, and destination details in one predictable section.',
+              title: l10n.logisticsTitle,
+              subtitle: l10n.adminScholarshipLogisticsSubtitle,
               child: Column(
                 children: [
                   AdminEditorField(
                     controller: _amountController,
-                    label: 'Amount',
-                    hint: 'e.g. 250000',
+                    label: l10n.uiAmount,
+                    hint: l10n.adminScholarshipAmountHint,
                     keyboardType: TextInputType.number,
                     validator: _validateAmount,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _deadlineController,
-                    label: 'Deadline',
-                    hint: 'Select a deadline',
+                    label: l10n.uiDeadline,
+                    hint: l10n.adminScholarshipDeadlineHint,
                     readOnly: true,
                     suffixIcon: const Icon(Icons.calendar_today_rounded),
                     onTap: _pickDeadline,
@@ -278,16 +283,16 @@ class _AdminScholarshipEditorScreenState
                       Expanded(
                         child: AdminEditorField(
                           controller: _countryController,
-                          label: 'Country',
-                          hint: 'e.g. France',
+                          label: l10n.uiCountry,
+                          hint: l10n.adminScholarshipCountryHint,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: AdminEditorField(
                           controller: _cityController,
-                          label: 'City',
-                          hint: 'e.g. Paris',
+                          label: l10n.uiCity,
+                          hint: l10n.adminScholarshipCityHint,
                         ),
                       ),
                     ],
@@ -295,53 +300,52 @@ class _AdminScholarshipEditorScreenState
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _locationController,
-                    label: 'Location label',
-                    hint: 'Fallback location text',
+                    label: l10n.adminScholarshipLocationLabelField,
+                    hint: l10n.adminScholarshipLocationHint,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             AdminEditorSection(
-              title: 'Additional Information',
-              subtitle:
-                  'Use these optional fields to improve discovery, filtering, and outbound application clarity.',
+              title: l10n.uiAdditionalInformation,
+              subtitle: l10n.adminScholarshipAdditionalInfoSubtitle,
               child: Column(
                 children: [
                   AdminEditorField(
                     controller: _linkController,
-                    label: 'Application link',
-                    hint: 'Optional direct link',
+                    label: l10n.adminScholarshipApplicationLinkLabel,
+                    hint: l10n.adminScholarshipApplicationLinkHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _fundingTypeController,
-                    label: 'Funding type',
-                    hint: 'e.g. Fully funded, Partial funding',
+                    label: l10n.adminScholarshipFundingTypeLabel,
+                    hint: l10n.adminScholarshipFundingTypeHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _categoryController,
-                    label: 'Category',
-                    hint: 'e.g. Masters, Research, Exchange',
+                    label: l10n.uiCategory,
+                    hint: l10n.adminScholarshipCategoryHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _levelController,
-                    label: 'Level',
-                    hint: 'e.g. Master, PhD',
+                    label: l10n.uiLevel,
+                    hint: l10n.adminScholarshipLevelHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _imageUrlController,
-                    label: 'Image URL',
-                    hint: 'Optional cover image URL',
+                    label: l10n.adminScholarshipImageUrlLabel,
+                    hint: l10n.adminScholarshipImageUrlHint,
                   ),
                   const SizedBox(height: 14),
                   AdminEditorField(
                     controller: _tagsController,
-                    label: 'Tags',
-                    hint: 'Comma-separated tags',
+                    label: l10n.uiTags,
+                    hint: l10n.adminScholarshipTagsHint,
                   ),
                 ],
               ),
@@ -364,7 +368,7 @@ class _AdminScholarshipEditorScreenState
       initialDate: initialDate.isBefore(today) ? today : initialDate,
       firstDate: today,
       lastDate: DateTime(2035),
-      helpText: 'Select deadline',
+      helpText: AppLocalizations.of(context)!.adminScholarshipDeadlinePickerHelp,
     );
     if (picked == null) return;
 
@@ -449,21 +453,24 @@ class _AdminScholarshipEditorScreenState
     final parsed = num.tryParse(
       (value ?? '').replaceAll(RegExp(r'[^0-9.\-]'), ''),
     );
-    if (parsed == null || parsed < 0) return 'Enter a valid amount';
+    if (parsed == null || parsed < 0) {
+      return AppLocalizations.of(context)!.adminScholarshipAmountValidator;
+    }
     return null;
   }
 
   String? _validateEligibilityItems(List<String> items) {
     if (items.where((item) => item.trim().isNotEmpty).isEmpty) {
-      return 'Add at least one eligibility item';
+      return AppLocalizations.of(context)!.adminScholarshipEligibilityValidator;
     }
     return null;
   }
 
   String? _validateDeadline(String? value) {
     final text = value?.trim() ?? '';
-    if (text.isEmpty) return 'Deadline is required';
+    final l10n = AppLocalizations.of(context)!;
+    if (text.isEmpty) return l10n.adminScholarshipDeadlineRequired;
     final parsed = OpportunityMetadata.parseDateTimeLike(text);
-    return parsed == null ? 'Use a valid date' : null;
+    return parsed == null ? l10n.adminScholarshipDeadlineInvalid : null;
   }
 }
