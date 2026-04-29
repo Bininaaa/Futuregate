@@ -8049,115 +8049,1148 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dashSectionRecommendedSubtitle =>
-      'Chosen around your profile, timing, and momentum.';
+      'Sélectionnées selon votre profil, le timing et votre progression.';
 
   @override
   String get dashSectionQuickAccessSubtitle =>
-      'Your fastest path back into jobs, funding, tools, and saves.';
+      'Votre chemin le plus rapide vers emplois, financements, outils et sauvegardes.';
 
   @override
   String get dashSectionLatestActivitySubtitle =>
-      'Your recent applications, saves, and CV updates.';
+      'Vos candidatures, sauvegardes et mises à jour CV récentes.';
 
   @override
   String get dashSectionClosingSoonSubtitle =>
-      'Deadlines worth acting on this week.';
+      'Des échéances à traiter cette semaine.';
 
   @override
   String get dashSectionDefaultSubtitle =>
-      'Everything important stays one tap away.';
+      'Tout ce qui compte reste à portée de main.';
 
   @override
   String get dashFocusCvSubtitle =>
-      'A ready CV makes jobs, internships, and scholarships much quicker to apply for.';
+      'Un CV prêt accélère vos candidatures aux emplois, stages et bourses.';
 
   @override
   String get dashFocusCvInsight =>
-      'Start with your CV, then tighten the profile details that make matching feel smarter.';
+      'Commencez par votre CV, puis affinez les détails du profil qui améliorent la pertinence des recommandations.';
 
   @override
   String dashFocusProfileSubtitle(Object count) {
-    return '$count detail(s) still missing for better matching.';
+    return '$count détail(s) encore manquant(s) pour améliorer la correspondance.';
   }
 
   @override
   String get dashFocusInsightApprovedMomentum =>
-      'This is a strong moment to keep exploring while your profile is landing well.';
+      'C’est un bon moment pour continuer à explorer pendant que votre profil suscite de l’intérêt.';
 
   @override
   String get dashFocusSubtitleInReview =>
-      'Keep a few strong options moving while you wait for responses.';
+      'Gardez quelques options solides en mouvement pendant que vous attendez les réponses.';
 
   @override
   String get dashFocusInsightInReview =>
-      'A little follow-through now keeps your pipeline healthier later.';
+      'Un petit suivi maintenant gardera vos candidatures plus solides par la suite.';
 
   @override
   String get dashFocusInsightSavedReady =>
-      'Your saved list is ready for a second pass before deadlines tighten.';
+      'Votre liste sauvegardée mérite une deuxième lecture avant que les échéances se rapprochent.';
 
   @override
   String get dashFocusSubtitleDiscover =>
-      'Explore open roles, internships, funding, and learning picks designed for students building momentum.';
+      'Explorez des emplois, stages, financements et formations pensés pour les étudiants qui avancent.';
 
   @override
   String get dashFocusInsightDiscover =>
-      'Use quick access below to jump into jobs, internships, scholarships, learning, or your saved shortlist.';
+      'Utilisez les accès rapides ci-dessous pour rejoindre les emplois, stages, bourses, formations ou votre liste sauvegardée.';
 
   @override
   String dashFocusClosingSoonSubtitle(Object count) {
-    return '$count opportunities close within the next two weeks.';
+    return '$count opportunités se clôturent dans les deux prochaines semaines.';
   }
 
   @override
   String dashFocusClosingSoonInsight(Object company, Object deadline) {
-    return '$company is first up, and it closes $deadline.';
+    return '$company est prioritaire et se clôture $deadline.';
   }
 
   @override
   String get dashSavedBannerEmpty =>
-      'Keep your strongest roles, funding, and learning picks one tap away.';
+      'Gardez vos meilleures offres, financements et formations à portée de main.';
 
   @override
   String dashSavedBannerCount(Object count) {
-    return '$count saved item(s) ready for a second look.';
+    return '$count élément(s) sauvegardé(s) prêt(s) pour une deuxième lecture.';
   }
 
   @override
-  String get dashDeadlineSoon => 'deadline soon';
+  String get dashDeadlineSoon => 'échéance proche';
 
   @override
-  String get dashLastDay => 'Last day';
+  String get dashLastDay => 'Dernier jour';
 
   @override
-  String get dashDayLeft => '1 day left';
+  String get dashDayLeft => '1 jour restant';
 
   @override
   String dashDaysLeft(Object count) {
-    return '$count days left';
+    return '$count jours restants';
   }
 
   @override
-  String get discoverResultsTitle => 'Results';
+  String get discoverResultsTitle => 'Résultats';
 
   @override
   String get discoverResultsSubtitle =>
-      'Listings that match your current search and filters';
+      'Annonces correspondant à votre recherche et à vos filtres actuels';
 
   @override
   String get discoverNoResultsHint =>
-      'Try adjusting your search or filters to uncover more matches.';
+      'Essayez d’ajuster votre recherche ou vos filtres pour afficher plus de résultats.';
 
   @override
   String get discoverTrendingSubtitle =>
-      'Featured, fresh, and high-signal picks from live data';
+      'Sélections récentes, pertinentes et mises en avant à partir des données en direct';
 
   @override
   String get discoverTrendingEmptyHint =>
-      'Fresh recommendations are highlighted as new listings go live.';
+      'Les nouvelles recommandations seront mises en avant dès que des annonces seront publiées.';
 
   @override
   String discoverLatestSubtitle(Object count) {
-    return 'The $count newest roles, internships, and sponsored tracks';
+    return 'Les $count offres, stages et parcours sponsorisés les plus récents';
   }
+
+  @override
+  String get studentOpportunityNoLongerAvailableOpen =>
+      'Cette opportunité n’est plus disponible.';
+
+  @override
+  String get studentApplicationFilterWithdrawn => 'Retirée';
+
+  @override
+  String studentFilterCount(Object count, Object label) {
+    return '$label ($count)';
+  }
+
+  @override
+  String studentApplicationsShown(Object count) {
+    return '$count candidatures affichées';
+  }
+
+  @override
+  String get studentAppliedOpportunityOne => '1 opportunité postulée';
+
+  @override
+  String studentAppliedOpportunitiesCount(Object count) {
+    return '$count opportunités postulées';
+  }
+
+  @override
+  String get studentBrowseOpportunities => 'Parcourir les opportunités';
+
+  @override
+  String get studentNoApplicationsMatchMessage =>
+      'Essayez une autre recherche ou un autre filtre pour retrouver plus d’historique de candidatures.';
+
+  @override
+  String get studentNoApplicationsYetMessage =>
+      'Commencez à postuler à des opportunités et suivez-les ici.';
+
+  @override
+  String get studentIdeaCoverUploadedSuccess =>
+      'Image de couverture téléversée avec succès.';
+
+  @override
+  String get studentIdeaResubmittedSuccess => 'Idée renvoyée avec succès.';
+
+  @override
+  String get studentIdeaResubmittedTitle => 'Idée renvoyée';
+
+  @override
+  String get studentIdeaImageUploadFailed =>
+      'Le téléversement de l’image a échoué. Veuillez réessayer.';
+
+  @override
+  String get studentCurrentCoverImage => 'Image de couverture actuelle';
+
+  @override
+  String get studentPublishIdeaButton => 'Publier l’idée';
+
+  @override
+  String get studentCreateIdeaTitle => 'Créer une idée';
+
+  @override
+  String get studentUploadingCoverImage =>
+      'Téléversement de l’image de couverture...';
+
+  @override
+  String get studentEditingLockedAfterReview =>
+      'Modification verrouillée après validation';
+
+  @override
+  String get studentPublishAgain => 'Publier à nouveau';
+
+  @override
+  String get studentSubmitIdea => 'Soumettre l’idée';
+
+  @override
+  String get studentIdeaTitleHint =>
+      'Exemple : Assistant santé mentale pour campus';
+
+  @override
+  String get studentIdeaTitleHelper =>
+      'Choisissez un nom clair : ce que c’est et à qui cela sert.';
+
+  @override
+  String get studentIdeaTaglineHint =>
+      'Exemple : Trouver du soutien avant que le stress augmente.';
+
+  @override
+  String get studentIdeaTaglineHelper =>
+      'Rédigez une courte phrase sur le bénéfice principal.';
+
+  @override
+  String get studentChooseCategory => 'Choisir une catégorie';
+
+  @override
+  String get studentPickIdeaCategory => 'Choisissez la catégorie de l’idée';
+
+  @override
+  String get studentChooseStage => 'Choisir une étape';
+
+  @override
+  String get studentPickCurrentStage => 'Choisissez l’étape actuelle';
+
+  @override
+  String get studentSelectStudentLevel => 'Sélectionner le niveau étudiant';
+
+  @override
+  String get studentIdeaDescriptionSubtitle =>
+      'Expliquez le concept, le problème traité et la solution à comprendre par les collaborateurs.';
+
+  @override
+  String get studentIdeaOverviewHint =>
+      'Décrivez le concept, ce qu’il fait et comment il prend forme.';
+
+  @override
+  String get studentIdeaOverviewHelper =>
+      'Ajoutez assez de contexte pour que les évaluateurs comprennent rapidement l’idée.';
+
+  @override
+  String get studentIdeaProblemHint =>
+      'Quel défi étudiant cette idée résout-elle ?';
+
+  @override
+  String get studentIdeaSolutionHint =>
+      'Expliquez la solution proposée et ce qui la distingue.';
+
+  @override
+  String get studentIdeaAudienceHint => 'Étudiants, clubs, mentors, campus...';
+
+  @override
+  String get studentIdeaBenefitsHint =>
+      'Pourquoi cette idée compte-t-elle maintenant ?';
+
+  @override
+  String get studentAddRole => 'Ajouter un rôle';
+
+  @override
+  String get studentAddRoleHint => 'Exemple : Développeur, Designer, Chercheur';
+
+  @override
+  String get studentAddRoleHelper =>
+      'Ajoutez les profils nécessaires à l’équipe, un par un ou séparés par des virgules.';
+
+  @override
+  String get studentAddSkillHint => 'Exemple : Flutter, Firebase, recherche UX';
+
+  @override
+  String get studentAddSkillHelper =>
+      'Ajoutez des technologies, compétences design, recherche ou connaissances métier.';
+
+  @override
+  String get studentResourcesHint =>
+      'Exemple : Mentor, utilisateurs test, données de sondage';
+
+  @override
+  String get studentResourcesHelper =>
+      'Listez le soutien nécessaire : personnes, outils, accès, financement ou retours.';
+
+  @override
+  String get studentIdeaLockNotice =>
+      'Les idées approuvées restent verrouillées ici. Si un admin en renvoie une pour modification, elle redeviendra modifiable dans ce formulaire.';
+
+  @override
+  String get studentPleaseAddMoreDetail => 'Veuillez ajouter plus de détails.';
+
+  @override
+  String get studentRefineAndPublishAgain => 'Affiner et publier à nouveau';
+
+  @override
+  String get studentAdminPublishIdeaSubtitle =>
+      'Ajoutez une idée sélectionnée par la plateforme avec une histoire solide, des métadonnées claires et une structure de publication prévisible.';
+
+  @override
+  String get studentResubmitIdeaSubtitle =>
+      'Mettez l’idée à jour, corrigez le rejet et renvoyez-la pour validation.';
+
+  @override
+  String get studentIdeaHeroSubtitle =>
+      'Construisez une fiche d’idée prête pour les collaborateurs, les retours et la dynamique étudiante.';
+
+  @override
+  String studentCvTemplateUpdatedTo(Object templateName) {
+    return 'Modèle mis à jour vers $templateName.';
+  }
+
+  @override
+  String get studentCvTemplateUpdatedTitle => 'Modèle mis à jour';
+
+  @override
+  String get studentCvTemplateUpdateUnavailable =>
+      'Mise à jour du modèle indisponible';
+
+  @override
+  String get studentCvAddDetailsBeforeSaving =>
+      'Ajoutez les détails de votre CV avant d’enregistrer un PDF.';
+
+  @override
+  String get studentCvPdfSavedToMyCv =>
+      'Votre PDF de CV a été enregistré dans Mon CV.';
+
+  @override
+  String get studentCvFileUploaded => 'Votre fichier CV a été téléversé.';
+
+  @override
+  String get studentCvUsingUploaded =>
+      'Votre CV téléversé est maintenant utilisé.';
+
+  @override
+  String get studentCvUsingBuilt => 'Votre CV créé est maintenant utilisé.';
+
+  @override
+  String get studentPrimaryCvUpdated => 'CV principal mis à jour';
+
+  @override
+  String get studentRemoveUploadedCvTitle => 'Supprimer le CV téléversé ?';
+
+  @override
+  String studentRemoveUploadedCvMessage(Object fileName) {
+    return 'Cela supprime $fileName de votre studio CV. Le contenu de votre CV créé reste disponible.';
+  }
+
+  @override
+  String get studentUploadedCvRemoved => 'CV téléversé supprimé.';
+
+  @override
+  String get studentCvRemovedTitle => 'CV supprimé';
+
+  @override
+  String get studentResetBuiltCvTitle => 'Réinitialiser le CV créé ?';
+
+  @override
+  String get studentResetBuiltCvWithUploadedMessage =>
+      'Cela supprime les détails du CV créé et le PDF enregistré. Votre CV téléversé reste disponible.';
+
+  @override
+  String get studentResetBuiltCvMessage =>
+      'Cela supprime les détails du CV créé et le PDF enregistré.';
+
+  @override
+  String get studentBuiltCvResetMessage => 'CV créé réinitialisé.';
+
+  @override
+  String get studentBuiltCvResetTitle => 'CV créé réinitialisé';
+
+  @override
+  String get studentFileNotValidPdfYet =>
+      'Ce fichier n’est pas encore un PDF valide.';
+
+  @override
+  String get studentCouldNotOpenDocumentNow =>
+      'Impossible d’ouvrir le document pour le moment.';
+
+  @override
+  String get studentCvContactInfo => 'Coordonnées';
+
+  @override
+  String get studentCvNameEmailReady => 'Le nom et l’e-mail sont prêts.';
+
+  @override
+  String get studentCvAddNameEmail => 'Ajoutez votre nom et votre e-mail.';
+
+  @override
+  String get studentCvProfileIntroReady =>
+      'Votre profil contient une courte introduction.';
+
+  @override
+  String get studentCvWriteProfile => 'Rédigez un court profil professionnel.';
+
+  @override
+  String studentCvEducationSaved(Object count) {
+    return '$count élément de formation enregistré.';
+  }
+
+  @override
+  String get studentCvAddEducation =>
+      'Ajoutez votre dernier diplôme ou formation.';
+
+  @override
+  String get studentCvExperienceProjects => 'Expériences ou projets';
+
+  @override
+  String studentCvExperienceSaved(Object count) {
+    return '$count élément d’expérience enregistré.';
+  }
+
+  @override
+  String get studentCvAddExperience =>
+      'Ajoutez un stage, un emploi ou un projet.';
+
+  @override
+  String studentCvSkillsListed(Object count) {
+    return '$count compétences listées.';
+  }
+
+  @override
+  String get studentCvListSkills => 'Listez vos compétences les plus fortes.';
+
+  @override
+  String studentCvLanguagesListed(Object count) {
+    return '$count langues listées.';
+  }
+
+  @override
+  String get studentCvAddLanguages =>
+      'Ajoutez les langues utiles aux recruteurs.';
+
+  @override
+  String studentCvTemplateSelected(Object templateName) {
+    return '$templateName sélectionné.';
+  }
+
+  @override
+  String get studentCvClassicDefault =>
+      'Classic sera utilisé sauf si vous choisissez un autre style.';
+
+  @override
+  String get studentCvBuildBeforeStyle =>
+      'Créez votre CV avant de choisir un style.';
+
+  @override
+  String get studentCvApplicationFile => 'Fichier de candidature';
+
+  @override
+  String get studentCvPdfReadyApplications =>
+      'Un PDF est prêt pour les candidatures.';
+
+  @override
+  String get studentCvSaveBuilderAsPdf => 'Enregistrez le CV créé en PDF.';
+
+  @override
+  String get studentCvBuildOrUploadFile => 'Créez ou téléversez un fichier CV.';
+
+  @override
+  String get studentRefreshCv => 'Actualiser le CV';
+
+  @override
+  String get studentCompaniesWillSee => 'Les entreprises verront';
+
+  @override
+  String get studentUseBuiltCvInstead => 'Utiliser plutôt le CV créé';
+
+  @override
+  String get studentUseUploadedCvInstead => 'Utiliser plutôt le CV téléversé';
+
+  @override
+  String get studentUploadPdf => 'Téléverser un PDF';
+
+  @override
+  String get studentViewActiveCv => 'Voir le CV actif';
+
+  @override
+  String get studentSaveAsPdf => 'Enregistrer en PDF';
+
+  @override
+  String get studentCvReadiness => 'Préparation du CV';
+
+  @override
+  String studentCvEssentialsComplete(Object completed, Object total) {
+    return '$completed sur $total éléments essentiels complétés';
+  }
+
+  @override
+  String get studentUploadedPdfActive => 'PDF téléversé actif';
+
+  @override
+  String studentUploadedCvActiveMessage(Object fileName) {
+    return '$fileName est le fichier reçu par les entreprises avec vos candidatures.';
+  }
+
+  @override
+  String get studentFileUploaded => 'Fichier téléversé';
+
+  @override
+  String get studentApplicationReady => 'Prêt pour candidatures';
+
+  @override
+  String get studentUploadedPdfReadyAttach =>
+      'Le PDF téléversé est prêt à être joint.';
+
+  @override
+  String get studentUploadedFileSavedPreviewLimited =>
+      'Le fichier téléversé est enregistré, mais l’aperçu PDF peut être limité.';
+
+  @override
+  String get studentReplacePdf => 'Remplacer le PDF';
+
+  @override
+  String get studentBuildInstead => 'Créer à la place';
+
+  @override
+  String get studentStructuredCvBuilder => 'Créateur de CV structuré';
+
+  @override
+  String studentTemplateEditSavePdf(Object templateName) {
+    return 'Modèle $templateName. Modifiez les détails, prévisualisez, puis enregistrez le PDF.';
+  }
+
+  @override
+  String get studentCreatePolishedCv =>
+      'Créez un CV soigné à partir des détails structurés du profil.';
+
+  @override
+  String get studentNotStarted => 'Non commencé';
+
+  @override
+  String get studentEditBuilder => 'Modifier le créateur';
+
+  @override
+  String get studentStartBuilder => 'Démarrer le créateur';
+
+  @override
+  String get studentSavePdf => 'Enregistrer PDF';
+
+  @override
+  String get studentApplicationFiles => 'Fichiers de candidature';
+
+  @override
+  String get studentApplicationFilesSubtitle =>
+      'Choisissez le document que les recruteurs recevront lorsque vous postulez.';
+
+  @override
+  String get studentUploadPdfCv => 'Téléverser un CV PDF';
+
+  @override
+  String get studentUseExistingPdfWhileBuilding =>
+      'Utilisez un fichier existant pendant que vous créez un CV structuré.';
+
+  @override
+  String get studentBuiltCvPdf => 'PDF du CV créé';
+
+  @override
+  String get studentReplaceUploadedPdf => 'Remplacer le PDF téléversé';
+
+  @override
+  String get studentAttachNewPdf =>
+      'Joindre un nouveau fichier PDF depuis votre appareil.';
+
+  @override
+  String get studentNoActiveCvYet => 'Aucun CV actif pour le moment';
+
+  @override
+  String get studentUploadedPdf => 'PDF téléversé';
+
+  @override
+  String get studentBuilderDraft => 'Brouillon du créateur';
+
+  @override
+  String get studentCvStartApplyingFaster =>
+      'Créez un CV structuré ou téléversez un PDF pour postuler plus vite.';
+
+  @override
+  String get studentSavedBuilderPdfReady =>
+      'Votre PDF généré depuis le créateur est prêt pour les candidatures.';
+
+  @override
+  String get studentUploadedFileUsedApplications =>
+      'Votre fichier téléversé est actuellement utilisé pour les candidatures.';
+
+  @override
+  String get studentPreviewDraftSavePdf =>
+      'Prévisualisez le brouillon, puis enregistrez-le en PDF avant de postuler.';
+
+  @override
+  String get studentUploadedRecently => 'téléversé récemment';
+
+  @override
+  String studentUploadedDate(Object date) {
+    return 'téléversé le $date';
+  }
+
+  @override
+  String studentReadinessSemantic(Object status, Object title) {
+    return '$title, $status';
+  }
+
+  @override
+  String get studentComplete => 'complet';
+
+  @override
+  String get studentIncomplete => 'incomplet';
+
+  @override
+  String get studentMakeActive => 'Rendre actif';
+
+  @override
+  String get studentCvDownloadReadyMessage =>
+      'Le téléchargement du PDF de votre CV est prêt.';
+
+  @override
+  String get studentDownloadReadyTitle => 'Téléchargement prêt';
+
+  @override
+  String get studentCvDownloadOpenedMessage =>
+      'Utilisez la feuille système pour enregistrer ou partager le PDF de votre CV.';
+
+  @override
+  String get studentDownloadOpenedTitle => 'Téléchargement ouvert';
+
+  @override
+  String studentCvDownloadError(Object error) {
+    return 'Impossible de télécharger ce PDF de CV. $error';
+  }
+
+  @override
+  String get studentDownloadUnavailableTitle => 'Téléchargement indisponible';
+
+  @override
+  String get studentDownloadPdf => 'Télécharger le PDF';
+
+  @override
+  String get studentProfileUpdatedSuccess =>
+      'Votre profil a été mis à jour avec succès.';
+
+  @override
+  String get studentSignInViewCreatorProfile =>
+      'Connectez-vous pour voir le profil du créateur.';
+
+  @override
+  String get studentProfileUnavailable => 'Profil indisponible';
+
+  @override
+  String get studentSignInSaveInternships =>
+      'Connectez-vous pour sauvegarder des stages.';
+
+  @override
+  String get studentSignInSaveOpportunities =>
+      'Connectez-vous pour sauvegarder des opportunités.';
+
+  @override
+  String get studentSignInContinueApplication =>
+      'Connectez-vous pour continuer votre candidature.';
+
+  @override
+  String get studentCreateCvBeforeApplying =>
+      'Créez votre CV avant de postuler à cette opportunité.';
+
+  @override
+  String get studentWithdrawApplicationTitle => 'Retirer la candidature';
+
+  @override
+  String get studentWithdrawApplicationMessage =>
+      'Voulez-vous vraiment retirer votre candidature ? Vous pourrez postuler à nouveau tant que l’opportunité reste ouverte.';
+
+  @override
+  String get studentWithdraw => 'Retirer';
+
+  @override
+  String get studentApplicationSubmittedSuccess =>
+      'Votre candidature a été envoyée avec succès.';
+
+  @override
+  String get studentApplicationSentTitle => 'Candidature envoyée';
+
+  @override
+  String get studentApplicationWithdrawnSuccess =>
+      'Votre candidature a été retirée.';
+
+  @override
+  String get studentWithdrawalFailedTitle => 'Retrait échoué';
+
+  @override
+  String get studentOpportunitySaved => 'Opportunité sauvegardée';
+
+  @override
+  String get studentRemovedFromSavedOpportunities =>
+      'Retirée des opportunités sauvegardées';
+
+  @override
+  String get studentSignInChatCompany =>
+      'Connectez-vous pour discuter avec l’entreprise.';
+
+  @override
+  String get studentPublisherUnavailableMessage =>
+      'Le profil de l’éditeur n’est pas disponible pour cette opportunité.';
+
+  @override
+  String get studentPublisherUnavailableTitle => 'Éditeur indisponible';
+
+  @override
+  String get studentFutureGatePublisher => 'Éditeur FutureGate';
+
+  @override
+  String get studentOpportunityPublisher => 'Éditeur de l’opportunité';
+
+  @override
+  String get studentPublisherProfileFallbackAbout =>
+      'Profil public de l’éditeur derrière cette opportunité.';
+
+  @override
+  String get studentLoginToApply => 'Se connecter pour postuler';
+
+  @override
+  String get studentApplyForFunding => 'Demander le financement';
+
+  @override
+  String studentStatusWithValue(Object status) {
+    return 'Statut : $status';
+  }
+
+  @override
+  String get studentAlreadyApplied => 'Déjà postulé';
+
+  @override
+  String get studentOpportunityClosed => 'Opportunité clôturée';
+
+  @override
+  String get studentNoLongerAvailable => 'Plus disponible';
+
+  @override
+  String get studentMustBeLoggedInApply =>
+      'Vous devez être connecté pour postuler.';
+
+  @override
+  String get studentCanApplyOpportunity =>
+      'Vous pouvez postuler à cette opportunité.';
+
+  @override
+  String get studentAlreadyAppliedOpportunity =>
+      'Vous avez déjà postulé à cette opportunité.';
+
+  @override
+  String get studentOpportunityClosedMessage =>
+      'Cette opportunité est clôturée.';
+
+  @override
+  String get studentOpportunityUnavailableMessage =>
+      'Cette opportunité n’est plus disponible.';
+
+  @override
+  String get studentSalary => 'Salaire';
+
+  @override
+  String get studentProgramOverview => 'Présentation du programme';
+
+  @override
+  String get studentShareOpportunitySubject => 'Opportunité sur FutureGate';
+
+  @override
+  String studentShareCompanyLine(Object company) {
+    return 'Entreprise : $company';
+  }
+
+  @override
+  String studentShareTypeLine(Object type) {
+    return 'Type : $type';
+  }
+
+  @override
+  String studentShareLocationLine(Object location) {
+    return 'Lieu : $location';
+  }
+
+  @override
+  String studentShareDurationLine(Object duration) {
+    return 'Durée : $duration';
+  }
+
+  @override
+  String studentShareDeadlineLine(Object deadline) {
+    return 'Échéance : $deadline';
+  }
+
+  @override
+  String get studentSharedFromFutureGate => 'Partagé depuis FutureGate';
+
+  @override
+  String get studentApplicationWithdrawnBefore => 'Candidature déjà retirée';
+
+  @override
+  String get studentWithdrawnCurrentMessage =>
+      'Vous avez retiré votre candidature pour cette opportunité. Vous pouvez postuler à nouveau tant qu’elle reste ouverte.';
+
+  @override
+  String get studentWithdrawnPreviousMessage =>
+      'Vous aviez déjà retiré une candidature pour cette opportunité.';
+
+  @override
+  String studentCanMessageCompany(Object company) {
+    return 'Vous pouvez maintenant écrire à $company.';
+  }
+
+  @override
+  String get studentTheCompany => 'l’entreprise';
+
+  @override
+  String studentOriginalLanguageValue(Object label, Object language) {
+    return '$label : $language';
+  }
+
+  @override
+  String get studentIdeaDeletedSuccess => 'Idée supprimée avec succès.';
+
+  @override
+  String get studentOpportunityNoLongerAvailable =>
+      'Cette opportunité n’est plus disponible.';
+
+  @override
+  String get studentScholarshipNoLongerAvailable =>
+      'Cette bourse n’est plus disponible.';
+
+  @override
+  String get studentRemoveSavedItemError =>
+      'Impossible de retirer cet élément pour le moment.';
+
+  @override
+  String get studentRemovedFromSavedScholarships =>
+      'Retirée des bourses sauvegardées';
+
+  @override
+  String get studentRemovedFromSavedTrainings =>
+      'Retirée des formations sauvegardées';
+
+  @override
+  String get studentRemovedFromSavedIdeas => 'Retirée des idées sauvegardées';
+
+  @override
+  String get studentSavedFilterTrainings => 'Formations';
+
+  @override
+  String get studentSponsoredFilter => 'Sponsorisé';
+
+  @override
+  String studentItemsShown(Object count) {
+    return '$count éléments affichés';
+  }
+
+  @override
+  String get studentSavedItemOne => '1 élément sauvegardé';
+
+  @override
+  String studentSavedItemsCount(Object count) {
+    return '$count éléments sauvegardés';
+  }
+
+  @override
+  String get studentNoSavedItemsMatchView =>
+      'Aucun élément sauvegardé ne correspond à cette vue';
+
+  @override
+  String get studentNoSavedItemsYet =>
+      'Aucun élément sauvegardé pour le moment';
+
+  @override
+  String get studentNoSavedItemsMatchMessage =>
+      'Essayez une autre recherche ou un autre filtre pour voir plus d’éléments sauvegardés.';
+
+  @override
+  String get studentNoSavedItemsYetMessage =>
+      'Sauvegardez des opportunités, bourses, formations ou idées pour construire votre sélection.';
+
+  @override
+  String get studentExploreOpportunities => 'Explorer les opportunités';
+
+  @override
+  String get studentLocationNotSpecified => 'Lieu non indiqué';
+
+  @override
+  String studentFundingValue(Object funding) {
+    return 'Financement : $funding';
+  }
+
+  @override
+  String get studentScholarshipFallback => 'Bourse';
+
+  @override
+  String get studentDestinationNotSpecified => 'Destination non indiquée';
+
+  @override
+  String get studentTrainingFallback => 'Formation';
+
+  @override
+  String get studentSavedItemFallback => 'Élément sauvegardé';
+
+  @override
+  String get studentRelativeSaved => 'Sauvegardé';
+
+  @override
+  String get studentRelativeToday => 'Aujourd’hui';
+
+  @override
+  String get studentRelativeYesterday => 'Hier';
+
+  @override
+  String studentDaysAgoCompact(Object count) {
+    return 'il y a $count j';
+  }
+
+  @override
+  String studentWeeksAgoCompact(Object count) {
+    return 'il y a $count sem.';
+  }
+
+  @override
+  String get studentNoDeadlineShared => 'Aucune échéance indiquée';
+
+  @override
+  String studentClosedDate(Object date) {
+    return 'Clôturé le $date';
+  }
+
+  @override
+  String studentClosesDate(Object date) {
+    return 'Clôture le $date';
+  }
+
+  @override
+  String studentInterestedCountLower(Object count) {
+    return '$count intéressé(s)';
+  }
+
+  @override
+  String studentInterestedCountTitle(Object count) {
+    return '$count intéressé(s)';
+  }
+
+  @override
+  String studentDashboardApprovedApplicationsTitle(Object count, Object word) {
+    return '$count $word approuvée(s).';
+  }
+
+  @override
+  String studentDashboardPendingApplicationsTitle(Object count, Object word) {
+    return '$count $word en cours d’examen.';
+  }
+
+  @override
+  String get studentApplicationSingular => 'candidature';
+
+  @override
+  String get studentApplicationsPlural => 'candidatures';
+
+  @override
+  String get studentDashboardSavedResourceLinkUnavailable =>
+      'Le lien de cette ressource sauvegardée n’est pas disponible.';
+
+  @override
+  String get studentDashboardSavedResourceOpenError =>
+      'Impossible d’ouvrir cette ressource sauvegardée pour le moment.';
+
+  @override
+  String studentSavedScholarshipFrom(Object provider) {
+    return 'Bourse sauvegardée de $provider';
+  }
+
+  @override
+  String get studentSavedScholarshipNeedsAttention =>
+      'Bourse sauvegardée nécessitant votre attention';
+
+  @override
+  String get studentSavedIdea => 'Idée sauvegardée';
+
+  @override
+  String get studentUploadedCvReady => 'Le CV téléversé est prêt à être envoyé';
+
+  @override
+  String get studentHybridCvReady => 'Le CV téléversé et le CV créé sont prêts';
+
+  @override
+  String get studentBuilderCvRefreshed =>
+      'CV créé actualisé pour postuler plus vite';
+
+  @override
+  String get studentCvReadyNextApplication =>
+      'CV prêt pour votre prochaine candidature';
+
+  @override
+  String get studentSkillSingular => 'compétence';
+
+  @override
+  String get studentSkillsPlural => 'compétences';
+
+  @override
+  String get studentExperienceBlockSingular => 'bloc d’expérience';
+
+  @override
+  String get studentExperienceBlocksPlural => 'blocs d’expérience';
+
+  @override
+  String get studentLanguageSingular => 'langue';
+
+  @override
+  String get studentLanguagesPlural => 'langues';
+
+  @override
+  String get studentCvUpdated => 'CV mis à jour';
+
+  @override
+  String get studentYourCvReady => 'Votre CV est prêt';
+
+  @override
+  String get studentBuilderCvUpdated => 'CV créé mis à jour';
+
+  @override
+  String get studentPrimaryFileAttached => 'Fichier principal joint';
+
+  @override
+  String get studentProfileDataSynced => 'Données du profil synchronisées';
+
+  @override
+  String studentClosesMonthDay(Object date) {
+    return 'Clôture le $date';
+  }
+
+  @override
+  String get studentDeadlineComingUp => 'Échéance proche.';
+
+  @override
+  String get studentAddItem => 'Ajouter un élément';
+
+  @override
+  String get studentStudentSpace => 'ESPACE ÉTUDIANT';
+
+  @override
+  String get studentReady => 'Prêt';
+
+  @override
+  String get studentDraft => 'Brouillon';
+
+  @override
+  String get studentEmpty => 'Vide';
+
+  @override
+  String get studentAvailable => 'Disponible';
+
+  @override
+  String get studentUploadingEllipsis => 'Téléversement...';
+
+  @override
+  String get studentSavingEllipsis => 'Enregistrement...';
+
+  @override
+  String get studentSaveChangesTitleCase => 'Enregistrer les modifications';
+
+  @override
+  String get studentManaged => 'Géré';
+
+  @override
+  String get studentReset => 'Réinitialiser';
+
+  @override
+  String get studentCvBuilderSteps => 'Étapes du créateur';
+
+  @override
+  String studentCvSectionsComplete(Object completed, Object total) {
+    return '$completed sur $total sections complétées';
+  }
+
+  @override
+  String get studentAddYourEducation => 'Ajoutez votre formation';
+
+  @override
+  String get studentAddYourExperience => 'Ajoutez votre expérience';
+
+  @override
+  String get studentRecentTrainingBook => 'Livre';
+
+  @override
+  String get studentRecentTrainingCourse => 'Cours';
+
+  @override
+  String get studentRecentTrainingVideo => 'Vidéo';
+
+  @override
+  String get studentRecentTrainingFile => 'Fichier';
+
+  @override
+  String get studentRecentTrainingLearning => 'Apprentissage';
+
+  @override
+  String studentRecommendationFitsFocus(Object focus) {
+    return 'Correspond à votre priorité $focus.';
+  }
+
+  @override
+  String studentRecommendationGoodForLevel(Object level) {
+    return 'Pertinent pour les étudiants $level.';
+  }
+
+  @override
+  String get studentRecommendationNearLocation =>
+      'Proche de votre localisation.';
+
+  @override
+  String get studentRecommendationRemoteFriendly =>
+      'Compatible avec le travail à distance.';
+
+  @override
+  String get studentRecommendationHybridSchedule => 'Rythme hybride.';
+
+  @override
+  String get studentRecommendationPaidOpportunity => 'Opportunité rémunérée.';
+
+  @override
+  String get studentRecommendationTeamHighlighted =>
+      'Mise en avant par l’équipe.';
+
+  @override
+  String get studentRecommendationBuildsExperience =>
+      'Développe une vraie expérience.';
+
+  @override
+  String get studentRecommendationSupportPath => 'Parcours de soutien clair.';
+
+  @override
+  String get studentRecommendationStrongNextStep => 'Prochaine étape solide.';
+
+  @override
+  String get studentProfileHintAddCv =>
+      'Ajoutez votre CV pour postuler plus vite lorsque la bonne opportunité apparaît.';
+
+  @override
+  String get studentProfileHintAcademic =>
+      'Complétez vos informations académiques pour rendre les opportunités plus pertinentes.';
+
+  @override
+  String get studentProfileHintBio =>
+      'Une courte bio rendra votre profil plus complet et plus intentionnel.';
+
+  @override
+  String get studentProfileHintContact =>
+      'Affinez vos coordonnées essentielles pour que votre profil soit complet partout dans l’application.';
+
+  @override
+  String get studentProfileHintGoodShape =>
+      'Votre profil est en bonne forme pour la prochaine opportunit? que vous ouvrirez.';
+
+  @override
+  String get studentAddCv => 'Ajouter CV';
+
+  @override
+  String get studentCompleteProfile => 'Compléter le profil';
+
+  @override
+  String get studentReviewProfile => 'Vérifier le profil';
 }

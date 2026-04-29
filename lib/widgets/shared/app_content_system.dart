@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/display_text.dart';
@@ -766,7 +767,7 @@ class _AppEditableListFieldState extends State<AppEditableListField> {
                 theme: widget.theme,
                 hint: widget.hint,
                 suffixIcon: IconButton(
-                  tooltip: 'Add item',
+                  tooltip: AppLocalizations.of(context)!.studentAddItem,
                   icon: Icon(widget.addIcon, color: widget.theme.accent),
                   onPressed: () => _commitPendingInput(field),
                 ),

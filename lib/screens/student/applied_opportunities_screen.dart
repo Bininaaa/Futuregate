@@ -143,13 +143,13 @@ class _AppliedOpportunitiesScreenState
     }).length;
   }
 
-  String _filterLabel(_ApplicationFilter filter) {
+  String _filterLabel(_ApplicationFilter filter, AppLocalizations l10n) {
     return switch (filter) {
-      _ApplicationFilter.all => 'All',
-      _ApplicationFilter.pending => 'Pending',
-      _ApplicationFilter.approved => 'Approved',
-      _ApplicationFilter.rejected => 'Rejected',
-      _ApplicationFilter.withdrawn => 'Withdrawn',
+      _ApplicationFilter.all => l10n.uiAll,
+      _ApplicationFilter.pending => l10n.uiPending,
+      _ApplicationFilter.approved => l10n.uiApproved,
+      _ApplicationFilter.rejected => l10n.uiRejected,
+      _ApplicationFilter.withdrawn => l10n.studentApplicationFilterWithdrawn,
     };
   }
 
@@ -171,7 +171,7 @@ class _AppliedOpportunitiesScreenState
       }
 
       context.showAppSnackBar(
-        'This opportunity is no longer available to open.',
+        AppLocalizations.of(context)!.studentOpportunityNoLongerAvailableOpen,
         title: AppLocalizations.of(context)!.uiOpportunityUnavailable,
         type: AppFeedbackType.warning,
       );
@@ -194,6 +194,7 @@ class _AppliedOpportunitiesScreenState
     final authProvider = context.watch<AuthProvider>();
     final mediaQuery = MediaQuery.of(context);
     final screenSize = mediaQuery.size;
+    final l10n = AppLocalizations.of(context)!;
     final isCompact = screenSize.width < 390 || screenSize.height < 780;
     final items = _filteredItems(provider);
     final totalCount = _visibleApplicationItems(provider).length;
@@ -263,8 +264,8 @@ class _AppliedOpportunitiesScreenState
                                   .isNotEmpty)
                                 _InlineBanner(
                                   icon: Icons.info_outline_rounded,
-                                  title:
-                                      'Application data is unavailable right now.',
+                                  title: l10n
+                                      .uiApplicationDataIsUnavailableRightNow,
                                   message: provider.submittedApplicationsError!,
                                   tone: StudentOpportunityHubPalette.error,
                                   background: StudentOpportunityHubPalette
@@ -278,7 +279,7 @@ class _AppliedOpportunitiesScreenState
                               StudentOpportunitySearchField(
                                 controller: _searchController,
                                 hintText:
-                                    'Search by role, company, location, or status',
+                                    l10n.uiSearchByRoleCompanyLocationOrStatus,
                                 onChanged: (_) => setState(() {}),
                               ),
                               const SizedBox(height: 10),
@@ -298,8 +299,10 @@ class _AppliedOpportunitiesScreenState
                                                 : 8,
                                           ),
                                           child: StudentOpportunityFilterChip(
-                                            label:
-                                                '${_filterLabel(filter)} (${_countFor(provider, filter)})',
+                                            label: l10n.studentFilterCount(
+                                              _filterLabel(filter, l10n),
+                                              _countFor(provider, filter),
+                                            ),
                                             selected: filter == _selectedFilter,
                                             color: _filterColor(filter),
                                             onTap: () {
@@ -319,10 +322,14 @@ class _AppliedOpportunitiesScreenState
                               const SizedBox(height: 14),
                               Text(
                                 hasFilters
-                                    ? '${items.length} applications shown'
+                                    ? l10n.studentApplicationsShown(
+                                        items.length,
+                                      )
                                     : totalCount == 1
-                                    ? '1 applied opportunity'
-                                    : '$totalCount applied opportunities',
+                                    ? l10n.studentAppliedOpportunityOne
+                                    : l10n.studentAppliedOpportunitiesCount(
+                                        totalCount,
+                                      ),
                                 style: AppTypography.product(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
@@ -342,8 +349,8 @@ class _AppliedOpportunitiesScreenState
                             title: AppLocalizations.of(
                               context,
                             )!.uiLoadingApplications,
-                            message:
-                                'Pulling together your submitted opportunities and their latest statuses.',
+                            message: l10n
+                                .uiPullingTogetherYourSubmittedOpportunitiesAndTheirLatestStatuses,
                           ),
                         )
                       else if (items.isEmpty)
@@ -354,12 +361,12 @@ class _AppliedOpportunitiesScreenState
                                 ? Icons.filter_alt_off_rounded
                                 : Icons.assignment_outlined,
                             title: hasFilters
-                                ? 'No applications match this view'
-                                : 'No applications yet',
+                                ? l10n.uiNoApplicationsMatchThisView
+                                : l10n.uiNoApplicationsYet,
                             message: hasFilters
-                                ? 'Try a different search or filter to bring more of your application history back into view.'
-                                : 'Start applying to opportunities and track them here.',
-                            actionLabel: 'Browse opportunities',
+                                ? l10n.studentNoApplicationsMatchMessage
+                                : l10n.studentNoApplicationsYetMessage,
+                            actionLabel: l10n.studentBrowseOpportunities,
                             onAction: () => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -458,7 +465,7 @@ class _AppliedCompactSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Application pipeline',
+                      AppLocalizations.of(context)!.uiApplicationPipeline,
                       style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -467,7 +474,9 @@ class _AppliedCompactSummary extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Track each submission and see what deserves your next move.',
+                      AppLocalizations.of(
+                        context,
+                      )!.uiTrackEachSubmissionAndSeeWhatDeservesYourNextMove,
                       style: AppTypography.product(
                         fontSize: 11,
                         color: StudentOpportunityHubPalette.textSecondary,

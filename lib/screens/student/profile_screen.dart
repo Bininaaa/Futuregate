@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Colors.transparent,
         body: Center(
           child: Text(
-            'Not signed in',
+            AppLocalizations.of(context)!.uiNotSignedIn,
             style: AppTypography.product(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -1284,7 +1284,7 @@ class _ActivityStrip extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Profile completion',
+                AppLocalizations.of(context)!.uiProfileCompletion,
                 style: AppTypography.product(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -1413,7 +1413,9 @@ class _ActivityStrip extends StatelessWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'The profile already looks polished. A quick refresh from time to time is enough.',
+                            AppLocalizations.of(
+                              context,
+                            )!.uiTheProfileAlreadyLooksPolishedAQuickRefreshFromTime,
                             style: AppTypography.product(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -1580,7 +1582,9 @@ class _DetailsCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'The essentials recruiters and programs often scan first.',
+            AppLocalizations.of(
+              context,
+            )!.uiTheEssentialsRecruitersAndProgramsOftenScanFirst,
             style: AppTypography.product(
               fontSize: 11.6,
               fontWeight: FontWeight.w500,
@@ -1738,16 +1742,17 @@ class _FactRow extends StatelessWidget {
                       : 'Not added yet',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.product(
-                    fontSize: 12.2,
-                    fontWeight: FontWeight.w600,
-                    color: filled
-                        ? SettingsFlowPalette.textPrimary
-                        : SettingsFlowPalette.textSecondary,
-                    height: 1.35,
-                  ).copyWith(
-                    fontStyle: filled ? FontStyle.normal : FontStyle.italic,
-                  ),
+                  style:
+                      AppTypography.product(
+                        fontSize: 12.2,
+                        fontWeight: FontWeight.w600,
+                        color: filled
+                            ? SettingsFlowPalette.textPrimary
+                            : SettingsFlowPalette.textSecondary,
+                        height: 1.35,
+                      ).copyWith(
+                        fontStyle: filled ? FontStyle.normal : FontStyle.italic,
+                      ),
                 ),
               ],
             ),
@@ -1806,7 +1811,9 @@ class _LinksCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Everything around your profile, documents, notifications, and account settings.',
+            AppLocalizations.of(
+              context,
+            )!.uiEverythingAroundYourProfileDocumentsNotificationsAndAccountSettings,
             style: AppTypography.product(
               fontSize: 12.8,
               fontWeight: FontWeight.w500,
@@ -1829,8 +1836,8 @@ class _LinksCard extends StatelessWidget {
                 subtitle: savedCount == 0
                     ? 'Nothing saved yet'
                     : savedCount == 1
-                        ? '1 saved item'
-                        : '$savedCount saved items',
+                    ? '1 saved item'
+                    : '$savedCount saved items',
                 icon: Icons.bookmark_outline_rounded,
                 color: SettingsFlowPalette.primary,
                 onTap: onSaved,

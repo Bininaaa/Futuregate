@@ -2340,16 +2340,14 @@
   "uiAppsPerOpportunity": "{rate} طلب لكل فرصة",
   "uiCvCompletionRateValue": "{percent}% ({totalCvs} من {students} طالب)",
   "uiPendingApprovedIdeasValue": "{pending} معلّقة و{approved} مقبولة",
-
   "dashSectionRecommendedSubtitle": "مختارة بناءً على ملفك الشخصي وتوقيتك وزخمك.",
   "dashSectionQuickAccessSubtitle": "أسرع طريق للعودة إلى الوظائف والتمويل والأدوات والمحفوظات.",
   "dashSectionLatestActivitySubtitle": "طلباتك الأخيرة والمحفوظات وتحديثات السيرة الذاتية.",
   "dashSectionClosingSoonSubtitle": "مواعيد تستحق التحرك الفوري هذا الأسبوع.",
   "dashSectionDefaultSubtitle": "كل ما يهمك في متناول لمسة واحدة.",
-
   "dashFocusCvSubtitle": "السيرة الذاتية الجاهزة تُسرّع تقديمك على الوظائف والتدريبات والمنح.",
   "dashFocusCvInsight": "ابدأ بسيرتك الذاتية، ثم أكمل تفاصيل الملف الشخصي لتحسين نتائج المطابقة.",
-  "dashFocusProfileSubtitle": "{count} تفصيل لا يزال ناقصاً لمطابقة أفضل.",
+  "dashFocusProfileSubtitle": "لا تزال هناك {count} تفاصيل ناقصة لتحسين المطابقة.",
   "dashFocusInsightApprovedMomentum": "هذه لحظة مثالية لمواصلة الاستكشاف بينما يلقى ملفك الشخصي استحسانًا.",
   "dashFocusSubtitleInReview": "تابع عدة خيارات قوية بينما تنتظر الردود.",
   "dashFocusInsightInReview": "المتابعة الآن تُبقي مساراتك في حالة أفضل لاحقًا.",
@@ -2357,19 +2355,531 @@
   "dashFocusSubtitleDiscover": "استكشف وظائف وتدريبات ومصادر تمويل واختيارات تعليمية مصممة للطلاب الطموحين.",
   "dashFocusInsightDiscover": "استخدم الوصول السريع للانتقال إلى الوظائف أو التدريبات أو المنح أو قائمتك المحفوظة.",
   "dashFocusClosingSoonSubtitle": "تُغلق {count} فرصة خلال الأسبوعين القادمين.",
-  "dashFocusClosingSoonInsight": "{company} هي الأولى، وتُغلق {deadline}.",
-  "dashSavedBannerEmpty": "احتفظ بأفضل وظائفك والتمويل والاختيارات التعليمية في متناول يدك.",
+  "dashFocusClosingSoonInsight": "{company} هي الأولوية الآن، وتُغلق {deadline}.",
+  "dashSavedBannerEmpty": "احتفظ بأقوى الفرص والتمويلات وخيارات التعلم في متناولك.",
   "dashSavedBannerCount": "{count} عنصر محفوظ جاهز لمراجعة ثانية.",
-
   "dashDeadlineSoon": "الموعد النهائي قريباً",
   "dashLastDay": "اليوم الأخير",
   "dashDayLeft": "يوم واحد متبقٍ",
-  "dashDaysLeft": "متبقٍ {count} أيام",
-
+  "dashDaysLeft": "متبقٍ {count} يوم",
   "discoverResultsTitle": "النتائج",
   "discoverResultsSubtitle": "القوائم المطابقة لبحثك والفلاتر الحالية",
   "discoverNoResultsHint": "حاول تعديل بحثك أو الفلاتر لاكتشاف مزيد من النتائج.",
-  "discoverTrendingSubtitle": "اختيارات مميزة وحديثة من بيانات فعلية",
+  "discoverTrendingSubtitle": "اختيارات حديثة ومميزة وعالية الجودة من البيانات المباشرة",
   "discoverTrendingEmptyHint": "تُبرز التوصيات الجديدة كلما أُضيفت قوائم حديثة.",
-  "discoverLatestSubtitle": "أحدث {count} وظائف وتدريبات ومسارات ممولة"
+  "discoverLatestSubtitle": "أحدث {count} وظائف وتدريبات ومسارات مدعومة",
+  "@dashDaysLeft": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@dashFocusClosingSoonInsight": {
+    "placeholders": {
+      "company": {},
+      "deadline": {}
+    }
+  },
+  "@dashFocusProfileSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@discoverLatestSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentOpportunityNoLongerAvailableOpen": "لم تعد هذه الفرصة متاحة للفتح.",
+  "studentApplicationFilterWithdrawn": "مسحوبة",
+  "studentFilterCount": "{label} ({count})",
+  "@studentFilterCount": {
+    "placeholders": {
+      "count": {},
+      "label": {}
+    }
+  },
+  "studentApplicationsShown": "{count} طلبات معروضة",
+  "@studentApplicationsShown": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentAppliedOpportunityOne": "فرصة واحدة تم التقديم لها",
+  "studentAppliedOpportunitiesCount": "{count} فرص تم التقديم لها",
+  "@studentAppliedOpportunitiesCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentBrowseOpportunities": "تصفح الفرص",
+  "studentNoApplicationsMatchMessage": "جرّب بحثاً أو فلترًا مختلفاً لعرض المزيد من سجل طلباتك.",
+  "studentNoApplicationsYetMessage": "ابدأ التقديم على الفرص وتابعها هنا.",
+  "studentIdeaCoverUploadedSuccess": "تم رفع صورة الغلاف بنجاح.",
+  "studentIdeaResubmittedSuccess": "تمت إعادة إرسال الفكرة بنجاح.",
+  "studentIdeaResubmittedTitle": "تمت إعادة إرسال الفكرة",
+  "studentIdeaImageUploadFailed": "تعذّر رفع الصورة. يرجى المحاولة مرة أخرى.",
+  "studentCurrentCoverImage": "صورة الغلاف الحالية",
+  "studentPublishIdeaButton": "نشر الفكرة",
+  "studentCreateIdeaTitle": "إنشاء فكرة",
+  "studentUploadingCoverImage": "جارٍ رفع صورة الغلاف...",
+  "studentEditingLockedAfterReview": "التعديل مقفل بعد المراجعة",
+  "studentPublishAgain": "النشر مرة أخرى",
+  "studentSubmitIdea": "إرسال الفكرة",
+  "studentIdeaTitleHint": "مثال: مساعد للصحة النفسية في الجامعة",
+  "studentIdeaTitleHelper": "استخدم اسماً واضحاً يوضح ماهية الفكرة ومن تخدم.",
+  "studentIdeaTaglineHint": "مثال: ابحث عن الدعم قبل أن يتزايد الضغط.",
+  "studentIdeaTaglineHelper": "اكتب جملة قصيرة عن الفائدة الرئيسية.",
+  "studentChooseCategory": "اختر فئة",
+  "studentPickIdeaCategory": "اختر فئة الفكرة",
+  "studentChooseStage": "اختر المرحلة",
+  "studentPickCurrentStage": "اختر المرحلة الحالية",
+  "studentSelectStudentLevel": "اختر مستوى الطالب",
+  "studentIdeaDescriptionSubtitle": "اشرح المفهوم والمشكلة التي يعالجها والحل الذي تريد أن يفهمه المتعاونون.",
+  "studentIdeaOverviewHint": "صف المفهوم وما يقدمه وكيف يمكن تنفيذه.",
+  "studentIdeaOverviewHelper": "أضف سياقاً كافياً ليسهل على المراجعين فهم الفكرة بسرعة.",
+  "studentIdeaProblemHint": "ما التحدي الطلابي الذي تحله هذه الفكرة؟",
+  "studentIdeaSolutionHint": "اشرح الحل المقترح وما الذي يميّزه.",
+  "studentIdeaAudienceHint": "طلاب، نوادٍ، مرشدون، جامعات...",
+  "studentIdeaBenefitsHint": "لماذا تهم هذه الفكرة الآن؟",
+  "studentAddRole": "إضافة دور",
+  "studentAddRoleHint": "مثال: مطور، مصمم، باحث",
+  "studentAddRoleHelper": "أضف الأشخاص الذين تحتاجهم في الفريق، واحداً تلو الآخر أو مفصولين بفواصل.",
+  "studentAddSkillHint": "مثال: Flutter، Firebase، بحث UX",
+  "studentAddSkillHelper": "أضف التقنيات أو مهارات التصميم أو البحث أو المعرفة بالمجال.",
+  "studentResourcesHint": "مثال: ملاحظات مرشد، مستخدمو اختبار، بيانات استبيان",
+  "studentResourcesHelper": "اذكر الدعم الذي تحتاجه: أشخاص، أدوات، وصول، تمويل أو ملاحظات.",
+  "studentIdeaLockNotice": "تبقى الأفكار المعتمدة مقفلة هنا. إذا أعادها مشرف للتعديل فستصبح قابلة للتحرير في هذا النموذج.",
+  "studentPleaseAddMoreDetail": "يرجى إضافة مزيد من التفاصيل.",
+  "studentRefineAndPublishAgain": "تحسين الفكرة ونشرها مجدداً",
+  "studentAdminPublishIdeaSubtitle": "أضف فكرة منسّقة من المنصة بقصة واضحة وبيانات منظمة وبنية نشر متوقعة.",
+  "studentResubmitIdeaSubtitle": "حدّث الفكرة، عالج سبب الرفض، وأرسلها للمراجعة مرة أخرى.",
+  "studentIdeaHeroSubtitle": "أنشئ ملف فكرة جاهزاً للتعاون والملاحظات والزخم الطلابي.",
+  "studentCvTemplateUpdatedTo": "تم تحديث القالب إلى {templateName}.",
+  "@studentCvTemplateUpdatedTo": {
+    "placeholders": {
+      "templateName": {}
+    }
+  },
+  "studentCvTemplateUpdatedTitle": "تم تحديث القالب",
+  "studentCvTemplateUpdateUnavailable": "تحديث القالب غير متاح",
+  "studentCvAddDetailsBeforeSaving": "أضف تفاصيل CV قبل حفظ ملف PDF.",
+  "studentCvPdfSavedToMyCv": "تم حفظ ملف PDF الخاص بـ CV في قسم CV الخاص بي.",
+  "studentCvFileUploaded": "تم رفع ملف CV الخاص بك.",
+  "studentCvUsingUploaded": "يتم الآن استخدام CV المرفوع.",
+  "studentCvUsingBuilt": "يتم الآن استخدام CV المُنشأ.",
+  "studentPrimaryCvUpdated": "تم تحديث CV الأساسي",
+  "studentRemoveUploadedCvTitle": "إزالة CV المرفوع؟",
+  "studentRemoveUploadedCvMessage": "سيؤدي ذلك إلى إزالة {fileName} من استوديو CV. سيبقى محتوى CV المُنشأ متاحاً.",
+  "@studentRemoveUploadedCvMessage": {
+    "placeholders": {
+      "fileName": {}
+    }
+  },
+  "studentUploadedCvRemoved": "تمت إزالة CV المرفوع.",
+  "studentCvRemovedTitle": "تمت إزالة CV",
+  "studentResetBuiltCvTitle": "إعادة ضبط CV المُنشأ؟",
+  "studentResetBuiltCvWithUploadedMessage": "سيؤدي ذلك إلى حذف تفاصيل CV المُنشأ وملف PDF المحفوظ. سيبقى CV المرفوع متاحاً.",
+  "studentResetBuiltCvMessage": "سيؤدي ذلك إلى حذف تفاصيل CV المُنشأ وملف PDF المحفوظ.",
+  "studentBuiltCvResetMessage": "تمت إعادة ضبط CV المُنشأ.",
+  "studentBuiltCvResetTitle": "تمت إعادة ضبط CV المُنشأ",
+  "studentFileNotValidPdfYet": "هذا الملف ليس ملف PDF صالحاً بعد.",
+  "studentCouldNotOpenDocumentNow": "تعذّر فتح المستند حالياً.",
+  "studentCvContactInfo": "معلومات التواصل",
+  "studentCvNameEmailReady": "الاسم والبريد الإلكتروني جاهزان.",
+  "studentCvAddNameEmail": "أضف اسمك وبريدك الإلكتروني.",
+  "studentCvProfileIntroReady": "يحتوي ملفك على مقدمة قصيرة.",
+  "studentCvWriteProfile": "اكتب نبذة مهنية قصيرة.",
+  "studentCvEducationSaved": "تم حفظ {count} عنصر تعليمي.",
+  "@studentCvEducationSaved": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentCvAddEducation": "أضف أحدث شهادة أو تكوين لديك.",
+  "studentCvExperienceProjects": "الخبرات أو المشاريع",
+  "studentCvExperienceSaved": "تم حفظ {count} عنصر خبرة.",
+  "@studentCvExperienceSaved": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentCvAddExperience": "أضف تدريباً أو عملاً أو تجربة مشروع.",
+  "studentCvSkillsListed": "تم إدراج {count} مهارات.",
+  "@studentCvSkillsListed": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentCvListSkills": "اذكر أقوى مهاراتك.",
+  "studentCvLanguagesListed": "تم إدراج {count} لغات.",
+  "@studentCvLanguagesListed": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentCvAddLanguages": "أضف اللغات التي ينبغي أن يعرفها مسؤولو التوظيف.",
+  "studentCvTemplateSelected": "تم اختيار {templateName}.",
+  "@studentCvTemplateSelected": {
+    "placeholders": {
+      "templateName": {}
+    }
+  },
+  "studentCvClassicDefault": "سيتم استخدام Classic ما لم تختر نمطاً آخر.",
+  "studentCvBuildBeforeStyle": "أنشئ CV قبل اختيار النمط.",
+  "studentCvApplicationFile": "ملف التقديم",
+  "studentCvPdfReadyApplications": "ملف PDF جاهز للتقديمات.",
+  "studentCvSaveBuilderAsPdf": "احفظ CV المُنشأ كملف PDF.",
+  "studentCvBuildOrUploadFile": "أنشئ أو ارفع ملف CV.",
+  "studentRefreshCv": "تحديث CV",
+  "studentCompaniesWillSee": "سترى الشركات",
+  "studentUseBuiltCvInstead": "استخدام CV المُنشأ بدلاً من ذلك",
+  "studentUseUploadedCvInstead": "استخدام CV المرفوع بدلاً من ذلك",
+  "studentUploadPdf": "رفع PDF",
+  "studentViewActiveCv": "عرض CV النشط",
+  "studentSaveAsPdf": "حفظ كـ PDF",
+  "studentCvReadiness": "جاهزية CV",
+  "studentCvEssentialsComplete": "{completed} من {total} عناصر أساسية مكتملة",
+  "@studentCvEssentialsComplete": {
+    "placeholders": {
+      "completed": {},
+      "total": {}
+    }
+  },
+  "studentUploadedPdfActive": "ملف PDF المرفوع نشط",
+  "studentUploadedCvActiveMessage": "{fileName} هو الملف الذي تستلمه الشركات مع طلباتك.",
+  "@studentUploadedCvActiveMessage": {
+    "placeholders": {
+      "fileName": {}
+    }
+  },
+  "studentFileUploaded": "تم رفع الملف",
+  "studentApplicationReady": "جاهز للتقديم",
+  "studentUploadedPdfReadyAttach": "ملف PDF المرفوع جاهز للإرفاق.",
+  "studentUploadedFileSavedPreviewLimited": "تم حفظ الملف المرفوع، لكن معاينة PDF قد تكون محدودة.",
+  "studentReplacePdf": "استبدال PDF",
+  "studentBuildInstead": "الإنشاء بدلاً من ذلك",
+  "studentStructuredCvBuilder": "منشئ CV المنظم",
+  "studentTemplateEditSavePdf": "قالب {templateName}. عدّل التفاصيل، عاينها، ثم احفظ ملف PDF.",
+  "@studentTemplateEditSavePdf": {
+    "placeholders": {
+      "templateName": {}
+    }
+  },
+  "studentCreatePolishedCv": "أنشئ CV مصقولاً من تفاصيل ملفك المنظمة.",
+  "studentNotStarted": "لم يبدأ",
+  "studentEditBuilder": "تعديل المنشئ",
+  "studentStartBuilder": "بدء المنشئ",
+  "studentSavePdf": "حفظ PDF",
+  "studentApplicationFiles": "ملفات التقديم",
+  "studentApplicationFilesSubtitle": "اختر المستند الذي سيستلمه مسؤولو التوظيف عند التقديم.",
+  "studentUploadPdfCv": "رفع CV بصيغة PDF",
+  "studentUseExistingPdfWhileBuilding": "استخدم ملفاً موجوداً أثناء إنشاء CV منظم.",
+  "studentBuiltCvPdf": "ملف PDF لـ CV المُنشأ",
+  "studentReplaceUploadedPdf": "استبدال PDF المرفوع",
+  "studentAttachNewPdf": "أرفق ملف PDF جديداً من جهازك.",
+  "studentNoActiveCvYet": "لا يوجد CV نشط بعد",
+  "studentUploadedPdf": "PDF مرفوع",
+  "studentBuilderDraft": "مسودة المنشئ",
+  "studentCvStartApplyingFaster": "أنشئ CV منظماً أو ارفع PDF للبدء في التقديم بسرعة أكبر.",
+  "studentSavedBuilderPdfReady": "ملف PDF المحفوظ من المنشئ جاهز للتقديمات.",
+  "studentUploadedFileUsedApplications": "يُستخدم ملفك المرفوع حالياً في التقديمات.",
+  "studentPreviewDraftSavePdf": "عاين المسودة، ثم احفظها كملف PDF قبل التقديم.",
+  "studentUploadedRecently": "تم الرفع مؤخراً",
+  "studentUploadedDate": "تم الرفع في {date}",
+  "@studentUploadedDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentReadinessSemantic": "{title}، {status}",
+  "@studentReadinessSemantic": {
+    "placeholders": {
+      "status": {},
+      "title": {}
+    }
+  },
+  "studentComplete": "مكتمل",
+  "studentIncomplete": "غير مكتمل",
+  "studentMakeActive": "جعله نشطاً",
+  "studentCvDownloadReadyMessage": "تنزيل ملف PDF الخاص بـ CV جاهز.",
+  "studentDownloadReadyTitle": "التنزيل جاهز",
+  "studentCvDownloadOpenedMessage": "استخدم نافذة النظام لحفظ أو مشاركة ملف PDF الخاص بـ CV.",
+  "studentDownloadOpenedTitle": "تم فتح التنزيل",
+  "studentCvDownloadError": "تعذّر تنزيل ملف PDF الخاص بـ CV. {error}",
+  "@studentCvDownloadError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "studentDownloadUnavailableTitle": "التنزيل غير متاح",
+  "studentDownloadPdf": "تنزيل PDF",
+  "studentProfileUpdatedSuccess": "تم تحديث ملفك الشخصي بنجاح.",
+  "studentSignInViewCreatorProfile": "سجّل الدخول لعرض ملف صاحب الفكرة.",
+  "studentProfileUnavailable": "الملف الشخصي غير متاح",
+  "studentSignInSaveInternships": "سجّل الدخول لحفظ التدريبات لوقت لاحق.",
+  "studentSignInSaveOpportunities": "سجّل الدخول لحفظ الفرص لوقت لاحق.",
+  "studentSignInContinueApplication": "سجّل الدخول لمتابعة طلبك.",
+  "studentCreateCvBeforeApplying": "أنشئ CV قبل التقديم على هذه الفرصة.",
+  "studentWithdrawApplicationTitle": "سحب الطلب",
+  "studentWithdrawApplicationMessage": "هل أنت متأكد من سحب طلبك؟ يمكنك التقديم مرة أخرى ما دامت الفرصة مفتوحة.",
+  "studentWithdraw": "سحب",
+  "studentApplicationSubmittedSuccess": "تم إرسال طلبك بنجاح.",
+  "studentApplicationSentTitle": "تم إرسال الطلب",
+  "studentApplicationWithdrawnSuccess": "تم سحب طلبك.",
+  "studentWithdrawalFailedTitle": "فشل السحب",
+  "studentOpportunitySaved": "تم حفظ الفرصة",
+  "studentRemovedFromSavedOpportunities": "تمت الإزالة من الفرص المحفوظة",
+  "studentSignInChatCompany": "سجّل الدخول للدردشة مع الشركة.",
+  "studentPublisherUnavailableMessage": "ملف الناشر غير متاح لهذه الفرصة.",
+  "studentPublisherUnavailableTitle": "الناشر غير متاح",
+  "studentFutureGatePublisher": "ناشر FutureGate",
+  "studentOpportunityPublisher": "ناشر الفرصة",
+  "studentPublisherProfileFallbackAbout": "ملف عام للناشر المسؤول عن هذه الفرصة.",
+  "studentLoginToApply": "تسجيل الدخول للتقديم",
+  "studentApplyForFunding": "التقديم للتمويل",
+  "studentStatusWithValue": "الحالة: {status}",
+  "@studentStatusWithValue": {
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "studentAlreadyApplied": "تم التقديم مسبقاً",
+  "studentOpportunityClosed": "الفرصة مغلقة",
+  "studentNoLongerAvailable": "لم تعد متاحة",
+  "studentMustBeLoggedInApply": "يجب تسجيل الدخول للتقديم.",
+  "studentCanApplyOpportunity": "يمكنك التقديم على هذه الفرصة.",
+  "studentAlreadyAppliedOpportunity": "لقد قدمت على هذه الفرصة مسبقاً.",
+  "studentOpportunityClosedMessage": "هذه الفرصة مغلقة.",
+  "studentOpportunityUnavailableMessage": "لم تعد هذه الفرصة متاحة.",
+  "studentSalary": "الراتب",
+  "studentProgramOverview": "نظرة عامة على البرنامج",
+  "studentShareOpportunitySubject": "فرصة على FutureGate",
+  "studentShareCompanyLine": "الشركة: {company}",
+  "@studentShareCompanyLine": {
+    "placeholders": {
+      "company": {}
+    }
+  },
+  "studentShareTypeLine": "النوع: {type}",
+  "@studentShareTypeLine": {
+    "placeholders": {
+      "type": {}
+    }
+  },
+  "studentShareLocationLine": "الموقع: {location}",
+  "@studentShareLocationLine": {
+    "placeholders": {
+      "location": {}
+    }
+  },
+  "studentShareDurationLine": "المدة: {duration}",
+  "@studentShareDurationLine": {
+    "placeholders": {
+      "duration": {}
+    }
+  },
+  "studentShareDeadlineLine": "الموعد النهائي: {deadline}",
+  "@studentShareDeadlineLine": {
+    "placeholders": {
+      "deadline": {}
+    }
+  },
+  "studentSharedFromFutureGate": "تمت المشاركة من FutureGate",
+  "studentApplicationWithdrawnBefore": "تم سحب الطلب سابقاً",
+  "studentWithdrawnCurrentMessage": "لقد سحبت طلبك لهذه الفرصة. يمكنك التقديم مرة أخرى ما دامت مفتوحة.",
+  "studentWithdrawnPreviousMessage": "سبق أن سحبت طلباً لهذه الفرصة.",
+  "studentCanMessageCompany": "يمكنك الآن مراسلة {company}.",
+  "@studentCanMessageCompany": {
+    "placeholders": {
+      "company": {}
+    }
+  },
+  "studentTheCompany": "الشركة",
+  "studentOriginalLanguageValue": "{label}: {language}",
+  "@studentOriginalLanguageValue": {
+    "placeholders": {
+      "label": {},
+      "language": {}
+    }
+  },
+  "studentIdeaDeletedSuccess": "تم حذف الفكرة بنجاح.",
+  "studentOpportunityNoLongerAvailable": "لم تعد هذه الفرصة متاحة.",
+  "studentScholarshipNoLongerAvailable": "لم تعد هذه المنحة متاحة.",
+  "studentRemoveSavedItemError": "تعذّرت إزالة هذا العنصر حالياً.",
+  "studentRemovedFromSavedScholarships": "تمت الإزالة من المنح المحفوظة",
+  "studentRemovedFromSavedTrainings": "تمت الإزالة من التدريبات المحفوظة",
+  "studentRemovedFromSavedIdeas": "تمت الإزالة من الأفكار المحفوظة",
+  "studentSavedFilterTrainings": "التدريبات",
+  "studentSponsoredFilter": "مدعومة",
+  "studentItemsShown": "{count} عناصر معروضة",
+  "@studentItemsShown": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentSavedItemOne": "عنصر محفوظ واحد",
+  "studentSavedItemsCount": "{count} عناصر محفوظة",
+  "@studentSavedItemsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentNoSavedItemsMatchView": "لا توجد عناصر محفوظة تطابق هذا العرض",
+  "studentNoSavedItemsYet": "لا توجد عناصر محفوظة بعد",
+  "studentNoSavedItemsMatchMessage": "جرّب بحثاً أو فلترًا مختلفاً لعرض المزيد من العناصر المحفوظة.",
+  "studentNoSavedItemsYetMessage": "احفظ الفرص أو المنح أو التدريبات أو الأفكار لبناء قائمتك المختصرة.",
+  "studentExploreOpportunities": "استكشاف الفرص",
+  "studentLocationNotSpecified": "الموقع غير محدد",
+  "studentFundingValue": "التمويل: {funding}",
+  "@studentFundingValue": {
+    "placeholders": {
+      "funding": {}
+    }
+  },
+  "studentScholarshipFallback": "منحة",
+  "studentDestinationNotSpecified": "الوجهة غير محددة",
+  "studentTrainingFallback": "تدريب",
+  "studentSavedItemFallback": "عنصر محفوظ",
+  "studentRelativeSaved": "محفوظ",
+  "studentRelativeToday": "اليوم",
+  "studentRelativeYesterday": "أمس",
+  "studentDaysAgoCompact": "منذ {count} يوم",
+  "@studentDaysAgoCompact": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentWeeksAgoCompact": "منذ {count} أسبوع",
+  "@studentWeeksAgoCompact": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentNoDeadlineShared": "لم تتم مشاركة موعد نهائي",
+  "studentClosedDate": "أُغلقت في {date}",
+  "@studentClosedDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentClosesDate": "تُغلق في {date}",
+  "@studentClosesDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentInterestedCountLower": "{count} مهتم",
+  "@studentInterestedCountLower": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentInterestedCountTitle": "{count} مهتم",
+  "@studentInterestedCountTitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentDashboardApprovedApplicationsTitle": "تم قبول {count} {word}.",
+  "@studentDashboardApprovedApplicationsTitle": {
+    "placeholders": {
+      "count": {},
+      "word": {}
+    }
+  },
+  "studentDashboardPendingApplicationsTitle": "{count} {word} قيد المراجعة.",
+  "@studentDashboardPendingApplicationsTitle": {
+    "placeholders": {
+      "count": {},
+      "word": {}
+    }
+  },
+  "studentApplicationSingular": "طلب",
+  "studentApplicationsPlural": "طلبات",
+  "studentDashboardSavedResourceLinkUnavailable": "رابط هذا المورد المحفوظ غير متاح.",
+  "studentDashboardSavedResourceOpenError": "تعذّر فتح هذا المورد المحفوظ حالياً.",
+  "studentSavedScholarshipFrom": "منحة محفوظة من {provider}",
+  "@studentSavedScholarshipFrom": {
+    "placeholders": {
+      "provider": {}
+    }
+  },
+  "studentSavedScholarshipNeedsAttention": "منحة محفوظة تحتاج إلى اهتمام",
+  "studentSavedIdea": "فكرة محفوظة",
+  "studentUploadedCvReady": "CV المرفوع جاهز للإرسال",
+  "studentHybridCvReady": "أصول CV المرفوع وCV المُنشأ جاهزة",
+  "studentBuilderCvRefreshed": "تم تحديث CV المُنشأ لتسريع التقديم",
+  "studentCvReadyNextApplication": "CV جاهز لطلبك التالي",
+  "studentSkillSingular": "مهارة",
+  "studentSkillsPlural": "مهارات",
+  "studentExperienceBlockSingular": "جزء خبرة",
+  "studentExperienceBlocksPlural": "أجزاء خبرة",
+  "studentLanguageSingular": "لغة",
+  "studentLanguagesPlural": "لغات",
+  "studentCvUpdated": "تم تحديث CV",
+  "studentYourCvReady": "CV الخاص بك جاهز",
+  "studentBuilderCvUpdated": "تم تحديث CV المُنشأ",
+  "studentPrimaryFileAttached": "تم إرفاق الملف الأساسي",
+  "studentProfileDataSynced": "تمت مزامنة بيانات الملف الشخصي",
+  "studentClosesMonthDay": "تُغلق في {date}",
+  "@studentClosesMonthDay": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentDeadlineComingUp": "الموعد النهائي يقترب.",
+  "studentAddItem": "إضافة عنصر",
+  "studentStudentSpace": "مساحة الطالب",
+  "studentReady": "جاهز",
+  "studentDraft": "مسودة",
+  "studentEmpty": "فارغ",
+  "studentAvailable": "متاح",
+  "studentUploadingEllipsis": "جارٍ الرفع...",
+  "studentSavingEllipsis": "جارٍ الحفظ...",
+  "studentSaveChangesTitleCase": "حفظ التغييرات",
+  "studentManaged": "مُدار",
+  "studentReset": "إعادة ضبط",
+  "studentCvBuilderSteps": "خطوات منشئ CV",
+  "studentCvSectionsComplete": "{completed} من {total} أقسام مكتملة",
+  "@studentCvSectionsComplete": {
+    "placeholders": {
+      "completed": {},
+      "total": {}
+    }
+  },
+  "studentAddYourEducation": "أضف تعليمك",
+  "studentAddYourExperience": "أضف خبرتك",
+  "studentRecentTrainingBook": "كتاب",
+  "studentRecentTrainingCourse": "دورة",
+  "studentRecentTrainingVideo": "فيديو",
+  "studentRecentTrainingFile": "ملف",
+  "studentRecentTrainingLearning": "تعلم",
+  "studentRecommendationFitsFocus": "يناسب تركيزك على {focus}.",
+  "@studentRecommendationFitsFocus": {
+    "placeholders": {
+      "focus": {}
+    }
+  },
+  "studentRecommendationGoodForLevel": "مناسب لطلاب مستوى {level}.",
+  "@studentRecommendationGoodForLevel": {
+    "placeholders": {
+      "level": {}
+    }
+  },
+  "studentRecommendationNearLocation": "قريب من موقعك.",
+  "studentRecommendationRemoteFriendly": "مناسب للعمل عن بُعد.",
+  "studentRecommendationHybridSchedule": "جدول هجين.",
+  "studentRecommendationPaidOpportunity": "فرصة مدفوعة الأجر.",
+  "studentRecommendationTeamHighlighted": "مميزة من الفريق.",
+  "studentRecommendationBuildsExperience": "يبني خبرة حقيقية.",
+  "studentRecommendationSupportPath": "مسار دعم واضح.",
+  "studentRecommendationStrongNextStep": "خطوة تالية قوية.",
+  "studentProfileHintAddCv": "أضف CV لتصبح طلباتك أسرع عندما تظهر الفرصة المناسبة.",
+  "studentProfileHintAcademic": "أكمل تفاصيلك الأكاديمية لتصبح الفرص أكثر ملاءمة لمسارك الطلابي.",
+  "studentProfileHintBio": "نبذة قصيرة تجعل ملفك الشخصي أكثر اكتمالاً ووضوحاً.",
+  "studentProfileHintContact": "رتّب تفاصيل التواصل الأساسية ليبدو ملفك مكتملاً في كل مكان داخل التطبيق.",
+  "studentProfileHintGoodShape": "ملفك الشخصي في حالة جيدة للفرصة التالية التي تفتحها.",
+  "studentAddCv": "إضافة CV",
+  "studentCompleteProfile": "إكمال الملف الشخصي",
+  "studentReviewProfile": "مراجعة الملف الشخصي"
 }

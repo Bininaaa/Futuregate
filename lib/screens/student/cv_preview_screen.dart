@@ -47,15 +47,15 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
 
     if (error == null) {
       context.showAppSnackBar(
-        'Your CV PDF was saved to My CV.',
-        title: 'PDF saved',
+        AppLocalizations.of(context)!.studentCvPdfSavedToMyCv,
+        title: AppLocalizations.of(context)!.uiExportComplete,
         type: AppFeedbackType.success,
       );
       Navigator.pop(context, true);
     } else {
       context.showAppSnackBar(
         error,
-        title: 'Save unavailable',
+        title: AppLocalizations.of(context)!.uiSaveUnavailable,
         type: AppFeedbackType.error,
       );
     }
@@ -80,8 +80,8 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
       }
 
       context.showAppSnackBar(
-        'Your CV PDF download is ready.',
-        title: 'Download ready',
+        AppLocalizations.of(context)!.studentCvDownloadReadyMessage,
+        title: AppLocalizations.of(context)!.studentDownloadReadyTitle,
         type: AppFeedbackType.success,
       );
     } catch (error) {
@@ -95,15 +95,15 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
           throw Exception('Download unavailable.');
         }
         context.showAppSnackBar(
-          'Use the system sheet to save or share your CV PDF.',
-          title: 'Download opened',
+          AppLocalizations.of(context)!.studentCvDownloadOpenedMessage,
+          title: AppLocalizations.of(context)!.studentDownloadOpenedTitle,
           type: AppFeedbackType.info,
         );
       } catch (_) {
         if (!mounted) return;
         context.showAppSnackBar(
-          'We couldn\'t download this CV PDF. $error',
-          title: 'Download unavailable',
+          AppLocalizations.of(context)!.studentCvDownloadError(error),
+          title: AppLocalizations.of(context)!.studentDownloadUnavailableTitle,
           type: AppFeedbackType.error,
         );
       }
@@ -172,7 +172,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Generating PDF...',
+                            AppLocalizations.of(context)!.uiGeneratingPdf,
                             style: SettingsFlowTheme.caption(),
                           ),
                         ],
@@ -190,8 +190,10 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                           title: AppLocalizations.of(
                             context,
                           )!.uiPreviewUnavailable,
-                          message:
-                              'We couldn\'t generate this PDF preview right now. ${snapshot.error}',
+                          message: AppLocalizations.of(context)!
+                              .uiWeCouldnTGenerateThisPdfPreviewRightNowValue(
+                                snapshot.error!,
+                              ),
                           accentColor: SettingsFlowPalette.error,
                         ),
                       ),
@@ -239,14 +241,18 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
                         return SettingsButtonGroup(
                           children: [
                             SettingsSecondaryButton(
-                              label: 'Download PDF',
+                              label: AppLocalizations.of(
+                                context,
+                              )!.studentDownloadPdf,
                               icon: Icons.download_rounded,
                               onPressed: pdfBytes == null
                                   ? null
                                   : () => _download(pdfBytes),
                             ),
                             SettingsPrimaryButton(
-                              label: 'Save PDF to My CV',
+                              label: AppLocalizations.of(
+                                context,
+                              )!.uiExportSaveCv,
                               icon: Icons.cloud_upload_outlined,
                               onPressed: !snapshot.hasData || snapshot.hasError
                                   ? null

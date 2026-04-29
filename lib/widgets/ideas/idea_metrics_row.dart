@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import 'innovation_hub_theme.dart';
 
 class IdeaMetricsRow extends StatelessWidget {
@@ -34,7 +35,9 @@ class IdeaMetricsRow extends StatelessWidget {
           Icon(Icons.people_outline_rounded, size: 15, color: iconColor),
           const SizedBox(width: 6),
           Text(
-            '$interestedCount Interested',
+            AppLocalizations.of(
+              context,
+            )!.studentInterestedCountTitle(interestedCount),
             style: InnovationHubTypography.label(color: labelColor, size: 11.5),
           ),
         ],

@@ -7877,7 +7877,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String dashFocusProfileSubtitle(Object count) {
-    return '$count تفصيل لا يزال ناقصاً لمطابقة أفضل.';
+    return 'لا تزال هناك $count تفاصيل ناقصة لتحسين المطابقة.';
   }
 
   @override
@@ -7911,12 +7911,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String dashFocusClosingSoonInsight(Object company, Object deadline) {
-    return '$company هي الأولى، وتُغلق $deadline.';
+    return '$company هي الأولوية الآن، وتُغلق $deadline.';
   }
 
   @override
   String get dashSavedBannerEmpty =>
-      'احتفظ بأفضل وظائفك والتمويل والاختيارات التعليمية في متناول يدك.';
+      'احتفظ بأقوى الفرص والتمويلات وخيارات التعلم في متناولك.';
 
   @override
   String dashSavedBannerCount(Object count) {
@@ -7934,7 +7934,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String dashDaysLeft(Object count) {
-    return 'متبقٍ $count أيام';
+    return 'متبقٍ $count يوم';
   }
 
   @override
@@ -7950,7 +7950,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get discoverTrendingSubtitle =>
-      'اختيارات مميزة وحديثة من بيانات فعلية';
+      'اختيارات حديثة ومميزة وعالية الجودة من البيانات المباشرة';
 
   @override
   String get discoverTrendingEmptyHint =>
@@ -7958,6 +7958,1001 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String discoverLatestSubtitle(Object count) {
-    return 'أحدث $count وظائف وتدريبات ومسارات ممولة';
+    return 'أحدث $count وظائف وتدريبات ومسارات مدعومة';
   }
+
+  @override
+  String get studentOpportunityNoLongerAvailableOpen =>
+      'لم تعد هذه الفرصة متاحة للفتح.';
+
+  @override
+  String get studentApplicationFilterWithdrawn => 'مسحوبة';
+
+  @override
+  String studentFilterCount(Object count, Object label) {
+    return '$label ($count)';
+  }
+
+  @override
+  String studentApplicationsShown(Object count) {
+    return '$count طلبات معروضة';
+  }
+
+  @override
+  String get studentAppliedOpportunityOne => 'فرصة واحدة تم التقديم لها';
+
+  @override
+  String studentAppliedOpportunitiesCount(Object count) {
+    return '$count فرص تم التقديم لها';
+  }
+
+  @override
+  String get studentBrowseOpportunities => 'تصفح الفرص';
+
+  @override
+  String get studentNoApplicationsMatchMessage =>
+      'جرّب بحثاً أو فلترًا مختلفاً لعرض المزيد من سجل طلباتك.';
+
+  @override
+  String get studentNoApplicationsYetMessage =>
+      'ابدأ التقديم على الفرص وتابعها هنا.';
+
+  @override
+  String get studentIdeaCoverUploadedSuccess => 'تم رفع صورة الغلاف بنجاح.';
+
+  @override
+  String get studentIdeaResubmittedSuccess => 'تمت إعادة إرسال الفكرة بنجاح.';
+
+  @override
+  String get studentIdeaResubmittedTitle => 'تمت إعادة إرسال الفكرة';
+
+  @override
+  String get studentIdeaImageUploadFailed =>
+      'تعذّر رفع الصورة. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get studentCurrentCoverImage => 'صورة الغلاف الحالية';
+
+  @override
+  String get studentPublishIdeaButton => 'نشر الفكرة';
+
+  @override
+  String get studentCreateIdeaTitle => 'إنشاء فكرة';
+
+  @override
+  String get studentUploadingCoverImage => 'جارٍ رفع صورة الغلاف...';
+
+  @override
+  String get studentEditingLockedAfterReview => 'التعديل مقفل بعد المراجعة';
+
+  @override
+  String get studentPublishAgain => 'النشر مرة أخرى';
+
+  @override
+  String get studentSubmitIdea => 'إرسال الفكرة';
+
+  @override
+  String get studentIdeaTitleHint => 'مثال: مساعد للصحة النفسية في الجامعة';
+
+  @override
+  String get studentIdeaTitleHelper =>
+      'استخدم اسماً واضحاً يوضح ماهية الفكرة ومن تخدم.';
+
+  @override
+  String get studentIdeaTaglineHint =>
+      'مثال: ابحث عن الدعم قبل أن يتزايد الضغط.';
+
+  @override
+  String get studentIdeaTaglineHelper => 'اكتب جملة قصيرة عن الفائدة الرئيسية.';
+
+  @override
+  String get studentChooseCategory => 'اختر فئة';
+
+  @override
+  String get studentPickIdeaCategory => 'اختر فئة الفكرة';
+
+  @override
+  String get studentChooseStage => 'اختر المرحلة';
+
+  @override
+  String get studentPickCurrentStage => 'اختر المرحلة الحالية';
+
+  @override
+  String get studentSelectStudentLevel => 'اختر مستوى الطالب';
+
+  @override
+  String get studentIdeaDescriptionSubtitle =>
+      'اشرح المفهوم والمشكلة التي يعالجها والحل الذي تريد أن يفهمه المتعاونون.';
+
+  @override
+  String get studentIdeaOverviewHint =>
+      'صف المفهوم وما يقدمه وكيف يمكن تنفيذه.';
+
+  @override
+  String get studentIdeaOverviewHelper =>
+      'أضف سياقاً كافياً ليسهل على المراجعين فهم الفكرة بسرعة.';
+
+  @override
+  String get studentIdeaProblemHint =>
+      'ما التحدي الطلابي الذي تحله هذه الفكرة؟';
+
+  @override
+  String get studentIdeaSolutionHint => 'اشرح الحل المقترح وما الذي يميّزه.';
+
+  @override
+  String get studentIdeaAudienceHint => 'طلاب، نوادٍ، مرشدون، جامعات...';
+
+  @override
+  String get studentIdeaBenefitsHint => 'لماذا تهم هذه الفكرة الآن؟';
+
+  @override
+  String get studentAddRole => 'إضافة دور';
+
+  @override
+  String get studentAddRoleHint => 'مثال: مطور، مصمم، باحث';
+
+  @override
+  String get studentAddRoleHelper =>
+      'أضف الأشخاص الذين تحتاجهم في الفريق، واحداً تلو الآخر أو مفصولين بفواصل.';
+
+  @override
+  String get studentAddSkillHint => 'مثال: Flutter، Firebase، بحث UX';
+
+  @override
+  String get studentAddSkillHelper =>
+      'أضف التقنيات أو مهارات التصميم أو البحث أو المعرفة بالمجال.';
+
+  @override
+  String get studentResourcesHint =>
+      'مثال: ملاحظات مرشد، مستخدمو اختبار، بيانات استبيان';
+
+  @override
+  String get studentResourcesHelper =>
+      'اذكر الدعم الذي تحتاجه: أشخاص، أدوات، وصول، تمويل أو ملاحظات.';
+
+  @override
+  String get studentIdeaLockNotice =>
+      'تبقى الأفكار المعتمدة مقفلة هنا. إذا أعادها مشرف للتعديل فستصبح قابلة للتحرير في هذا النموذج.';
+
+  @override
+  String get studentPleaseAddMoreDetail => 'يرجى إضافة مزيد من التفاصيل.';
+
+  @override
+  String get studentRefineAndPublishAgain => 'تحسين الفكرة ونشرها مجدداً';
+
+  @override
+  String get studentAdminPublishIdeaSubtitle =>
+      'أضف فكرة منسّقة من المنصة بقصة واضحة وبيانات منظمة وبنية نشر متوقعة.';
+
+  @override
+  String get studentResubmitIdeaSubtitle =>
+      'حدّث الفكرة، عالج سبب الرفض، وأرسلها للمراجعة مرة أخرى.';
+
+  @override
+  String get studentIdeaHeroSubtitle =>
+      'أنشئ ملف فكرة جاهزاً للتعاون والملاحظات والزخم الطلابي.';
+
+  @override
+  String studentCvTemplateUpdatedTo(Object templateName) {
+    return 'تم تحديث القالب إلى $templateName.';
+  }
+
+  @override
+  String get studentCvTemplateUpdatedTitle => 'تم تحديث القالب';
+
+  @override
+  String get studentCvTemplateUpdateUnavailable => 'تحديث القالب غير متاح';
+
+  @override
+  String get studentCvAddDetailsBeforeSaving =>
+      'أضف تفاصيل CV قبل حفظ ملف PDF.';
+
+  @override
+  String get studentCvPdfSavedToMyCv =>
+      'تم حفظ ملف PDF الخاص بـ CV في قسم CV الخاص بي.';
+
+  @override
+  String get studentCvFileUploaded => 'تم رفع ملف CV الخاص بك.';
+
+  @override
+  String get studentCvUsingUploaded => 'يتم الآن استخدام CV المرفوع.';
+
+  @override
+  String get studentCvUsingBuilt => 'يتم الآن استخدام CV المُنشأ.';
+
+  @override
+  String get studentPrimaryCvUpdated => 'تم تحديث CV الأساسي';
+
+  @override
+  String get studentRemoveUploadedCvTitle => 'إزالة CV المرفوع؟';
+
+  @override
+  String studentRemoveUploadedCvMessage(Object fileName) {
+    return 'سيؤدي ذلك إلى إزالة $fileName من استوديو CV. سيبقى محتوى CV المُنشأ متاحاً.';
+  }
+
+  @override
+  String get studentUploadedCvRemoved => 'تمت إزالة CV المرفوع.';
+
+  @override
+  String get studentCvRemovedTitle => 'تمت إزالة CV';
+
+  @override
+  String get studentResetBuiltCvTitle => 'إعادة ضبط CV المُنشأ؟';
+
+  @override
+  String get studentResetBuiltCvWithUploadedMessage =>
+      'سيؤدي ذلك إلى حذف تفاصيل CV المُنشأ وملف PDF المحفوظ. سيبقى CV المرفوع متاحاً.';
+
+  @override
+  String get studentResetBuiltCvMessage =>
+      'سيؤدي ذلك إلى حذف تفاصيل CV المُنشأ وملف PDF المحفوظ.';
+
+  @override
+  String get studentBuiltCvResetMessage => 'تمت إعادة ضبط CV المُنشأ.';
+
+  @override
+  String get studentBuiltCvResetTitle => 'تمت إعادة ضبط CV المُنشأ';
+
+  @override
+  String get studentFileNotValidPdfYet => 'هذا الملف ليس ملف PDF صالحاً بعد.';
+
+  @override
+  String get studentCouldNotOpenDocumentNow => 'تعذّر فتح المستند حالياً.';
+
+  @override
+  String get studentCvContactInfo => 'معلومات التواصل';
+
+  @override
+  String get studentCvNameEmailReady => 'الاسم والبريد الإلكتروني جاهزان.';
+
+  @override
+  String get studentCvAddNameEmail => 'أضف اسمك وبريدك الإلكتروني.';
+
+  @override
+  String get studentCvProfileIntroReady => 'يحتوي ملفك على مقدمة قصيرة.';
+
+  @override
+  String get studentCvWriteProfile => 'اكتب نبذة مهنية قصيرة.';
+
+  @override
+  String studentCvEducationSaved(Object count) {
+    return 'تم حفظ $count عنصر تعليمي.';
+  }
+
+  @override
+  String get studentCvAddEducation => 'أضف أحدث شهادة أو تكوين لديك.';
+
+  @override
+  String get studentCvExperienceProjects => 'الخبرات أو المشاريع';
+
+  @override
+  String studentCvExperienceSaved(Object count) {
+    return 'تم حفظ $count عنصر خبرة.';
+  }
+
+  @override
+  String get studentCvAddExperience => 'أضف تدريباً أو عملاً أو تجربة مشروع.';
+
+  @override
+  String studentCvSkillsListed(Object count) {
+    return 'تم إدراج $count مهارات.';
+  }
+
+  @override
+  String get studentCvListSkills => 'اذكر أقوى مهاراتك.';
+
+  @override
+  String studentCvLanguagesListed(Object count) {
+    return 'تم إدراج $count لغات.';
+  }
+
+  @override
+  String get studentCvAddLanguages =>
+      'أضف اللغات التي ينبغي أن يعرفها مسؤولو التوظيف.';
+
+  @override
+  String studentCvTemplateSelected(Object templateName) {
+    return 'تم اختيار $templateName.';
+  }
+
+  @override
+  String get studentCvClassicDefault =>
+      'سيتم استخدام Classic ما لم تختر نمطاً آخر.';
+
+  @override
+  String get studentCvBuildBeforeStyle => 'أنشئ CV قبل اختيار النمط.';
+
+  @override
+  String get studentCvApplicationFile => 'ملف التقديم';
+
+  @override
+  String get studentCvPdfReadyApplications => 'ملف PDF جاهز للتقديمات.';
+
+  @override
+  String get studentCvSaveBuilderAsPdf => 'احفظ CV المُنشأ كملف PDF.';
+
+  @override
+  String get studentCvBuildOrUploadFile => 'أنشئ أو ارفع ملف CV.';
+
+  @override
+  String get studentRefreshCv => 'تحديث CV';
+
+  @override
+  String get studentCompaniesWillSee => 'سترى الشركات';
+
+  @override
+  String get studentUseBuiltCvInstead => 'استخدام CV المُنشأ بدلاً من ذلك';
+
+  @override
+  String get studentUseUploadedCvInstead => 'استخدام CV المرفوع بدلاً من ذلك';
+
+  @override
+  String get studentUploadPdf => 'رفع PDF';
+
+  @override
+  String get studentViewActiveCv => 'عرض CV النشط';
+
+  @override
+  String get studentSaveAsPdf => 'حفظ كـ PDF';
+
+  @override
+  String get studentCvReadiness => 'جاهزية CV';
+
+  @override
+  String studentCvEssentialsComplete(Object completed, Object total) {
+    return '$completed من $total عناصر أساسية مكتملة';
+  }
+
+  @override
+  String get studentUploadedPdfActive => 'ملف PDF المرفوع نشط';
+
+  @override
+  String studentUploadedCvActiveMessage(Object fileName) {
+    return '$fileName هو الملف الذي تستلمه الشركات مع طلباتك.';
+  }
+
+  @override
+  String get studentFileUploaded => 'تم رفع الملف';
+
+  @override
+  String get studentApplicationReady => 'جاهز للتقديم';
+
+  @override
+  String get studentUploadedPdfReadyAttach => 'ملف PDF المرفوع جاهز للإرفاق.';
+
+  @override
+  String get studentUploadedFileSavedPreviewLimited =>
+      'تم حفظ الملف المرفوع، لكن معاينة PDF قد تكون محدودة.';
+
+  @override
+  String get studentReplacePdf => 'استبدال PDF';
+
+  @override
+  String get studentBuildInstead => 'الإنشاء بدلاً من ذلك';
+
+  @override
+  String get studentStructuredCvBuilder => 'منشئ CV المنظم';
+
+  @override
+  String studentTemplateEditSavePdf(Object templateName) {
+    return 'قالب $templateName. عدّل التفاصيل، عاينها، ثم احفظ ملف PDF.';
+  }
+
+  @override
+  String get studentCreatePolishedCv =>
+      'أنشئ CV مصقولاً من تفاصيل ملفك المنظمة.';
+
+  @override
+  String get studentNotStarted => 'لم يبدأ';
+
+  @override
+  String get studentEditBuilder => 'تعديل المنشئ';
+
+  @override
+  String get studentStartBuilder => 'بدء المنشئ';
+
+  @override
+  String get studentSavePdf => 'حفظ PDF';
+
+  @override
+  String get studentApplicationFiles => 'ملفات التقديم';
+
+  @override
+  String get studentApplicationFilesSubtitle =>
+      'اختر المستند الذي سيستلمه مسؤولو التوظيف عند التقديم.';
+
+  @override
+  String get studentUploadPdfCv => 'رفع CV بصيغة PDF';
+
+  @override
+  String get studentUseExistingPdfWhileBuilding =>
+      'استخدم ملفاً موجوداً أثناء إنشاء CV منظم.';
+
+  @override
+  String get studentBuiltCvPdf => 'ملف PDF لـ CV المُنشأ';
+
+  @override
+  String get studentReplaceUploadedPdf => 'استبدال PDF المرفوع';
+
+  @override
+  String get studentAttachNewPdf => 'أرفق ملف PDF جديداً من جهازك.';
+
+  @override
+  String get studentNoActiveCvYet => 'لا يوجد CV نشط بعد';
+
+  @override
+  String get studentUploadedPdf => 'PDF مرفوع';
+
+  @override
+  String get studentBuilderDraft => 'مسودة المنشئ';
+
+  @override
+  String get studentCvStartApplyingFaster =>
+      'أنشئ CV منظماً أو ارفع PDF للبدء في التقديم بسرعة أكبر.';
+
+  @override
+  String get studentSavedBuilderPdfReady =>
+      'ملف PDF المحفوظ من المنشئ جاهز للتقديمات.';
+
+  @override
+  String get studentUploadedFileUsedApplications =>
+      'يُستخدم ملفك المرفوع حالياً في التقديمات.';
+
+  @override
+  String get studentPreviewDraftSavePdf =>
+      'عاين المسودة، ثم احفظها كملف PDF قبل التقديم.';
+
+  @override
+  String get studentUploadedRecently => 'تم الرفع مؤخراً';
+
+  @override
+  String studentUploadedDate(Object date) {
+    return 'تم الرفع في $date';
+  }
+
+  @override
+  String studentReadinessSemantic(Object status, Object title) {
+    return '$title، $status';
+  }
+
+  @override
+  String get studentComplete => 'مكتمل';
+
+  @override
+  String get studentIncomplete => 'غير مكتمل';
+
+  @override
+  String get studentMakeActive => 'جعله نشطاً';
+
+  @override
+  String get studentCvDownloadReadyMessage => 'تنزيل ملف PDF الخاص بـ CV جاهز.';
+
+  @override
+  String get studentDownloadReadyTitle => 'التنزيل جاهز';
+
+  @override
+  String get studentCvDownloadOpenedMessage =>
+      'استخدم نافذة النظام لحفظ أو مشاركة ملف PDF الخاص بـ CV.';
+
+  @override
+  String get studentDownloadOpenedTitle => 'تم فتح التنزيل';
+
+  @override
+  String studentCvDownloadError(Object error) {
+    return 'تعذّر تنزيل ملف PDF الخاص بـ CV. $error';
+  }
+
+  @override
+  String get studentDownloadUnavailableTitle => 'التنزيل غير متاح';
+
+  @override
+  String get studentDownloadPdf => 'تنزيل PDF';
+
+  @override
+  String get studentProfileUpdatedSuccess => 'تم تحديث ملفك الشخصي بنجاح.';
+
+  @override
+  String get studentSignInViewCreatorProfile =>
+      'سجّل الدخول لعرض ملف صاحب الفكرة.';
+
+  @override
+  String get studentProfileUnavailable => 'الملف الشخصي غير متاح';
+
+  @override
+  String get studentSignInSaveInternships =>
+      'سجّل الدخول لحفظ التدريبات لوقت لاحق.';
+
+  @override
+  String get studentSignInSaveOpportunities =>
+      'سجّل الدخول لحفظ الفرص لوقت لاحق.';
+
+  @override
+  String get studentSignInContinueApplication => 'سجّل الدخول لمتابعة طلبك.';
+
+  @override
+  String get studentCreateCvBeforeApplying =>
+      'أنشئ CV قبل التقديم على هذه الفرصة.';
+
+  @override
+  String get studentWithdrawApplicationTitle => 'سحب الطلب';
+
+  @override
+  String get studentWithdrawApplicationMessage =>
+      'هل أنت متأكد من سحب طلبك؟ يمكنك التقديم مرة أخرى ما دامت الفرصة مفتوحة.';
+
+  @override
+  String get studentWithdraw => 'سحب';
+
+  @override
+  String get studentApplicationSubmittedSuccess => 'تم إرسال طلبك بنجاح.';
+
+  @override
+  String get studentApplicationSentTitle => 'تم إرسال الطلب';
+
+  @override
+  String get studentApplicationWithdrawnSuccess => 'تم سحب طلبك.';
+
+  @override
+  String get studentWithdrawalFailedTitle => 'فشل السحب';
+
+  @override
+  String get studentOpportunitySaved => 'تم حفظ الفرصة';
+
+  @override
+  String get studentRemovedFromSavedOpportunities =>
+      'تمت الإزالة من الفرص المحفوظة';
+
+  @override
+  String get studentSignInChatCompany => 'سجّل الدخول للدردشة مع الشركة.';
+
+  @override
+  String get studentPublisherUnavailableMessage =>
+      'ملف الناشر غير متاح لهذه الفرصة.';
+
+  @override
+  String get studentPublisherUnavailableTitle => 'الناشر غير متاح';
+
+  @override
+  String get studentFutureGatePublisher => 'ناشر FutureGate';
+
+  @override
+  String get studentOpportunityPublisher => 'ناشر الفرصة';
+
+  @override
+  String get studentPublisherProfileFallbackAbout =>
+      'ملف عام للناشر المسؤول عن هذه الفرصة.';
+
+  @override
+  String get studentLoginToApply => 'تسجيل الدخول للتقديم';
+
+  @override
+  String get studentApplyForFunding => 'التقديم للتمويل';
+
+  @override
+  String studentStatusWithValue(Object status) {
+    return 'الحالة: $status';
+  }
+
+  @override
+  String get studentAlreadyApplied => 'تم التقديم مسبقاً';
+
+  @override
+  String get studentOpportunityClosed => 'الفرصة مغلقة';
+
+  @override
+  String get studentNoLongerAvailable => 'لم تعد متاحة';
+
+  @override
+  String get studentMustBeLoggedInApply => 'يجب تسجيل الدخول للتقديم.';
+
+  @override
+  String get studentCanApplyOpportunity => 'يمكنك التقديم على هذه الفرصة.';
+
+  @override
+  String get studentAlreadyAppliedOpportunity =>
+      'لقد قدمت على هذه الفرصة مسبقاً.';
+
+  @override
+  String get studentOpportunityClosedMessage => 'هذه الفرصة مغلقة.';
+
+  @override
+  String get studentOpportunityUnavailableMessage => 'لم تعد هذه الفرصة متاحة.';
+
+  @override
+  String get studentSalary => 'الراتب';
+
+  @override
+  String get studentProgramOverview => 'نظرة عامة على البرنامج';
+
+  @override
+  String get studentShareOpportunitySubject => 'فرصة على FutureGate';
+
+  @override
+  String studentShareCompanyLine(Object company) {
+    return 'الشركة: $company';
+  }
+
+  @override
+  String studentShareTypeLine(Object type) {
+    return 'النوع: $type';
+  }
+
+  @override
+  String studentShareLocationLine(Object location) {
+    return 'الموقع: $location';
+  }
+
+  @override
+  String studentShareDurationLine(Object duration) {
+    return 'المدة: $duration';
+  }
+
+  @override
+  String studentShareDeadlineLine(Object deadline) {
+    return 'الموعد النهائي: $deadline';
+  }
+
+  @override
+  String get studentSharedFromFutureGate => 'تمت المشاركة من FutureGate';
+
+  @override
+  String get studentApplicationWithdrawnBefore => 'تم سحب الطلب سابقاً';
+
+  @override
+  String get studentWithdrawnCurrentMessage =>
+      'لقد سحبت طلبك لهذه الفرصة. يمكنك التقديم مرة أخرى ما دامت مفتوحة.';
+
+  @override
+  String get studentWithdrawnPreviousMessage =>
+      'سبق أن سحبت طلباً لهذه الفرصة.';
+
+  @override
+  String studentCanMessageCompany(Object company) {
+    return 'يمكنك الآن مراسلة $company.';
+  }
+
+  @override
+  String get studentTheCompany => 'الشركة';
+
+  @override
+  String studentOriginalLanguageValue(Object label, Object language) {
+    return '$label: $language';
+  }
+
+  @override
+  String get studentIdeaDeletedSuccess => 'تم حذف الفكرة بنجاح.';
+
+  @override
+  String get studentOpportunityNoLongerAvailable => 'لم تعد هذه الفرصة متاحة.';
+
+  @override
+  String get studentScholarshipNoLongerAvailable => 'لم تعد هذه المنحة متاحة.';
+
+  @override
+  String get studentRemoveSavedItemError => 'تعذّرت إزالة هذا العنصر حالياً.';
+
+  @override
+  String get studentRemovedFromSavedScholarships =>
+      'تمت الإزالة من المنح المحفوظة';
+
+  @override
+  String get studentRemovedFromSavedTrainings =>
+      'تمت الإزالة من التدريبات المحفوظة';
+
+  @override
+  String get studentRemovedFromSavedIdeas => 'تمت الإزالة من الأفكار المحفوظة';
+
+  @override
+  String get studentSavedFilterTrainings => 'التدريبات';
+
+  @override
+  String get studentSponsoredFilter => 'مدعومة';
+
+  @override
+  String studentItemsShown(Object count) {
+    return '$count عناصر معروضة';
+  }
+
+  @override
+  String get studentSavedItemOne => 'عنصر محفوظ واحد';
+
+  @override
+  String studentSavedItemsCount(Object count) {
+    return '$count عناصر محفوظة';
+  }
+
+  @override
+  String get studentNoSavedItemsMatchView =>
+      'لا توجد عناصر محفوظة تطابق هذا العرض';
+
+  @override
+  String get studentNoSavedItemsYet => 'لا توجد عناصر محفوظة بعد';
+
+  @override
+  String get studentNoSavedItemsMatchMessage =>
+      'جرّب بحثاً أو فلترًا مختلفاً لعرض المزيد من العناصر المحفوظة.';
+
+  @override
+  String get studentNoSavedItemsYetMessage =>
+      'احفظ الفرص أو المنح أو التدريبات أو الأفكار لبناء قائمتك المختصرة.';
+
+  @override
+  String get studentExploreOpportunities => 'استكشاف الفرص';
+
+  @override
+  String get studentLocationNotSpecified => 'الموقع غير محدد';
+
+  @override
+  String studentFundingValue(Object funding) {
+    return 'التمويل: $funding';
+  }
+
+  @override
+  String get studentScholarshipFallback => 'منحة';
+
+  @override
+  String get studentDestinationNotSpecified => 'الوجهة غير محددة';
+
+  @override
+  String get studentTrainingFallback => 'تدريب';
+
+  @override
+  String get studentSavedItemFallback => 'عنصر محفوظ';
+
+  @override
+  String get studentRelativeSaved => 'محفوظ';
+
+  @override
+  String get studentRelativeToday => 'اليوم';
+
+  @override
+  String get studentRelativeYesterday => 'أمس';
+
+  @override
+  String studentDaysAgoCompact(Object count) {
+    return 'منذ $count يوم';
+  }
+
+  @override
+  String studentWeeksAgoCompact(Object count) {
+    return 'منذ $count أسبوع';
+  }
+
+  @override
+  String get studentNoDeadlineShared => 'لم تتم مشاركة موعد نهائي';
+
+  @override
+  String studentClosedDate(Object date) {
+    return 'أُغلقت في $date';
+  }
+
+  @override
+  String studentClosesDate(Object date) {
+    return 'تُغلق في $date';
+  }
+
+  @override
+  String studentInterestedCountLower(Object count) {
+    return '$count مهتم';
+  }
+
+  @override
+  String studentInterestedCountTitle(Object count) {
+    return '$count مهتم';
+  }
+
+  @override
+  String studentDashboardApprovedApplicationsTitle(Object count, Object word) {
+    return 'تم قبول $count $word.';
+  }
+
+  @override
+  String studentDashboardPendingApplicationsTitle(Object count, Object word) {
+    return '$count $word قيد المراجعة.';
+  }
+
+  @override
+  String get studentApplicationSingular => 'طلب';
+
+  @override
+  String get studentApplicationsPlural => 'طلبات';
+
+  @override
+  String get studentDashboardSavedResourceLinkUnavailable =>
+      'رابط هذا المورد المحفوظ غير متاح.';
+
+  @override
+  String get studentDashboardSavedResourceOpenError =>
+      'تعذّر فتح هذا المورد المحفوظ حالياً.';
+
+  @override
+  String studentSavedScholarshipFrom(Object provider) {
+    return 'منحة محفوظة من $provider';
+  }
+
+  @override
+  String get studentSavedScholarshipNeedsAttention =>
+      'منحة محفوظة تحتاج إلى اهتمام';
+
+  @override
+  String get studentSavedIdea => 'فكرة محفوظة';
+
+  @override
+  String get studentUploadedCvReady => 'CV المرفوع جاهز للإرسال';
+
+  @override
+  String get studentHybridCvReady => 'أصول CV المرفوع وCV المُنشأ جاهزة';
+
+  @override
+  String get studentBuilderCvRefreshed => 'تم تحديث CV المُنشأ لتسريع التقديم';
+
+  @override
+  String get studentCvReadyNextApplication => 'CV جاهز لطلبك التالي';
+
+  @override
+  String get studentSkillSingular => 'مهارة';
+
+  @override
+  String get studentSkillsPlural => 'مهارات';
+
+  @override
+  String get studentExperienceBlockSingular => 'جزء خبرة';
+
+  @override
+  String get studentExperienceBlocksPlural => 'أجزاء خبرة';
+
+  @override
+  String get studentLanguageSingular => 'لغة';
+
+  @override
+  String get studentLanguagesPlural => 'لغات';
+
+  @override
+  String get studentCvUpdated => 'تم تحديث CV';
+
+  @override
+  String get studentYourCvReady => 'CV الخاص بك جاهز';
+
+  @override
+  String get studentBuilderCvUpdated => 'تم تحديث CV المُنشأ';
+
+  @override
+  String get studentPrimaryFileAttached => 'تم إرفاق الملف الأساسي';
+
+  @override
+  String get studentProfileDataSynced => 'تمت مزامنة بيانات الملف الشخصي';
+
+  @override
+  String studentClosesMonthDay(Object date) {
+    return 'تُغلق في $date';
+  }
+
+  @override
+  String get studentDeadlineComingUp => 'الموعد النهائي يقترب.';
+
+  @override
+  String get studentAddItem => 'إضافة عنصر';
+
+  @override
+  String get studentStudentSpace => 'مساحة الطالب';
+
+  @override
+  String get studentReady => 'جاهز';
+
+  @override
+  String get studentDraft => 'مسودة';
+
+  @override
+  String get studentEmpty => 'فارغ';
+
+  @override
+  String get studentAvailable => 'متاح';
+
+  @override
+  String get studentUploadingEllipsis => 'جارٍ الرفع...';
+
+  @override
+  String get studentSavingEllipsis => 'جارٍ الحفظ...';
+
+  @override
+  String get studentSaveChangesTitleCase => 'حفظ التغييرات';
+
+  @override
+  String get studentManaged => 'مُدار';
+
+  @override
+  String get studentReset => 'إعادة ضبط';
+
+  @override
+  String get studentCvBuilderSteps => 'خطوات منشئ CV';
+
+  @override
+  String studentCvSectionsComplete(Object completed, Object total) {
+    return '$completed من $total أقسام مكتملة';
+  }
+
+  @override
+  String get studentAddYourEducation => 'أضف تعليمك';
+
+  @override
+  String get studentAddYourExperience => 'أضف خبرتك';
+
+  @override
+  String get studentRecentTrainingBook => 'كتاب';
+
+  @override
+  String get studentRecentTrainingCourse => 'دورة';
+
+  @override
+  String get studentRecentTrainingVideo => 'فيديو';
+
+  @override
+  String get studentRecentTrainingFile => 'ملف';
+
+  @override
+  String get studentRecentTrainingLearning => 'تعلم';
+
+  @override
+  String studentRecommendationFitsFocus(Object focus) {
+    return 'يناسب تركيزك على $focus.';
+  }
+
+  @override
+  String studentRecommendationGoodForLevel(Object level) {
+    return 'مناسب لطلاب مستوى $level.';
+  }
+
+  @override
+  String get studentRecommendationNearLocation => 'قريب من موقعك.';
+
+  @override
+  String get studentRecommendationRemoteFriendly => 'مناسب للعمل عن بُعد.';
+
+  @override
+  String get studentRecommendationHybridSchedule => 'جدول هجين.';
+
+  @override
+  String get studentRecommendationPaidOpportunity => 'فرصة مدفوعة الأجر.';
+
+  @override
+  String get studentRecommendationTeamHighlighted => 'مميزة من الفريق.';
+
+  @override
+  String get studentRecommendationBuildsExperience => 'يبني خبرة حقيقية.';
+
+  @override
+  String get studentRecommendationSupportPath => 'مسار دعم واضح.';
+
+  @override
+  String get studentRecommendationStrongNextStep => 'خطوة تالية قوية.';
+
+  @override
+  String get studentProfileHintAddCv =>
+      'أضف CV لتصبح طلباتك أسرع عندما تظهر الفرصة المناسبة.';
+
+  @override
+  String get studentProfileHintAcademic =>
+      'أكمل تفاصيلك الأكاديمية لتصبح الفرص أكثر ملاءمة لمسارك الطلابي.';
+
+  @override
+  String get studentProfileHintBio =>
+      'نبذة قصيرة تجعل ملفك الشخصي أكثر اكتمالاً ووضوحاً.';
+
+  @override
+  String get studentProfileHintContact =>
+      'رتّب تفاصيل التواصل الأساسية ليبدو ملفك مكتملاً في كل مكان داخل التطبيق.';
+
+  @override
+  String get studentProfileHintGoodShape =>
+      'ملفك الشخصي في حالة جيدة للفرصة التالية التي تفتحها.';
+
+  @override
+  String get studentAddCv => 'إضافة CV';
+
+  @override
+  String get studentCompleteProfile => 'إكمال الملف الشخصي';
+
+  @override
+  String get studentReviewProfile => 'مراجعة الملف الشخصي';
 }

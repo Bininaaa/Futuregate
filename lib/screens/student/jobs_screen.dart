@@ -238,7 +238,7 @@ class _JobsScreenState extends State<JobsScreen> {
 
     if (userId == null || userId.isEmpty) {
       context.showAppSnackBar(
-        'Sign in to save opportunities for later.',
+        AppLocalizations.of(context)!.studentSignInSaveOpportunities,
         title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
@@ -1127,7 +1127,7 @@ class _JobsScreenState extends State<JobsScreen> {
                 ),
                 sliver: SliverToBoxAdapter(
                   child: Text(
-                    'Featured Jobs',
+                    AppLocalizations.of(context)!.uiFeaturedJobs,
                     style: AppTypography.product(
                       fontSize: isCompact ? 16 : 19,
                       fontWeight: FontWeight.w700,
@@ -1797,7 +1797,7 @@ class _JobsSearchBar extends StatelessWidget {
     return StudentSearchField(
       controller: controller,
       focusNode: focusNode,
-      hintText: 'Search roles, companies...',
+      hintText: AppLocalizations.of(context)!.uiSearchRolesCompanies,
       onClear: onClear,
     );
   }

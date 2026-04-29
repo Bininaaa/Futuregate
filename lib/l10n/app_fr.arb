@@ -2209,8 +2209,8 @@
   "uiSuggested": "Suggestions",
   "uiApprovedCompanies": "Entreprises approuvées",
   "uiNoApplicantsMatchYourSearch": "Aucun candidat ne correspond à votre recherche.",
-  "uiNoApprovedCompaniesMatchYourSearch": "Aucune entreprise approuvée ne correspond à votre recherche."
-, "pressBackAgainToExitApp": "Appuyez encore sur retour pour quitter l'application.",
+  "uiNoApprovedCompaniesMatchYourSearch": "Aucune entreprise approuvée ne correspond à votre recherche.",
+  "pressBackAgainToExitApp": "Appuyez encore sur retour pour quitter l'application.",
   "uiDashboardSubtitle": "Pulsation de la plateforme, charge de modération et points de contrôle rapides.",
   "uiUsersSubtitle": "Recherchez des utilisateurs, consultez les profils et gérez le statut des comptes.",
   "uiContentSubtitle": "Modérez les idées, candidatures, annonces, bourses et ressources de la bibliothèque.",
@@ -2339,5 +2339,557 @@
   "uiDaysAgoShort": "il y a {count} j",
   "uiAppsPerOpportunity": "{rate} candidatures par offre",
   "uiCvCompletionRateValue": "{percent} % ({totalCvs} sur {students} étudiants)",
-  "uiPendingApprovedIdeasValue": "{pending} en attente et {approved} approuvées"
+  "uiPendingApprovedIdeasValue": "{pending} en attente et {approved} approuvées",
+  "dashDayLeft": "1 jour restant",
+  "dashDaysLeft": "{count} jours restants",
+  "@dashDaysLeft": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashDeadlineSoon": "échéance proche",
+  "dashFocusClosingSoonInsight": "{company} est prioritaire et se clôture {deadline}.",
+  "@dashFocusClosingSoonInsight": {
+    "placeholders": {
+      "company": {},
+      "deadline": {}
+    }
+  },
+  "dashFocusClosingSoonSubtitle": "{count} opportunités se clôturent dans les deux prochaines semaines.",
+  "@dashFocusClosingSoonSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashFocusCvInsight": "Commencez par votre CV, puis affinez les détails du profil qui améliorent la pertinence des recommandations.",
+  "dashFocusCvSubtitle": "Un CV prêt accélère vos candidatures aux emplois, stages et bourses.",
+  "dashFocusInsightApprovedMomentum": "C’est un bon moment pour continuer à explorer pendant que votre profil suscite de l’intérêt.",
+  "dashFocusInsightDiscover": "Utilisez les accès rapides ci-dessous pour rejoindre les emplois, stages, bourses, formations ou votre liste sauvegardée.",
+  "dashFocusInsightInReview": "Un petit suivi maintenant gardera vos candidatures plus solides par la suite.",
+  "dashFocusInsightSavedReady": "Votre liste sauvegardée mérite une deuxième lecture avant que les échéances se rapprochent.",
+  "dashFocusProfileSubtitle": "{count} détail(s) encore manquant(s) pour améliorer la correspondance.",
+  "@dashFocusProfileSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashFocusSubtitleDiscover": "Explorez des emplois, stages, financements et formations pensés pour les étudiants qui avancent.",
+  "dashFocusSubtitleInReview": "Gardez quelques options solides en mouvement pendant que vous attendez les réponses.",
+  "dashLastDay": "Dernier jour",
+  "dashSavedBannerCount": "{count} élément(s) sauvegardé(s) prêt(s) pour une deuxième lecture.",
+  "@dashSavedBannerCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashSavedBannerEmpty": "Gardez vos meilleures offres, financements et formations à portée de main.",
+  "dashSectionClosingSoonSubtitle": "Des échéances à traiter cette semaine.",
+  "dashSectionLatestActivitySubtitle": "Vos candidatures, sauvegardes et mises à jour CV récentes.",
+  "dashSectionQuickAccessSubtitle": "Votre chemin le plus rapide vers emplois, financements, outils et sauvegardes.",
+  "dashSectionRecommendedSubtitle": "Sélectionnées selon votre profil, le timing et votre progression.",
+  "dashSectionDefaultSubtitle": "Tout ce qui compte reste à portée de main.",
+  "discoverLatestSubtitle": "Les {count} offres, stages et parcours sponsorisés les plus récents",
+  "@discoverLatestSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "discoverNoResultsHint": "Essayez d’ajuster votre recherche ou vos filtres pour afficher plus de résultats.",
+  "discoverResultsSubtitle": "Annonces correspondant à votre recherche et à vos filtres actuels",
+  "discoverResultsTitle": "Résultats",
+  "discoverTrendingEmptyHint": "Les nouvelles recommandations seront mises en avant dès que des annonces seront publiées.",
+  "discoverTrendingSubtitle": "Sélections récentes, pertinentes et mises en avant à partir des données en direct",
+  "studentOpportunityNoLongerAvailableOpen": "Cette opportunité n’est plus disponible.",
+  "studentApplicationFilterWithdrawn": "Retirée",
+  "studentFilterCount": "{label} ({count})",
+  "@studentFilterCount": {
+    "placeholders": {
+      "count": {},
+      "label": {}
+    }
+  },
+  "studentApplicationsShown": "{count} candidatures affichées",
+  "@studentApplicationsShown": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentAppliedOpportunityOne": "1 opportunité postulée",
+  "studentAppliedOpportunitiesCount": "{count} opportunités postulées",
+  "@studentAppliedOpportunitiesCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentBrowseOpportunities": "Parcourir les opportunités",
+  "studentNoApplicationsMatchMessage": "Essayez une autre recherche ou un autre filtre pour retrouver plus d’historique de candidatures.",
+  "studentNoApplicationsYetMessage": "Commencez à postuler à des opportunités et suivez-les ici.",
+  "studentIdeaCoverUploadedSuccess": "Image de couverture téléversée avec succès.",
+  "studentIdeaResubmittedSuccess": "Idée renvoyée avec succès.",
+  "studentIdeaResubmittedTitle": "Idée renvoyée",
+  "studentIdeaImageUploadFailed": "Le téléversement de l’image a échoué. Veuillez réessayer.",
+  "studentCurrentCoverImage": "Image de couverture actuelle",
+  "studentPublishIdeaButton": "Publier l’idée",
+  "studentCreateIdeaTitle": "Créer une idée",
+  "studentUploadingCoverImage": "Téléversement de l’image de couverture...",
+  "studentEditingLockedAfterReview": "Modification verrouillée après validation",
+  "studentPublishAgain": "Publier à nouveau",
+  "studentSubmitIdea": "Soumettre l’idée",
+  "studentIdeaTitleHint": "Exemple : Assistant santé mentale pour campus",
+  "studentIdeaTitleHelper": "Choisissez un nom clair : ce que c’est et à qui cela sert.",
+  "studentIdeaTaglineHint": "Exemple : Trouver du soutien avant que le stress augmente.",
+  "studentIdeaTaglineHelper": "Rédigez une courte phrase sur le bénéfice principal.",
+  "studentChooseCategory": "Choisir une catégorie",
+  "studentPickIdeaCategory": "Choisissez la catégorie de l’idée",
+  "studentChooseStage": "Choisir une étape",
+  "studentPickCurrentStage": "Choisissez l’étape actuelle",
+  "studentSelectStudentLevel": "Sélectionner le niveau étudiant",
+  "studentIdeaDescriptionSubtitle": "Expliquez le concept, le problème traité et la solution à comprendre par les collaborateurs.",
+  "studentIdeaOverviewHint": "Décrivez le concept, ce qu’il fait et comment il prend forme.",
+  "studentIdeaOverviewHelper": "Ajoutez assez de contexte pour que les évaluateurs comprennent rapidement l’idée.",
+  "studentIdeaProblemHint": "Quel défi étudiant cette idée résout-elle ?",
+  "studentIdeaSolutionHint": "Expliquez la solution proposée et ce qui la distingue.",
+  "studentIdeaAudienceHint": "Étudiants, clubs, mentors, campus...",
+  "studentIdeaBenefitsHint": "Pourquoi cette idée compte-t-elle maintenant ?",
+  "studentAddRole": "Ajouter un rôle",
+  "studentAddRoleHint": "Exemple : Développeur, Designer, Chercheur",
+  "studentAddRoleHelper": "Ajoutez les profils nécessaires à l’équipe, un par un ou séparés par des virgules.",
+  "studentAddSkillHint": "Exemple : Flutter, Firebase, recherche UX",
+  "studentAddSkillHelper": "Ajoutez des technologies, compétences design, recherche ou connaissances métier.",
+  "studentResourcesHint": "Exemple : Mentor, utilisateurs test, données de sondage",
+  "studentResourcesHelper": "Listez le soutien nécessaire : personnes, outils, accès, financement ou retours.",
+  "studentIdeaLockNotice": "Les idées approuvées restent verrouillées ici. Si un admin en renvoie une pour modification, elle redeviendra modifiable dans ce formulaire.",
+  "studentPleaseAddMoreDetail": "Veuillez ajouter plus de détails.",
+  "studentRefineAndPublishAgain": "Affiner et publier à nouveau",
+  "studentAdminPublishIdeaSubtitle": "Ajoutez une idée sélectionnée par la plateforme avec une histoire solide, des métadonnées claires et une structure de publication prévisible.",
+  "studentResubmitIdeaSubtitle": "Mettez l’idée à jour, corrigez le rejet et renvoyez-la pour validation.",
+  "studentIdeaHeroSubtitle": "Construisez une fiche d’idée prête pour les collaborateurs, les retours et la dynamique étudiante.",
+  "studentCvTemplateUpdatedTo": "Modèle mis à jour vers {templateName}.",
+  "@studentCvTemplateUpdatedTo": {
+    "placeholders": {
+      "templateName": {}
+    }
+  },
+  "studentCvTemplateUpdatedTitle": "Modèle mis à jour",
+  "studentCvTemplateUpdateUnavailable": "Mise à jour du modèle indisponible",
+  "studentCvAddDetailsBeforeSaving": "Ajoutez les détails de votre CV avant d’enregistrer un PDF.",
+  "studentCvPdfSavedToMyCv": "Votre PDF de CV a été enregistré dans Mon CV.",
+  "studentCvFileUploaded": "Votre fichier CV a été téléversé.",
+  "studentCvUsingUploaded": "Votre CV téléversé est maintenant utilisé.",
+  "studentCvUsingBuilt": "Votre CV créé est maintenant utilisé.",
+  "studentPrimaryCvUpdated": "CV principal mis à jour",
+  "studentRemoveUploadedCvTitle": "Supprimer le CV téléversé ?",
+  "studentRemoveUploadedCvMessage": "Cela supprime {fileName} de votre studio CV. Le contenu de votre CV créé reste disponible.",
+  "@studentRemoveUploadedCvMessage": {
+    "placeholders": {
+      "fileName": {}
+    }
+  },
+  "studentUploadedCvRemoved": "CV téléversé supprimé.",
+  "studentCvRemovedTitle": "CV supprimé",
+  "studentResetBuiltCvTitle": "Réinitialiser le CV créé ?",
+  "studentResetBuiltCvWithUploadedMessage": "Cela supprime les détails du CV créé et le PDF enregistré. Votre CV téléversé reste disponible.",
+  "studentResetBuiltCvMessage": "Cela supprime les détails du CV créé et le PDF enregistré.",
+  "studentBuiltCvResetMessage": "CV créé réinitialisé.",
+  "studentBuiltCvResetTitle": "CV créé réinitialisé",
+  "studentFileNotValidPdfYet": "Ce fichier n’est pas encore un PDF valide.",
+  "studentCouldNotOpenDocumentNow": "Impossible d’ouvrir le document pour le moment.",
+  "studentCvContactInfo": "Coordonnées",
+  "studentCvNameEmailReady": "Le nom et l’e-mail sont prêts.",
+  "studentCvAddNameEmail": "Ajoutez votre nom et votre e-mail.",
+  "studentCvProfileIntroReady": "Votre profil contient une courte introduction.",
+  "studentCvWriteProfile": "Rédigez un court profil professionnel.",
+  "studentCvEducationSaved": "{count} élément de formation enregistré.",
+  "@studentCvEducationSaved": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentCvAddEducation": "Ajoutez votre dernier diplôme ou formation.",
+  "studentCvExperienceProjects": "Expériences ou projets",
+  "studentCvExperienceSaved": "{count} élément d’expérience enregistré.",
+  "@studentCvExperienceSaved": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentCvAddExperience": "Ajoutez un stage, un emploi ou un projet.",
+  "studentCvSkillsListed": "{count} compétences listées.",
+  "@studentCvSkillsListed": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentCvListSkills": "Listez vos compétences les plus fortes.",
+  "studentCvLanguagesListed": "{count} langues listées.",
+  "@studentCvLanguagesListed": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentCvAddLanguages": "Ajoutez les langues utiles aux recruteurs.",
+  "studentCvTemplateSelected": "{templateName} sélectionné.",
+  "@studentCvTemplateSelected": {
+    "placeholders": {
+      "templateName": {}
+    }
+  },
+  "studentCvClassicDefault": "Classic sera utilisé sauf si vous choisissez un autre style.",
+  "studentCvBuildBeforeStyle": "Créez votre CV avant de choisir un style.",
+  "studentCvApplicationFile": "Fichier de candidature",
+  "studentCvPdfReadyApplications": "Un PDF est prêt pour les candidatures.",
+  "studentCvSaveBuilderAsPdf": "Enregistrez le CV créé en PDF.",
+  "studentCvBuildOrUploadFile": "Créez ou téléversez un fichier CV.",
+  "studentRefreshCv": "Actualiser le CV",
+  "studentCompaniesWillSee": "Les entreprises verront",
+  "studentUseBuiltCvInstead": "Utiliser plutôt le CV créé",
+  "studentUseUploadedCvInstead": "Utiliser plutôt le CV téléversé",
+  "studentUploadPdf": "Téléverser un PDF",
+  "studentViewActiveCv": "Voir le CV actif",
+  "studentSaveAsPdf": "Enregistrer en PDF",
+  "studentCvReadiness": "Préparation du CV",
+  "studentCvEssentialsComplete": "{completed} sur {total} éléments essentiels complétés",
+  "@studentCvEssentialsComplete": {
+    "placeholders": {
+      "completed": {},
+      "total": {}
+    }
+  },
+  "studentUploadedPdfActive": "PDF téléversé actif",
+  "studentUploadedCvActiveMessage": "{fileName} est le fichier reçu par les entreprises avec vos candidatures.",
+  "@studentUploadedCvActiveMessage": {
+    "placeholders": {
+      "fileName": {}
+    }
+  },
+  "studentFileUploaded": "Fichier téléversé",
+  "studentApplicationReady": "Prêt pour candidatures",
+  "studentUploadedPdfReadyAttach": "Le PDF téléversé est prêt à être joint.",
+  "studentUploadedFileSavedPreviewLimited": "Le fichier téléversé est enregistré, mais l’aperçu PDF peut être limité.",
+  "studentReplacePdf": "Remplacer le PDF",
+  "studentBuildInstead": "Créer à la place",
+  "studentStructuredCvBuilder": "Créateur de CV structuré",
+  "studentTemplateEditSavePdf": "Modèle {templateName}. Modifiez les détails, prévisualisez, puis enregistrez le PDF.",
+  "@studentTemplateEditSavePdf": {
+    "placeholders": {
+      "templateName": {}
+    }
+  },
+  "studentCreatePolishedCv": "Créez un CV soigné à partir des détails structurés du profil.",
+  "studentNotStarted": "Non commencé",
+  "studentEditBuilder": "Modifier le créateur",
+  "studentStartBuilder": "Démarrer le créateur",
+  "studentSavePdf": "Enregistrer PDF",
+  "studentApplicationFiles": "Fichiers de candidature",
+  "studentApplicationFilesSubtitle": "Choisissez le document que les recruteurs recevront lorsque vous postulez.",
+  "studentUploadPdfCv": "Téléverser un CV PDF",
+  "studentUseExistingPdfWhileBuilding": "Utilisez un fichier existant pendant que vous créez un CV structuré.",
+  "studentBuiltCvPdf": "PDF du CV créé",
+  "studentReplaceUploadedPdf": "Remplacer le PDF téléversé",
+  "studentAttachNewPdf": "Joindre un nouveau fichier PDF depuis votre appareil.",
+  "studentNoActiveCvYet": "Aucun CV actif pour le moment",
+  "studentUploadedPdf": "PDF téléversé",
+  "studentBuilderDraft": "Brouillon du créateur",
+  "studentCvStartApplyingFaster": "Créez un CV structuré ou téléversez un PDF pour postuler plus vite.",
+  "studentSavedBuilderPdfReady": "Votre PDF généré depuis le créateur est prêt pour les candidatures.",
+  "studentUploadedFileUsedApplications": "Votre fichier téléversé est actuellement utilisé pour les candidatures.",
+  "studentPreviewDraftSavePdf": "Prévisualisez le brouillon, puis enregistrez-le en PDF avant de postuler.",
+  "studentUploadedRecently": "téléversé récemment",
+  "studentUploadedDate": "téléversé le {date}",
+  "@studentUploadedDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentReadinessSemantic": "{title}, {status}",
+  "@studentReadinessSemantic": {
+    "placeholders": {
+      "status": {},
+      "title": {}
+    }
+  },
+  "studentComplete": "complet",
+  "studentIncomplete": "incomplet",
+  "studentMakeActive": "Rendre actif",
+  "studentCvDownloadReadyMessage": "Le téléchargement du PDF de votre CV est prêt.",
+  "studentDownloadReadyTitle": "Téléchargement prêt",
+  "studentCvDownloadOpenedMessage": "Utilisez la feuille système pour enregistrer ou partager le PDF de votre CV.",
+  "studentDownloadOpenedTitle": "Téléchargement ouvert",
+  "studentCvDownloadError": "Impossible de télécharger ce PDF de CV. {error}",
+  "@studentCvDownloadError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "studentDownloadUnavailableTitle": "Téléchargement indisponible",
+  "studentDownloadPdf": "Télécharger le PDF",
+  "studentProfileUpdatedSuccess": "Votre profil a été mis à jour avec succès.",
+  "studentSignInViewCreatorProfile": "Connectez-vous pour voir le profil du créateur.",
+  "studentProfileUnavailable": "Profil indisponible",
+  "studentSignInSaveInternships": "Connectez-vous pour sauvegarder des stages.",
+  "studentSignInSaveOpportunities": "Connectez-vous pour sauvegarder des opportunités.",
+  "studentSignInContinueApplication": "Connectez-vous pour continuer votre candidature.",
+  "studentCreateCvBeforeApplying": "Créez votre CV avant de postuler à cette opportunité.",
+  "studentWithdrawApplicationTitle": "Retirer la candidature",
+  "studentWithdrawApplicationMessage": "Voulez-vous vraiment retirer votre candidature ? Vous pourrez postuler à nouveau tant que l’opportunité reste ouverte.",
+  "studentWithdraw": "Retirer",
+  "studentApplicationSubmittedSuccess": "Votre candidature a été envoyée avec succès.",
+  "studentApplicationSentTitle": "Candidature envoyée",
+  "studentApplicationWithdrawnSuccess": "Votre candidature a été retirée.",
+  "studentWithdrawalFailedTitle": "Retrait échoué",
+  "studentOpportunitySaved": "Opportunité sauvegardée",
+  "studentRemovedFromSavedOpportunities": "Retirée des opportunités sauvegardées",
+  "studentSignInChatCompany": "Connectez-vous pour discuter avec l’entreprise.",
+  "studentPublisherUnavailableMessage": "Le profil de l’éditeur n’est pas disponible pour cette opportunité.",
+  "studentPublisherUnavailableTitle": "Éditeur indisponible",
+  "studentFutureGatePublisher": "Éditeur FutureGate",
+  "studentOpportunityPublisher": "Éditeur de l’opportunité",
+  "studentPublisherProfileFallbackAbout": "Profil public de l’éditeur derrière cette opportunité.",
+  "studentLoginToApply": "Se connecter pour postuler",
+  "studentApplyForFunding": "Demander le financement",
+  "studentStatusWithValue": "Statut : {status}",
+  "@studentStatusWithValue": {
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "studentAlreadyApplied": "Déjà postulé",
+  "studentOpportunityClosed": "Opportunité clôturée",
+  "studentNoLongerAvailable": "Plus disponible",
+  "studentMustBeLoggedInApply": "Vous devez être connecté pour postuler.",
+  "studentCanApplyOpportunity": "Vous pouvez postuler à cette opportunité.",
+  "studentAlreadyAppliedOpportunity": "Vous avez déjà postulé à cette opportunité.",
+  "studentOpportunityClosedMessage": "Cette opportunité est clôturée.",
+  "studentOpportunityUnavailableMessage": "Cette opportunité n’est plus disponible.",
+  "studentSalary": "Salaire",
+  "studentProgramOverview": "Présentation du programme",
+  "studentShareOpportunitySubject": "Opportunité sur FutureGate",
+  "studentShareCompanyLine": "Entreprise : {company}",
+  "@studentShareCompanyLine": {
+    "placeholders": {
+      "company": {}
+    }
+  },
+  "studentShareTypeLine": "Type : {type}",
+  "@studentShareTypeLine": {
+    "placeholders": {
+      "type": {}
+    }
+  },
+  "studentShareLocationLine": "Lieu : {location}",
+  "@studentShareLocationLine": {
+    "placeholders": {
+      "location": {}
+    }
+  },
+  "studentShareDurationLine": "Durée : {duration}",
+  "@studentShareDurationLine": {
+    "placeholders": {
+      "duration": {}
+    }
+  },
+  "studentShareDeadlineLine": "Échéance : {deadline}",
+  "@studentShareDeadlineLine": {
+    "placeholders": {
+      "deadline": {}
+    }
+  },
+  "studentSharedFromFutureGate": "Partagé depuis FutureGate",
+  "studentApplicationWithdrawnBefore": "Candidature déjà retirée",
+  "studentWithdrawnCurrentMessage": "Vous avez retiré votre candidature pour cette opportunité. Vous pouvez postuler à nouveau tant qu’elle reste ouverte.",
+  "studentWithdrawnPreviousMessage": "Vous aviez déjà retiré une candidature pour cette opportunité.",
+  "studentCanMessageCompany": "Vous pouvez maintenant écrire à {company}.",
+  "@studentCanMessageCompany": {
+    "placeholders": {
+      "company": {}
+    }
+  },
+  "studentTheCompany": "l’entreprise",
+  "studentOriginalLanguageValue": "{label} : {language}",
+  "@studentOriginalLanguageValue": {
+    "placeholders": {
+      "label": {},
+      "language": {}
+    }
+  },
+  "studentIdeaDeletedSuccess": "Idée supprimée avec succès.",
+  "studentOpportunityNoLongerAvailable": "Cette opportunité n’est plus disponible.",
+  "studentScholarshipNoLongerAvailable": "Cette bourse n’est plus disponible.",
+  "studentRemoveSavedItemError": "Impossible de retirer cet élément pour le moment.",
+  "studentRemovedFromSavedScholarships": "Retirée des bourses sauvegardées",
+  "studentRemovedFromSavedTrainings": "Retirée des formations sauvegardées",
+  "studentRemovedFromSavedIdeas": "Retirée des idées sauvegardées",
+  "studentSavedFilterTrainings": "Formations",
+  "studentSponsoredFilter": "Sponsorisé",
+  "studentItemsShown": "{count} éléments affichés",
+  "@studentItemsShown": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentSavedItemOne": "1 élément sauvegardé",
+  "studentSavedItemsCount": "{count} éléments sauvegardés",
+  "@studentSavedItemsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentNoSavedItemsMatchView": "Aucun élément sauvegardé ne correspond à cette vue",
+  "studentNoSavedItemsYet": "Aucun élément sauvegardé pour le moment",
+  "studentNoSavedItemsMatchMessage": "Essayez une autre recherche ou un autre filtre pour voir plus d’éléments sauvegardés.",
+  "studentNoSavedItemsYetMessage": "Sauvegardez des opportunités, bourses, formations ou idées pour construire votre sélection.",
+  "studentExploreOpportunities": "Explorer les opportunités",
+  "studentLocationNotSpecified": "Lieu non indiqué",
+  "studentFundingValue": "Financement : {funding}",
+  "@studentFundingValue": {
+    "placeholders": {
+      "funding": {}
+    }
+  },
+  "studentScholarshipFallback": "Bourse",
+  "studentDestinationNotSpecified": "Destination non indiquée",
+  "studentTrainingFallback": "Formation",
+  "studentSavedItemFallback": "Élément sauvegardé",
+  "studentRelativeSaved": "Sauvegardé",
+  "studentRelativeToday": "Aujourd’hui",
+  "studentRelativeYesterday": "Hier",
+  "studentDaysAgoCompact": "il y a {count} j",
+  "@studentDaysAgoCompact": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentWeeksAgoCompact": "il y a {count} sem.",
+  "@studentWeeksAgoCompact": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentNoDeadlineShared": "Aucune échéance indiquée",
+  "studentClosedDate": "Clôturé le {date}",
+  "@studentClosedDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentClosesDate": "Clôture le {date}",
+  "@studentClosesDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentInterestedCountLower": "{count} intéressé(s)",
+  "@studentInterestedCountLower": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentInterestedCountTitle": "{count} intéressé(s)",
+  "@studentInterestedCountTitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "studentDashboardApprovedApplicationsTitle": "{count} {word} approuvée(s).",
+  "@studentDashboardApprovedApplicationsTitle": {
+    "placeholders": {
+      "count": {},
+      "word": {}
+    }
+  },
+  "studentDashboardPendingApplicationsTitle": "{count} {word} en cours d’examen.",
+  "@studentDashboardPendingApplicationsTitle": {
+    "placeholders": {
+      "count": {},
+      "word": {}
+    }
+  },
+  "studentApplicationSingular": "candidature",
+  "studentApplicationsPlural": "candidatures",
+  "studentDashboardSavedResourceLinkUnavailable": "Le lien de cette ressource sauvegardée n’est pas disponible.",
+  "studentDashboardSavedResourceOpenError": "Impossible d’ouvrir cette ressource sauvegardée pour le moment.",
+  "studentSavedScholarshipFrom": "Bourse sauvegardée de {provider}",
+  "@studentSavedScholarshipFrom": {
+    "placeholders": {
+      "provider": {}
+    }
+  },
+  "studentSavedScholarshipNeedsAttention": "Bourse sauvegardée nécessitant votre attention",
+  "studentSavedIdea": "Idée sauvegardée",
+  "studentUploadedCvReady": "Le CV téléversé est prêt à être envoyé",
+  "studentHybridCvReady": "Le CV téléversé et le CV créé sont prêts",
+  "studentBuilderCvRefreshed": "CV créé actualisé pour postuler plus vite",
+  "studentCvReadyNextApplication": "CV prêt pour votre prochaine candidature",
+  "studentSkillSingular": "compétence",
+  "studentSkillsPlural": "compétences",
+  "studentExperienceBlockSingular": "bloc d’expérience",
+  "studentExperienceBlocksPlural": "blocs d’expérience",
+  "studentLanguageSingular": "langue",
+  "studentLanguagesPlural": "langues",
+  "studentCvUpdated": "CV mis à jour",
+  "studentYourCvReady": "Votre CV est prêt",
+  "studentBuilderCvUpdated": "CV créé mis à jour",
+  "studentPrimaryFileAttached": "Fichier principal joint",
+  "studentProfileDataSynced": "Données du profil synchronisées",
+  "studentClosesMonthDay": "Clôture le {date}",
+  "@studentClosesMonthDay": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "studentDeadlineComingUp": "Échéance proche.",
+  "studentAddItem": "Ajouter un élément",
+  "studentStudentSpace": "ESPACE ÉTUDIANT",
+  "studentReady": "Prêt",
+  "studentDraft": "Brouillon",
+  "studentEmpty": "Vide",
+  "studentAvailable": "Disponible",
+  "studentUploadingEllipsis": "Téléversement...",
+  "studentSavingEllipsis": "Enregistrement...",
+  "studentSaveChangesTitleCase": "Enregistrer les modifications",
+  "studentManaged": "Géré",
+  "studentReset": "Réinitialiser",
+  "studentCvBuilderSteps": "Étapes du créateur",
+  "studentCvSectionsComplete": "{completed} sur {total} sections complétées",
+  "@studentCvSectionsComplete": {
+    "placeholders": {
+      "completed": {},
+      "total": {}
+    }
+  },
+  "studentAddYourEducation": "Ajoutez votre formation",
+  "studentAddYourExperience": "Ajoutez votre expérience",
+  "studentRecentTrainingBook": "Livre",
+  "studentRecentTrainingCourse": "Cours",
+  "studentRecentTrainingVideo": "Vidéo",
+  "studentRecentTrainingFile": "Fichier",
+  "studentRecentTrainingLearning": "Apprentissage",
+  "studentRecommendationFitsFocus": "Correspond à votre priorité {focus}.",
+  "@studentRecommendationFitsFocus": {
+    "placeholders": {
+      "focus": {}
+    }
+  },
+  "studentRecommendationGoodForLevel": "Pertinent pour les étudiants {level}.",
+  "@studentRecommendationGoodForLevel": {
+    "placeholders": {
+      "level": {}
+    }
+  },
+  "studentRecommendationNearLocation": "Proche de votre localisation.",
+  "studentRecommendationRemoteFriendly": "Compatible avec le travail à distance.",
+  "studentRecommendationHybridSchedule": "Rythme hybride.",
+  "studentRecommendationPaidOpportunity": "Opportunité rémunérée.",
+  "studentRecommendationTeamHighlighted": "Mise en avant par l’équipe.",
+  "studentRecommendationBuildsExperience": "Développe une vraie expérience.",
+  "studentRecommendationSupportPath": "Parcours de soutien clair.",
+  "studentRecommendationStrongNextStep": "Prochaine étape solide.",
+  "studentProfileHintAddCv": "Ajoutez votre CV pour postuler plus vite lorsque la bonne opportunité apparaît.",
+  "studentProfileHintAcademic": "Complétez vos informations académiques pour rendre les opportunités plus pertinentes.",
+  "studentProfileHintBio": "Une courte bio rendra votre profil plus complet et plus intentionnel.",
+  "studentProfileHintContact": "Affinez vos coordonnées essentielles pour que votre profil soit complet partout dans l’application.",
+  "studentProfileHintGoodShape": "Votre profil est en bonne forme pour la prochaine opportunit? que vous ouvrirez.",
+  "studentAddCv": "Ajouter CV",
+  "studentCompleteProfile": "Compléter le profil",
+  "studentReviewProfile": "Vérifier le profil"
 }

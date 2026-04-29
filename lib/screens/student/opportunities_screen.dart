@@ -328,11 +328,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final authProvider = context.read<AuthProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
     final userId = authProvider.userModel?.uid;
+    final l10n = AppLocalizations.of(context)!;
 
     if (userId == null || userId.isEmpty) {
       context.showAppSnackBar(
-        'Sign in to save opportunities for later.',
-        title: AppLocalizations.of(context)!.uiLoginRequired,
+        l10n.studentSignInSaveOpportunities,
+        title: l10n.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -344,18 +345,18 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     final existingSaved = matchingSaved.isNotEmpty ? matchingSaved.first : null;
 
     String? error;
-    var message = 'Opportunity saved';
+    var message = l10n.studentOpportunitySaved;
 
     if (existingSaved != null) {
       error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
-      message = 'Removed from saved opportunities';
+      message = l10n.studentRemovedFromSavedOpportunities;
     } else {
       error = await savedProvider.saveOpportunity(
         studentId: userId,
         opportunityId: opportunity.id,
         title: DisplayText.opportunityTitle(
           opportunity.title,
-          fallback: AppLocalizations.of(context)!.opportunityOpenFallback,
+          fallback: l10n.opportunityOpenFallback,
         ),
         companyName: opportunity.companyName,
         type: opportunity.type,
@@ -373,7 +374,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
     context.showAppSnackBar(
       error ?? message,
-      title: error == null ? 'Saved items updated' : 'Save unavailable',
+      title: error == null ? l10n.trainingSavedUpdatedTitle : l10n.uiSaveUnavailable,
       type: error == null
           ? (existingSaved != null
                 ? AppFeedbackType.removed
@@ -441,7 +442,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Browse categories',
+                        AppLocalizations.of(context)!.uiBrowseCategories,
                         style: AppTypography.product(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -450,7 +451,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Keep the existing data source, but tailor what you see.',
+                        AppLocalizations.of(
+                          context,
+                        )!.uiKeepTheExistingDataSourceButTailorWhatYouSee,
                         style: AppTypography.product(
                           fontSize: 13,
                           color: OpportunityDashboardPalette.textSecondary,
@@ -478,7 +481,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Employment type',
+                        AppLocalizations.of(context)!.uiEmploymentType,
                         style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -519,7 +522,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Work mode',
+                        AppLocalizations.of(context)!.uiWorkMode,
                         style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -558,7 +561,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Quick filters',
+                        AppLocalizations.of(context)!.uiQuickFilters,
                         style: AppTypography.product(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -1548,8 +1551,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
           ? null
           : StudentWorkspaceAppBar(
               title: AppLocalizations.of(context)!.uiDiscover,
-              subtitle:
-                  'Jobs, internships, sponsored tracks, and training in one stream.',
+              subtitle: AppLocalizations.of(
+                context,
+              )!.uiJobsInternshipsSponsoredTracksAndTrainingInOneStream,
               icon: Icons.explore_rounded,
               showBackButton: true,
               onBack: () => Navigator.maybePop(context),
@@ -1600,8 +1604,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       sliver: SliverToBoxAdapter(
                         key: _latestSectionKey,
                         child: OpportunitySectionHeader(
-                          title: AppLocalizations.of(context)!.discoverResultsTitle,
-                          subtitle: AppLocalizations.of(context)!.discoverResultsSubtitle,
+                          title: AppLocalizations.of(
+                            context,
+                          )!.discoverResultsTitle,
+                          subtitle: AppLocalizations.of(
+                            context,
+                          )!.discoverResultsSubtitle,
                           accentColor: OpportunityDashboardPalette.primary,
                         ),
                       ),
@@ -1615,7 +1623,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                             title: AppLocalizations.of(
                               context,
                             )!.uiNoOpportunitiesMatchView,
-                            subtitle: AppLocalizations.of(context)!.discoverNoResultsHint,
+                            subtitle: AppLocalizations.of(
+                              context,
+                            )!.discoverNoResultsHint,
                             color: OpportunityDashboardPalette.primary,
                           ),
                         ),
@@ -1784,7 +1794,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           title: AppLocalizations.of(
                             context,
                           )!.uiTrendingOpportunities,
-                          subtitle: AppLocalizations.of(context)!.discoverTrendingSubtitle,
+                          subtitle: AppLocalizations.of(
+                            context,
+                          )!.discoverTrendingSubtitle,
                           actionLabel: AppLocalizations.of(context)!.uiViewAll,
                           onAction: () async {
                             _setFilter(_OpportunityDashboardFilter.all);
@@ -1804,7 +1816,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                   title: AppLocalizations.of(
                                     context,
                                   )!.uiNoTrendingOpportunities,
-                                  subtitle: AppLocalizations.of(context)!.discoverTrendingEmptyHint,
+                                  subtitle: AppLocalizations.of(
+                                    context,
+                                  )!.discoverTrendingEmptyHint,
                                   color: OpportunityDashboardPalette.primary,
                                 ),
                               )
@@ -1863,7 +1877,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                           title: AppLocalizations.of(
                             context,
                           )!.uiLatestOpportunities,
-                          subtitle: AppLocalizations.of(context)!.discoverLatestSubtitle(_latestItemsLimit),
+                          subtitle: AppLocalizations.of(
+                            context,
+                          )!.discoverLatestSubtitle(_latestItemsLimit),
                           accentColor: OpportunityDashboardPalette.success,
                         ),
                       ),
@@ -1877,7 +1893,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                             title: AppLocalizations.of(
                               context,
                             )!.uiNoOpportunitiesMatchView,
-                            subtitle: AppLocalizations.of(context)!.discoverNoResultsHint,
+                            subtitle: AppLocalizations.of(
+                              context,
+                            )!.discoverNoResultsHint,
                             color: OpportunityDashboardPalette.success,
                           ),
                         ),
@@ -1922,8 +1940,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       sliver: SliverToBoxAdapter(
                         child: OpportunitySectionHeader(
                           title: AppLocalizations.of(context)!.uiClosingSoon,
-                          subtitle:
-                              'Urgent applications that need attention before they expire',
+                          subtitle: AppLocalizations.of(
+                            context,
+                          )!.uiUrgentApplicationsThatNeedAttentionBeforeTheyExpire,
                           accentColor: OpportunityDashboardPalette.error,
                         ),
                       ),
@@ -1937,8 +1956,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                 title: AppLocalizations.of(
                                   context,
                                 )!.uiNoUrgentDeadlines,
-                                subtitle:
-                                    'Opportunities nearing their deadlines are highlighted here.',
+                                subtitle: AppLocalizations.of(
+                                  context,
+                                )!.uiOpportunitiesNearingTheirDeadlinesAreHighlightedHere,
                                 color: OpportunityDashboardPalette.error,
                               ),
                             )

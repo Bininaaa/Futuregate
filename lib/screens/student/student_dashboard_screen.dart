@@ -247,7 +247,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader(l10n.dashSectionClosingSoon, subtitle: l10n.dashSectionClosingSoonSubtitle, accentColor: accentGold),
+                child: _buildSectionHeader(
+                  l10n.dashSectionClosingSoon,
+                  subtitle: l10n.dashSectionClosingSoonSubtitle,
+                  accentColor: accentGold,
+                ),
               ),
             ),
             SliverPadding(
@@ -279,7 +283,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader(l10n.dashSectionQuickAccess, subtitle: l10n.dashSectionQuickAccessSubtitle),
+                child: _buildSectionHeader(
+                  l10n.dashSectionQuickAccess,
+                  subtitle: l10n.dashSectionQuickAccessSubtitle,
+                ),
               ),
             ),
             SliverPadding(
@@ -291,7 +298,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
               sliver: SliverToBoxAdapter(
-                child: _buildSectionHeader(l10n.dashSectionLatestActivity, subtitle: l10n.dashSectionLatestActivitySubtitle),
+                child: _buildSectionHeader(
+                  l10n.dashSectionLatestActivity,
+                  subtitle: l10n.dashSectionLatestActivitySubtitle,
+                ),
               ),
             ),
             SliverPadding(
@@ -832,7 +842,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           context,
         )!.uiBadgeProfileReady(profileCompletion),
         title: AppLocalizations.of(context)!.uiCompleteProfile,
-        subtitle: AppLocalizations.of(context)!.dashFocusProfileSubtitle(missingCount),
+        subtitle: AppLocalizations.of(
+          context,
+        )!.dashFocusProfileSubtitle(missingCount),
         insight: _profileHint(user, cv),
         accent: accentGold,
         insightIcon: Icons.verified_user_outlined,
@@ -853,13 +865,23 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final l10n = AppLocalizations.of(context)!;
       return _DashboardFocus(
         badgeLabel: l10n.uiBadgeMomentum,
-        title:
-            '$approved ${_pluralizedWord(approved, "application", "applications")} approved.',
-        subtitle: l10n.uiKeepApplyingWhileTeamsAreAlreadyEngagingWithYourProfile,
+        title: l10n.studentDashboardApprovedApplicationsTitle(
+          approved,
+          _pluralizedWord(
+            approved,
+            l10n.studentApplicationSingular,
+            l10n.studentApplicationsPlural,
+          ),
+        ),
+        subtitle:
+            l10n.uiKeepApplyingWhileTeamsAreAlreadyEngagingWithYourProfile,
         insight: pending > 0
             ? l10n.dashFocusClosingSoonSubtitle(pending)
             : firstUrgent != null && firstUrgentDeadline != null
-            ? l10n.dashFocusClosingSoonInsight(firstUrgent.title, _deadlineCountdown(firstUrgentDeadline))
+            ? l10n.dashFocusClosingSoonInsight(
+                firstUrgent.title,
+                _deadlineCountdown(firstUrgentDeadline),
+              )
             : l10n.dashFocusInsightApprovedMomentum,
         accent: const Color(0xFF86EFAC),
         insightIcon: Icons.verified_rounded,
@@ -877,8 +899,14 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final l10n = AppLocalizations.of(context)!;
       return _DashboardFocus(
         badgeLabel: l10n.uiBadgeInReview,
-        title:
-            '$pending ${_pluralizedWord(pending, "application", "applications")} in review.',
+        title: l10n.studentDashboardPendingApplicationsTitle(
+          pending,
+          _pluralizedWord(
+            pending,
+            l10n.studentApplicationSingular,
+            l10n.studentApplicationsPlural,
+          ),
+        ),
         subtitle: l10n.dashFocusSubtitleInReview,
         insight: firstUrgent != null && firstUrgentDeadline != null
             ? l10n.dashFocusClosingSoonInsight(
@@ -906,7 +934,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         badgeLabel: l10n.dashSectionClosingSoon,
         title: l10n.uiActBeforeDeadlines,
         subtitle: l10n.dashFocusClosingSoonSubtitle(snapshot.closingSoonCount),
-        insight: l10n.dashFocusClosingSoonInsight(firstUrgent.companyName, deadlineLabel),
+        insight: l10n.dashFocusClosingSoonInsight(
+          firstUrgent.companyName,
+          deadlineLabel,
+        ),
         accent: accentGold,
         insightIcon: Icons.schedule_outlined,
         primaryActionLabel: AppLocalizations.of(context)!.uiActionSeeOpenRoles,
@@ -1045,11 +1076,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           '${snapshot.savedScholarshipCount} ${l10n.uiScholarships}',
         ),
       if (snapshot.savedTrainingCount > 0)
-        _buildSavedShortcutChip('${snapshot.savedTrainingCount} ${l10n.uiTraining}'),
-      if (snapshot.savedIdeaCount > 0)
         _buildSavedShortcutChip(
-          '${snapshot.savedIdeaCount} ${l10n.uiIdeas}',
+          '${snapshot.savedTrainingCount} ${l10n.uiTraining}',
         ),
+      if (snapshot.savedIdeaCount > 0)
+        _buildSavedShortcutChip('${snapshot.savedIdeaCount} ${l10n.uiIdeas}'),
     ];
 
     return Material(
@@ -1542,8 +1573,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         child: _buildEmptyState(
           icon: Icons.schedule_outlined,
           message: AppLocalizations.of(context)!.uiNoUrgentDeadlines,
-          subtitle:
-              'Upcoming deadlines are highlighted here as new opportunities go live.',
+          subtitle: AppLocalizations.of(
+            context,
+          )!.uiUpcomingDeadlinesAreHighlightedHereAsNewOpportunitiesGoLive,
         ),
       );
     }
@@ -2170,7 +2202,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     )
                   else
                     Text(
-                      'Open details',
+                      AppLocalizations.of(context)!.uiOpenDetails,
                       style: AppTypography.product(
                         fontSize: 9.6,
                         fontWeight: FontWeight.w700,
@@ -2314,8 +2346,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           _buildEmptyState(
             icon: Icons.bolt_rounded,
             message: AppLocalizations.of(context)!.uiNoRecentActivity,
-            subtitle:
-                'Your latest applications, saves, and CV updates are reflected here.',
+            subtitle: AppLocalizations.of(
+              context,
+            )!.uiYourLatestApplicationsSavesAndCvUpdatesAreReflectedHere,
           ),
         ]),
       );
@@ -2446,7 +2479,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           final hasUpcomingDeadline =
               deadline != null && _daysUntil(deadline) >= 0;
           final meta = hasUpcomingDeadline
-              ? 'Closes ${DateFormat('MMM d').format(deadline)}'
+              ? AppLocalizations.of(
+                  context,
+                )!.studentClosesMonthDay(DateFormat('MMM d').format(deadline))
               : item.location;
 
           return _DashboardActivityEntry(
@@ -2537,7 +2572,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               : OpportunityType.icon(item.type),
           title: DisplayText.opportunityTitle(
             item.title,
-            fallback: 'Saved opportunity',
+            fallback: l10n.savedOpportunityFallback,
           ),
           subtitle: subtitle,
           metaLabel: meta.trim().isEmpty ? null : meta,
@@ -2583,11 +2618,19 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final providerName = item.provider.trim();
       final subtitle = isUrgent
           ? providerName.isNotEmpty
-                ? 'Saved scholarship from $providerName'
-                : 'Saved scholarship that needs attention'
-          : (providerName.isNotEmpty ? providerName : 'Scholarship');
+                ? AppLocalizations.of(
+                    context,
+                  )!.studentSavedScholarshipFrom(providerName)
+                : AppLocalizations.of(
+                    context,
+                  )!.studentSavedScholarshipNeedsAttention
+          : (providerName.isNotEmpty
+                ? providerName
+                : AppLocalizations.of(context)!.studentScholarshipFallback);
       final meta = deadline != null
-          ? 'Closes ${DateFormat('MMM d').format(deadline)}'
+          ? AppLocalizations.of(
+              context,
+            )!.studentClosesMonthDay(DateFormat('MMM d').format(deadline))
           : _firstNonEmpty([item.level, item.location, item.fundingType]);
 
       activities.add(
@@ -2682,12 +2725,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           return _DashboardActivityEntry(
             dedupeKey: 'saved_idea:${item.ideaId}',
             sortDate: item.savedAt!.toDate(),
-            badgeLabel: 'Saved idea',
+            badgeLabel: AppLocalizations.of(context)!.studentSavedIdea,
             accent: accentGold,
             icon: Icons.lightbulb_outline_rounded,
             title: item.idea.title.trim().isNotEmpty
                 ? item.idea.title.trim()
-                : 'Saved idea',
+                : AppLocalizations.of(context)!.studentSavedIdea,
             subtitle: item.idea.creatorName,
             metaLabel: _firstNonEmpty([
               item.idea.displayCategory,
@@ -2725,36 +2768,38 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
 
     final subtitle = switch (cv.sourceType.trim()) {
-      'uploaded' => 'Uploaded CV is ready to send',
-      'hybrid' => 'Uploaded and builder CV assets are ready',
+      'uploaded' => AppLocalizations.of(context)!.studentUploadedCvReady,
+      'hybrid' => AppLocalizations.of(context)!.studentHybridCvReady,
       _ =>
         cv.hasBuilderContent
-            ? 'Builder CV refreshed for faster applications'
-            : 'CV is ready for your next application',
+            ? AppLocalizations.of(context)!.studentBuilderCvRefreshed
+            : AppLocalizations.of(context)!.studentCvReadyNextApplication,
     };
 
     final cvSignals = <String>[
       if (cv.skills.isNotEmpty)
-        '${cv.skills.length} ${_pluralizedWord(cv.skills.length, "skill", "skills")}',
+        '${cv.skills.length} ${_pluralizedWord(cv.skills.length, AppLocalizations.of(context)!.studentSkillSingular, AppLocalizations.of(context)!.studentSkillsPlural)}',
       if (cv.experience.isNotEmpty)
-        '${cv.experience.length} ${_pluralizedWord(cv.experience.length, "experience block", "experience blocks")}',
+        '${cv.experience.length} ${_pluralizedWord(cv.experience.length, AppLocalizations.of(context)!.studentExperienceBlockSingular, AppLocalizations.of(context)!.studentExperienceBlocksPlural)}',
       if (cv.languages.isNotEmpty)
-        '${cv.languages.length} ${_pluralizedWord(cv.languages.length, "language", "languages")}',
+        '${cv.languages.length} ${_pluralizedWord(cv.languages.length, AppLocalizations.of(context)!.studentLanguageSingular, AppLocalizations.of(context)!.studentLanguagesPlural)}',
     ];
 
     return _DashboardActivityEntry(
       dedupeKey: 'cv:${cv.id.isNotEmpty ? cv.id : cv.studentId}',
       sortDate: timestamp,
-      badgeLabel: 'CV updated',
+      badgeLabel: AppLocalizations.of(context)!.studentCvUpdated,
       accent: primaryPurple,
       icon: Icons.description_outlined,
-      title: cv.hasUploadedCv ? 'Your CV is ready' : 'Builder CV updated',
+      title: cv.hasUploadedCv
+          ? AppLocalizations.of(context)!.studentYourCvReady
+          : AppLocalizations.of(context)!.studentBuilderCvUpdated,
       subtitle: subtitle,
       metaLabel: cvSignals.isNotEmpty
           ? cvSignals.take(2).join(' - ')
           : (cv.hasUploadedCv
-                ? 'Primary file attached'
-                : 'Profile data synced'),
+                ? AppLocalizations.of(context)!.studentPrimaryFileAttached
+                : AppLocalizations.of(context)!.studentProfileDataSynced),
       metaIcon: cv.hasUploadedCv
           ? Icons.file_present_outlined
           : Icons.auto_awesome_outlined,
@@ -2857,7 +2902,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         return;
       }
       context.showAppSnackBar(
-        'This saved resource link is not available.',
+        AppLocalizations.of(
+          context,
+        )!.studentDashboardSavedResourceLinkUnavailable,
         title: AppLocalizations.of(context)!.uiLinkUnavailable,
         type: AppFeedbackType.warning,
       );
@@ -2868,7 +2915,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (!launched && context.mounted) {
       context.showAppSnackBar(
-        'We couldn\'t open this saved resource right now.',
+        AppLocalizations.of(context)!.studentDashboardSavedResourceOpenError,
         title: AppLocalizations.of(context)!.uiOpenUnavailable,
         type: AppFeedbackType.error,
       );
@@ -2964,17 +3011,18 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 
   String _recentTrainingTypeLabel(String type) {
+    final l10n = AppLocalizations.of(context)!;
     switch (type.trim().toLowerCase()) {
       case 'book':
-        return 'Book';
+        return l10n.studentRecentTrainingBook;
       case 'course':
-        return 'Course';
+        return l10n.studentRecentTrainingCourse;
       case 'video':
-        return 'Video';
+        return l10n.studentRecentTrainingVideo;
       case 'file':
-        return 'File';
+        return l10n.studentRecentTrainingFile;
       default:
-        return 'Learning';
+        return l10n.studentRecentTrainingLearning;
     }
   }
 
@@ -2996,7 +3044,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   String? _recentFriendlyDeadline(OpportunityModel item) {
     final deadline = _opportunityDeadline(item);
     if (deadline != null) {
-      return 'Closes ${DateFormat('MMM d').format(deadline)}';
+      return AppLocalizations.of(
+        context,
+      )!.studentClosesMonthDay(DateFormat('MMM d').format(deadline));
     }
 
     final raw = item.deadlineLabel.trim();
@@ -3004,7 +3054,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       return null;
     }
 
-    return 'Closes $raw';
+    return AppLocalizations.of(context)!.studentClosesMonthDay(raw);
   }
 
   String _recentCompactLabel(String value) {
@@ -3232,42 +3282,50 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (_matchesRecommendationSignal(field, haystack)) {
       final compactField = _compactRecommendationValue(field);
       if (compactField.isNotEmpty) {
-        return 'Fits your $compactField focus.';
+        return AppLocalizations.of(
+          context,
+        )!.studentRecommendationFitsFocus(compactField);
       }
     }
     if (_matchesRecommendationSignal(level, haystack)) {
       final compactLevel = _compactRecommendationValue(level);
       if (compactLevel.isNotEmpty) {
-        return 'Good for $compactLevel students.';
+        return AppLocalizations.of(
+          context,
+        )!.studentRecommendationGoodForLevel(compactLevel);
       }
     }
     if (_matchesRecommendationSignal(location, haystack)) {
-      return 'Near your location.';
+      return AppLocalizations.of(context)!.studentRecommendationNearLocation;
     }
     if (workMode == 'remote') {
-      return 'Remote-friendly.';
+      return AppLocalizations.of(context)!.studentRecommendationRemoteFriendly;
     }
     if (workMode == 'hybrid') {
-      return 'Hybrid schedule.';
+      return AppLocalizations.of(context)!.studentRecommendationHybridSchedule;
     }
     if (item.isPaid == true) {
-      return 'Paid opportunity.';
+      return AppLocalizations.of(context)!.studentRecommendationPaidOpportunity;
     }
     if (daysLeft != null && daysLeft >= 0 && daysLeft <= 7) {
-      return 'Deadline coming up.';
+      return AppLocalizations.of(context)!.studentDeadlineComingUp;
     }
     if (item.isFeatured) {
-      return 'Team-highlighted.';
+      return AppLocalizations.of(context)!.studentRecommendationTeamHighlighted;
     }
 
     switch (OpportunityType.parse(item.type)) {
       case OpportunityType.internship:
-        return 'Builds real experience.';
+        return AppLocalizations.of(
+          context,
+        )!.studentRecommendationBuildsExperience;
       case OpportunityType.sponsoring:
-        return 'Clear support path.';
+        return AppLocalizations.of(context)!.studentRecommendationSupportPath;
       case OpportunityType.job:
       default:
-        return 'Strong next step.';
+        return AppLocalizations.of(
+          context,
+        )!.studentRecommendationStrongNextStep;
     }
   }
 
@@ -3429,37 +3487,37 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   String _profileHint(UserModel? user, CvModel? cv) {
     final profileSummary = buildStudentProfileCompletionSummary(user, cv);
     if (!profileSummary.hasReadyCv) {
-      return 'Add your CV so applications are quicker when the right opportunity appears.';
+      return AppLocalizations.of(context)!.studentProfileHintAddCv;
     }
     if ((user?.academicLevel ?? '').trim().isEmpty ||
         (user?.fieldOfStudy ?? '').trim().isEmpty ||
         (user?.university ?? '').trim().isEmpty) {
-      return 'Complete your academic details so opportunities can feel more relevant to your student path.';
+      return AppLocalizations.of(context)!.studentProfileHintAcademic;
     }
     if ((user?.bio ?? '').trim().isEmpty) {
-      return 'A short bio will make your profile look more complete and intentional.';
+      return AppLocalizations.of(context)!.studentProfileHintBio;
     }
     if ((user?.fullName ?? '').trim().isEmpty ||
         (user?.email ?? '').trim().isEmpty ||
         (user?.location ?? '').trim().isEmpty ||
         (user?.phone ?? '').trim().isEmpty) {
-      return 'Tighten your core contact details so your profile feels complete everywhere in the app.';
+      return AppLocalizations.of(context)!.studentProfileHintContact;
     }
 
-    return 'Your profile is in good shape for the next opportunity you open.';
+    return AppLocalizations.of(context)!.studentProfileHintGoodShape;
   }
 
   String _profilePrimaryActionLabel(UserModel? user, CvModel? cv) {
     final profileSummary = buildStudentProfileCompletionSummary(user, cv);
     if (!profileSummary.hasReadyCv) {
-      return 'Add CV';
+      return AppLocalizations.of(context)!.studentAddCv;
     }
 
     if (!profileSummary.isComplete) {
-      return 'Complete profile';
+      return AppLocalizations.of(context)!.studentCompleteProfile;
     }
 
-    return 'Review profile';
+    return AppLocalizations.of(context)!.studentReviewProfile;
   }
 
   void _openProfilePrimaryAction(
@@ -3555,7 +3613,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return OpportunitySectionHeader(
       title: title,
       subtitle: subtitle,
-      actionLabel: onSeeAll != null ? AppLocalizations.of(context)!.uiViewAll : null,
+      actionLabel: onSeeAll != null
+          ? AppLocalizations.of(context)!.uiViewAll
+          : null,
       onAction: onSeeAll,
       accentColor: accentColor ?? accentTeal,
     );

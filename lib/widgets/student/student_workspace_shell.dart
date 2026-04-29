@@ -338,7 +338,7 @@ class StudentWorkspaceUtilityHeader extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'STUDENT SPACE',
+                  AppLocalizations.of(context)!.studentStudentSpace,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.product(

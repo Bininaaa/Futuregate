@@ -162,7 +162,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
 
     if (userId == null || userId.isEmpty) {
       context.showAppSnackBar(
-        'Sign in to save internships for later.',
+        AppLocalizations.of(context)!.studentSignInSaveInternships,
         title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
@@ -924,7 +924,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
                         opportunityProvider.isLoading) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'Loading live internships...',
+                        AppLocalizations.of(context)!.uiLoadingLiveInternships,
                         style: AppTypography.product(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -992,7 +992,7 @@ class _InternshipSearchBar extends StatelessWidget {
     return StudentSearchField(
       controller: controller,
       focusNode: focusNode,
-      hintText: 'Search internships...',
+      hintText: AppLocalizations.of(context)!.uiSearchInternships,
       onClear: onClear,
     );
   }

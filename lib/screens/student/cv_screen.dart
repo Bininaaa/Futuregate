@@ -94,12 +94,15 @@ class _CvScreenState extends State<CvScreen> {
 
       if (!mounted) return;
 
+      final l10n = AppLocalizations.of(context)!;
       context.showAppSnackBar(
         error ??
-            'Template updated to ${CvTemplateConfig.getTemplate(selectedId).name}.',
+            l10n.studentCvTemplateUpdatedTo(
+              CvTemplateConfig.getTemplate(selectedId).name,
+            ),
         title: error == null
-            ? 'Template updated'
-            : 'Template update unavailable',
+            ? l10n.studentCvTemplateUpdatedTitle
+            : l10n.studentCvTemplateUpdateUnavailable,
         type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
       );
     }
@@ -118,7 +121,7 @@ class _CvScreenState extends State<CvScreen> {
   Future<void> _generateCv(CvModel? cv) async {
     if (cv == null || !cv.hasBuilderContent) {
       context.showAppSnackBar(
-        'Add your CV details before saving a PDF.',
+        AppLocalizations.of(context)!.studentCvAddDetailsBeforeSaving,
         title: AppLocalizations.of(context)!.uiContentNeeded,
         type: AppFeedbackType.warning,
       );
@@ -135,8 +138,10 @@ class _CvScreenState extends State<CvScreen> {
     if (!mounted) return;
 
     context.showAppSnackBar(
-      error ?? 'Your CV PDF was saved to My CV.',
-      title: error == null ? 'PDF saved' : 'Save unavailable',
+      error ?? AppLocalizations.of(context)!.studentCvPdfSavedToMyCv,
+      title: error == null
+          ? AppLocalizations.of(context)!.uiExportComplete
+          : AppLocalizations.of(context)!.uiSaveUnavailable,
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -180,8 +185,10 @@ class _CvScreenState extends State<CvScreen> {
     if (!mounted) return;
 
     context.showAppSnackBar(
-      error ?? 'Your CV file has been uploaded.',
-      title: error == null ? 'Upload complete' : 'Upload unavailable',
+      error ?? AppLocalizations.of(context)!.studentCvFileUploaded,
+      title: error == null
+          ? AppLocalizations.of(context)!.uiUploadComplete
+          : AppLocalizations.of(context)!.uiUploadUnavailable,
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -205,12 +212,14 @@ class _CvScreenState extends State<CvScreen> {
     if (!mounted) return;
 
     final successMessage = newMode == 'uploaded'
-        ? 'Now using your uploaded CV.'
-        : 'Now using your built CV.';
+        ? AppLocalizations.of(context)!.studentCvUsingUploaded
+        : AppLocalizations.of(context)!.studentCvUsingBuilt;
 
     context.showAppSnackBar(
       error ?? successMessage,
-      title: error == null ? 'Primary CV updated' : 'Update unavailable',
+      title: error == null
+          ? AppLocalizations.of(context)!.studentPrimaryCvUpdated
+          : AppLocalizations.of(context)!.uiUpdateUnavailable,
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -221,9 +230,9 @@ class _CvScreenState extends State<CvScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Remove uploaded CV?'),
+          title: Text(l10n.studentRemoveUploadedCvTitle),
           content: Text(
-            'This removes ${cv.uploadedCvDisplayName} from your CV studio. Your built CV content stays available.',
+            l10n.studentRemoveUploadedCvMessage(cv.uploadedCvDisplayName),
           ),
           actions: [
             TextButton(
@@ -255,8 +264,10 @@ class _CvScreenState extends State<CvScreen> {
     if (!mounted) return;
 
     context.showAppSnackBar(
-      error ?? 'Uploaded CV removed.',
-      title: error == null ? 'CV removed' : l10n.uiRemoveUnavailable,
+      error ?? l10n.studentUploadedCvRemoved,
+      title: error == null
+          ? l10n.studentCvRemovedTitle
+          : l10n.uiRemoveUnavailable,
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -267,11 +278,11 @@ class _CvScreenState extends State<CvScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Reset built CV?'),
+          title: Text(l10n.studentResetBuiltCvTitle),
           content: Text(
             cv.hasUploadedCv
-                ? 'This deletes your built CV details and saved PDF. Your uploaded CV stays available.'
-                : 'This deletes your built CV details and saved PDF.',
+                ? l10n.studentResetBuiltCvWithUploadedMessage
+                : l10n.studentResetBuiltCvMessage,
           ),
           actions: [
             TextButton(
@@ -284,7 +295,7 @@ class _CvScreenState extends State<CvScreen> {
                 backgroundColor: SettingsFlowPalette.error,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Reset'),
+              child: Text(l10n.studentReset),
             ),
           ],
         );
@@ -301,8 +312,10 @@ class _CvScreenState extends State<CvScreen> {
     if (!mounted) return;
 
     context.showAppSnackBar(
-      error ?? 'Built CV reset.',
-      title: error == null ? 'Built CV reset' : 'Reset unavailable',
+      error ?? l10n.studentBuiltCvResetMessage,
+      title: error == null
+          ? l10n.studentBuiltCvResetTitle
+          : l10n.uiResetUnavailable,
       type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
     );
   }
@@ -324,7 +337,7 @@ class _CvScreenState extends State<CvScreen> {
 
       if (requirePdf && !document.isPdf) {
         context.showAppSnackBar(
-          'This file is not a valid PDF yet.',
+          AppLocalizations.of(context)!.studentFileNotValidPdfYet,
           title: AppLocalizations.of(context)!.uiPreviewUnavailable,
           type: AppFeedbackType.warning,
         );
@@ -346,7 +359,7 @@ class _CvScreenState extends State<CvScreen> {
       if (!mounted) return;
       if (!launched) {
         context.showAppSnackBar(
-          'We couldn\'t open the document right now.',
+          AppLocalizations.of(context)!.studentCouldNotOpenDocumentNow,
           title: AppLocalizations.of(context)!.uiOpenUnavailable,
           type: AppFeedbackType.error,
         );
@@ -354,7 +367,7 @@ class _CvScreenState extends State<CvScreen> {
     } catch (e) {
       if (!mounted) return;
       context.showAppSnackBar(
-        _documentErrorMessage(e),
+        _documentErrorMessage(e, AppLocalizations.of(context)!),
         title: AppLocalizations.of(context)!.uiDocumentUnavailable,
         type: AppFeedbackType.error,
       );
@@ -399,7 +412,7 @@ class _CvScreenState extends State<CvScreen> {
     return cv != null && (cv.hasUploadedCv || cv.hasExportedPdf);
   }
 
-  List<_ReadinessItem> _readinessItems(CvModel? cv) {
+  List<_ReadinessItem> _readinessItems(CvModel? cv, AppLocalizations l10n) {
     final hasContact =
         cv?.fullName.trim().isNotEmpty == true &&
         cv?.email.trim().isNotEmpty == true;
@@ -408,70 +421,72 @@ class _CvScreenState extends State<CvScreen> {
     return [
       _ReadinessItem(
         icon: Icons.badge_outlined,
-        title: 'Contact info',
+        title: l10n.studentCvContactInfo,
         subtitle: hasContact
-            ? 'Name and email are ready.'
-            : 'Add your name and email.',
+            ? l10n.studentCvNameEmailReady
+            : l10n.studentCvAddNameEmail,
         isComplete: hasContact,
       ),
       _ReadinessItem(
         icon: Icons.subject_rounded,
-        title: 'Summary',
+        title: l10n.uiSummary,
         subtitle: cv?.summary.trim().isNotEmpty == true
-            ? 'Your profile has a short introduction.'
-            : 'Write a short professional profile.',
+            ? l10n.studentCvProfileIntroReady
+            : l10n.studentCvWriteProfile,
         isComplete: cv?.summary.trim().isNotEmpty == true,
       ),
       _ReadinessItem(
         icon: Icons.school_outlined,
-        title: 'Education',
+        title: l10n.uiEducation,
         subtitle: cv?.education.isNotEmpty == true
-            ? '${cv!.education.length} education item saved.'
-            : 'Add your latest degree or training.',
+            ? l10n.studentCvEducationSaved(cv!.education.length)
+            : l10n.studentCvAddEducation,
         isComplete: cv?.education.isNotEmpty == true,
       ),
       _ReadinessItem(
         icon: Icons.work_outline_rounded,
-        title: 'Experience or projects',
+        title: l10n.studentCvExperienceProjects,
         subtitle: cv?.experience.isNotEmpty == true
-            ? '${cv!.experience.length} experience item saved.'
-            : 'Add internships, work, or project experience.',
+            ? l10n.studentCvExperienceSaved(cv!.experience.length)
+            : l10n.studentCvAddExperience,
         isComplete: cv?.experience.isNotEmpty == true,
       ),
       _ReadinessItem(
         icon: Icons.auto_awesome_outlined,
-        title: 'Skills',
+        title: l10n.uiSkills,
         subtitle: cv?.skills.isNotEmpty == true
-            ? '${cv!.skills.length} skills listed.'
-            : 'List your strongest skills.',
+            ? l10n.studentCvSkillsListed(cv!.skills.length)
+            : l10n.studentCvListSkills,
         isComplete: cv?.skills.isNotEmpty == true,
       ),
       _ReadinessItem(
         icon: Icons.translate_outlined,
-        title: 'Languages',
+        title: l10n.uiLanguages,
         subtitle: cv?.languages.isNotEmpty == true
-            ? '${cv!.languages.length} languages listed.'
-            : 'Add languages recruiters should know.',
+            ? l10n.studentCvLanguagesListed(cv!.languages.length)
+            : l10n.studentCvAddLanguages,
         isComplete: cv?.languages.isNotEmpty == true,
       ),
       _ReadinessItem(
         icon: Icons.dashboard_customize_outlined,
-        title: 'Template',
+        title: l10n.uiTemplate,
         subtitle: cv?.templateId.trim().isNotEmpty == true
-            ? '${CvTemplateConfig.getTemplate(cv!.templateId).name} selected.'
+            ? l10n.studentCvTemplateSelected(
+                CvTemplateConfig.getTemplate(cv!.templateId).name,
+              )
             : hasBuilderContent
-            ? 'Classic will be used unless you choose another style.'
-            : 'Build your CV before choosing a style.',
+            ? l10n.studentCvClassicDefault
+            : l10n.studentCvBuildBeforeStyle,
         isComplete: cv?.templateId.trim().isNotEmpty == true,
       ),
       _ReadinessItem(
         icon: Icons.verified_outlined,
-        title: 'Application file',
+        title: l10n.studentCvApplicationFile,
         subtitle: _hasApplicationReadyCv(cv)
-            ? 'A PDF is ready for applications.'
+            ? l10n.studentCvPdfReadyApplications
             : hasBuilderContent
-            ? 'Save the builder as a PDF.'
-            : 'Build or upload a CV file.',
+            ? l10n.studentCvSaveBuilderAsPdf
+            : l10n.studentCvBuildOrUploadFile,
         isComplete: _hasApplicationReadyCv(cv),
       ),
     ];
@@ -486,7 +501,7 @@ class _CvScreenState extends State<CvScreen> {
       title: AppLocalizations.of(context)!.uiCvStudio,
       actions: [
         IconButton(
-          tooltip: 'Refresh CV',
+          tooltip: AppLocalizations.of(context)!.studentRefreshCv,
           onPressed: _reload,
           icon: Icon(
             Icons.refresh_rounded,
@@ -523,9 +538,12 @@ class _CvScreenState extends State<CvScreen> {
   Widget _buildActiveCvPanel(CvModel? cv, CvProvider cvProvider) {
     final ready = _hasApplicationReadyCv(cv);
     final hasDraft = cv?.hasBuilderContent == true && !ready;
-    final title = _activeCvTitle(cv);
-    final subtitle = _activeCvSubtitle(cv);
-    final statusLabel = ready ? 'Ready' : (hasDraft ? 'Draft' : 'Empty');
+    final l10n = AppLocalizations.of(context)!;
+    final title = _activeCvTitle(cv, l10n);
+    final subtitle = _activeCvSubtitle(cv, l10n);
+    final statusLabel = ready
+        ? l10n.studentReady
+        : (hasDraft ? l10n.studentDraft : l10n.studentEmpty);
     final statusColor = ready
         ? SettingsFlowPalette.success
         : (hasDraft ? SettingsFlowPalette.warning : SettingsFlowPalette.error);
@@ -554,7 +572,7 @@ class _CvScreenState extends State<CvScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Companies will see',
+                      l10n.studentCompaniesWillSee,
                       style: SettingsFlowTheme.micro(
                         SettingsFlowPalette.textSecondary,
                       ),
@@ -576,8 +594,8 @@ class _CvScreenState extends State<CvScreen> {
             const SizedBox(height: 10),
             SettingsSecondaryButton(
               label: cv.primaryCvMode == 'uploaded'
-                  ? 'Use built CV instead'
-                  : 'Use uploaded CV instead',
+                  ? l10n.studentUseBuiltCvInstead
+                  : l10n.studentUseUploadedCvInstead,
               icon: Icons.swap_horiz_rounded,
               onPressed: () => _togglePrimaryCvMode(cv),
             ),
@@ -593,12 +611,12 @@ class _CvScreenState extends State<CvScreen> {
       return SettingsButtonGroup(
         children: [
           SettingsPrimaryButton(
-            label: 'Build CV',
+            label: AppLocalizations.of(context)!.uiActionBuildCv,
             icon: Icons.edit_rounded,
             onPressed: _navigateToEdit,
           ),
           SettingsSecondaryButton(
-            label: 'Upload PDF',
+            label: AppLocalizations.of(context)!.studentUploadPdf,
             icon: Icons.upload_file_rounded,
             onPressed: _uploadExistingCv,
           ),
@@ -610,12 +628,12 @@ class _CvScreenState extends State<CvScreen> {
       return SettingsButtonGroup(
         children: [
           SettingsPrimaryButton(
-            label: 'View active CV',
+            label: AppLocalizations.of(context)!.studentViewActiveCv,
             icon: Icons.visibility_outlined,
             onPressed: () => _openActiveCv(cv),
           ),
           SettingsSecondaryButton(
-            label: 'Download',
+            label: AppLocalizations.of(context)!.uiDownload,
             icon: Icons.download_rounded,
             onPressed: () => _openActiveCv(cv, download: true),
           ),
@@ -626,7 +644,9 @@ class _CvScreenState extends State<CvScreen> {
     return SettingsButtonGroup(
       children: [
         SettingsPrimaryButton(
-          label: cvProvider.isExporting ? 'Saving...' : 'Save as PDF',
+          label: cvProvider.isExporting
+              ? AppLocalizations.of(context)!.studentSavingEllipsis
+              : AppLocalizations.of(context)!.studentSaveAsPdf,
           icon: Icons.picture_as_pdf_rounded,
           onPressed: cvProvider.isExporting ? null : () => _generateCv(cv),
         ),
@@ -640,7 +660,8 @@ class _CvScreenState extends State<CvScreen> {
   }
 
   Widget _buildReadinessPanel(CvModel? cv) {
-    final items = _readinessItems(cv);
+    final l10n = AppLocalizations.of(context)!;
+    final items = _readinessItems(cv, l10n);
     final completed = items.where((item) => item.isComplete).length;
     final progress = completed / items.length;
 
@@ -655,12 +676,12 @@ class _CvScreenState extends State<CvScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'CV readiness',
+                      l10n.studentCvReadiness,
                       style: SettingsFlowTheme.sectionTitle(),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '$completed of ${items.length} essentials complete',
+                      l10n.studentCvEssentialsComplete(completed, items.length),
                       style: SettingsFlowTheme.caption(),
                     ),
                   ],
@@ -715,12 +736,16 @@ class _CvScreenState extends State<CvScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Uploaded PDF active',
+                      AppLocalizations.of(context)!.studentUploadedPdfActive,
                       style: SettingsFlowTheme.sectionTitle(),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${cv.uploadedCvDisplayName} is the file companies receive with your applications.',
+                      AppLocalizations.of(
+                        context,
+                      )!.studentUploadedCvActiveMessage(
+                        cv.uploadedCvDisplayName,
+                      ),
                       style: SettingsFlowTheme.caption(),
                     ),
                   ],
@@ -728,7 +753,9 @@ class _CvScreenState extends State<CvScreen> {
               ),
               const SizedBox(width: 10),
               SettingsStatusPill(
-                label: cv.isUploadedCvPdf ? 'PDF' : 'File',
+                label: cv.isUploadedCvPdf
+                    ? 'PDF'
+                    : AppLocalizations.of(context)!.uiFile,
                 color: SettingsFlowPalette.success,
               ),
             ],
@@ -737,18 +764,20 @@ class _CvScreenState extends State<CvScreen> {
           _ReadinessRow(
             item: _ReadinessItem(
               icon: Icons.upload_file_rounded,
-              title: 'File uploaded',
-              subtitle: _uploadedDateLabel(cv),
+              title: AppLocalizations.of(context)!.studentFileUploaded,
+              subtitle: _uploadedDateLabel(cv, AppLocalizations.of(context)!),
               isComplete: true,
             ),
           ),
           _ReadinessRow(
             item: _ReadinessItem(
               icon: Icons.verified_outlined,
-              title: 'Application-ready',
+              title: AppLocalizations.of(context)!.studentApplicationReady,
               subtitle: cv.isUploadedCvPdf
-                  ? 'The uploaded PDF is ready to attach.'
-                  : 'The uploaded file is saved, but PDF preview may be limited.',
+                  ? AppLocalizations.of(context)!.studentUploadedPdfReadyAttach
+                  : AppLocalizations.of(
+                      context,
+                    )!.studentUploadedFileSavedPreviewLimited,
               isComplete: cv.hasUploadedCv,
             ),
           ),
@@ -756,12 +785,12 @@ class _CvScreenState extends State<CvScreen> {
           SettingsButtonGroup(
             children: [
               SettingsSecondaryButton(
-                label: 'Replace PDF',
+                label: AppLocalizations.of(context)!.studentReplacePdf,
                 icon: Icons.upload_file_rounded,
                 onPressed: _uploadExistingCv,
               ),
               SettingsSecondaryButton(
-                label: 'Build instead',
+                label: AppLocalizations.of(context)!.studentBuildInstead,
                 icon: Icons.edit_rounded,
                 onPressed: cv.hasExportedPdf
                     ? () => _setPrimaryCvMode(cv, 'builder_pdf')
@@ -780,6 +809,7 @@ class _CvScreenState extends State<CvScreen> {
         ? CvTemplateConfig.resolveTemplateId(cv!.templateId)
         : CvTemplateConfig.defaultTemplate;
     final templateName = CvTemplateConfig.getTemplate(selectedTemplateId).name;
+    final l10n = AppLocalizations.of(context)!;
 
     return SettingsPanel(
       child: Column(
@@ -793,14 +823,14 @@ class _CvScreenState extends State<CvScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Structured CV builder',
+                      l10n.studentStructuredCvBuilder,
                       style: SettingsFlowTheme.sectionTitle(),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       hasContent
-                          ? '$templateName template. Edit details, preview, then save the PDF.'
-                          : 'Create a polished CV from structured profile details.',
+                          ? l10n.studentTemplateEditSavePdf(templateName)
+                          : l10n.studentCreatePolishedCv,
                       style: SettingsFlowTheme.caption(),
                     ),
                   ],
@@ -808,8 +838,8 @@ class _CvScreenState extends State<CvScreen> {
               ),
               SettingsStatusPill(
                 label: cv?.hasExportedPdf == true
-                    ? 'PDF saved'
-                    : (hasContent ? 'Draft' : 'Not started'),
+                    ? l10n.uiExportComplete
+                    : (hasContent ? l10n.studentDraft : l10n.studentNotStarted),
                 color: cv?.hasExportedPdf == true
                     ? SettingsFlowPalette.success
                     : (hasContent
@@ -840,12 +870,14 @@ class _CvScreenState extends State<CvScreen> {
           SettingsButtonGroup(
             children: [
               SettingsPrimaryButton(
-                label: hasContent ? 'Edit builder' : 'Start builder',
+                label: hasContent
+                    ? l10n.studentEditBuilder
+                    : l10n.studentStartBuilder,
                 icon: Icons.edit_rounded,
                 onPressed: _navigateToEdit,
               ),
               SettingsSecondaryButton(
-                label: 'Template',
+                label: l10n.uiTemplate,
                 icon: Icons.dashboard_customize_outlined,
                 onPressed: hasContent
                     ? () => _navigateToTemplateSelector(cv!)
@@ -863,7 +895,9 @@ class _CvScreenState extends State<CvScreen> {
                   onPressed: () => _navigateToPreview(cv!),
                 ),
                 SettingsPrimaryButton(
-                  label: cvProvider.isExporting ? 'Saving...' : 'Save PDF',
+                  label: cvProvider.isExporting
+                      ? l10n.studentSavingEllipsis
+                      : l10n.studentSavePdf,
                   icon: Icons.picture_as_pdf_rounded,
                   onPressed: cvProvider.isExporting
                       ? null
@@ -884,19 +918,23 @@ class _CvScreenState extends State<CvScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SettingsSectionHeading(
-          title: 'Application files',
-          subtitle: 'Choose the document recruiters receive when you apply.',
+          title: AppLocalizations.of(context)!.studentApplicationFiles,
+          subtitle: AppLocalizations.of(
+            context,
+          )!.studentApplicationFilesSubtitle,
         ),
         const SizedBox(height: 10),
         if (!hasFiles)
           SettingsListRow(
             icon: Icons.upload_file_rounded,
             iconColor: SettingsFlowPalette.secondary,
-            title: 'Upload a PDF CV',
-            subtitle: 'Use an existing file while you build a structured CV.',
+            title: AppLocalizations.of(context)!.studentUploadPdfCv,
+            subtitle: AppLocalizations.of(
+              context,
+            )!.studentUseExistingPdfWhileBuilding,
             onTap: _uploadExistingCv,
             trailing: SettingsStatusPill(
-              label: 'Upload',
+              label: AppLocalizations.of(context)!.uploadLabel,
               color: SettingsFlowPalette.secondary,
             ),
           )
@@ -907,7 +945,7 @@ class _CvScreenState extends State<CvScreen> {
               iconColor: SettingsFlowPalette.secondary,
               title: AppLocalizations.of(context)!.uiUploadedCv,
               subtitle:
-                  '${cv.uploadedCvDisplayName} - ${_uploadedDateLabel(cv)}',
+                  '${cv.uploadedCvDisplayName} - ${_uploadedDateLabel(cv, AppLocalizations.of(context)!)}',
               isActive: _isUploadedActive(cv),
               onView: cv.isUploadedCvPdf
                   ? () => _openSecureCv(variant: 'primary', requirePdf: true)
@@ -924,7 +962,7 @@ class _CvScreenState extends State<CvScreen> {
             _CvDocumentCard(
               icon: Icons.picture_as_pdf_rounded,
               iconColor: SettingsFlowPalette.primary,
-              title: 'Built CV PDF',
+              title: AppLocalizations.of(context)!.studentBuiltCvPdf,
               subtitle:
                   '${cv.exportedPdfFileName} - ${CvTemplateConfig.getTemplate(CvTemplateConfig.resolveTemplateId(cv.templateId)).name}',
               isActive: _isBuiltActive(cv),
@@ -939,8 +977,10 @@ class _CvScreenState extends State<CvScreen> {
           SettingsListRow(
             icon: Icons.add_rounded,
             iconColor: SettingsFlowPalette.secondary,
-            title: cv.hasUploadedCv ? 'Replace uploaded PDF' : 'Upload PDF CV',
-            subtitle: 'Attach a new PDF file from your device.',
+            title: cv.hasUploadedCv
+                ? AppLocalizations.of(context)!.studentReplaceUploadedPdf
+                : AppLocalizations.of(context)!.studentUploadPdfCv,
+            subtitle: AppLocalizations.of(context)!.studentAttachNewPdf,
             compact: true,
             onTap: _uploadExistingCv,
           ),
@@ -949,49 +989,51 @@ class _CvScreenState extends State<CvScreen> {
     );
   }
 
-  String _activeCvTitle(CvModel? cv) {
-    if (cv == null) return 'No active CV yet';
-    if (_isBuiltActive(cv)) return 'Built CV PDF';
-    if (_isUploadedActive(cv)) return 'Uploaded PDF';
-    if (cv.hasBuilderContent) return 'Builder draft';
-    return 'No active CV yet';
+  String _activeCvTitle(CvModel? cv, AppLocalizations l10n) {
+    if (cv == null) return l10n.studentNoActiveCvYet;
+    if (_isBuiltActive(cv)) return l10n.studentBuiltCvPdf;
+    if (_isUploadedActive(cv)) return l10n.studentUploadedPdf;
+    if (cv.hasBuilderContent) return l10n.studentBuilderDraft;
+    return l10n.studentNoActiveCvYet;
   }
 
-  String _activeCvSubtitle(CvModel? cv) {
+  String _activeCvSubtitle(CvModel? cv, AppLocalizations l10n) {
     if (cv == null) {
-      return 'Build a structured CV or upload a PDF to start applying faster.';
+      return l10n.studentCvStartApplyingFaster;
     }
 
     if (_isBuiltActive(cv)) {
-      return 'Your saved builder PDF is ready for applications.';
+      return l10n.studentSavedBuilderPdfReady;
     }
 
     if (_isUploadedActive(cv)) {
-      return 'Your uploaded file is currently used for applications.';
+      return l10n.studentUploadedFileUsedApplications;
     }
 
     if (cv.hasBuilderContent) {
-      return 'Preview the draft, then save it as a PDF before applying.';
+      return l10n.studentPreviewDraftSavePdf;
     }
 
-    return 'Build a structured CV or upload a PDF to start applying faster.';
+    return l10n.studentCvStartApplyingFaster;
   }
 
-  String _uploadedDateLabel(CvModel cv) {
+  String _uploadedDateLabel(CvModel cv, AppLocalizations l10n) {
     final uploadedAt = cv.uploadedCvUploadedAt;
-    if (uploadedAt == null) return 'uploaded recently';
-    return 'uploaded ${DateFormat('MMM d, yyyy').format(uploadedAt.toDate())}';
+    if (uploadedAt == null) return l10n.studentUploadedRecently;
+    return l10n.studentUploadedDate(
+      DateFormat('MMM d, yyyy').format(uploadedAt.toDate()),
+    );
   }
 
-  String _documentErrorMessage(Object error) {
+  String _documentErrorMessage(Object error, AppLocalizations l10n) {
     final message = error.toString();
     if (message.contains('permission') || message.contains('403')) {
-      return 'Permission denied while opening the document.';
+      return l10n.uiPermissionDeniedWhileOpeningTheDocument;
     }
     if (message.contains('404') || message.contains('not found')) {
-      return 'The requested document is no longer available.';
+      return l10n.uiTheRequestedDocumentIsNoLongerAvailable;
     }
-    return 'We couldn\'t open the document right now.';
+    return l10n.studentCouldNotOpenDocumentNow;
   }
 }
 
@@ -1019,9 +1061,13 @@ class _ReadinessRow extends StatelessWidget {
     final color = item.isComplete
         ? SettingsFlowPalette.success
         : SettingsFlowPalette.textSecondary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Semantics(
-      label: '${item.title}, ${item.isComplete ? 'complete' : 'incomplete'}',
+      label: l10n.studentReadinessSemantic(
+        item.title,
+        item.isComplete ? l10n.studentComplete : l10n.studentIncomplete,
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7),
         child: Row(
@@ -1105,7 +1151,9 @@ class _CvDocumentCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               SettingsStatusPill(
-                label: isActive ? 'Active' : 'Available',
+                label: isActive
+                    ? AppLocalizations.of(context)!.uiActive
+                    : AppLocalizations.of(context)!.studentAvailable,
                 color: isActive
                     ? SettingsFlowPalette.success
                     : SettingsFlowPalette.textSecondary,
@@ -1118,18 +1166,18 @@ class _CvDocumentCard extends StatelessWidget {
             runSpacing: 8,
             children: [
               _DocumentActionButton(
-                label: 'View',
+                label: AppLocalizations.of(context)!.uiView,
                 icon: Icons.visibility_outlined,
                 onPressed: onView,
               ),
               _DocumentActionButton(
-                label: 'Download',
+                label: AppLocalizations.of(context)!.uiDownload,
                 icon: Icons.download_outlined,
                 onPressed: onDownload,
               ),
               if (onMakeActive != null)
                 _DocumentActionButton(
-                  label: 'Make active',
+                  label: AppLocalizations.of(context)!.studentMakeActive,
                   icon: Icons.check_circle_outline_rounded,
                   onPressed: onMakeActive,
                   color: SettingsFlowPalette.success,

@@ -203,13 +203,13 @@ class _SavedScreenState extends State<SavedScreen> {
     };
   }
 
-  String _filterLabel(_SavedHubFilter filter) {
+  String _filterLabel(_SavedHubFilter filter, AppLocalizations l10n) {
     return switch (filter) {
-      _SavedHubFilter.all => 'All',
-      _SavedHubFilter.opportunities => 'Opportunities',
-      _SavedHubFilter.scholarships => 'Scholarships',
-      _SavedHubFilter.trainings => 'Trainings',
-      _SavedHubFilter.ideas => 'Ideas',
+      _SavedHubFilter.all => l10n.uiAll,
+      _SavedHubFilter.opportunities => l10n.uiOpportunities,
+      _SavedHubFilter.scholarships => l10n.uiScholarships,
+      _SavedHubFilter.trainings => l10n.studentSavedFilterTrainings,
+      _SavedHubFilter.ideas => l10n.uiIdeas,
     };
   }
 
@@ -223,16 +223,16 @@ class _SavedScreenState extends State<SavedScreen> {
     };
   }
 
-  String _opportunityTypeFilterLabel(String? type) {
+  String _opportunityTypeFilterLabel(String? type, AppLocalizations l10n) {
     final normalized = OpportunityType.parse(type);
     switch (normalized) {
       case OpportunityType.internship:
-        return 'Internships';
+        return l10n.uiInternships;
       case OpportunityType.sponsoring:
-        return 'Sponsored';
+        return l10n.studentSponsoredFilter;
       case OpportunityType.job:
       default:
-        return 'Jobs';
+        return l10n.uiJobs;
     }
   }
 
@@ -309,7 +309,7 @@ class _SavedScreenState extends State<SavedScreen> {
 
     if (opportunity == null) {
       context.showAppSnackBar(
-        'This opportunity is no longer available.',
+        AppLocalizations.of(context)!.studentOpportunityNoLongerAvailable,
         title: AppLocalizations.of(context)!.uiOpportunityUnavailable,
         type: AppFeedbackType.warning,
       );
@@ -330,7 +330,7 @@ class _SavedScreenState extends State<SavedScreen> {
 
     if (scholarship == null) {
       context.showAppSnackBar(
-        'This scholarship is no longer available.',
+        AppLocalizations.of(context)!.studentScholarshipNoLongerAvailable,
         title: AppLocalizations.of(context)!.uiScholarshipUnavailable,
         type: AppFeedbackType.warning,
       );
@@ -386,6 +386,7 @@ class _SavedScreenState extends State<SavedScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final key = _itemKey(item);
     setState(() => _removingItemKey = key);
 
@@ -397,27 +398,27 @@ class _SavedScreenState extends State<SavedScreen> {
         error = await context
             .read<SavedOpportunityProvider>()
             .unsaveOpportunity(item.opportunity!.id, studentId);
-        successMessage = 'Removed from saved opportunities';
+        successMessage = l10n.studentRemovedFromSavedOpportunities;
         break;
       case _SavedHubItemKind.scholarship:
         error = await context
             .read<SavedScholarshipProvider>()
             .unsaveScholarship(item.scholarship!.id, studentId);
-        successMessage = 'Removed from saved scholarships';
+        successMessage = l10n.studentRemovedFromSavedScholarships;
         break;
       case _SavedHubItemKind.training:
         error = await context.read<TrainingProvider>().unsaveTraining(
           userId: studentId,
           trainingId: item.training!.id,
         );
-        successMessage = 'Removed from saved trainings';
+        successMessage = l10n.studentRemovedFromSavedTrainings;
         break;
       case _SavedHubItemKind.idea:
         error = await context.read<ProjectIdeaProvider>().toggleSave(
           item.idea!.idea,
           studentId,
         );
-        successMessage = 'Removed from saved ideas';
+        successMessage = l10n.studentRemovedFromSavedIdeas;
         break;
     }
 
@@ -428,10 +429,10 @@ class _SavedScreenState extends State<SavedScreen> {
     setState(() => _removingItemKey = null);
 
     context.showAppSnackBar(
-      error == null
-          ? successMessage
-          : 'We couldn\'t remove this item right now.',
-      title: error == null ? 'Saved items updated' : 'Update unavailable',
+      error == null ? successMessage : l10n.studentRemoveSavedItemError,
+      title: error == null
+          ? l10n.trainingSavedUpdatedTitle
+          : l10n.uiUpdateUnavailable,
       type: error == null ? AppFeedbackType.removed : AppFeedbackType.error,
       icon: error == null ? Icons.bookmark_remove_outlined : null,
     );
@@ -535,7 +536,7 @@ class _SavedScreenState extends State<SavedScreen> {
                                 _InlineBanner(
                                   icon: Icons.info_outline_rounded,
                                   title:
-                                      'Some saved ideas could not load right now.',
+                                      l10n.uiSomeSavedIdeasCouldNotLoadRightNow,
                                   message: savedIdeasProvider.savedIdeasError!,
                                   tone: StudentOpportunityHubPalette.error,
                                   background: StudentOpportunityHubPalette
@@ -548,8 +549,8 @@ class _SavedScreenState extends State<SavedScreen> {
                                 const SizedBox(height: 12),
                               StudentOpportunitySearchField(
                                 controller: _searchController,
-                                hintText:
-                                    'Search by title, company, provider, or category',
+                                hintText: l10n
+                                    .uiSearchByTitleCompanyProviderOrCategory,
                                 onChanged: (_) => setState(() {}),
                               ),
                               const SizedBox(height: 10),
@@ -567,8 +568,20 @@ class _SavedScreenState extends State<SavedScreen> {
                                                 : 8,
                                           ),
                                           child: StudentOpportunityFilterChip(
-                                            label:
-                                                '${_filterLabel(filter)} (${_countForFilter(opportunities: visibleSavedOpportunities, scholarships: visibleSavedScholarships, trainings: trainingProvider.savedTrainings, ideas: savedIdeasProvider.savedIdeas, filter: filter)})',
+                                            label: l10n.studentFilterCount(
+                                              _filterLabel(filter, l10n),
+                                              _countForFilter(
+                                                opportunities:
+                                                    visibleSavedOpportunities,
+                                                scholarships:
+                                                    visibleSavedScholarships,
+                                                trainings: trainingProvider
+                                                    .savedTrainings,
+                                                ideas: savedIdeasProvider
+                                                    .savedIdeas,
+                                                filter: filter,
+                                              ),
+                                            ),
                                             selected: filter == _selectedFilter,
                                             color: _filterColor(filter),
                                             onTap: () {
@@ -665,8 +678,16 @@ class _SavedScreenState extends State<SavedScreen> {
                                                             : 8,
                                                       ),
                                                       child: StudentOpportunityFilterChip(
-                                                        label:
-                                                            '${_opportunityTypeFilterLabel(type)} (${_countForOpportunityTypeFilter(visibleSavedOpportunities, type)})',
+                                                        label: l10n.studentFilterCount(
+                                                          _opportunityTypeFilterLabel(
+                                                            type,
+                                                            l10n,
+                                                          ),
+                                                          _countForOpportunityTypeFilter(
+                                                            visibleSavedOpportunities,
+                                                            type,
+                                                          ),
+                                                        ),
                                                         selected:
                                                             _selectedOpportunityType ==
                                                             type,
@@ -699,10 +720,10 @@ class _SavedScreenState extends State<SavedScreen> {
                               const SizedBox(height: 14),
                               Text(
                                 hasFilters
-                                    ? '${items.length} items shown'
+                                    ? l10n.studentItemsShown(items.length)
                                     : totalSaved == 1
-                                    ? '1 saved item'
-                                    : '$totalSaved saved items',
+                                    ? l10n.studentSavedItemOne
+                                    : l10n.studentSavedItemsCount(totalSaved),
                                 style: AppTypography.product(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
@@ -721,8 +742,8 @@ class _SavedScreenState extends State<SavedScreen> {
                             title: AppLocalizations.of(
                               context,
                             )!.uiLoadingSavedItems,
-                            message:
-                                'Pulling together your saved opportunities, scholarships, trainings, and ideas.',
+                            message: l10n
+                                .uiPullingTogetherYourSavedOpportunitiesScholarshipsTrainingsAndIdeas,
                           ),
                         )
                       else if (items.isEmpty)
@@ -733,12 +754,12 @@ class _SavedScreenState extends State<SavedScreen> {
                                 ? Icons.filter_alt_off_rounded
                                 : Icons.bookmark_border_rounded,
                             title: hasFilters
-                                ? 'No saved items match this view'
-                                : 'No saved items yet',
+                                ? l10n.studentNoSavedItemsMatchView
+                                : l10n.studentNoSavedItemsYet,
                             message: hasFilters
-                                ? 'Try a different search or filter to see more saved items.'
-                                : 'Save opportunities, scholarships, trainings, or ideas to build your shortlist.',
-                            actionLabel: 'Explore opportunities',
+                                ? l10n.studentNoSavedItemsMatchMessage
+                                : l10n.studentNoSavedItemsYetMessage,
+                            actionLabel: l10n.studentExploreOpportunities,
                             onAction: () => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -894,7 +915,7 @@ class _SavedCompactSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Your shortlist',
+                      AppLocalizations.of(context)!.uiYourShortlist,
                       style: AppTypography.product(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -903,7 +924,9 @@ class _SavedCompactSummary extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Quick access to roles, funding, learning, and ideas worth revisiting.',
+                      AppLocalizations.of(
+                        context,
+                      )!.uiQuickAccessToRolesFundingLearningAndIdeasWorthRevisiting,
                       style: AppTypography.product(
                         fontSize: 11,
                         color: StudentOpportunityHubPalette.textSecondary,
@@ -1135,7 +1158,7 @@ class _SavedOpportunityCard extends StatelessWidget {
         item.type,
         AppLocalizations.of(context)!,
       ),
-      savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
+      savedLabel: _relativeSavedLabel(context, item.savedAt?.toDate()),
       title: DisplayText.opportunityTitle(
         item.title,
         fallback: AppLocalizations.of(context)!.opportunityOpenFallback,
@@ -1145,19 +1168,21 @@ class _SavedOpportunityCard extends StatelessWidget {
         _SavedMetaChip(
           icon: Icons.location_on_outlined,
           label: item.location.trim().isEmpty
-              ? 'Location not specified'
+              ? AppLocalizations.of(context)!.studentLocationNotSpecified
               : item.location.trim(),
         ),
         _SavedMetaChip(
           icon: isExpired ? Icons.event_busy_outlined : Icons.flag_outlined,
-          label: _deadlineLabel(deadline, item.deadline),
+          label: _deadlineLabel(context, deadline, item.deadline),
           tone: _deadlineTone(deadline),
         ),
         if (OpportunityType.isSponsoring(item.type) &&
             item.fundingLabel.trim().isNotEmpty)
           _SavedMetaChip(
             icon: Icons.savings_outlined,
-            label: 'Funding: ${item.fundingLabel.trim()}',
+            label: AppLocalizations.of(
+              context,
+            )!.studentFundingValue(item.fundingLabel.trim()),
             tone: accent,
           ),
         if (isClosingSoon && !isExpired)
@@ -1195,26 +1220,26 @@ class _SavedScholarshipCard extends StatelessWidget {
     final accent = StudentOpportunityHubPalette.secondary;
     final deadline = OpportunityMetadata.parseDateTimeLike(item.deadline);
     final fundingLabel = item.fundingType.trim().isEmpty
-        ? 'Scholarship'
+        ? AppLocalizations.of(context)!.studentScholarshipFallback
         : item.fundingType.trim();
 
     return _SavedListCard(
       accent: accent,
       leadingIcon: Icons.school_outlined,
       typeLabel: fundingLabel,
-      savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
+      savedLabel: _relativeSavedLabel(context, item.savedAt?.toDate()),
       title: item.title,
       subtitle: item.provider,
       meta: [
         _SavedMetaChip(
           icon: Icons.public_rounded,
           label: item.location.trim().isEmpty
-              ? 'Destination not specified'
+              ? AppLocalizations.of(context)!.studentDestinationNotSpecified
               : item.location.trim(),
         ),
         _SavedMetaChip(
           icon: Icons.event_available_outlined,
-          label: _deadlineLabel(deadline, item.deadline),
+          label: _deadlineLabel(context, deadline, item.deadline),
           tone: _deadlineTone(deadline),
         ),
         if (item.level.trim().isNotEmpty)
@@ -1251,7 +1276,7 @@ class _SavedTrainingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const accent = Color(0xFF6366F1);
     final typeLabel = item.type.trim().isEmpty
-        ? 'Training'
+        ? AppLocalizations.of(context)!.studentTrainingFallback
         : item.type[0].toUpperCase() + item.type.substring(1);
     final summary = item.description.trim();
 
@@ -1259,7 +1284,7 @@ class _SavedTrainingCard extends StatelessWidget {
       accent: accent,
       leadingIcon: Icons.menu_book_rounded,
       typeLabel: typeLabel,
-      savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
+      savedLabel: _relativeSavedLabel(context, item.savedAt?.toDate()),
       title: item.title,
       subtitle: item.provider,
       summary: summary.isEmpty ? null : summary,
@@ -1331,7 +1356,7 @@ class _SavedIdeaCard extends StatelessWidget {
       accent: accent,
       leadingIcon: innovationCategoryIcon(item.idea.displayCategory),
       typeLabel: item.idea.displayCategory,
-      savedLabel: _relativeSavedLabel(item.savedAt?.toDate()),
+      savedLabel: _relativeSavedLabel(context, item.savedAt?.toDate()),
       title: item.idea.title,
       subtitle: item.idea.creatorName,
       summary: summary.isEmpty ? null : summary,
@@ -1343,7 +1368,9 @@ class _SavedIdeaCard extends StatelessWidget {
         ),
         _SavedMetaChip(
           icon: Icons.people_outline_rounded,
-          label: '${item.idea.interestedCount} interested',
+          label: AppLocalizations.of(
+            context,
+          )!.studentInterestedCountLower(item.idea.interestedCount),
           tone: StudentOpportunityHubPalette.secondary,
         ),
       ],
@@ -1933,20 +1960,21 @@ class _SavedHubItem {
       case _SavedHubItemKind.opportunity:
         return OpportunityType.label(opportunity!.type, l10n);
       case _SavedHubItemKind.scholarship:
-        return 'Scholarship';
+        return l10n.studentScholarshipFallback;
       case _SavedHubItemKind.training:
         return training!.type.isNotEmpty
             ? training!.type[0].toUpperCase() + training!.type.substring(1)
-            : 'Training';
+            : l10n.studentTrainingFallback;
       case _SavedHubItemKind.idea:
         return idea!.idea.displayCategory;
     }
   }
 }
 
-String _relativeSavedLabel(DateTime? value) {
+String _relativeSavedLabel(BuildContext context, DateTime? value) {
+  final l10n = AppLocalizations.of(context)!;
   if (value == null) {
-    return 'Saved';
+    return l10n.studentRelativeSaved;
   }
 
   final now = DateTime.now();
@@ -1955,17 +1983,17 @@ String _relativeSavedLabel(DateTime? value) {
   final difference = today.difference(target).inDays;
 
   if (difference <= 0) {
-    return 'Today';
+    return l10n.studentRelativeToday;
   }
   if (difference == 1) {
-    return 'Yesterday';
+    return l10n.studentRelativeYesterday;
   }
   if (difference < 7) {
-    return '${difference}d ago';
+    return l10n.studentDaysAgoCompact(difference);
   }
   if (difference < 30) {
     final weeks = (difference / 7).ceil();
-    return '${weeks}w ago';
+    return l10n.studentWeeksAgoCompact(weeks);
   }
 
   return DateFormat('MMM d').format(value);
@@ -1994,17 +2022,24 @@ bool _isExpired(DateTime? deadline) {
   return target.isBefore(today);
 }
 
-String _deadlineLabel(DateTime? deadline, String fallback) {
+String _deadlineLabel(
+  BuildContext context,
+  DateTime? deadline,
+  String fallback,
+) {
+  final l10n = AppLocalizations.of(context)!;
   if (deadline == null) {
     final normalizedFallback = fallback.trim();
     if (normalizedFallback.isEmpty) {
-      return 'No deadline shared';
+      return l10n.studentNoDeadlineShared;
     }
     return normalizedFallback;
   }
 
-  final prefix = _isExpired(deadline) ? 'Closed' : 'Closes';
-  return '$prefix ${DateFormat('MMM d').format(deadline)}';
+  final date = DateFormat('MMM d').format(deadline);
+  return _isExpired(deadline)
+      ? l10n.studentClosedDate(date)
+      : l10n.studentClosesDate(date);
 }
 
 Color? _deadlineTone(DateTime? deadline) {

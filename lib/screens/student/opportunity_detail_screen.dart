@@ -192,7 +192,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
     if (currentUser == null) {
       context.showAppSnackBar(
-        'Sign in to continue with your application.',
+        AppLocalizations.of(context)!.studentSignInContinueApplication,
         title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
@@ -229,7 +229,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       final cv = cvProvider.cv;
       if (cv == null) {
         context.showAppSnackBar(
-          'Create your CV before applying to this opportunity.',
+          AppLocalizations.of(context)!.studentCreateCvBeforeApplying,
           title: AppLocalizations.of(context)!.uiCvRequired,
           type: AppFeedbackType.warning,
         );
@@ -248,8 +248,11 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       }
 
       context.showAppSnackBar(
-        error ?? 'Your application has been submitted successfully.',
-        title: error == null ? 'Application sent' : 'Application unavailable',
+        error ??
+            AppLocalizations.of(context)!.studentApplicationSubmittedSuccess,
+        title: error == null
+            ? AppLocalizations.of(context)!.studentApplicationSentTitle
+            : AppLocalizations.of(context)!.uiApplicationUnavailable,
         type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
       );
       _refreshEligibility();
@@ -266,21 +269,23 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Withdraw Application'),
-        content: const Text(
-          'Are you sure you want to withdraw your application? You can re-apply later while the opportunity is still open.',
+        title: Text(
+          AppLocalizations.of(context)!.studentWithdrawApplicationTitle,
+        ),
+        content: Text(
+          AppLocalizations.of(context)!.studentWithdrawApplicationMessage,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancelLabel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: TextButton.styleFrom(
               foregroundColor: AppColors.current.danger,
             ),
-            child: const Text('Withdraw'),
+            child: Text(AppLocalizations.of(context)!.studentWithdraw),
           ),
         ],
       ),
@@ -303,8 +308,11 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       if (!mounted) return;
 
       context.showAppSnackBar(
-        error ?? 'Your application has been withdrawn.',
-        title: error == null ? 'Application withdrawn' : 'Withdrawal failed',
+        error ??
+            AppLocalizations.of(context)!.studentApplicationWithdrawnSuccess,
+        title: error == null
+            ? AppLocalizations.of(context)!.uiApplicationWithdrawn
+            : AppLocalizations.of(context)!.studentWithdrawalFailedTitle,
         type: error == null ? AppFeedbackType.removed : AppFeedbackType.error,
         icon: error == null ? Icons.undo_rounded : null,
       );
@@ -319,14 +327,15 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final authProvider = context.read<AuthProvider>();
     final savedProvider = context.read<SavedOpportunityProvider>();
     final currentUser = authProvider.userModel;
+    final l10n = AppLocalizations.of(context)!;
 
     if (_isBookmarkBusy) {
       return;
     }
     if (currentUser == null) {
       context.showAppSnackBar(
-        'Sign in to save opportunities for later.',
-        title: AppLocalizations.of(context)!.uiLoginRequired,
+        l10n.studentSignInSaveOpportunities,
+        title: l10n.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
       return;
@@ -337,18 +346,18 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
     try {
       String? error;
-      var message = 'Opportunity saved';
+      var message = l10n.studentOpportunitySaved;
 
       if (existingSaved != null) {
         error = await savedProvider.unsaveOpportunity(
           existingSaved.id,
           currentUser.uid,
         );
-        message = 'Removed from saved opportunities';
+        message = l10n.studentRemovedFromSavedOpportunities;
       } else {
         final savedTitle = DisplayText.opportunityTitle(
           widget.opportunity.title,
-          fallback: 'Opportunity',
+          fallback: l10n.uiOpportunity,
         );
         error = await savedProvider.saveOpportunity(
           studentId: currentUser.uid,
@@ -370,7 +379,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
       context.showAppSnackBar(
         error ?? message,
-        title: error == null ? 'Saved items updated' : 'Save unavailable',
+        title: error == null
+            ? l10n.trainingSavedUpdatedTitle
+            : l10n.uiSaveUnavailable,
         type: error == null
             ? (existingSaved != null
                   ? AppFeedbackType.removed
@@ -390,18 +401,23 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   Future<void> _shareOpportunity() async {
     final shareTitle = DisplayText.opportunityTitle(
       widget.opportunity.title,
-      fallback: 'Opportunity on FutureGate',
+      fallback: AppLocalizations.of(context)!.studentShareOpportunitySubject,
     );
     final lines = <String>[
       shareTitle,
-      'Company: $_companyName',
-      'Type: ${OpportunityType.label(_effectiveType, AppLocalizations.of(context)!)}',
-      if (_locationValue.isNotEmpty) 'Location: $_locationValue',
+      AppLocalizations.of(context)!.studentShareCompanyLine(_companyName),
+      AppLocalizations.of(context)!.studentShareTypeLine(
+        OpportunityType.label(_effectiveType, AppLocalizations.of(context)!),
+      ),
+      if (_locationValue.isNotEmpty)
+        AppLocalizations.of(context)!.studentShareLocationLine(_locationValue),
       if (_salaryLabel != null) '$_primaryCompensationLabel: ${_salaryLabel!}',
-      if (_durationLabel != null) 'Duration: ${_durationLabel!}',
-      if (_deadlineLabel != null) 'Deadline: ${_deadlineLabel!}',
+      if (_durationLabel != null)
+        AppLocalizations.of(context)!.studentShareDurationLine(_durationLabel!),
+      if (_deadlineLabel != null)
+        AppLocalizations.of(context)!.studentShareDeadlineLine(_deadlineLabel!),
       '',
-      'Shared from FutureGate',
+      AppLocalizations.of(context)!.studentSharedFromFutureGate,
     ];
 
     await SharePlus.instance.share(
@@ -416,7 +432,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
     if (widget.opportunity.isAdminPosted) {
       context.showAppSnackBar(
-        'The company will contact you by email soon.',
+        AppLocalizations.of(context)!.uiTheCompanyWillContactYouByEmailSoon,
         title: AppLocalizations.of(context)!.uiApplicationApprovedB0Cb,
         type: AppFeedbackType.info,
       );
@@ -426,7 +442,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final currentUser = context.read<AuthProvider>().userModel;
     if (currentUser == null) {
       context.showAppSnackBar(
-        'Sign in to chat with the company.',
+        AppLocalizations.of(context)!.studentSignInChatCompany,
         title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
@@ -504,8 +520,8 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final publisherId = widget.opportunity.companyId.trim();
     if (publisherId.isEmpty) {
       context.showAppSnackBar(
-        'The publisher profile is not available for this opportunity.',
-        title: 'Publisher unavailable',
+        AppLocalizations.of(context)!.studentPublisherUnavailableMessage,
+        title: AppLocalizations.of(context)!.studentPublisherUnavailableTitle,
         type: AppFeedbackType.info,
       );
       return;
@@ -517,10 +533,11 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       fallbackName: _companyName,
       fallbackRole: widget.opportunity.isAdminPosted ? 'admin' : 'company',
       fallbackHeadline: widget.opportunity.isAdminPosted
-          ? 'FutureGate publisher'
-          : 'Opportunity publisher',
-      fallbackAbout:
-          'Public profile for the publisher behind this opportunity.',
+          ? AppLocalizations.of(context)!.studentFutureGatePublisher
+          : AppLocalizations.of(context)!.studentOpportunityPublisher,
+      fallbackAbout: AppLocalizations.of(
+        context,
+      )!.studentPublisherProfileFallbackAbout,
       fallbackLocation: _locationValue,
       contextLabel: OpportunityType.label(
         _effectiveType,
@@ -568,42 +585,48 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   ) {
     switch (status) {
       case ApplicationEligibilityStatus.requiresLogin:
-        return 'Login to Apply';
+        return AppLocalizations.of(context)!.studentLoginToApply;
       case ApplicationEligibilityStatus.available:
         return _effectiveType == OpportunityType.sponsoring
-            ? 'Apply for Funding'
-            : 'Apply Now';
+            ? AppLocalizations.of(context)!.studentApplyForFunding
+            : AppLocalizations.of(context)!.uiApplyNow;
       case ApplicationEligibilityStatus.alreadyApplied:
         final appStatus = _appliedStatusFor(applicationProvider);
         if (appStatus != null) {
-          return 'Status: ${ApplicationStatus.label(appStatus, AppLocalizations.of(context)!)}';
+          return AppLocalizations.of(context)!.studentStatusWithValue(
+            ApplicationStatus.label(appStatus, AppLocalizations.of(context)!),
+          );
         }
-        return 'Already Applied';
+        return AppLocalizations.of(context)!.studentAlreadyApplied;
       case ApplicationEligibilityStatus.closed:
-        return 'Opportunity Closed';
+        return AppLocalizations.of(context)!.studentOpportunityClosed;
       case ApplicationEligibilityStatus.unavailable:
-        return 'No Longer Available';
+        return AppLocalizations.of(context)!.studentNoLongerAvailable;
     }
   }
 
   String _messageForStatus(ApplicationEligibilityStatus status) {
     switch (status) {
       case ApplicationEligibilityStatus.requiresLogin:
-        return 'You must be logged in to apply.';
+        return AppLocalizations.of(context)!.studentMustBeLoggedInApply;
       case ApplicationEligibilityStatus.available:
-        return 'You can apply to this opportunity.';
+        return AppLocalizations.of(context)!.studentCanApplyOpportunity;
       case ApplicationEligibilityStatus.alreadyApplied:
-        return 'You have already applied to this opportunity.';
+        return AppLocalizations.of(context)!.studentAlreadyAppliedOpportunity;
       case ApplicationEligibilityStatus.closed:
-        return 'This opportunity is closed.';
+        return AppLocalizations.of(context)!.studentOpportunityClosedMessage;
       case ApplicationEligibilityStatus.unavailable:
-        return 'This opportunity is no longer available.';
+        return AppLocalizations.of(
+          context,
+        )!.studentOpportunityUnavailableMessage;
     }
   }
 
   String get _companyName {
     final companyName = widget.opportunity.companyName.trim();
-    return companyName.isEmpty ? 'FutureGate partner' : companyName;
+    return companyName.isEmpty
+        ? AppLocalizations.of(context)!.opportunityFutureGatePartner
+        : companyName;
   }
 
   String get _locationValue {
@@ -633,7 +656,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   }
 
   String get _primaryCompensationLabel =>
-      _effectiveType == OpportunityType.sponsoring ? 'Funding' : 'Salary';
+      _effectiveType == OpportunityType.sponsoring
+      ? AppLocalizations.of(context)!.uiFunding
+      : AppLocalizations.of(context)!.studentSalary;
 
   String get _compensationNoteTitle =>
       _effectiveType == OpportunityType.sponsoring
@@ -724,12 +749,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   }
 
   String get _overviewTitle => _effectiveType == OpportunityType.sponsoring
-      ? 'Program Overview'
-      : 'Overview';
+      ? AppLocalizations.of(context)!.studentProgramOverview
+      : AppLocalizations.of(context)!.uiOverview;
 
   String get _requirementsTitle => _effectiveType == OpportunityType.sponsoring
-      ? 'Eligibility'
-      : 'Requirements';
+      ? AppLocalizations.of(context)!.eligibilityLabel
+      : AppLocalizations.of(context)!.requirementsLabel;
 
   List<String> get _explicitTags => OpportunityMetadata.stringListFromValue(
     widget.opportunity.firstValue(<String>[
@@ -1434,7 +1459,7 @@ class _ApprovedEmailContactNotice extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'Application approved',
+                  AppLocalizations.of(context)!.uiApplicationApprovedB0Cb,
                   style: theme.label(
                     size: 12.8,
                     color: theme.success,
@@ -1443,7 +1468,9 @@ class _ApprovedEmailContactNotice extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'The company will contact you by email soon.',
+                  AppLocalizations.of(
+                    context,
+                  )!.uiTheCompanyWillContactYouByEmailSoon,
                   style: theme.body(
                     size: 12.2,
                     color: theme.textSecondary,
@@ -1498,7 +1525,9 @@ class _WithdrawnApplicationNotice extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'Application withdrawn before',
+                  AppLocalizations.of(
+                    context,
+                  )!.studentApplicationWithdrawnBefore,
                   style: theme.label(
                     size: 12.8,
                     color: accent,
@@ -1508,8 +1537,12 @@ class _WithdrawnApplicationNotice extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   isCurrentlyWithdrawn
-                      ? 'You withdrew your application for this opportunity. You can apply again while it remains open.'
-                      : 'You previously withdrew an application for this opportunity.',
+                      ? AppLocalizations.of(
+                          context,
+                        )!.studentWithdrawnCurrentMessage
+                      : AppLocalizations.of(
+                          context,
+                        )!.studentWithdrawnPreviousMessage,
                   style: theme.body(
                     size: 12.2,
                     color: theme.textSecondary,
@@ -1536,7 +1569,7 @@ class _ApprovedChatCue extends StatelessWidget {
   Widget build(BuildContext context) {
     final trimmedCompany = companyName.trim();
     final companyLabel = trimmedCompany.isEmpty
-        ? 'the company'
+        ? AppLocalizations.of(context)!.studentTheCompany
         : trimmedCompany;
 
     return Container(
@@ -1566,7 +1599,7 @@ class _ApprovedChatCue extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Application approved',
+                  AppLocalizations.of(context)!.uiApplicationApprovedB0Cb,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.label(
@@ -1577,7 +1610,9 @@ class _ApprovedChatCue extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'You can now message $companyLabel.',
+                  AppLocalizations.of(
+                    context,
+                  )!.studentCanMessageCompany(companyLabel),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.body(
@@ -1782,7 +1817,10 @@ class _PostedLanguageBanner extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              '${l10n.originalLanguageLabel}: $languageName',
+              l10n.studentOriginalLanguageValue(
+                l10n.originalLanguageLabel,
+                languageName,
+              ),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,

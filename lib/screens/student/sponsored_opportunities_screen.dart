@@ -193,7 +193,7 @@ class _SponsoredOpportunitiesScreenState
 
     if (userId == null || userId.isEmpty) {
       context.showAppSnackBar(
-        'Sign in to save opportunities for later.',
+        AppLocalizations.of(context)!.studentSignInSaveOpportunities,
         title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
@@ -271,7 +271,7 @@ class _SponsoredOpportunitiesScreenState
 
     if (currentUser == null) {
       context.showAppSnackBar(
-        'Sign in to continue with your application.',
+        AppLocalizations.of(context)!.studentSignInContinueApplication,
         title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
@@ -310,7 +310,7 @@ class _SponsoredOpportunitiesScreenState
       final cv = cvProvider.cv;
       if (cv == null) {
         context.showAppSnackBar(
-          'Create your CV before applying to this opportunity.',
+          AppLocalizations.of(context)!.studentCreateCvBeforeApplying,
           title: AppLocalizations.of(context)!.uiCvRequired,
           type: AppFeedbackType.warning,
         );
@@ -392,7 +392,9 @@ class _SponsoredOpportunitiesScreenState
       );
     }
 
-    return const _SponsoredActionState(label: 'Apply Now');
+    return _SponsoredActionState(
+      label: AppLocalizations.of(context)!.uiApplyNow,
+    );
   }
 
   List<_SponsoredCardModel> _buildCardModels(
@@ -1983,7 +1985,7 @@ class _SponsoredGridCard extends StatelessWidget {
                         ),
                         const Spacer(),
                         Text(
-                          'Tap card for details',
+                          AppLocalizations.of(context)!.uiTapCardForDetails,
                           style: AppTypography.product(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w500,

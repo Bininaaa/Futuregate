@@ -8042,4 +8042,1016 @@ class AppLocalizationsEn extends AppLocalizations {
   String discoverLatestSubtitle(Object count) {
     return 'The $count newest roles, internships, and sponsored tracks';
   }
+
+  @override
+  String get studentOpportunityNoLongerAvailableOpen =>
+      'This opportunity is no longer available to open.';
+
+  @override
+  String get studentApplicationFilterWithdrawn => 'Withdrawn';
+
+  @override
+  String studentFilterCount(Object count, Object label) {
+    return '$label ($count)';
+  }
+
+  @override
+  String studentApplicationsShown(Object count) {
+    return '$count applications shown';
+  }
+
+  @override
+  String get studentAppliedOpportunityOne => '1 applied opportunity';
+
+  @override
+  String studentAppliedOpportunitiesCount(Object count) {
+    return '$count applied opportunities';
+  }
+
+  @override
+  String get studentBrowseOpportunities => 'Browse opportunities';
+
+  @override
+  String get studentNoApplicationsMatchMessage =>
+      'Try a different search or filter to bring more of your application history back into view.';
+
+  @override
+  String get studentNoApplicationsYetMessage =>
+      'Start applying to opportunities and track them here.';
+
+  @override
+  String get studentIdeaCoverUploadedSuccess =>
+      'Cover image uploaded successfully.';
+
+  @override
+  String get studentIdeaResubmittedSuccess => 'Idea resubmitted successfully.';
+
+  @override
+  String get studentIdeaResubmittedTitle => 'Idea resubmitted';
+
+  @override
+  String get studentIdeaImageUploadFailed =>
+      'Image upload failed. Please try again.';
+
+  @override
+  String get studentCurrentCoverImage => 'Current cover image';
+
+  @override
+  String get studentPublishIdeaButton => 'Publish Idea';
+
+  @override
+  String get studentCreateIdeaTitle => 'Create Idea';
+
+  @override
+  String get studentUploadingCoverImage => 'Uploading cover image...';
+
+  @override
+  String get studentEditingLockedAfterReview => 'Editing locked after review';
+
+  @override
+  String get studentPublishAgain => 'Publish Again';
+
+  @override
+  String get studentSubmitIdea => 'Submit Idea';
+
+  @override
+  String get studentIdeaTitleHint => 'Example: Campus mental health assistant';
+
+  @override
+  String get studentIdeaTitleHelper =>
+      'Use a clear name: what it is and who it helps.';
+
+  @override
+  String get studentIdeaTaglineHint =>
+      'Example: Find support before stress builds.';
+
+  @override
+  String get studentIdeaTaglineHelper =>
+      'Write one short sentence about the main benefit.';
+
+  @override
+  String get studentChooseCategory => 'Choose a category';
+
+  @override
+  String get studentPickIdeaCategory => 'Pick the idea category';
+
+  @override
+  String get studentChooseStage => 'Choose a stage';
+
+  @override
+  String get studentPickCurrentStage => 'Pick the current stage';
+
+  @override
+  String get studentSelectStudentLevel => 'Select student level';
+
+  @override
+  String get studentIdeaDescriptionSubtitle =>
+      'Explain the concept, the problem behind it, and the solution you want collaborators to understand.';
+
+  @override
+  String get studentIdeaOverviewHint =>
+      'Describe the concept, what it does, and how it comes to life.';
+
+  @override
+  String get studentIdeaOverviewHelper =>
+      'Add enough context for reviewers to understand the idea quickly.';
+
+  @override
+  String get studentIdeaProblemHint =>
+      'What student challenge does this idea solve?';
+
+  @override
+  String get studentIdeaSolutionHint =>
+      'Explain the proposed solution and why it stands out.';
+
+  @override
+  String get studentIdeaAudienceHint => 'Students, clubs, mentors, campuses...';
+
+  @override
+  String get studentIdeaBenefitsHint => 'Why does this idea matter right now?';
+
+  @override
+  String get studentAddRole => 'Add a role';
+
+  @override
+  String get studentAddRoleHint => 'Example: Developer, Designer, Researcher';
+
+  @override
+  String get studentAddRoleHelper =>
+      'Add the people you need on the team, one by one or separated by commas.';
+
+  @override
+  String get studentAddSkillHint => 'Example: Flutter, Firebase, UX Research';
+
+  @override
+  String get studentAddSkillHelper =>
+      'Add technologies, design skills, research skills, or domain knowledge.';
+
+  @override
+  String get studentResourcesHint =>
+      'Example: Mentor feedback, test users, survey data';
+
+  @override
+  String get studentResourcesHelper =>
+      'List the support you need: people, tools, access, funding, or feedback.';
+
+  @override
+  String get studentIdeaLockNotice =>
+      'Approved ideas stay locked here. If an admin sends one back for changes, it will become editable again in this form.';
+
+  @override
+  String get studentPleaseAddMoreDetail => 'Please add more detail.';
+
+  @override
+  String get studentRefineAndPublishAgain => 'Refine and publish again';
+
+  @override
+  String get studentAdminPublishIdeaSubtitle =>
+      'Add a platform-curated idea with a strong story, clear metadata, and a predictable posting structure.';
+
+  @override
+  String get studentResubmitIdeaSubtitle =>
+      'Update the idea, clear the rejection, and send it back for review.';
+
+  @override
+  String get studentIdeaHeroSubtitle =>
+      'Build an idea profile that feels ready for collaborators, feedback, and student momentum.';
+
+  @override
+  String studentCvTemplateUpdatedTo(Object templateName) {
+    return 'Template updated to $templateName.';
+  }
+
+  @override
+  String get studentCvTemplateUpdatedTitle => 'Template updated';
+
+  @override
+  String get studentCvTemplateUpdateUnavailable =>
+      'Template update unavailable';
+
+  @override
+  String get studentCvAddDetailsBeforeSaving =>
+      'Add your CV details before saving a PDF.';
+
+  @override
+  String get studentCvPdfSavedToMyCv => 'Your CV PDF was saved to My CV.';
+
+  @override
+  String get studentCvFileUploaded => 'Your CV file has been uploaded.';
+
+  @override
+  String get studentCvUsingUploaded => 'Now using your uploaded CV.';
+
+  @override
+  String get studentCvUsingBuilt => 'Now using your built CV.';
+
+  @override
+  String get studentPrimaryCvUpdated => 'Primary CV updated';
+
+  @override
+  String get studentRemoveUploadedCvTitle => 'Remove uploaded CV?';
+
+  @override
+  String studentRemoveUploadedCvMessage(Object fileName) {
+    return 'This removes $fileName from your CV studio. Your built CV content stays available.';
+  }
+
+  @override
+  String get studentUploadedCvRemoved => 'Uploaded CV removed.';
+
+  @override
+  String get studentCvRemovedTitle => 'CV removed';
+
+  @override
+  String get studentResetBuiltCvTitle => 'Reset built CV?';
+
+  @override
+  String get studentResetBuiltCvWithUploadedMessage =>
+      'This deletes your built CV details and saved PDF. Your uploaded CV stays available.';
+
+  @override
+  String get studentResetBuiltCvMessage =>
+      'This deletes your built CV details and saved PDF.';
+
+  @override
+  String get studentBuiltCvResetMessage => 'Built CV reset.';
+
+  @override
+  String get studentBuiltCvResetTitle => 'Built CV reset';
+
+  @override
+  String get studentFileNotValidPdfYet => 'This file is not a valid PDF yet.';
+
+  @override
+  String get studentCouldNotOpenDocumentNow =>
+      'We couldn\'t open the document right now.';
+
+  @override
+  String get studentCvContactInfo => 'Contact info';
+
+  @override
+  String get studentCvNameEmailReady => 'Name and email are ready.';
+
+  @override
+  String get studentCvAddNameEmail => 'Add your name and email.';
+
+  @override
+  String get studentCvProfileIntroReady =>
+      'Your profile has a short introduction.';
+
+  @override
+  String get studentCvWriteProfile => 'Write a short professional profile.';
+
+  @override
+  String studentCvEducationSaved(Object count) {
+    return '$count education item saved.';
+  }
+
+  @override
+  String get studentCvAddEducation => 'Add your latest degree or training.';
+
+  @override
+  String get studentCvExperienceProjects => 'Experience or projects';
+
+  @override
+  String studentCvExperienceSaved(Object count) {
+    return '$count experience item saved.';
+  }
+
+  @override
+  String get studentCvAddExperience =>
+      'Add internships, work, or project experience.';
+
+  @override
+  String studentCvSkillsListed(Object count) {
+    return '$count skills listed.';
+  }
+
+  @override
+  String get studentCvListSkills => 'List your strongest skills.';
+
+  @override
+  String studentCvLanguagesListed(Object count) {
+    return '$count languages listed.';
+  }
+
+  @override
+  String get studentCvAddLanguages => 'Add languages recruiters should know.';
+
+  @override
+  String studentCvTemplateSelected(Object templateName) {
+    return '$templateName selected.';
+  }
+
+  @override
+  String get studentCvClassicDefault =>
+      'Classic will be used unless you choose another style.';
+
+  @override
+  String get studentCvBuildBeforeStyle =>
+      'Build your CV before choosing a style.';
+
+  @override
+  String get studentCvApplicationFile => 'Application file';
+
+  @override
+  String get studentCvPdfReadyApplications =>
+      'A PDF is ready for applications.';
+
+  @override
+  String get studentCvSaveBuilderAsPdf => 'Save the builder as a PDF.';
+
+  @override
+  String get studentCvBuildOrUploadFile => 'Build or upload a CV file.';
+
+  @override
+  String get studentRefreshCv => 'Refresh CV';
+
+  @override
+  String get studentCompaniesWillSee => 'Companies will see';
+
+  @override
+  String get studentUseBuiltCvInstead => 'Use built CV instead';
+
+  @override
+  String get studentUseUploadedCvInstead => 'Use uploaded CV instead';
+
+  @override
+  String get studentUploadPdf => 'Upload PDF';
+
+  @override
+  String get studentViewActiveCv => 'View active CV';
+
+  @override
+  String get studentSaveAsPdf => 'Save as PDF';
+
+  @override
+  String get studentCvReadiness => 'CV readiness';
+
+  @override
+  String studentCvEssentialsComplete(Object completed, Object total) {
+    return '$completed of $total essentials complete';
+  }
+
+  @override
+  String get studentUploadedPdfActive => 'Uploaded PDF active';
+
+  @override
+  String studentUploadedCvActiveMessage(Object fileName) {
+    return '$fileName is the file companies receive with your applications.';
+  }
+
+  @override
+  String get studentFileUploaded => 'File uploaded';
+
+  @override
+  String get studentApplicationReady => 'Application-ready';
+
+  @override
+  String get studentUploadedPdfReadyAttach =>
+      'The uploaded PDF is ready to attach.';
+
+  @override
+  String get studentUploadedFileSavedPreviewLimited =>
+      'The uploaded file is saved, but PDF preview may be limited.';
+
+  @override
+  String get studentReplacePdf => 'Replace PDF';
+
+  @override
+  String get studentBuildInstead => 'Build instead';
+
+  @override
+  String get studentStructuredCvBuilder => 'Structured CV builder';
+
+  @override
+  String studentTemplateEditSavePdf(Object templateName) {
+    return '$templateName template. Edit details, preview, then save the PDF.';
+  }
+
+  @override
+  String get studentCreatePolishedCv =>
+      'Create a polished CV from structured profile details.';
+
+  @override
+  String get studentNotStarted => 'Not started';
+
+  @override
+  String get studentEditBuilder => 'Edit builder';
+
+  @override
+  String get studentStartBuilder => 'Start builder';
+
+  @override
+  String get studentSavePdf => 'Save PDF';
+
+  @override
+  String get studentApplicationFiles => 'Application files';
+
+  @override
+  String get studentApplicationFilesSubtitle =>
+      'Choose the document recruiters receive when you apply.';
+
+  @override
+  String get studentUploadPdfCv => 'Upload a PDF CV';
+
+  @override
+  String get studentUseExistingPdfWhileBuilding =>
+      'Use an existing file while you build a structured CV.';
+
+  @override
+  String get studentBuiltCvPdf => 'Built CV PDF';
+
+  @override
+  String get studentReplaceUploadedPdf => 'Replace uploaded PDF';
+
+  @override
+  String get studentAttachNewPdf => 'Attach a new PDF file from your device.';
+
+  @override
+  String get studentNoActiveCvYet => 'No active CV yet';
+
+  @override
+  String get studentUploadedPdf => 'Uploaded PDF';
+
+  @override
+  String get studentBuilderDraft => 'Builder draft';
+
+  @override
+  String get studentCvStartApplyingFaster =>
+      'Build a structured CV or upload a PDF to start applying faster.';
+
+  @override
+  String get studentSavedBuilderPdfReady =>
+      'Your saved builder PDF is ready for applications.';
+
+  @override
+  String get studentUploadedFileUsedApplications =>
+      'Your uploaded file is currently used for applications.';
+
+  @override
+  String get studentPreviewDraftSavePdf =>
+      'Preview the draft, then save it as a PDF before applying.';
+
+  @override
+  String get studentUploadedRecently => 'uploaded recently';
+
+  @override
+  String studentUploadedDate(Object date) {
+    return 'uploaded $date';
+  }
+
+  @override
+  String studentReadinessSemantic(Object status, Object title) {
+    return '$title, $status';
+  }
+
+  @override
+  String get studentComplete => 'complete';
+
+  @override
+  String get studentIncomplete => 'incomplete';
+
+  @override
+  String get studentMakeActive => 'Make active';
+
+  @override
+  String get studentCvDownloadReadyMessage => 'Your CV PDF download is ready.';
+
+  @override
+  String get studentDownloadReadyTitle => 'Download ready';
+
+  @override
+  String get studentCvDownloadOpenedMessage =>
+      'Use the system sheet to save or share your CV PDF.';
+
+  @override
+  String get studentDownloadOpenedTitle => 'Download opened';
+
+  @override
+  String studentCvDownloadError(Object error) {
+    return 'We couldn\'t download this CV PDF. $error';
+  }
+
+  @override
+  String get studentDownloadUnavailableTitle => 'Download unavailable';
+
+  @override
+  String get studentDownloadPdf => 'Download PDF';
+
+  @override
+  String get studentProfileUpdatedSuccess =>
+      'Your profile has been updated successfully.';
+
+  @override
+  String get studentSignInViewCreatorProfile =>
+      'Sign in to view the creator profile.';
+
+  @override
+  String get studentProfileUnavailable => 'Profile unavailable';
+
+  @override
+  String get studentSignInSaveInternships =>
+      'Sign in to save internships for later.';
+
+  @override
+  String get studentSignInSaveOpportunities =>
+      'Sign in to save opportunities for later.';
+
+  @override
+  String get studentSignInContinueApplication =>
+      'Sign in to continue with your application.';
+
+  @override
+  String get studentCreateCvBeforeApplying =>
+      'Create your CV before applying to this opportunity.';
+
+  @override
+  String get studentWithdrawApplicationTitle => 'Withdraw Application';
+
+  @override
+  String get studentWithdrawApplicationMessage =>
+      'Are you sure you want to withdraw your application? You can re-apply later while the opportunity is still open.';
+
+  @override
+  String get studentWithdraw => 'Withdraw';
+
+  @override
+  String get studentApplicationSubmittedSuccess =>
+      'Your application has been submitted successfully.';
+
+  @override
+  String get studentApplicationSentTitle => 'Application sent';
+
+  @override
+  String get studentApplicationWithdrawnSuccess =>
+      'Your application has been withdrawn.';
+
+  @override
+  String get studentWithdrawalFailedTitle => 'Withdrawal failed';
+
+  @override
+  String get studentOpportunitySaved => 'Opportunity saved';
+
+  @override
+  String get studentRemovedFromSavedOpportunities =>
+      'Removed from saved opportunities';
+
+  @override
+  String get studentSignInChatCompany => 'Sign in to chat with the company.';
+
+  @override
+  String get studentPublisherUnavailableMessage =>
+      'The publisher profile is not available for this opportunity.';
+
+  @override
+  String get studentPublisherUnavailableTitle => 'Publisher unavailable';
+
+  @override
+  String get studentFutureGatePublisher => 'FutureGate publisher';
+
+  @override
+  String get studentOpportunityPublisher => 'Opportunity publisher';
+
+  @override
+  String get studentPublisherProfileFallbackAbout =>
+      'Public profile for the publisher behind this opportunity.';
+
+  @override
+  String get studentLoginToApply => 'Login to Apply';
+
+  @override
+  String get studentApplyForFunding => 'Apply for Funding';
+
+  @override
+  String studentStatusWithValue(Object status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String get studentAlreadyApplied => 'Already Applied';
+
+  @override
+  String get studentOpportunityClosed => 'Opportunity Closed';
+
+  @override
+  String get studentNoLongerAvailable => 'No Longer Available';
+
+  @override
+  String get studentMustBeLoggedInApply => 'You must be logged in to apply.';
+
+  @override
+  String get studentCanApplyOpportunity => 'You can apply to this opportunity.';
+
+  @override
+  String get studentAlreadyAppliedOpportunity =>
+      'You have already applied to this opportunity.';
+
+  @override
+  String get studentOpportunityClosedMessage => 'This opportunity is closed.';
+
+  @override
+  String get studentOpportunityUnavailableMessage =>
+      'This opportunity is no longer available.';
+
+  @override
+  String get studentSalary => 'Salary';
+
+  @override
+  String get studentProgramOverview => 'Program Overview';
+
+  @override
+  String get studentShareOpportunitySubject => 'Opportunity on FutureGate';
+
+  @override
+  String studentShareCompanyLine(Object company) {
+    return 'Company: $company';
+  }
+
+  @override
+  String studentShareTypeLine(Object type) {
+    return 'Type: $type';
+  }
+
+  @override
+  String studentShareLocationLine(Object location) {
+    return 'Location: $location';
+  }
+
+  @override
+  String studentShareDurationLine(Object duration) {
+    return 'Duration: $duration';
+  }
+
+  @override
+  String studentShareDeadlineLine(Object deadline) {
+    return 'Deadline: $deadline';
+  }
+
+  @override
+  String get studentSharedFromFutureGate => 'Shared from FutureGate';
+
+  @override
+  String get studentApplicationWithdrawnBefore =>
+      'Application withdrawn before';
+
+  @override
+  String get studentWithdrawnCurrentMessage =>
+      'You withdrew your application for this opportunity. You can apply again while it remains open.';
+
+  @override
+  String get studentWithdrawnPreviousMessage =>
+      'You previously withdrew an application for this opportunity.';
+
+  @override
+  String studentCanMessageCompany(Object company) {
+    return 'You can now message $company.';
+  }
+
+  @override
+  String get studentTheCompany => 'the company';
+
+  @override
+  String studentOriginalLanguageValue(Object label, Object language) {
+    return '$label: $language';
+  }
+
+  @override
+  String get studentIdeaDeletedSuccess => 'Idea deleted successfully.';
+
+  @override
+  String get studentOpportunityNoLongerAvailable =>
+      'This opportunity is no longer available.';
+
+  @override
+  String get studentScholarshipNoLongerAvailable =>
+      'This scholarship is no longer available.';
+
+  @override
+  String get studentRemoveSavedItemError =>
+      'We couldn\'t remove this item right now.';
+
+  @override
+  String get studentRemovedFromSavedScholarships =>
+      'Removed from saved scholarships';
+
+  @override
+  String get studentRemovedFromSavedTrainings => 'Removed from saved trainings';
+
+  @override
+  String get studentRemovedFromSavedIdeas => 'Removed from saved ideas';
+
+  @override
+  String get studentSavedFilterTrainings => 'Trainings';
+
+  @override
+  String get studentSponsoredFilter => 'Sponsored';
+
+  @override
+  String studentItemsShown(Object count) {
+    return '$count items shown';
+  }
+
+  @override
+  String get studentSavedItemOne => '1 saved item';
+
+  @override
+  String studentSavedItemsCount(Object count) {
+    return '$count saved items';
+  }
+
+  @override
+  String get studentNoSavedItemsMatchView => 'No saved items match this view';
+
+  @override
+  String get studentNoSavedItemsYet => 'No saved items yet';
+
+  @override
+  String get studentNoSavedItemsMatchMessage =>
+      'Try a different search or filter to see more saved items.';
+
+  @override
+  String get studentNoSavedItemsYetMessage =>
+      'Save opportunities, scholarships, trainings, or ideas to build your shortlist.';
+
+  @override
+  String get studentExploreOpportunities => 'Explore opportunities';
+
+  @override
+  String get studentLocationNotSpecified => 'Location not specified';
+
+  @override
+  String studentFundingValue(Object funding) {
+    return 'Funding: $funding';
+  }
+
+  @override
+  String get studentScholarshipFallback => 'Scholarship';
+
+  @override
+  String get studentDestinationNotSpecified => 'Destination not specified';
+
+  @override
+  String get studentTrainingFallback => 'Training';
+
+  @override
+  String get studentSavedItemFallback => 'Saved item';
+
+  @override
+  String get studentRelativeSaved => 'Saved';
+
+  @override
+  String get studentRelativeToday => 'Today';
+
+  @override
+  String get studentRelativeYesterday => 'Yesterday';
+
+  @override
+  String studentDaysAgoCompact(Object count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String studentWeeksAgoCompact(Object count) {
+    return '${count}w ago';
+  }
+
+  @override
+  String get studentNoDeadlineShared => 'No deadline shared';
+
+  @override
+  String studentClosedDate(Object date) {
+    return 'Closed $date';
+  }
+
+  @override
+  String studentClosesDate(Object date) {
+    return 'Closes $date';
+  }
+
+  @override
+  String studentInterestedCountLower(Object count) {
+    return '$count interested';
+  }
+
+  @override
+  String studentInterestedCountTitle(Object count) {
+    return '$count Interested';
+  }
+
+  @override
+  String studentDashboardApprovedApplicationsTitle(Object count, Object word) {
+    return '$count $word approved.';
+  }
+
+  @override
+  String studentDashboardPendingApplicationsTitle(Object count, Object word) {
+    return '$count $word in review.';
+  }
+
+  @override
+  String get studentApplicationSingular => 'application';
+
+  @override
+  String get studentApplicationsPlural => 'applications';
+
+  @override
+  String get studentDashboardSavedResourceLinkUnavailable =>
+      'This saved resource link is not available.';
+
+  @override
+  String get studentDashboardSavedResourceOpenError =>
+      'We couldn\'t open this saved resource right now.';
+
+  @override
+  String studentSavedScholarshipFrom(Object provider) {
+    return 'Saved scholarship from $provider';
+  }
+
+  @override
+  String get studentSavedScholarshipNeedsAttention =>
+      'Saved scholarship that needs attention';
+
+  @override
+  String get studentSavedIdea => 'Saved idea';
+
+  @override
+  String get studentUploadedCvReady => 'Uploaded CV is ready to send';
+
+  @override
+  String get studentHybridCvReady => 'Uploaded and builder CV assets are ready';
+
+  @override
+  String get studentBuilderCvRefreshed =>
+      'Builder CV refreshed for faster applications';
+
+  @override
+  String get studentCvReadyNextApplication =>
+      'CV is ready for your next application';
+
+  @override
+  String get studentSkillSingular => 'skill';
+
+  @override
+  String get studentSkillsPlural => 'skills';
+
+  @override
+  String get studentExperienceBlockSingular => 'experience block';
+
+  @override
+  String get studentExperienceBlocksPlural => 'experience blocks';
+
+  @override
+  String get studentLanguageSingular => 'language';
+
+  @override
+  String get studentLanguagesPlural => 'languages';
+
+  @override
+  String get studentCvUpdated => 'CV updated';
+
+  @override
+  String get studentYourCvReady => 'Your CV is ready';
+
+  @override
+  String get studentBuilderCvUpdated => 'Builder CV updated';
+
+  @override
+  String get studentPrimaryFileAttached => 'Primary file attached';
+
+  @override
+  String get studentProfileDataSynced => 'Profile data synced';
+
+  @override
+  String studentClosesMonthDay(Object date) {
+    return 'Closes $date';
+  }
+
+  @override
+  String get studentDeadlineComingUp => 'Deadline coming up.';
+
+  @override
+  String get studentAddItem => 'Add item';
+
+  @override
+  String get studentStudentSpace => 'STUDENT SPACE';
+
+  @override
+  String get studentReady => 'Ready';
+
+  @override
+  String get studentDraft => 'Draft';
+
+  @override
+  String get studentEmpty => 'Empty';
+
+  @override
+  String get studentAvailable => 'Available';
+
+  @override
+  String get studentUploadingEllipsis => 'Uploading...';
+
+  @override
+  String get studentSavingEllipsis => 'Saving...';
+
+  @override
+  String get studentSaveChangesTitleCase => 'Save Changes';
+
+  @override
+  String get studentManaged => 'Managed';
+
+  @override
+  String get studentReset => 'Reset';
+
+  @override
+  String get studentCvBuilderSteps => 'Builder steps';
+
+  @override
+  String studentCvSectionsComplete(Object completed, Object total) {
+    return '$completed of $total sections complete';
+  }
+
+  @override
+  String get studentAddYourEducation => 'Add your education';
+
+  @override
+  String get studentAddYourExperience => 'Add your experience';
+
+  @override
+  String get studentRecentTrainingBook => 'Book';
+
+  @override
+  String get studentRecentTrainingCourse => 'Course';
+
+  @override
+  String get studentRecentTrainingVideo => 'Video';
+
+  @override
+  String get studentRecentTrainingFile => 'File';
+
+  @override
+  String get studentRecentTrainingLearning => 'Learning';
+
+  @override
+  String studentRecommendationFitsFocus(Object focus) {
+    return 'Fits your $focus focus.';
+  }
+
+  @override
+  String studentRecommendationGoodForLevel(Object level) {
+    return 'Good for $level students.';
+  }
+
+  @override
+  String get studentRecommendationNearLocation => 'Near your location.';
+
+  @override
+  String get studentRecommendationRemoteFriendly => 'Remote-friendly.';
+
+  @override
+  String get studentRecommendationHybridSchedule => 'Hybrid schedule.';
+
+  @override
+  String get studentRecommendationPaidOpportunity => 'Paid opportunity.';
+
+  @override
+  String get studentRecommendationTeamHighlighted => 'Team-highlighted.';
+
+  @override
+  String get studentRecommendationBuildsExperience => 'Builds real experience.';
+
+  @override
+  String get studentRecommendationSupportPath => 'Clear support path.';
+
+  @override
+  String get studentRecommendationStrongNextStep => 'Strong next step.';
+
+  @override
+  String get studentProfileHintAddCv =>
+      'Add your CV so applications are quicker when the right opportunity appears.';
+
+  @override
+  String get studentProfileHintAcademic =>
+      'Complete your academic details so opportunities can feel more relevant to your student path.';
+
+  @override
+  String get studentProfileHintBio =>
+      'A short bio will make your profile look more complete and intentional.';
+
+  @override
+  String get studentProfileHintContact =>
+      'Tighten your core contact details so your profile feels complete everywhere in the app.';
+
+  @override
+  String get studentProfileHintGoodShape =>
+      'Your profile is in good shape for the next opportunity you open.';
+
+  @override
+  String get studentAddCv => 'Add CV';
+
+  @override
+  String get studentCompleteProfile => 'Complete profile';
+
+  @override
+  String get studentReviewProfile => 'Review profile';
 }

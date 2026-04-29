@@ -401,12 +401,14 @@ class _CvEditScreenState extends State<CvEditScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Builder steps',
+                      AppLocalizations.of(context)!.studentCvBuilderSteps,
                       style: SettingsFlowTheme.sectionTitle(),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '$completed of ${steps.length} sections complete',
+                      AppLocalizations.of(
+                        context,
+                      )!.studentCvSectionsComplete(completed, steps.length),
                       style: SettingsFlowTheme.caption(),
                     ),
                   ],
@@ -834,7 +836,10 @@ class _CvEditScreenState extends State<CvEditScreen> {
               ),
               const SizedBox(height: 10),
               if (_education.isEmpty)
-                _emptyState('Add your education', Icons.school_outlined)
+                _emptyState(
+                  AppLocalizations.of(context)!.studentAddYourEducation,
+                  Icons.school_outlined,
+                )
               else
                 ..._education.asMap().entries.map((entry) {
                   final i = entry.key;
@@ -861,7 +866,10 @@ class _CvEditScreenState extends State<CvEditScreen> {
               ),
               const SizedBox(height: 10),
               if (_experience.isEmpty)
-                _emptyState('Add your experience', Icons.work_outline)
+                _emptyState(
+                  AppLocalizations.of(context)!.studentAddYourExperience,
+                  Icons.work_outline,
+                )
               else
                 ..._experience.asMap().entries.map((entry) {
                   final i = entry.key;

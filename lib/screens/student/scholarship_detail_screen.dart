@@ -657,8 +657,9 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         icon: Icons.verified_user_rounded,
                         iconColor: _P.secondary,
                         title: AppLocalizations.of(context)!.uiWhoCanApply,
-                        subtitle:
-                            'Check the core eligibility signals before moving forward.',
+                        subtitle: AppLocalizations.of(
+                          context,
+                        )!.uiCheckTheCoreEligibilitySignalsBeforeMovingForward,
                         child: eligibilityItems.isEmpty
                             ? Text(
                                 displayEligibility,
@@ -696,8 +697,9 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         title: AppLocalizations.of(
                           context,
                         )!.uiScholarshipProfile,
-                        subtitle:
-                            'A cleaner breakdown of the provider, destination, and track.',
+                        subtitle: AppLocalizations.of(
+                          context,
+                        )!.uiACleanerBreakdownOfTheProviderDestinationAndTrack,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -739,8 +741,9 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         icon: Icons.launch_rounded,
                         iconColor: _P.primaryDark,
                         title: AppLocalizations.of(context)!.uiApplicationLink,
-                        subtitle:
-                            'Continue with confidence on the official destination.',
+                        subtitle: AppLocalizations.of(
+                          context,
+                        )!.uiContinueWithConfidenceOnTheOfficialDestination,
                         child: _ApplicationPreviewCard(
                           link: scholarship.link,
                           hostLabel: _linkHost,

@@ -14130,6 +14130,1722 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The {count} newest roles, internships, and sponsored tracks'**
   String discoverLatestSubtitle(Object count);
+
+  /// No description provided for @studentOpportunityNoLongerAvailableOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'This opportunity is no longer available to open.'**
+  String get studentOpportunityNoLongerAvailableOpen;
+
+  /// No description provided for @studentApplicationFilterWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get studentApplicationFilterWithdrawn;
+
+  /// No description provided for @studentFilterCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} ({count})'**
+  String studentFilterCount(Object count, Object label);
+
+  /// No description provided for @studentApplicationsShown.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} applications shown'**
+  String studentApplicationsShown(Object count);
+
+  /// No description provided for @studentAppliedOpportunityOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 applied opportunity'**
+  String get studentAppliedOpportunityOne;
+
+  /// No description provided for @studentAppliedOpportunitiesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} applied opportunities'**
+  String studentAppliedOpportunitiesCount(Object count);
+
+  /// No description provided for @studentBrowseOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse opportunities'**
+  String get studentBrowseOpportunities;
+
+  /// No description provided for @studentNoApplicationsMatchMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search or filter to bring more of your application history back into view.'**
+  String get studentNoApplicationsMatchMessage;
+
+  /// No description provided for @studentNoApplicationsYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Start applying to opportunities and track them here.'**
+  String get studentNoApplicationsYetMessage;
+
+  /// No description provided for @studentIdeaCoverUploadedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover image uploaded successfully.'**
+  String get studentIdeaCoverUploadedSuccess;
+
+  /// No description provided for @studentIdeaResubmittedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Idea resubmitted successfully.'**
+  String get studentIdeaResubmittedSuccess;
+
+  /// No description provided for @studentIdeaResubmittedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Idea resubmitted'**
+  String get studentIdeaResubmittedTitle;
+
+  /// No description provided for @studentIdeaImageUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Image upload failed. Please try again.'**
+  String get studentIdeaImageUploadFailed;
+
+  /// No description provided for @studentCurrentCoverImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Current cover image'**
+  String get studentCurrentCoverImage;
+
+  /// No description provided for @studentPublishIdeaButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Idea'**
+  String get studentPublishIdeaButton;
+
+  /// No description provided for @studentCreateIdeaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Idea'**
+  String get studentCreateIdeaTitle;
+
+  /// No description provided for @studentUploadingCoverImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading cover image...'**
+  String get studentUploadingCoverImage;
+
+  /// No description provided for @studentEditingLockedAfterReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing locked after review'**
+  String get studentEditingLockedAfterReview;
+
+  /// No description provided for @studentPublishAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Again'**
+  String get studentPublishAgain;
+
+  /// No description provided for @studentSubmitIdea.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Idea'**
+  String get studentSubmitIdea;
+
+  /// No description provided for @studentIdeaTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Campus mental health assistant'**
+  String get studentIdeaTitleHint;
+
+  /// No description provided for @studentIdeaTitleHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a clear name: what it is and who it helps.'**
+  String get studentIdeaTitleHelper;
+
+  /// No description provided for @studentIdeaTaglineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Find support before stress builds.'**
+  String get studentIdeaTaglineHint;
+
+  /// No description provided for @studentIdeaTaglineHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Write one short sentence about the main benefit.'**
+  String get studentIdeaTaglineHelper;
+
+  /// No description provided for @studentChooseCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a category'**
+  String get studentChooseCategory;
+
+  /// No description provided for @studentPickIdeaCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the idea category'**
+  String get studentPickIdeaCategory;
+
+  /// No description provided for @studentChooseStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a stage'**
+  String get studentChooseStage;
+
+  /// No description provided for @studentPickCurrentStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the current stage'**
+  String get studentPickCurrentStage;
+
+  /// No description provided for @studentSelectStudentLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select student level'**
+  String get studentSelectStudentLevel;
+
+  /// No description provided for @studentIdeaDescriptionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the concept, the problem behind it, and the solution you want collaborators to understand.'**
+  String get studentIdeaDescriptionSubtitle;
+
+  /// No description provided for @studentIdeaOverviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the concept, what it does, and how it comes to life.'**
+  String get studentIdeaOverviewHint;
+
+  /// No description provided for @studentIdeaOverviewHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Add enough context for reviewers to understand the idea quickly.'**
+  String get studentIdeaOverviewHelper;
+
+  /// No description provided for @studentIdeaProblemHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What student challenge does this idea solve?'**
+  String get studentIdeaProblemHint;
+
+  /// No description provided for @studentIdeaSolutionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the proposed solution and why it stands out.'**
+  String get studentIdeaSolutionHint;
+
+  /// No description provided for @studentIdeaAudienceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Students, clubs, mentors, campuses...'**
+  String get studentIdeaAudienceHint;
+
+  /// No description provided for @studentIdeaBenefitsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Why does this idea matter right now?'**
+  String get studentIdeaBenefitsHint;
+
+  /// No description provided for @studentAddRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a role'**
+  String get studentAddRole;
+
+  /// No description provided for @studentAddRoleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Developer, Designer, Researcher'**
+  String get studentAddRoleHint;
+
+  /// No description provided for @studentAddRoleHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the people you need on the team, one by one or separated by commas.'**
+  String get studentAddRoleHelper;
+
+  /// No description provided for @studentAddSkillHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Flutter, Firebase, UX Research'**
+  String get studentAddSkillHint;
+
+  /// No description provided for @studentAddSkillHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Add technologies, design skills, research skills, or domain knowledge.'**
+  String get studentAddSkillHelper;
+
+  /// No description provided for @studentResourcesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Mentor feedback, test users, survey data'**
+  String get studentResourcesHint;
+
+  /// No description provided for @studentResourcesHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'List the support you need: people, tools, access, funding, or feedback.'**
+  String get studentResourcesHelper;
+
+  /// No description provided for @studentIdeaLockNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved ideas stay locked here. If an admin sends one back for changes, it will become editable again in this form.'**
+  String get studentIdeaLockNotice;
+
+  /// No description provided for @studentPleaseAddMoreDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add more detail.'**
+  String get studentPleaseAddMoreDetail;
+
+  /// No description provided for @studentRefineAndPublishAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Refine and publish again'**
+  String get studentRefineAndPublishAgain;
+
+  /// No description provided for @studentAdminPublishIdeaSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a platform-curated idea with a strong story, clear metadata, and a predictable posting structure.'**
+  String get studentAdminPublishIdeaSubtitle;
+
+  /// No description provided for @studentResubmitIdeaSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the idea, clear the rejection, and send it back for review.'**
+  String get studentResubmitIdeaSubtitle;
+
+  /// No description provided for @studentIdeaHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build an idea profile that feels ready for collaborators, feedback, and student momentum.'**
+  String get studentIdeaHeroSubtitle;
+
+  /// No description provided for @studentCvTemplateUpdatedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Template updated to {templateName}.'**
+  String studentCvTemplateUpdatedTo(Object templateName);
+
+  /// No description provided for @studentCvTemplateUpdatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Template updated'**
+  String get studentCvTemplateUpdatedTitle;
+
+  /// No description provided for @studentCvTemplateUpdateUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Template update unavailable'**
+  String get studentCvTemplateUpdateUnavailable;
+
+  /// No description provided for @studentCvAddDetailsBeforeSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your CV details before saving a PDF.'**
+  String get studentCvAddDetailsBeforeSaving;
+
+  /// No description provided for @studentCvPdfSavedToMyCv.
+  ///
+  /// In en, this message translates to:
+  /// **'Your CV PDF was saved to My CV.'**
+  String get studentCvPdfSavedToMyCv;
+
+  /// No description provided for @studentCvFileUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Your CV file has been uploaded.'**
+  String get studentCvFileUploaded;
+
+  /// No description provided for @studentCvUsingUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Now using your uploaded CV.'**
+  String get studentCvUsingUploaded;
+
+  /// No description provided for @studentCvUsingBuilt.
+  ///
+  /// In en, this message translates to:
+  /// **'Now using your built CV.'**
+  String get studentCvUsingBuilt;
+
+  /// No description provided for @studentPrimaryCvUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary CV updated'**
+  String get studentPrimaryCvUpdated;
+
+  /// No description provided for @studentRemoveUploadedCvTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove uploaded CV?'**
+  String get studentRemoveUploadedCvTitle;
+
+  /// No description provided for @studentRemoveUploadedCvMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes {fileName} from your CV studio. Your built CV content stays available.'**
+  String studentRemoveUploadedCvMessage(Object fileName);
+
+  /// No description provided for @studentUploadedCvRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded CV removed.'**
+  String get studentUploadedCvRemoved;
+
+  /// No description provided for @studentCvRemovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'CV removed'**
+  String get studentCvRemovedTitle;
+
+  /// No description provided for @studentResetBuiltCvTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset built CV?'**
+  String get studentResetBuiltCvTitle;
+
+  /// No description provided for @studentResetBuiltCvWithUploadedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes your built CV details and saved PDF. Your uploaded CV stays available.'**
+  String get studentResetBuiltCvWithUploadedMessage;
+
+  /// No description provided for @studentResetBuiltCvMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes your built CV details and saved PDF.'**
+  String get studentResetBuiltCvMessage;
+
+  /// No description provided for @studentBuiltCvResetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Built CV reset.'**
+  String get studentBuiltCvResetMessage;
+
+  /// No description provided for @studentBuiltCvResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Built CV reset'**
+  String get studentBuiltCvResetTitle;
+
+  /// No description provided for @studentFileNotValidPdfYet.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not a valid PDF yet.'**
+  String get studentFileNotValidPdfYet;
+
+  /// No description provided for @studentCouldNotOpenDocumentNow.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open the document right now.'**
+  String get studentCouldNotOpenDocumentNow;
+
+  /// No description provided for @studentCvContactInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact info'**
+  String get studentCvContactInfo;
+
+  /// No description provided for @studentCvNameEmailReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Name and email are ready.'**
+  String get studentCvNameEmailReady;
+
+  /// No description provided for @studentCvAddNameEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your name and email.'**
+  String get studentCvAddNameEmail;
+
+  /// No description provided for @studentCvProfileIntroReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile has a short introduction.'**
+  String get studentCvProfileIntroReady;
+
+  /// No description provided for @studentCvWriteProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a short professional profile.'**
+  String get studentCvWriteProfile;
+
+  /// No description provided for @studentCvEducationSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} education item saved.'**
+  String studentCvEducationSaved(Object count);
+
+  /// No description provided for @studentCvAddEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your latest degree or training.'**
+  String get studentCvAddEducation;
+
+  /// No description provided for @studentCvExperienceProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience or projects'**
+  String get studentCvExperienceProjects;
+
+  /// No description provided for @studentCvExperienceSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} experience item saved.'**
+  String studentCvExperienceSaved(Object count);
+
+  /// No description provided for @studentCvAddExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Add internships, work, or project experience.'**
+  String get studentCvAddExperience;
+
+  /// No description provided for @studentCvSkillsListed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} skills listed.'**
+  String studentCvSkillsListed(Object count);
+
+  /// No description provided for @studentCvListSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'List your strongest skills.'**
+  String get studentCvListSkills;
+
+  /// No description provided for @studentCvLanguagesListed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} languages listed.'**
+  String studentCvLanguagesListed(Object count);
+
+  /// No description provided for @studentCvAddLanguages.
+  ///
+  /// In en, this message translates to:
+  /// **'Add languages recruiters should know.'**
+  String get studentCvAddLanguages;
+
+  /// No description provided for @studentCvTemplateSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'{templateName} selected.'**
+  String studentCvTemplateSelected(Object templateName);
+
+  /// No description provided for @studentCvClassicDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic will be used unless you choose another style.'**
+  String get studentCvClassicDefault;
+
+  /// No description provided for @studentCvBuildBeforeStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build your CV before choosing a style.'**
+  String get studentCvBuildBeforeStyle;
+
+  /// No description provided for @studentCvApplicationFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Application file'**
+  String get studentCvApplicationFile;
+
+  /// No description provided for @studentCvPdfReadyApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'A PDF is ready for applications.'**
+  String get studentCvPdfReadyApplications;
+
+  /// No description provided for @studentCvSaveBuilderAsPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the builder as a PDF.'**
+  String get studentCvSaveBuilderAsPdf;
+
+  /// No description provided for @studentCvBuildOrUploadFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Build or upload a CV file.'**
+  String get studentCvBuildOrUploadFile;
+
+  /// No description provided for @studentRefreshCv.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh CV'**
+  String get studentRefreshCv;
+
+  /// No description provided for @studentCompaniesWillSee.
+  ///
+  /// In en, this message translates to:
+  /// **'Companies will see'**
+  String get studentCompaniesWillSee;
+
+  /// No description provided for @studentUseBuiltCvInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Use built CV instead'**
+  String get studentUseBuiltCvInstead;
+
+  /// No description provided for @studentUseUploadedCvInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Use uploaded CV instead'**
+  String get studentUseUploadedCvInstead;
+
+  /// No description provided for @studentUploadPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload PDF'**
+  String get studentUploadPdf;
+
+  /// No description provided for @studentViewActiveCv.
+  ///
+  /// In en, this message translates to:
+  /// **'View active CV'**
+  String get studentViewActiveCv;
+
+  /// No description provided for @studentSaveAsPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as PDF'**
+  String get studentSaveAsPdf;
+
+  /// No description provided for @studentCvReadiness.
+  ///
+  /// In en, this message translates to:
+  /// **'CV readiness'**
+  String get studentCvReadiness;
+
+  /// No description provided for @studentCvEssentialsComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} essentials complete'**
+  String studentCvEssentialsComplete(Object completed, Object total);
+
+  /// No description provided for @studentUploadedPdfActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded PDF active'**
+  String get studentUploadedPdfActive;
+
+  /// No description provided for @studentUploadedCvActiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{fileName} is the file companies receive with your applications.'**
+  String studentUploadedCvActiveMessage(Object fileName);
+
+  /// No description provided for @studentFileUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'File uploaded'**
+  String get studentFileUploaded;
+
+  /// No description provided for @studentApplicationReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Application-ready'**
+  String get studentApplicationReady;
+
+  /// No description provided for @studentUploadedPdfReadyAttach.
+  ///
+  /// In en, this message translates to:
+  /// **'The uploaded PDF is ready to attach.'**
+  String get studentUploadedPdfReadyAttach;
+
+  /// No description provided for @studentUploadedFileSavedPreviewLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'The uploaded file is saved, but PDF preview may be limited.'**
+  String get studentUploadedFileSavedPreviewLimited;
+
+  /// No description provided for @studentReplacePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace PDF'**
+  String get studentReplacePdf;
+
+  /// No description provided for @studentBuildInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Build instead'**
+  String get studentBuildInstead;
+
+  /// No description provided for @studentStructuredCvBuilder.
+  ///
+  /// In en, this message translates to:
+  /// **'Structured CV builder'**
+  String get studentStructuredCvBuilder;
+
+  /// No description provided for @studentTemplateEditSavePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'{templateName} template. Edit details, preview, then save the PDF.'**
+  String studentTemplateEditSavePdf(Object templateName);
+
+  /// No description provided for @studentCreatePolishedCv.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a polished CV from structured profile details.'**
+  String get studentCreatePolishedCv;
+
+  /// No description provided for @studentNotStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not started'**
+  String get studentNotStarted;
+
+  /// No description provided for @studentEditBuilder.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit builder'**
+  String get studentEditBuilder;
+
+  /// No description provided for @studentStartBuilder.
+  ///
+  /// In en, this message translates to:
+  /// **'Start builder'**
+  String get studentStartBuilder;
+
+  /// No description provided for @studentSavePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Save PDF'**
+  String get studentSavePdf;
+
+  /// No description provided for @studentApplicationFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Application files'**
+  String get studentApplicationFiles;
+
+  /// No description provided for @studentApplicationFilesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the document recruiters receive when you apply.'**
+  String get studentApplicationFilesSubtitle;
+
+  /// No description provided for @studentUploadPdfCv.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a PDF CV'**
+  String get studentUploadPdfCv;
+
+  /// No description provided for @studentUseExistingPdfWhileBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Use an existing file while you build a structured CV.'**
+  String get studentUseExistingPdfWhileBuilding;
+
+  /// No description provided for @studentBuiltCvPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Built CV PDF'**
+  String get studentBuiltCvPdf;
+
+  /// No description provided for @studentReplaceUploadedPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace uploaded PDF'**
+  String get studentReplaceUploadedPdf;
+
+  /// No description provided for @studentAttachNewPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach a new PDF file from your device.'**
+  String get studentAttachNewPdf;
+
+  /// No description provided for @studentNoActiveCvYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No active CV yet'**
+  String get studentNoActiveCvYet;
+
+  /// No description provided for @studentUploadedPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded PDF'**
+  String get studentUploadedPdf;
+
+  /// No description provided for @studentBuilderDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Builder draft'**
+  String get studentBuilderDraft;
+
+  /// No description provided for @studentCvStartApplyingFaster.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a structured CV or upload a PDF to start applying faster.'**
+  String get studentCvStartApplyingFaster;
+
+  /// No description provided for @studentSavedBuilderPdfReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved builder PDF is ready for applications.'**
+  String get studentSavedBuilderPdfReady;
+
+  /// No description provided for @studentUploadedFileUsedApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'Your uploaded file is currently used for applications.'**
+  String get studentUploadedFileUsedApplications;
+
+  /// No description provided for @studentPreviewDraftSavePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview the draft, then save it as a PDF before applying.'**
+  String get studentPreviewDraftSavePdf;
+
+  /// No description provided for @studentUploadedRecently.
+  ///
+  /// In en, this message translates to:
+  /// **'uploaded recently'**
+  String get studentUploadedRecently;
+
+  /// No description provided for @studentUploadedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'uploaded {date}'**
+  String studentUploadedDate(Object date);
+
+  /// No description provided for @studentReadinessSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, {status}'**
+  String studentReadinessSemantic(Object status, Object title);
+
+  /// No description provided for @studentComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'complete'**
+  String get studentComplete;
+
+  /// No description provided for @studentIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'incomplete'**
+  String get studentIncomplete;
+
+  /// No description provided for @studentMakeActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Make active'**
+  String get studentMakeActive;
+
+  /// No description provided for @studentCvDownloadReadyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your CV PDF download is ready.'**
+  String get studentCvDownloadReadyMessage;
+
+  /// No description provided for @studentDownloadReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Download ready'**
+  String get studentDownloadReadyTitle;
+
+  /// No description provided for @studentCvDownloadOpenedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the system sheet to save or share your CV PDF.'**
+  String get studentCvDownloadOpenedMessage;
+
+  /// No description provided for @studentDownloadOpenedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Download opened'**
+  String get studentDownloadOpenedTitle;
+
+  /// No description provided for @studentCvDownloadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t download this CV PDF. {error}'**
+  String studentCvDownloadError(Object error);
+
+  /// No description provided for @studentDownloadUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Download unavailable'**
+  String get studentDownloadUnavailableTitle;
+
+  /// No description provided for @studentDownloadPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Download PDF'**
+  String get studentDownloadPdf;
+
+  /// No description provided for @studentProfileUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile has been updated successfully.'**
+  String get studentProfileUpdatedSuccess;
+
+  /// No description provided for @studentSignInViewCreatorProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view the creator profile.'**
+  String get studentSignInViewCreatorProfile;
+
+  /// No description provided for @studentProfileUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile unavailable'**
+  String get studentProfileUnavailable;
+
+  /// No description provided for @studentSignInSaveInternships.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to save internships for later.'**
+  String get studentSignInSaveInternships;
+
+  /// No description provided for @studentSignInSaveOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to save opportunities for later.'**
+  String get studentSignInSaveOpportunities;
+
+  /// No description provided for @studentSignInContinueApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue with your application.'**
+  String get studentSignInContinueApplication;
+
+  /// No description provided for @studentCreateCvBeforeApplying.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your CV before applying to this opportunity.'**
+  String get studentCreateCvBeforeApplying;
+
+  /// No description provided for @studentWithdrawApplicationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw Application'**
+  String get studentWithdrawApplicationTitle;
+
+  /// No description provided for @studentWithdrawApplicationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to withdraw your application? You can re-apply later while the opportunity is still open.'**
+  String get studentWithdrawApplicationMessage;
+
+  /// No description provided for @studentWithdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get studentWithdraw;
+
+  /// No description provided for @studentApplicationSubmittedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your application has been submitted successfully.'**
+  String get studentApplicationSubmittedSuccess;
+
+  /// No description provided for @studentApplicationSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Application sent'**
+  String get studentApplicationSentTitle;
+
+  /// No description provided for @studentApplicationWithdrawnSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your application has been withdrawn.'**
+  String get studentApplicationWithdrawnSuccess;
+
+  /// No description provided for @studentWithdrawalFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal failed'**
+  String get studentWithdrawalFailedTitle;
+
+  /// No description provided for @studentOpportunitySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity saved'**
+  String get studentOpportunitySaved;
+
+  /// No description provided for @studentRemovedFromSavedOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved opportunities'**
+  String get studentRemovedFromSavedOpportunities;
+
+  /// No description provided for @studentSignInChatCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to chat with the company.'**
+  String get studentSignInChatCompany;
+
+  /// No description provided for @studentPublisherUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The publisher profile is not available for this opportunity.'**
+  String get studentPublisherUnavailableMessage;
+
+  /// No description provided for @studentPublisherUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Publisher unavailable'**
+  String get studentPublisherUnavailableTitle;
+
+  /// No description provided for @studentFutureGatePublisher.
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate publisher'**
+  String get studentFutureGatePublisher;
+
+  /// No description provided for @studentOpportunityPublisher.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity publisher'**
+  String get studentOpportunityPublisher;
+
+  /// No description provided for @studentPublisherProfileFallbackAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'Public profile for the publisher behind this opportunity.'**
+  String get studentPublisherProfileFallbackAbout;
+
+  /// No description provided for @studentLoginToApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to Apply'**
+  String get studentLoginToApply;
+
+  /// No description provided for @studentApplyForFunding.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply for Funding'**
+  String get studentApplyForFunding;
+
+  /// No description provided for @studentStatusWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String studentStatusWithValue(Object status);
+
+  /// No description provided for @studentAlreadyApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Already Applied'**
+  String get studentAlreadyApplied;
+
+  /// No description provided for @studentOpportunityClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity Closed'**
+  String get studentOpportunityClosed;
+
+  /// No description provided for @studentNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No Longer Available'**
+  String get studentNoLongerAvailable;
+
+  /// No description provided for @studentMustBeLoggedInApply.
+  ///
+  /// In en, this message translates to:
+  /// **'You must be logged in to apply.'**
+  String get studentMustBeLoggedInApply;
+
+  /// No description provided for @studentCanApplyOpportunity.
+  ///
+  /// In en, this message translates to:
+  /// **'You can apply to this opportunity.'**
+  String get studentCanApplyOpportunity;
+
+  /// No description provided for @studentAlreadyAppliedOpportunity.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already applied to this opportunity.'**
+  String get studentAlreadyAppliedOpportunity;
+
+  /// No description provided for @studentOpportunityClosedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This opportunity is closed.'**
+  String get studentOpportunityClosedMessage;
+
+  /// No description provided for @studentOpportunityUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This opportunity is no longer available.'**
+  String get studentOpportunityUnavailableMessage;
+
+  /// No description provided for @studentSalary.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary'**
+  String get studentSalary;
+
+  /// No description provided for @studentProgramOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Program Overview'**
+  String get studentProgramOverview;
+
+  /// No description provided for @studentShareOpportunitySubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity on FutureGate'**
+  String get studentShareOpportunitySubject;
+
+  /// No description provided for @studentShareCompanyLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Company: {company}'**
+  String studentShareCompanyLine(Object company);
+
+  /// No description provided for @studentShareTypeLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Type: {type}'**
+  String studentShareTypeLine(Object type);
+
+  /// No description provided for @studentShareLocationLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Location: {location}'**
+  String studentShareLocationLine(Object location);
+
+  /// No description provided for @studentShareDurationLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {duration}'**
+  String studentShareDurationLine(Object duration);
+
+  /// No description provided for @studentShareDeadlineLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline: {deadline}'**
+  String studentShareDeadlineLine(Object deadline);
+
+  /// No description provided for @studentSharedFromFutureGate.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared from FutureGate'**
+  String get studentSharedFromFutureGate;
+
+  /// No description provided for @studentApplicationWithdrawnBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Application withdrawn before'**
+  String get studentApplicationWithdrawnBefore;
+
+  /// No description provided for @studentWithdrawnCurrentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You withdrew your application for this opportunity. You can apply again while it remains open.'**
+  String get studentWithdrawnCurrentMessage;
+
+  /// No description provided for @studentWithdrawnPreviousMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You previously withdrew an application for this opportunity.'**
+  String get studentWithdrawnPreviousMessage;
+
+  /// No description provided for @studentCanMessageCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'You can now message {company}.'**
+  String studentCanMessageCompany(Object company);
+
+  /// No description provided for @studentTheCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'the company'**
+  String get studentTheCompany;
+
+  /// No description provided for @studentOriginalLanguageValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {language}'**
+  String studentOriginalLanguageValue(Object label, Object language);
+
+  /// No description provided for @studentIdeaDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Idea deleted successfully.'**
+  String get studentIdeaDeletedSuccess;
+
+  /// No description provided for @studentOpportunityNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This opportunity is no longer available.'**
+  String get studentOpportunityNoLongerAvailable;
+
+  /// No description provided for @studentScholarshipNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This scholarship is no longer available.'**
+  String get studentScholarshipNoLongerAvailable;
+
+  /// No description provided for @studentRemoveSavedItemError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t remove this item right now.'**
+  String get studentRemoveSavedItemError;
+
+  /// No description provided for @studentRemovedFromSavedScholarships.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved scholarships'**
+  String get studentRemovedFromSavedScholarships;
+
+  /// No description provided for @studentRemovedFromSavedTrainings.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved trainings'**
+  String get studentRemovedFromSavedTrainings;
+
+  /// No description provided for @studentRemovedFromSavedIdeas.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved ideas'**
+  String get studentRemovedFromSavedIdeas;
+
+  /// No description provided for @studentSavedFilterTrainings.
+  ///
+  /// In en, this message translates to:
+  /// **'Trainings'**
+  String get studentSavedFilterTrainings;
+
+  /// No description provided for @studentSponsoredFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get studentSponsoredFilter;
+
+  /// No description provided for @studentItemsShown.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items shown'**
+  String studentItemsShown(Object count);
+
+  /// No description provided for @studentSavedItemOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 saved item'**
+  String get studentSavedItemOne;
+
+  /// No description provided for @studentSavedItemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} saved items'**
+  String studentSavedItemsCount(Object count);
+
+  /// No description provided for @studentNoSavedItemsMatchView.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved items match this view'**
+  String get studentNoSavedItemsMatchView;
+
+  /// No description provided for @studentNoSavedItemsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved items yet'**
+  String get studentNoSavedItemsYet;
+
+  /// No description provided for @studentNoSavedItemsMatchMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search or filter to see more saved items.'**
+  String get studentNoSavedItemsMatchMessage;
+
+  /// No description provided for @studentNoSavedItemsYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Save opportunities, scholarships, trainings, or ideas to build your shortlist.'**
+  String get studentNoSavedItemsYetMessage;
+
+  /// No description provided for @studentExploreOpportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore opportunities'**
+  String get studentExploreOpportunities;
+
+  /// No description provided for @studentLocationNotSpecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not specified'**
+  String get studentLocationNotSpecified;
+
+  /// No description provided for @studentFundingValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Funding: {funding}'**
+  String studentFundingValue(Object funding);
+
+  /// No description provided for @studentScholarshipFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship'**
+  String get studentScholarshipFallback;
+
+  /// No description provided for @studentDestinationNotSpecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination not specified'**
+  String get studentDestinationNotSpecified;
+
+  /// No description provided for @studentTrainingFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Training'**
+  String get studentTrainingFallback;
+
+  /// No description provided for @studentSavedItemFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved item'**
+  String get studentSavedItemFallback;
+
+  /// No description provided for @studentRelativeSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get studentRelativeSaved;
+
+  /// No description provided for @studentRelativeToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get studentRelativeToday;
+
+  /// No description provided for @studentRelativeYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get studentRelativeYesterday;
+
+  /// No description provided for @studentDaysAgoCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String studentDaysAgoCompact(Object count);
+
+  /// No description provided for @studentWeeksAgoCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}w ago'**
+  String studentWeeksAgoCompact(Object count);
+
+  /// No description provided for @studentNoDeadlineShared.
+  ///
+  /// In en, this message translates to:
+  /// **'No deadline shared'**
+  String get studentNoDeadlineShared;
+
+  /// No description provided for @studentClosedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed {date}'**
+  String studentClosedDate(Object date);
+
+  /// No description provided for @studentClosesDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes {date}'**
+  String studentClosesDate(Object date);
+
+  /// No description provided for @studentInterestedCountLower.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} interested'**
+  String studentInterestedCountLower(Object count);
+
+  /// No description provided for @studentInterestedCountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Interested'**
+  String studentInterestedCountTitle(Object count);
+
+  /// No description provided for @studentDashboardApprovedApplicationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {word} approved.'**
+  String studentDashboardApprovedApplicationsTitle(Object count, Object word);
+
+  /// No description provided for @studentDashboardPendingApplicationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {word} in review.'**
+  String studentDashboardPendingApplicationsTitle(Object count, Object word);
+
+  /// No description provided for @studentApplicationSingular.
+  ///
+  /// In en, this message translates to:
+  /// **'application'**
+  String get studentApplicationSingular;
+
+  /// No description provided for @studentApplicationsPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'applications'**
+  String get studentApplicationsPlural;
+
+  /// No description provided for @studentDashboardSavedResourceLinkUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This saved resource link is not available.'**
+  String get studentDashboardSavedResourceLinkUnavailable;
+
+  /// No description provided for @studentDashboardSavedResourceOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open this saved resource right now.'**
+  String get studentDashboardSavedResourceOpenError;
+
+  /// No description provided for @studentSavedScholarshipFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved scholarship from {provider}'**
+  String studentSavedScholarshipFrom(Object provider);
+
+  /// No description provided for @studentSavedScholarshipNeedsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved scholarship that needs attention'**
+  String get studentSavedScholarshipNeedsAttention;
+
+  /// No description provided for @studentSavedIdea.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved idea'**
+  String get studentSavedIdea;
+
+  /// No description provided for @studentUploadedCvReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded CV is ready to send'**
+  String get studentUploadedCvReady;
+
+  /// No description provided for @studentHybridCvReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded and builder CV assets are ready'**
+  String get studentHybridCvReady;
+
+  /// No description provided for @studentBuilderCvRefreshed.
+  ///
+  /// In en, this message translates to:
+  /// **'Builder CV refreshed for faster applications'**
+  String get studentBuilderCvRefreshed;
+
+  /// No description provided for @studentCvReadyNextApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'CV is ready for your next application'**
+  String get studentCvReadyNextApplication;
+
+  /// No description provided for @studentSkillSingular.
+  ///
+  /// In en, this message translates to:
+  /// **'skill'**
+  String get studentSkillSingular;
+
+  /// No description provided for @studentSkillsPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'skills'**
+  String get studentSkillsPlural;
+
+  /// No description provided for @studentExperienceBlockSingular.
+  ///
+  /// In en, this message translates to:
+  /// **'experience block'**
+  String get studentExperienceBlockSingular;
+
+  /// No description provided for @studentExperienceBlocksPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'experience blocks'**
+  String get studentExperienceBlocksPlural;
+
+  /// No description provided for @studentLanguageSingular.
+  ///
+  /// In en, this message translates to:
+  /// **'language'**
+  String get studentLanguageSingular;
+
+  /// No description provided for @studentLanguagesPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'languages'**
+  String get studentLanguagesPlural;
+
+  /// No description provided for @studentCvUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'CV updated'**
+  String get studentCvUpdated;
+
+  /// No description provided for @studentYourCvReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your CV is ready'**
+  String get studentYourCvReady;
+
+  /// No description provided for @studentBuilderCvUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Builder CV updated'**
+  String get studentBuilderCvUpdated;
+
+  /// No description provided for @studentPrimaryFileAttached.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary file attached'**
+  String get studentPrimaryFileAttached;
+
+  /// No description provided for @studentProfileDataSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile data synced'**
+  String get studentProfileDataSynced;
+
+  /// No description provided for @studentClosesMonthDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes {date}'**
+  String studentClosesMonthDay(Object date);
+
+  /// No description provided for @studentDeadlineComingUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline coming up.'**
+  String get studentDeadlineComingUp;
+
+  /// No description provided for @studentAddItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get studentAddItem;
+
+  /// No description provided for @studentStudentSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'STUDENT SPACE'**
+  String get studentStudentSpace;
+
+  /// No description provided for @studentReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get studentReady;
+
+  /// No description provided for @studentDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get studentDraft;
+
+  /// No description provided for @studentEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get studentEmpty;
+
+  /// No description provided for @studentAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get studentAvailable;
+
+  /// No description provided for @studentUploadingEllipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading...'**
+  String get studentUploadingEllipsis;
+
+  /// No description provided for @studentSavingEllipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get studentSavingEllipsis;
+
+  /// No description provided for @studentSaveChangesTitleCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get studentSaveChangesTitleCase;
+
+  /// No description provided for @studentManaged.
+  ///
+  /// In en, this message translates to:
+  /// **'Managed'**
+  String get studentManaged;
+
+  /// No description provided for @studentReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get studentReset;
+
+  /// No description provided for @studentCvBuilderSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Builder steps'**
+  String get studentCvBuilderSteps;
+
+  /// No description provided for @studentCvSectionsComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} sections complete'**
+  String studentCvSectionsComplete(Object completed, Object total);
+
+  /// No description provided for @studentAddYourEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your education'**
+  String get studentAddYourEducation;
+
+  /// No description provided for @studentAddYourExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your experience'**
+  String get studentAddYourExperience;
+
+  /// No description provided for @studentRecentTrainingBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get studentRecentTrainingBook;
+
+  /// No description provided for @studentRecentTrainingCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Course'**
+  String get studentRecentTrainingCourse;
+
+  /// No description provided for @studentRecentTrainingVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get studentRecentTrainingVideo;
+
+  /// No description provided for @studentRecentTrainingFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get studentRecentTrainingFile;
+
+  /// No description provided for @studentRecentTrainingLearning.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning'**
+  String get studentRecentTrainingLearning;
+
+  /// No description provided for @studentRecommendationFitsFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Fits your {focus} focus.'**
+  String studentRecommendationFitsFocus(Object focus);
+
+  /// No description provided for @studentRecommendationGoodForLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Good for {level} students.'**
+  String studentRecommendationGoodForLevel(Object level);
+
+  /// No description provided for @studentRecommendationNearLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Near your location.'**
+  String get studentRecommendationNearLocation;
+
+  /// No description provided for @studentRecommendationRemoteFriendly.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote-friendly.'**
+  String get studentRecommendationRemoteFriendly;
+
+  /// No description provided for @studentRecommendationHybridSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Hybrid schedule.'**
+  String get studentRecommendationHybridSchedule;
+
+  /// No description provided for @studentRecommendationPaidOpportunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid opportunity.'**
+  String get studentRecommendationPaidOpportunity;
+
+  /// No description provided for @studentRecommendationTeamHighlighted.
+  ///
+  /// In en, this message translates to:
+  /// **'Team-highlighted.'**
+  String get studentRecommendationTeamHighlighted;
+
+  /// No description provided for @studentRecommendationBuildsExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Builds real experience.'**
+  String get studentRecommendationBuildsExperience;
+
+  /// No description provided for @studentRecommendationSupportPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear support path.'**
+  String get studentRecommendationSupportPath;
+
+  /// No description provided for @studentRecommendationStrongNextStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong next step.'**
+  String get studentRecommendationStrongNextStep;
+
+  /// No description provided for @studentProfileHintAddCv.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your CV so applications are quicker when the right opportunity appears.'**
+  String get studentProfileHintAddCv;
+
+  /// No description provided for @studentProfileHintAcademic.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your academic details so opportunities can feel more relevant to your student path.'**
+  String get studentProfileHintAcademic;
+
+  /// No description provided for @studentProfileHintBio.
+  ///
+  /// In en, this message translates to:
+  /// **'A short bio will make your profile look more complete and intentional.'**
+  String get studentProfileHintBio;
+
+  /// No description provided for @studentProfileHintContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Tighten your core contact details so your profile feels complete everywhere in the app.'**
+  String get studentProfileHintContact;
+
+  /// No description provided for @studentProfileHintGoodShape.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile is in good shape for the next opportunity you open.'**
+  String get studentProfileHintGoodShape;
+
+  /// No description provided for @studentAddCv.
+  ///
+  /// In en, this message translates to:
+  /// **'Add CV'**
+  String get studentAddCv;
+
+  /// No description provided for @studentCompleteProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete profile'**
+  String get studentCompleteProfile;
+
+  /// No description provided for @studentReviewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Review profile'**
+  String get studentReviewProfile;
 }
 
 class _AppLocalizationsDelegate

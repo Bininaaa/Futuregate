@@ -571,7 +571,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
     }
 
     context.showAppSnackBar(
-      'Idea deleted successfully.',
+      AppLocalizations.of(context)!.studentIdeaDeletedSuccess,
       type: AppFeedbackType.success,
     );
   }

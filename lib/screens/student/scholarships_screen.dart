@@ -294,8 +294,9 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
           ? null
           : StudentWorkspaceAppBar(
               title: AppLocalizations.of(context)!.uiScholarships,
-              subtitle:
-                  'Curated funding paths, deadlines, and global study options.',
+              subtitle: AppLocalizations.of(
+                context,
+              )!.uiCuratedFundingPathsDeadlinesAndGlobalStudyOptions,
               icon: Icons.school_rounded,
               showBackButton: true,
               onBack: () => Navigator.maybePop(context),

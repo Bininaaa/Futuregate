@@ -755,7 +755,7 @@ class IdeaDetailsScreen extends StatelessWidget {
     final auth = context.read<AuthProvider>().userModel;
     if (auth == null) {
       context.showAppSnackBar(
-        'Sign in to view the creator profile.',
+        AppLocalizations.of(context)!.studentSignInViewCreatorProfile,
         title: AppLocalizations.of(context)!.uiLoginRequired,
         type: AppFeedbackType.warning,
       );
@@ -765,7 +765,7 @@ class IdeaDetailsScreen extends StatelessWidget {
     if (idea.submittedBy.trim().isEmpty) {
       context.showAppSnackBar(
         AppLocalizations.of(context)!.ideaNotAvailable,
-        title: 'Profile unavailable',
+        title: AppLocalizations.of(context)!.studentProfileUnavailable,
         type: AppFeedbackType.warning,
       );
       return;

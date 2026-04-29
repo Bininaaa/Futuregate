@@ -105,7 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     context.showAppSnackBar(
-      'Your profile has been updated successfully.',
+      AppLocalizations.of(context)!.studentProfileUpdatedSuccess,
       title: AppLocalizations.of(context)!.uiProfileUpdated,
       type: AppFeedbackType.success,
     );
@@ -190,7 +190,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return;
       }
       context.showAppSnackBar(
-        'Choose an image smaller than 5 MB.',
+        AppLocalizations.of(context)!.ideaUploadSizeMessage,
         title: AppLocalizations.of(context)!.uiUploadUnavailable,
         type: AppFeedbackType.warning,
       );
@@ -261,6 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final hasUploadedPhoto =
         student != null && (student.profileImage).trim().isNotEmpty;
     final isUploadActive = student?.photoType == 'upload';
+    final l10n = AppLocalizations.of(context)!;
 
     return SettingsPageScaffold(
       title: AppLocalizations.of(context)!.uiEditProfile,
@@ -327,12 +328,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Update your profile',
+                  l10n.uiUpdateYourProfile,
                   style: SettingsFlowTheme.sectionTitle(),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Refresh your details, switch avatars, or upload a new photo without affecting your existing account logic.',
+                  l10n.uiRefreshYourDetailsSwitchAvatarsOrUploadANewPhoto,
                   style: SettingsFlowTheme.caption(),
                   textAlign: TextAlign.center,
                 ),
@@ -375,8 +376,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(height: 18),
           SettingsSectionHeading(
             title: AppLocalizations.of(context)!.uiBasicDetails,
-            subtitle:
-                'Use graceful fallbacks where data is missing and keep email changes on the secure auth flow.',
+            subtitle: l10n.uiUseGracefulFallbacksWhereDataIsMissingAndKeepEmail,
           ),
           const SizedBox(height: 10),
           SettingsPanel(
@@ -404,10 +404,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         : null,
                     child: Text(
                       authProvider.canChangeEmail
-                          ? 'Change'
+                          ? l10n.changeLabel
                           : authProvider.hasGoogleProvider
-                          ? 'Google'
-                          : 'Managed',
+                          ? l10n.uiGoogle
+                          : l10n.studentManaged,
                       style: SettingsFlowTheme.micro(
                         SettingsFlowPalette.primary,
                       ),
@@ -433,8 +433,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(height: 18),
           SettingsSectionHeading(
             title: AppLocalizations.of(context)!.uiAcademicProfile,
-            subtitle:
-                'Keep your student context current so opportunity matching stays useful.',
+            subtitle: l10n
+                .uiKeepYourStudentContextCurrentSoOpportunityMatchingStaysUseful,
           ),
           const SizedBox(height: 10),
           SettingsPanel(
@@ -463,7 +463,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           const SizedBox(height: 18),
           SettingsPrimaryButton(
-            label: _studentProvider.isLoading ? 'Saving...' : 'Save Changes',
+            label: _studentProvider.isLoading
+                ? l10n.studentSavingEllipsis
+                : l10n.studentSaveChangesTitleCase,
             icon: _studentProvider.isLoading ? null : Icons.check_rounded,
             onPressed: _studentProvider.isLoading || _uploadingPhoto
                 ? null
@@ -502,10 +504,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(height: 14),
-              Text(AppLocalizations.of(context)!.uiChooseAvatar, style: SettingsFlowTheme.sectionTitle()),
+              Text(
+                AppLocalizations.of(context)!.uiChooseAvatar,
+                style: SettingsFlowTheme.sectionTitle(),
+              ),
               const SizedBox(height: 6),
               Text(
-                'Pick a built-in look, or keep using your uploaded photo.',
+                AppLocalizations.of(
+                  context,
+                )!.uiPickABuiltInLookOrKeepUsingYourUploaded,
                 style: SettingsFlowTheme.caption(),
               ),
               const SizedBox(height: 18),
