@@ -7153,7 +7153,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiResource => 'resource';
 
   @override
-  String uiCountOpenOpportunitiesCuratedForStudents(Object count) {
+  String uiCountOpenOpportunitiesCuratedForStudents(num count) {
     return '$count open opportunities curated for students.';
   }
 

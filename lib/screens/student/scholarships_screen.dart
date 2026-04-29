@@ -10,6 +10,7 @@ import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/scholarship_provider.dart';
 import '../../services/opportunity_translation_service.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -911,9 +912,11 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
     if (s.city != null && s.city!.isNotEmpty) parts.add(s.city!);
     if (s.country != null && s.country!.isNotEmpty) parts.add(s.country!);
     if (parts.isEmpty && s.location != null && s.location!.isNotEmpty) {
-      return s.location!;
+      return LocalizedDisplay.metadataLabel(context, s.location);
     }
-    return parts.isEmpty ? null : parts.join(', ');
+    return parts.isEmpty
+        ? null
+        : LocalizedDisplay.metadataLabel(context, parts.join(', '));
   }
 
   void _openDetail(BuildContext context, ScholarshipModel scholarship) {
@@ -931,6 +934,11 @@ class _ScholarshipsScreenState extends State<ScholarshipsScreen> {
         return l10n.uiAllScholarships;
       case 'Fully Funded':
         return l10n.uiFullyFunded;
+      case 'Europe':
+      case 'Asia':
+      case 'Masters':
+      case 'PhD':
+        return LocalizedDisplay.metadataLabel(context, key);
       default:
         return key;
     }
@@ -997,9 +1005,15 @@ class _ScholarshipCard extends StatelessWidget {
     final hasImage =
         scholarship.imageUrl != null && scholarship.imageUrl!.isNotEmpty;
     final gradientColors = _gradients[cardIndex % _gradients.length];
-    final locationText = _locationText();
+    final rawLocationText = _locationText();
+    final locationText = rawLocationText == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, rawLocationText);
     final fundingBadge = _fundingBadgeText(context);
-    final tagText = _tagText();
+    final rawTagText = _tagText();
+    final tagText = rawTagText == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, rawTagText);
 
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -1066,9 +1080,9 @@ class _ScholarshipCard extends StatelessWidget {
 
                     // ── B. Status badge ──
                     if (fundingBadge != null)
-                      Positioned(
+                      PositionedDirectional(
                         top: 9,
-                        left: 9,
+                        start: 9,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 7,
@@ -1089,9 +1103,9 @@ class _ScholarshipCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                    Positioned(
+                    PositionedDirectional(
                       top: 9,
-                      right: 9,
+                      end: 9,
                       child: GestureDetector(
                         onTap: isBusy ? null : onToggleSaved,
                         child: Container(
@@ -1147,11 +1161,15 @@ class _ScholarshipCard extends StatelessWidget {
                         const SizedBox(width: 3),
                         Expanded(
                           child: Text(
-                            locationText.toUpperCase(),
+                            LocalizedDisplay.isArabic(context)
+                                ? locationText
+                                : locationText.toUpperCase(),
                             style: AppTypography.product(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w500,
-                              letterSpacing: 0.7,
+                              letterSpacing: LocalizedDisplay.isArabic(context)
+                                  ? 0
+                                  : 0.7,
                               color: _P.textSecondary.withValues(alpha: 0.7),
                             ),
                             maxLines: 1,
@@ -1216,11 +1234,15 @@ class _ScholarshipCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        tagText.toUpperCase(),
+                        LocalizedDisplay.isArabic(context)
+                            ? tagText
+                            : tagText.toUpperCase(),
                         style: AppTypography.product(
                           fontSize: 8.5,
                           fontWeight: FontWeight.w600,
-                          letterSpacing: 0.45,
+                          letterSpacing: LocalizedDisplay.isArabic(context)
+                              ? 0
+                              : 0.45,
                           color: _P.secondary,
                         ),
                       ),
@@ -1373,13 +1395,19 @@ class _ScholarshipCard extends StatelessWidget {
     if (ft == null || ft.isEmpty) return null;
     final lower = ft.toLowerCase();
     final l10n = AppLocalizations.of(context)!;
-    if (lower.contains('full')) return l10n.uiFullyFunded.toUpperCase();
-    if (lower.contains('partial')) {
-      return l10n.studentPartiallyFunded.toUpperCase();
+    String label;
+    if (lower.contains('full')) {
+      label = l10n.uiFullyFunded;
+    } else if (lower.contains('partial')) {
+      label = l10n.studentPartiallyFunded;
+    } else if (lower.contains('merit')) {
+      label = l10n.studentMeritBased;
+    } else if (lower.contains('prestige')) {
+      label = l10n.studentPrestige;
+    } else {
+      label = LocalizedDisplay.metadataLabel(context, ft);
     }
-    if (lower.contains('merit')) return l10n.studentMeritBased.toUpperCase();
-    if (lower.contains('prestige')) return l10n.studentPrestige.toUpperCase();
-    return ft.toUpperCase();
+    return LocalizedDisplay.isArabic(context) ? label : label.toUpperCase();
   }
 
   String? _tagText() {

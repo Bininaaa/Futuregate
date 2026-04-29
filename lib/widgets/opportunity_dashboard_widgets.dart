@@ -8,6 +8,7 @@ import '../utils/application_status.dart';
 import '../utils/display_text.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import '../utils/opportunity_type.dart';
+import 'shared/app_directional.dart';
 import 'shared/app_feedback.dart';
 import 'shared/app_loading.dart';
 
@@ -103,7 +104,7 @@ class OpportunitySectionHeader extends StatelessWidget {
         ),
         if (actionLabel != null && onAction != null)
           Padding(
-            padding: const EdgeInsets.only(left: 12),
+            padding: const EdgeInsetsDirectional.only(start: 12),
             child: TextButton(
               onPressed: onAction,
               style: TextButton.styleFrom(
@@ -210,7 +211,7 @@ class TrendingOpportunitySectionHeader extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 12),
+          padding: const EdgeInsetsDirectional.only(start: 12),
           child: TextButton(
             onPressed: onAction,
             style: TextButton.styleFrom(
@@ -288,9 +289,9 @@ class OpportunityHeroCard extends StatelessWidget {
             height: 202,
             child: Stack(
               children: [
-                Positioned(
+                PositionedDirectional(
                   top: -40,
-                  right: -24,
+                  end: -24,
                   child: Container(
                     width: 148,
                     height: 148,
@@ -300,9 +301,9 @@ class OpportunityHeroCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
+                PositionedDirectional(
                   bottom: -44,
-                  left: -16,
+                  start: -16,
                   child: Container(
                     width: 116,
                     height: 116,
@@ -312,9 +313,9 @@ class OpportunityHeroCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
+                PositionedDirectional(
                   top: 18,
-                  right: 18,
+                  end: 18,
                   child: Container(
                     width: 50,
                     height: 50,
@@ -326,7 +327,7 @@ class OpportunityHeroCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 92, 18),
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 92, 18),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -393,7 +394,7 @@ class OpportunityHeroCard extends StatelessWidget {
                               color: Colors.white.withValues(alpha: 0.14),
                               borderRadius: BorderRadius.circular(999),
                             ),
-                            child: const Icon(
+                            child: const AppDirectionalIcon(
                               Icons.arrow_forward_rounded,
                               color: Colors.white,
                               size: 16,
@@ -451,8 +452,8 @@ class OpportunityCategoryCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              Positioned(
-                right: -8,
+              PositionedDirectional(
+                end: -8,
                 bottom: -8,
                 child: Icon(
                   icon,

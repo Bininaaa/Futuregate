@@ -367,17 +367,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
               ),
               const SizedBox(height: 14),
               _TranslateOption(
-                label: 'Arabic',
+                label: l10n.languageArabic,
                 flag: '\u{1F1E9}\u{1F1FF}',
                 onTap: () => Navigator.pop(ctx, 'Arabic'),
               ),
               _TranslateOption(
-                label: 'French',
+                label: l10n.languageFrench,
                 flag: '\u{1F1EB}\u{1F1F7}',
                 onTap: () => Navigator.pop(ctx, 'French'),
               ),
               _TranslateOption(
-                label: 'English',
+                label: l10n.languageEnglish,
                 flag: '\u{1F1EC}\u{1F1E7}',
                 onTap: () => Navigator.pop(ctx, 'English'),
               ),
@@ -499,7 +499,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         message: AppLocalizations.of(
           context,
         )!.uiAreYouSureYouWantToArchiveThisConversation,
-        confirmLabel: 'Archive',
+        confirmLabel: AppLocalizations.of(context)!.uiArchive,
         icon: Icons.archive_outlined,
       );
 
@@ -845,7 +845,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     for (int i = 0; i < messages.length; i++) {
       final dateLabel = messages[i].sentAt != null
-          ? ChatFormatters.dayDividerLabel(messages[i].sentAt!.toDate())
+          ? ChatFormatters.dayDividerLabel(
+              messages[i].sentAt!.toDate(),
+              context: context,
+            )
           : '';
       if (dateLabel != lastDateLabel) {
         if (currentIndex == index) {
@@ -1026,6 +1029,7 @@ class _ConversationHeader extends StatelessWidget {
                             ChatFormatters.presenceLabel(
                               otherUser?.lastSeenAt,
                               isOnline: isOnline,
+                              context: context,
                             ),
                             style: ChatThemeStyles.meta(presenceColor).copyWith(
                               fontSize: 11,
@@ -1079,14 +1083,16 @@ class _ConversationHeader extends StatelessWidget {
                 PopupMenuItem<String>(
                   value: 'archive',
                   child: Text(
-                    archived ? 'Unarchive Chat' : 'Archive Chat',
+                    archived
+                        ? AppLocalizations.of(context)!.uiUnarchive
+                        : AppLocalizations.of(context)!.uiArchive,
                     style: ChatThemeStyles.body(),
                   ),
                 ),
                 PopupMenuItem<String>(
                   value: 'delete',
                   child: Text(
-                    'Delete Chat',
+                    AppLocalizations.of(context)!.uiDeleteChat,
                     style: ChatThemeStyles.body(ChatThemePalette.error),
                   ),
                 ),

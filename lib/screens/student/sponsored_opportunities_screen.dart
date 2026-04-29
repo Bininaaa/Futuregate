@@ -13,6 +13,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -786,7 +787,7 @@ class _SponsoredOpportunitiesScreenState
     }
 
     return l10n.studentApplyByDate(
-      OpportunityMetadata.formatDateLabel(deadline!, pattern: 'MMM d'),
+      LocalizedDisplay.shortDate(context, deadline!),
     );
   }
 
@@ -815,6 +816,11 @@ class _SponsoredOpportunitiesScreenState
     );
     if (duration == null) {
       return null;
+    }
+
+    if (LocalizedDisplay.isArabic(context) ||
+        LocalizedDisplay.isFrench(context)) {
+      return LocalizedDisplay.duration(context, duration);
     }
 
     return duration

@@ -11,6 +11,7 @@ import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
 import '../../services/opportunity_translation_service.dart';
 import '../../utils/document_launch_helper.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_directional.dart';
@@ -43,16 +44,20 @@ class ScholarshipDetailScreen extends StatelessWidget {
     return value.isEmpty ? l10n.scholarshipNoEligFallback : value;
   }
 
-  String _deadlineText(AppLocalizations l10n) {
+  String _deadlineText(BuildContext context, AppLocalizations l10n) {
     final value = scholarship.deadline.trim();
-    return value.isEmpty ? l10n.scholarshipDeadlineFallback : value;
+    return value.isEmpty
+        ? l10n.scholarshipDeadlineFallback
+        : LocalizedDisplay.dateText(context, value);
   }
 
-  String _amountText(AppLocalizations l10n) {
+  String _amountText(BuildContext context, AppLocalizations l10n) {
     final amount = scholarship.amount;
     if (amount <= 0) {
       final funding = _fundingType;
-      return funding ?? l10n.scholarshipFundingFallback;
+      return funding == null
+          ? l10n.scholarshipFundingFallback
+          : LocalizedDisplay.metadataLabel(context, funding);
     }
 
     final isWholeNumber = amount is int || amount == amount.roundToDouble();
@@ -113,29 +118,37 @@ class ScholarshipDetailScreen extends StatelessWidget {
     return host.replaceFirst(RegExp(r'^www\.'), '');
   }
 
-  String _primaryBadgeLabel(AppLocalizations l10n) {
+  String _primaryBadgeLabel(BuildContext context, AppLocalizations l10n) {
     final funding = _fundingType;
     if (funding != null) {
-      return funding.toUpperCase();
+      final label = LocalizedDisplay.metadataLabel(context, funding);
+      return LocalizedDisplay.isArabic(context) ? label : label.toUpperCase();
     }
     if (scholarship.isFeatured) {
-      return l10n.uiFeatured.toUpperCase();
+      return LocalizedDisplay.isArabic(context)
+          ? l10n.uiFeatured
+          : l10n.uiFeatured.toUpperCase();
     }
     final level = _level;
     if (level != null) {
-      return level.toUpperCase();
+      final label = LocalizedDisplay.metadataLabel(context, level);
+      return LocalizedDisplay.isArabic(context) ? label : label.toUpperCase();
     }
-    return l10n.uiScholarshipLabel.toUpperCase();
+    return LocalizedDisplay.isArabic(context)
+        ? l10n.uiScholarshipLabel
+        : l10n.uiScholarshipLabel.toUpperCase();
   }
 
-  String? _secondaryBadgeLabel(AppLocalizations l10n) {
+  String? _secondaryBadgeLabel(BuildContext context, AppLocalizations l10n) {
     if (_fundingType != null && scholarship.isFeatured) {
-      return l10n.uiFeatured.toUpperCase();
+      return LocalizedDisplay.isArabic(context)
+          ? l10n.uiFeatured
+          : l10n.uiFeatured.toUpperCase();
     }
     return null;
   }
 
-  List<String> get _heroChips {
+  List<String> _heroChips(BuildContext context) {
     final chips = <String>[];
 
     void addChip(String? value) {
@@ -162,29 +175,37 @@ class ScholarshipDetailScreen extends StatelessWidget {
       }
     }
 
-    return chips.take(3).toList(growable: false);
+    return chips
+        .take(3)
+        .map((chip) => LocalizedDisplay.metadataLabel(context, chip))
+        .toList(growable: false);
   }
 
-  List<_ScholarshipStatData> _buildStats(AppLocalizations l10n) {
+  List<_ScholarshipStatData> _buildStats(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     final stats = <_ScholarshipStatData>[
       _ScholarshipStatData(
         icon: Icons.payments_rounded,
         label: scholarship.amount > 0
             ? l10n.scholarshipFundingAmount
             : l10n.scholarshipFundingDetails,
-        value: _amountText(l10n),
+        value: _amountText(context, l10n),
         accentColor: _P.primary,
         highlight: true,
       ),
       _ScholarshipStatData(
         icon: Icons.event_available_rounded,
         label: l10n.uiDeadline,
-        value: _deadlineText(l10n),
+        value: _deadlineText(context, l10n),
         accentColor: _P.accent,
       ),
     ];
 
-    final location = _locationText;
+    final location = _locationText == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, _locationText);
     if (location != null) {
       stats.add(
         _ScholarshipStatData(
@@ -213,7 +234,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
           label: _level != null
               ? l10n.scholarshipStudyLevel
               : l10n.scholarshipProgramType,
-          value: academicLabel,
+          value: LocalizedDisplay.metadataLabel(context, academicLabel),
           accentColor: _P.primaryDark,
         ),
       );
@@ -222,7 +243,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
         _ScholarshipStatData(
           icon: Icons.workspace_premium_rounded,
           label: l10n.uiSupportType,
-          value: _fundingType!,
+          value: LocalizedDisplay.metadataLabel(context, _fundingType),
           accentColor: _P.primaryDark,
         ),
       );
@@ -231,7 +252,10 @@ class ScholarshipDetailScreen extends StatelessWidget {
     return stats;
   }
 
-  List<_ScholarshipProfileRowData> _buildProfileRows(AppLocalizations l10n) {
+  List<_ScholarshipProfileRowData> _buildProfileRows(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     final rows = <_ScholarshipProfileRowData>[
       _ScholarshipProfileRowData(
         icon: Icons.business_center_rounded,
@@ -241,11 +265,13 @@ class ScholarshipDetailScreen extends StatelessWidget {
       _ScholarshipProfileRowData(
         icon: Icons.calendar_month_rounded,
         label: l10n.uiApplicationDeadline,
-        value: _deadlineText(l10n),
+        value: _deadlineText(context, l10n),
       ),
     ];
 
-    final location = _locationText;
+    final location = _locationText == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, _locationText);
     if (location != null) {
       rows.add(
         _ScholarshipProfileRowData(
@@ -261,7 +287,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
         _ScholarshipProfileRowData(
           icon: Icons.wallet_giftcard_rounded,
           label: l10n.uiFundingType,
-          value: _fundingType!,
+          value: LocalizedDisplay.metadataLabel(context, _fundingType),
         ),
       );
     }
@@ -271,7 +297,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
         _ScholarshipProfileRowData(
           icon: Icons.auto_stories_rounded,
           label: l10n.uiLevel,
-          value: _level!,
+          value: LocalizedDisplay.metadataLabel(context, _level),
         ),
       );
     }
@@ -281,7 +307,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
         _ScholarshipProfileRowData(
           icon: Icons.category_rounded,
           label: l10n.uiCategory,
-          value: _category!,
+          value: LocalizedDisplay.metadataLabel(context, _category),
         ),
       );
     }
@@ -402,8 +428,10 @@ class ScholarshipDetailScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final fallbackTitle = _title(l10n);
     final fallbackProvider = _provider(l10n);
-    final fallbackDeadline = _deadlineText(l10n);
-    final location = _locationText ?? l10n.uiLocation;
+    final fallbackDeadline = _deadlineText(context, l10n);
+    final location = _locationText == null
+        ? l10n.uiLocation
+        : LocalizedDisplay.metadataLabel(context, _locationText);
 
     final error = existing != null
         ? await provider.unsaveScholarship(existing.id, userId)
@@ -469,14 +497,16 @@ class ScholarshipDetailScreen extends StatelessWidget {
     }
     final isSaved = existingSaved != null;
     final hasLink = _linkUri != null;
-    final location = _locationText;
+    final location = _locationText == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, _locationText);
     final l10n = AppLocalizations.of(context)!;
     final fallbackTitle = _title(l10n);
     final fallbackProvider = _provider(l10n);
     final fallbackDescription = _description(l10n);
     final fallbackEligibility = _eligibility(l10n);
-    final fallbackDeadline = _deadlineText(l10n);
-    final chips = _heroChips;
+    final fallbackDeadline = _deadlineText(context, l10n);
+    final chips = _heroChips(context);
     final displayTitle =
         translationProvider
             .resolvedField(
@@ -529,7 +559,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
             originalValue: scholarship.eligibility,
           );
     final eligibilityItems = _translatedEligibilityItems(displayEligibility);
-    final profileRows = _buildProfileRows(l10n);
+    final profileRows = _buildProfileRows(context, l10n);
 
     return AppShellBackground(
       child: Scaffold(
@@ -537,7 +567,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
         bottomNavigationBar: SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
             child: _ScholarshipActionBar(
               hostLabel: _linkHost,
               enabled: hasLink,
@@ -547,17 +577,17 @@ class ScholarshipDetailScreen extends StatelessWidget {
         ),
         body: Stack(
           children: [
-            Positioned(
+            PositionedDirectional(
               top: -72,
-              right: -36,
+              end: -36,
               child: _SoftOrb(
                 size: 184,
                 color: _P.primary.withValues(alpha: 0.12),
               ),
             ),
-            Positioned(
+            PositionedDirectional(
               top: 240,
-              left: -58,
+              start: -58,
               child: _SoftOrb(
                 size: 144,
                 color: _P.secondary.withValues(alpha: 0.10),
@@ -568,7 +598,12 @@ class ScholarshipDetailScreen extends StatelessWidget {
                 SafeArea(
                   bottom: false,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      16,
+                      10,
+                      16,
+                      6,
+                    ),
                     child: Row(
                       children: [
                         IconButton(
@@ -588,7 +623,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                             l10n.uiScholarshipLabel,
-                            textAlign: TextAlign.left,
+                            textAlign: TextAlign.start,
                             style: AppTypography.product(
                               fontSize: 19,
                               fontWeight: FontWeight.w800,
@@ -616,12 +651,20 @@ class ScholarshipDetailScreen extends StatelessWidget {
                 Expanded(
                   child: ListView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 132),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      16,
+                      8,
+                      16,
+                      132,
+                    ),
                     children: [
                       _ScholarshipHeroCard(
                         scholarship: scholarship,
-                        badgeLabel: _primaryBadgeLabel(l10n),
-                        secondaryBadgeLabel: _secondaryBadgeLabel(l10n),
+                        badgeLabel: _primaryBadgeLabel(context, l10n),
+                        secondaryBadgeLabel: _secondaryBadgeLabel(
+                          context,
+                          l10n,
+                        ),
                         provider: fallbackProvider,
                         title: displayTitle,
                         location: location,
@@ -637,7 +680,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                         subtitle: l10n.scholarshipSnapshotSubtitle,
                       ),
                       const SizedBox(height: 14),
-                      _ScholarshipStatsWrap(stats: _buildStats(l10n)),
+                      _ScholarshipStatsWrap(stats: _buildStats(context, l10n)),
                       const SizedBox(height: 22),
                       _ScholarshipSectionCard(
                         icon: Icons.auto_awesome_rounded,
@@ -732,7 +775,14 @@ class ScholarshipDetailScreen extends StatelessWidget {
                                 runSpacing: 8,
                                 children: scholarship.tags
                                     .take(6)
-                                    .map((tag) => _TagChip(label: tag))
+                                    .map(
+                                      (tag) => _TagChip(
+                                        label: LocalizedDisplay.metadataLabel(
+                                          context,
+                                          tag,
+                                        ),
+                                      ),
+                                    )
                                     .toList(growable: false),
                               ),
                             ],
@@ -838,9 +888,9 @@ class _ScholarshipHeroCard extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
+            PositionedDirectional(
               top: -18,
-              right: -18,
+              end: -18,
               child: Container(
                 width: 148,
                 height: 148,
@@ -850,8 +900,8 @@ class _ScholarshipHeroCard extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              left: -24,
+            PositionedDirectional(
+              start: -24,
               bottom: -42,
               child: Container(
                 width: 134,
@@ -863,7 +913,7 @@ class _ScholarshipHeroCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(
+              padding: EdgeInsetsDirectional.fromSTEB(
                 isCompact ? 16 : 20,
                 isCompact ? 16 : 20,
                 isCompact ? 16 : 20,
@@ -992,9 +1042,9 @@ class _HeroGradientFallback extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned(
+          PositionedDirectional(
             top: -24,
-            right: -18,
+            end: -18,
             child: Container(
               width: 148,
               height: 148,
@@ -1004,8 +1054,8 @@ class _HeroGradientFallback extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            left: -18,
+          PositionedDirectional(
+            start: -18,
             bottom: -34,
             child: Container(
               width: 124,
@@ -1521,20 +1571,28 @@ class _PrimaryActionButton extends StatelessWidget {
                 : null,
             borderRadius: BorderRadius.circular(18),
           ),
-          child: AppInlineIconLabel(
-            icon: icon,
-            iconSize: 18,
-            iconColor: Colors.white,
-            gap: 10,
-            label: Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.product(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
+              child: AppInlineIconLabel(
+                icon: icon,
+                iconSize: 18,
+                iconColor: Colors.white,
+                gap: 10,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                label: Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.product(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),

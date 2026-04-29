@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -12,6 +11,7 @@ import '../models/scholarship_model.dart';
 import '../models/training_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
+import '../utils/localized_display.dart';
 import '../utils/opportunity_type.dart';
 import 'admin/admin_content_center_screen.dart';
 import 'admin/admin_home_navigation.dart';
@@ -688,39 +688,79 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     switch (_selectedFilter) {
       case _NotificationFilter.all:
         return provider.unreadCount > 0
-            ? '${provider.unreadCount} updates needing attention'
+            ? _updatesNeedingAttention(provider.unreadCount)
             : l10n.notifAllCaughtUp;
       case _NotificationFilter.unread:
         return visibleCount > 0
-            ? '$visibleCount updates needing attention'
-            : 'No updates need attention';
+            ? _updatesNeedingAttention(visibleCount)
+            : _noUpdatesNeedAttention();
       case _NotificationFilter.applications:
-        return visibleCount == 1
-            ? '1 application update'
-            : '$visibleCount application updates';
+        return _countedNotificationTitle(
+          visibleCount,
+          enOne: 'application update',
+          enMany: 'application updates',
+          arOne: 'تحديث طلب واحد',
+          arTwo: 'تحديثا طلب',
+          arMany: 'تحديثات طلبات',
+          frOne: 'mise à jour de candidature',
+          frMany: 'mises à jour de candidature',
+        );
       case _NotificationFilter.messages:
-        return visibleCount == 1
-            ? '1 message update'
-            : '$visibleCount message updates';
+        return _countedNotificationTitle(
+          visibleCount,
+          enOne: 'message update',
+          enMany: 'message updates',
+          arOne: 'تحديث رسالة واحد',
+          arTwo: 'تحديثا رسائل',
+          arMany: 'تحديثات رسائل',
+          frOne: 'mise à jour de message',
+          frMany: 'mises à jour de messages',
+        );
       case _NotificationFilter.newContent:
         return switch (_selectedContentFilter) {
-          _NotificationContentFilter.all =>
-            visibleCount == 1
-                ? '1 new content alert'
-                : '$visibleCount new content alerts',
+          _NotificationContentFilter.all => _countedNotificationTitle(
+            visibleCount,
+            enOne: 'new content alert',
+            enMany: 'new content alerts',
+            arOne: 'تنبيه محتوى جديد واحد',
+            arTwo: 'تنبيها محتوى جديد',
+            arMany: 'تنبيهات محتوى جديدة',
+            frOne: 'alerte de nouveau contenu',
+            frMany: 'alertes de nouveau contenu',
+          ),
           _NotificationContentFilter.opportunities => _opportunitySummaryTitle(
             visibleCount,
           ),
-          _NotificationContentFilter.trainings =>
-            visibleCount == 1
-                ? '1 new training alert'
-                : '$visibleCount new training alerts',
-          _NotificationContentFilter.scholarships =>
-            visibleCount == 1
-                ? '1 new scholarship alert'
-                : '$visibleCount new scholarship alerts',
-          _NotificationContentFilter.ideas =>
-            visibleCount == 1 ? '1 idea alert' : '$visibleCount idea alerts',
+          _NotificationContentFilter.trainings => _countedNotificationTitle(
+            visibleCount,
+            enOne: 'new training alert',
+            enMany: 'new training alerts',
+            arOne: 'تنبيه تدريب جديد واحد',
+            arTwo: 'تنبيها تدريب جديد',
+            arMany: 'تنبيهات تدريب جديدة',
+            frOne: 'alerte de formation',
+            frMany: 'alertes de formation',
+          ),
+          _NotificationContentFilter.scholarships => _countedNotificationTitle(
+            visibleCount,
+            enOne: 'new scholarship alert',
+            enMany: 'new scholarship alerts',
+            arOne: 'تنبيه منحة جديد واحد',
+            arTwo: 'تنبيها منح جديدان',
+            arMany: 'تنبيهات منح جديدة',
+            frOne: 'alerte de bourse',
+            frMany: 'alertes de bourses',
+          ),
+          _NotificationContentFilter.ideas => _countedNotificationTitle(
+            visibleCount,
+            enOne: 'idea alert',
+            enMany: 'idea alerts',
+            arOne: 'تنبيه فكرة واحد',
+            arTwo: 'تنبيها أفكار',
+            arMany: 'تنبيهات أفكار',
+            frOne: 'alerte d’idée',
+            frMany: 'alertes d’idées',
+          ),
         };
     }
   }
@@ -733,31 +773,71 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   ) {
     if (provider.notifications.isEmpty) {
       if (role == 'company') {
-        return 'Your company notification center will fill up as applicants and chats change.';
+        return _copy(
+          en: 'Your company notification center will fill up as applicants and chats change.',
+          ar: 'سيمتلئ مركز إشعارات شركتك عند تغيّر الطلبات والمحادثات.',
+          fr: 'Votre centre de notifications se remplira avec les candidatures et les conversations.',
+        );
       }
       if (role == 'admin') {
-        return 'Your admin notification center will fill up as reviews, content, and platform updates arrive.';
+        return _copy(
+          en: 'Your admin notification center will fill up as reviews, content, and platform updates arrive.',
+          ar: 'سيمتلئ مركز إشعارات الإدارة مع المراجعات والمحتوى وتحديثات المنصة.',
+          fr: 'Votre centre admin se remplira avec les révisions, le contenu et les mises à jour.',
+        );
       }
-      return 'Your notification center will fill up as applications, chats, opportunities, trainings, scholarships, and ideas change.';
+      return _copy(
+        en: 'Your notification center will fill up as applications, chats, opportunities, trainings, scholarships, and ideas change.',
+        ar: 'سيمتلئ مركز الإشعارات مع تغيّر الطلبات والمحادثات والفرص والتدريبات والمنح والأفكار.',
+        fr: 'Votre centre de notifications se remplira avec les candidatures, chats, opportunités, formations, bourses et idées.',
+      );
     }
 
     switch (_selectedFilter) {
       case _NotificationFilter.all:
         if (role == 'company') {
-          return 'Track applicant activity and conversations in one place.';
+          return _copy(
+            en: 'Track applicant activity and conversations in one place.',
+            ar: 'تابع نشاط المتقدمين والمحادثات في مكان واحد.',
+            fr: 'Suivez l’activité des candidats et les conversations au même endroit.',
+          );
         }
         if (role == 'admin') {
-          return 'Track reviews, content activity, and platform alerts in one place.';
+          return _copy(
+            en: 'Track reviews, content activity, and platform alerts in one place.',
+            ar: 'تابع المراجعات ونشاط المحتوى وتنبيهات المنصة في مكان واحد.',
+            fr: 'Suivez les révisions, le contenu et les alertes de la plateforme au même endroit.',
+          );
         }
-        return 'Track application decisions, new content, and messages in one place.';
+        return _copy(
+          en: 'Track application decisions, new content, and messages in one place.',
+          ar: 'تابع قرارات الطلبات والمحتوى الجديد والرسائل في مكان واحد.',
+          fr: 'Suivez les décisions de candidature, le nouveau contenu et les messages au même endroit.',
+        );
       case _NotificationFilter.unread:
         return visibleCount > 0
-            ? 'Focus on the updates you have not opened yet.'
-            : 'Everything has already been reviewed.';
+            ? _copy(
+                en: 'Focus on the updates you have not opened yet.',
+                ar: 'ركّز على التحديثات التي لم تفتحها بعد.',
+                fr: 'Concentrez-vous sur les mises à jour non ouvertes.',
+              )
+            : _copy(
+                en: 'Everything has already been reviewed.',
+                ar: 'تمت مراجعة كل شيء بالفعل.',
+                fr: 'Tout a déjà été consulté.',
+              );
       case _NotificationFilter.applications:
-        return 'Follow new applications, approvals, and rejections without leaving this inbox.';
+        return _copy(
+          en: 'Follow new applications, approvals, and rejections without leaving this inbox.',
+          ar: 'تابع الطلبات الجديدة والموافقات والرفض من صندوق واحد.',
+          fr: 'Suivez les nouvelles candidatures, approbations et refus depuis cette boîte.',
+        );
       case _NotificationFilter.messages:
-        return 'Keep up with active conversations and jump straight back into chat.';
+        return _copy(
+          en: 'Keep up with active conversations and jump straight back into chat.',
+          ar: 'تابع المحادثات النشطة وعد مباشرة إلى الدردشة.',
+          fr: 'Suivez les conversations actives et revenez directement au chat.',
+        );
       case _NotificationFilter.newContent:
         return switch (_selectedContentFilter) {
           _NotificationContentFilter.all =>
@@ -774,24 +854,117 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+  String _updatesNeedingAttention(int count) {
+    if (LocalizedDisplay.isArabic(context)) {
+      if (count == 1) {
+        return 'تحديث واحد يحتاج انتباهك';
+      }
+      if (count == 2) {
+        return 'تحديثان يحتاجان انتباهك';
+      }
+      return '$count تحديثات تحتاج انتباهك';
+    }
+    if (LocalizedDisplay.isFrench(context)) {
+      return count == 1
+          ? '1 mise à jour demande votre attention'
+          : '$count mises à jour demandent votre attention';
+    }
+    return count == 1
+        ? '1 update needing attention'
+        : '$count updates needing attention';
+  }
+
+  String _noUpdatesNeedAttention() {
+    if (LocalizedDisplay.isArabic(context)) {
+      return 'لا توجد تحديثات تحتاج انتباهك';
+    }
+    if (LocalizedDisplay.isFrench(context)) {
+      return 'Aucune mise à jour ne demande votre attention';
+    }
+    return 'No updates need attention';
+  }
+
+  String _countedNotificationTitle(
+    int count, {
+    required String enOne,
+    required String enMany,
+    required String arOne,
+    required String arTwo,
+    required String arMany,
+    required String frOne,
+    required String frMany,
+  }) {
+    if (LocalizedDisplay.isArabic(context)) {
+      if (count == 1) {
+        return arOne;
+      }
+      if (count == 2) {
+        return arTwo;
+      }
+      return '$count $arMany';
+    }
+    if (LocalizedDisplay.isFrench(context)) {
+      return count == 1 ? '1 $frOne' : '$count $frMany';
+    }
+    return count == 1 ? '1 $enOne' : '$count $enMany';
+  }
+
+  String _copy({required String en, required String ar, required String fr}) {
+    if (LocalizedDisplay.isArabic(context)) {
+      return ar;
+    }
+    if (LocalizedDisplay.isFrench(context)) {
+      return fr;
+    }
+    return en;
+  }
+
   String _emptyStateTitle(AppLocalizations l10n) {
     switch (_selectedFilter) {
       case _NotificationFilter.all:
-        return 'No notifications right now';
+        return _copy(
+          en: 'No notifications right now',
+          ar: 'لا توجد إشعارات الآن',
+          fr: 'Aucune notification pour le moment',
+        );
       case _NotificationFilter.unread:
-        return 'No updates need attention';
+        return _noUpdatesNeedAttention();
       case _NotificationFilter.applications:
-        return 'No application updates';
+        return _copy(
+          en: 'No application updates',
+          ar: 'لا توجد تحديثات طلبات',
+          fr: 'Aucune mise à jour de candidature',
+        );
       case _NotificationFilter.messages:
-        return 'No message updates';
+        return _copy(
+          en: 'No message updates',
+          ar: 'لا توجد تحديثات رسائل',
+          fr: 'Aucune mise à jour de messages',
+        );
       case _NotificationFilter.newContent:
         return switch (_selectedContentFilter) {
-          _NotificationContentFilter.all => 'No new content alerts',
+          _NotificationContentFilter.all => _copy(
+            en: 'No new content alerts',
+            ar: 'لا توجد تنبيهات محتوى جديد',
+            fr: 'Aucune alerte de nouveau contenu',
+          ),
           _NotificationContentFilter.opportunities =>
             _opportunityEmptyStateTitle(),
-          _NotificationContentFilter.trainings => 'No training alerts',
-          _NotificationContentFilter.scholarships => 'No scholarship alerts',
-          _NotificationContentFilter.ideas => 'No idea alerts',
+          _NotificationContentFilter.trainings => _copy(
+            en: 'No training alerts',
+            ar: 'لا توجد تنبيهات تدريب',
+            fr: 'Aucune alerte de formation',
+          ),
+          _NotificationContentFilter.scholarships => _copy(
+            en: 'No scholarship alerts',
+            ar: 'لا توجد تنبيهات منح',
+            fr: 'Aucune alerte de bourses',
+          ),
+          _NotificationContentFilter.ideas => _copy(
+            en: 'No idea alerts',
+            ar: 'لا توجد تنبيهات أفكار',
+            fr: 'Aucune alerte d’idées',
+          ),
         };
     }
   }
@@ -799,13 +972,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   String _emptyStateMessage(AppLocalizations l10n, String role) {
     switch (_selectedFilter) {
       case _NotificationFilter.all:
-        return 'Check back after your next application, message, or content update.';
+        return _copy(
+          en: 'Check back after your next application, message, or content update.',
+          ar: 'عد بعد طلبك أو رسالتك أو تحديث المحتوى التالي.',
+          fr: 'Revenez après votre prochaine candidature, message ou mise à jour.',
+        );
       case _NotificationFilter.unread:
-        return 'You have already opened everything in your inbox.';
+        return _copy(
+          en: 'You have already opened everything in your inbox.',
+          ar: 'لقد فتحت كل ما في صندوقك بالفعل.',
+          fr: 'Vous avez déjà ouvert tout ce qui se trouve dans votre boîte.',
+        );
       case _NotificationFilter.applications:
-        return 'Application decisions and submissions will appear here.';
+        return _copy(
+          en: 'Application decisions and submissions will appear here.',
+          ar: 'ستظهر قرارات الطلبات والإرسالات هنا.',
+          fr: 'Les décisions et envois de candidatures apparaîtront ici.',
+        );
       case _NotificationFilter.messages:
-        return 'New conversations and replies will show up here.';
+        return _copy(
+          en: 'New conversations and replies will show up here.',
+          ar: 'ستظهر المحادثات والردود الجديدة هنا.',
+          fr: 'Les nouvelles conversations et réponses apparaîtront ici.',
+        );
       case _NotificationFilter.newContent:
         return switch (_selectedContentFilter) {
           _NotificationContentFilter.all =>
@@ -824,20 +1013,46 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   String _opportunitySummaryTitle(int visibleCount) {
     return switch (_selectedOpportunityFilter) {
-      _OpportunityNotificationFilter.jobs =>
-        visibleCount == 1 ? '1 new job alert' : '$visibleCount new job alerts',
-      _OpportunityNotificationFilter.internships =>
-        visibleCount == 1
-            ? '1 new internship alert'
-            : '$visibleCount new internship alerts',
-      _OpportunityNotificationFilter.sponsored =>
-        visibleCount == 1
-            ? '1 new sponsored opportunity alert'
-            : '$visibleCount new sponsored opportunity alerts',
-      _OpportunityNotificationFilter.all =>
-        visibleCount == 1
-            ? '1 new opportunity alert'
-            : '$visibleCount new opportunity alerts',
+      _OpportunityNotificationFilter.jobs => _countedNotificationTitle(
+        visibleCount,
+        enOne: 'new job alert',
+        enMany: 'new job alerts',
+        arOne: 'تنبيه وظيفة جديد واحد',
+        arTwo: 'تنبيها وظائف جديدان',
+        arMany: 'تنبيهات وظائف جديدة',
+        frOne: 'alerte d’emploi',
+        frMany: 'alertes d’emploi',
+      ),
+      _OpportunityNotificationFilter.internships => _countedNotificationTitle(
+        visibleCount,
+        enOne: 'new internship alert',
+        enMany: 'new internship alerts',
+        arOne: 'تنبيه تدريب جديد واحد',
+        arTwo: 'تنبيها تدريب جديدان',
+        arMany: 'تنبيهات تدريب جديدة',
+        frOne: 'alerte de stage',
+        frMany: 'alertes de stage',
+      ),
+      _OpportunityNotificationFilter.sponsored => _countedNotificationTitle(
+        visibleCount,
+        enOne: 'new sponsored opportunity alert',
+        enMany: 'new sponsored opportunity alerts',
+        arOne: 'تنبيه فرصة ممولة واحد',
+        arTwo: 'تنبيها فرص ممولة',
+        arMany: 'تنبيهات فرص ممولة',
+        frOne: 'alerte d’opportunité sponsorisée',
+        frMany: 'alertes d’opportunités sponsorisées',
+      ),
+      _OpportunityNotificationFilter.all => _countedNotificationTitle(
+        visibleCount,
+        enOne: 'new opportunity alert',
+        enMany: 'new opportunity alerts',
+        arOne: 'تنبيه فرصة جديد واحد',
+        arTwo: 'تنبيها فرص جديدان',
+        arMany: 'تنبيهات فرص جديدة',
+        frOne: 'alerte d’opportunité',
+        frMany: 'alertes d’opportunités',
+      ),
     };
   }
 
@@ -856,24 +1071,51 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   String _opportunityEmptyStateTitle() {
     return switch (_selectedOpportunityFilter) {
-      _OpportunityNotificationFilter.jobs => 'No job alerts',
-      _OpportunityNotificationFilter.internships => 'No internship alerts',
-      _OpportunityNotificationFilter.sponsored =>
-        'No sponsored opportunity alerts',
-      _OpportunityNotificationFilter.all => 'No opportunity alerts',
+      _OpportunityNotificationFilter.jobs => _copy(
+        en: 'No job alerts',
+        ar: 'لا توجد تنبيهات وظائف',
+        fr: 'Aucune alerte d’emploi',
+      ),
+      _OpportunityNotificationFilter.internships => _copy(
+        en: 'No internship alerts',
+        ar: 'لا توجد تنبيهات تدريب',
+        fr: 'Aucune alerte de stage',
+      ),
+      _OpportunityNotificationFilter.sponsored => _copy(
+        en: 'No sponsored opportunity alerts',
+        ar: 'لا توجد تنبيهات فرص ممولة',
+        fr: 'Aucune alerte d’opportunités sponsorisées',
+      ),
+      _OpportunityNotificationFilter.all => _copy(
+        en: 'No opportunity alerts',
+        ar: 'لا توجد تنبيهات فرص',
+        fr: 'Aucune alerte d’opportunités',
+      ),
     };
   }
 
   String _opportunityEmptyStateMessage() {
     return switch (_selectedOpportunityFilter) {
-      _OpportunityNotificationFilter.jobs =>
-        'New job notifications will show up here.',
-      _OpportunityNotificationFilter.internships =>
-        'New internship notifications will show up here.',
-      _OpportunityNotificationFilter.sponsored =>
-        'New sponsored opportunity notifications will show up here.',
-      _OpportunityNotificationFilter.all =>
-        'New opportunity notifications will show up here.',
+      _OpportunityNotificationFilter.jobs => _copy(
+        en: 'New job notifications will show up here.',
+        ar: 'ستظهر إشعارات الوظائف الجديدة هنا.',
+        fr: 'Les nouvelles notifications d’emploi apparaîtront ici.',
+      ),
+      _OpportunityNotificationFilter.internships => _copy(
+        en: 'New internship notifications will show up here.',
+        ar: 'ستظهر إشعارات التدريب الجديدة هنا.',
+        fr: 'Les nouvelles notifications de stage apparaîtront ici.',
+      ),
+      _OpportunityNotificationFilter.sponsored => _copy(
+        en: 'New sponsored opportunity notifications will show up here.',
+        ar: 'ستظهر إشعارات الفرص الممولة الجديدة هنا.',
+        fr: 'Les nouvelles notifications sponsorisées apparaîtront ici.',
+      ),
+      _OpportunityNotificationFilter.all => _copy(
+        en: 'New opportunity notifications will show up here.',
+        ar: 'ستظهر إشعارات الفرص الجديدة هنا.',
+        fr: 'Les nouvelles notifications d’opportunités apparaîtront ici.',
+      ),
     };
   }
 
@@ -1219,9 +1461,11 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final body = notification.body.isNotEmpty
+    final rawBody = notification.body.isNotEmpty
         ? notification.body
         : notification.message;
+    final title = _localizedNotificationTitle(context);
+    final body = _localizedNotificationBody(context, rawBody);
     final createdAt = notification.createdAt?.toDate();
 
     return Material(
@@ -1267,7 +1511,7 @@ class _NotificationCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            notification.title,
+                            title,
                             style: SettingsFlowTheme.cardTitle(),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -1316,7 +1560,7 @@ class _NotificationCard extends StatelessWidget {
                               if (createdAt != null) ...[
                                 const SizedBox(height: 6),
                                 Text(
-                                  _formatTime(createdAt),
+                                  _formatTime(context, createdAt),
                                   style: SettingsFlowTheme.micro(),
                                 ),
                               ],
@@ -1339,7 +1583,9 @@ class _NotificationCard extends StatelessWidget {
                             ),
                             const Spacer(),
                             Text(
-                              createdAt == null ? '' : _formatTime(createdAt),
+                              createdAt == null
+                                  ? ''
+                                  : _formatTime(context, createdAt),
                               style: SettingsFlowTheme.micro(),
                             ),
                           ],
@@ -1440,23 +1686,105 @@ class _NotificationCard extends StatelessWidget {
     }
   }
 
-  String _formatTime(DateTime dt) {
+  String _localizedNotificationTitle(BuildContext context) {
+    final title = notification.title.trim();
+    final lower = title.toLowerCase();
+    if (lower.contains('application approved')) {
+      return _copy(
+        context,
+        en: 'Application Approved',
+        ar: 'تمت الموافقة على الطلب',
+        fr: 'Candidature approuvée',
+      );
+    }
+    if (lower.contains('application rejected')) {
+      return _copy(
+        context,
+        en: 'Application Rejected',
+        ar: 'تم رفض الطلب',
+        fr: 'Candidature refusée',
+      );
+    }
+    if (lower.startsWith('new message from ')) {
+      final sender = title.substring('New message from '.length).trim();
+      return _copy(
+        context,
+        en: title,
+        ar: 'رسالة جديدة من $sender',
+        fr: 'Nouveau message de $sender',
+      );
+    }
+    return title;
+  }
+
+  String _localizedNotificationBody(BuildContext context, String rawBody) {
+    final body = rawBody.trim();
+    final approved = RegExp(
+      r'^Your application to (.+?) was approved by (.+)\.?$',
+      caseSensitive: false,
+    ).firstMatch(body);
+    if (approved != null) {
+      final opportunity = approved.group(1)?.trim() ?? '';
+      final company = approved.group(2)?.trim().replaceAll('.', '') ?? '';
+      return _copy(
+        context,
+        en: body,
+        ar: 'تمت الموافقة على طلبك إلى $opportunity من طرف $company.',
+        fr: 'Votre candidature à $opportunity a été approuvée par $company.',
+      );
+    }
+
+    final rejected = RegExp(
+      r'^Your application to (.+?) was rejected by (.+)\.?$',
+      caseSensitive: false,
+    ).firstMatch(body);
+    if (rejected != null) {
+      final opportunity = rejected.group(1)?.trim() ?? '';
+      final company = rejected.group(2)?.trim().replaceAll('.', '') ?? '';
+      return _copy(
+        context,
+        en: body,
+        ar: 'تم رفض طلبك إلى $opportunity من طرف $company.',
+        fr: 'Votre candidature à $opportunity a été refusée par $company.',
+      );
+    }
+
+    return body;
+  }
+
+  String _copy(
+    BuildContext context, {
+    required String en,
+    required String ar,
+    required String fr,
+  }) {
+    if (LocalizedDisplay.isArabic(context)) {
+      return ar;
+    }
+    if (LocalizedDisplay.isFrench(context)) {
+      return fr;
+    }
+    return en;
+  }
+
+  String _formatTime(BuildContext context, DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
+    final l10n = AppLocalizations.of(context)!;
 
     if (diff.inMinutes < 1) {
-      return 'Just now';
+      return l10n.notifJustNow;
     }
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
+      return l10n.studentMinutesAgoCompact(diff.inMinutes);
     }
     if (diff.inHours < 24) {
-      return '${diff.inHours}h ago';
+      return l10n.studentHoursAgoCompact(diff.inHours);
     }
     if (diff.inDays < 7) {
-      return '${diff.inDays}d ago';
+      return l10n.studentDaysAgoCompact(diff.inDays);
     }
-    return DateFormat.MMMd().format(dt);
+    return LocalizedDisplay.shortDate(context, dt);
   }
 }
 

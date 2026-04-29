@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -19,6 +18,7 @@ import '../../services/opportunity_service.dart';
 import '../../services/scholarship_service.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -638,8 +638,8 @@ class _SavedScreenState extends State<SavedScreen> {
                                                 children: [
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.only(
-                                                          right: 8,
+                                                        const EdgeInsetsDirectional.only(
+                                                          end: 8,
                                                         ),
                                                     child: StudentOpportunityFilterChip(
                                                       label: l10n.uiAllOppsValue(
@@ -669,15 +669,16 @@ class _SavedScreenState extends State<SavedScreen> {
                                                   ),
                                                   ...OpportunityType.values.map(
                                                     (type) => Padding(
-                                                      padding: EdgeInsets.only(
-                                                        right:
-                                                            type ==
-                                                                OpportunityType
-                                                                    .values
-                                                                    .last
-                                                            ? 0
-                                                            : 8,
-                                                      ),
+                                                      padding:
+                                                          EdgeInsetsDirectional.only(
+                                                            end:
+                                                                type ==
+                                                                    OpportunityType
+                                                                        .values
+                                                                        .last
+                                                                ? 0
+                                                                : 8,
+                                                          ),
                                                       child: StudentOpportunityFilterChip(
                                                         label: l10n.studentFilterCount(
                                                           _opportunityTypeFilterLabel(
@@ -1222,7 +1223,7 @@ class _SavedScholarshipCard extends StatelessWidget {
     final deadline = OpportunityMetadata.parseDateTimeLike(item.deadline);
     final fundingLabel = item.fundingType.trim().isEmpty
         ? AppLocalizations.of(context)!.studentScholarshipFallback
-        : item.fundingType.trim();
+        : LocalizedDisplay.metadataLabel(context, item.fundingType);
 
     return _SavedListCard(
       accent: accent,
@@ -1236,7 +1237,7 @@ class _SavedScholarshipCard extends StatelessWidget {
           icon: Icons.public_rounded,
           label: item.location.trim().isEmpty
               ? AppLocalizations.of(context)!.studentDestinationNotSpecified
-              : item.location.trim(),
+              : LocalizedDisplay.metadataLabel(context, item.location),
         ),
         _SavedMetaChip(
           icon: Icons.event_available_outlined,
@@ -1246,7 +1247,7 @@ class _SavedScholarshipCard extends StatelessWidget {
         if (item.level.trim().isNotEmpty)
           _SavedMetaChip(
             icon: Icons.school_outlined,
-            label: item.level.trim(),
+            label: LocalizedDisplay.metadataLabel(context, item.level),
             tone: StudentOpportunityHubPalette.secondary,
           ),
       ],
@@ -1278,7 +1279,10 @@ class _SavedTrainingCard extends StatelessWidget {
     const accent = Color(0xFF6366F1);
     final typeLabel = item.type.trim().isEmpty
         ? AppLocalizations.of(context)!.studentTrainingFallback
-        : item.type[0].toUpperCase() + item.type.substring(1);
+        : LocalizedDisplay.metadataLabel(
+            context,
+            item.type[0].toUpperCase() + item.type.substring(1),
+          );
     final summary = item.description.trim();
 
     return _SavedListCard(
@@ -1293,13 +1297,13 @@ class _SavedTrainingCard extends StatelessWidget {
         if (item.level.trim().isNotEmpty)
           _SavedMetaChip(
             icon: Icons.signal_cellular_alt_rounded,
-            label: item.level.trim(),
+            label: LocalizedDisplay.metadataLabel(context, item.level),
             tone: accent,
           ),
         if (item.duration.trim().isNotEmpty)
           _SavedMetaChip(
             icon: Icons.schedule_rounded,
-            label: item.duration.trim(),
+            label: LocalizedDisplay.duration(context, item.duration),
           ),
         if (item.domain.trim().isNotEmpty)
           _SavedMetaChip(
@@ -1566,12 +1570,16 @@ class _SavedRemoveMetaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tone = StudentOpportunityHubPalette.error;
+    final l10n = AppLocalizations.of(context)!;
+    final visibleLabel = isRemoving
+        ? l10n.studentRemovingSavedItem
+        : l10n.removeLabel;
 
     return Semantics(
       button: true,
       label: isRemoving
-          ? AppLocalizations.of(context)!.studentRemovingSavedItem
-          : AppLocalizations.of(context)!.studentRemoveSavedItem,
+          ? l10n.studentRemovingSavedItem
+          : l10n.studentRemoveSavedItem,
       child: InkWell(
         onTap: isDisabled ? null : onTap,
         borderRadius: BorderRadius.circular(999),
@@ -1594,7 +1602,7 @@ class _SavedRemoveMetaChip extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                isRemoving ? 'Removing' : 'Remove',
+                visibleLabel,
                 style: AppTypography.product(
                   fontSize: 10.6,
                   fontWeight: FontWeight.w600,
@@ -2003,7 +2011,7 @@ String _relativeSavedLabel(BuildContext context, DateTime? value) {
     return l10n.studentWeeksAgoCompact(weeks);
   }
 
-  return DateFormat('MMM d').format(value);
+  return LocalizedDisplay.shortDate(context, value);
 }
 
 bool _isClosingSoon(DateTime? deadline) {
@@ -2043,7 +2051,7 @@ String _deadlineLabel(
     return normalizedFallback;
   }
 
-  final date = DateFormat('MMM d').format(deadline);
+  final date = LocalizedDisplay.shortDate(context, deadline);
   return _isExpired(deadline)
       ? l10n.studentClosedDate(date)
       : l10n.studentClosesDate(date);

@@ -142,6 +142,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
                             Text(
                               ChatFormatters.inboxTimestamp(
                                 conversation.lastMessageTime,
+                                context: context,
                               ),
                               style:
                                   ChatThemeStyles.meta(
@@ -230,7 +231,9 @@ class _ConversationListItemState extends State<ConversationListItem> {
                               if (widget.isArchived)
                                 _MetaPill(
                                   icon: Icons.archive_outlined,
-                                  label: AppLocalizations.of(context)!.uiArchived,
+                                  label: AppLocalizations.of(
+                                    context,
+                                  )!.uiArchived,
                                   foregroundColor: ChatThemePalette.secondary,
                                   backgroundColor: Color(0x1100A38C),
                                 ),

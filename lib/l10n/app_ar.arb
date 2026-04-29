@@ -445,8 +445,8 @@
   "uiClear": "مسح",
   "uiClearFilters": "مسح عوامل التصفية",
   "uiClearSearch": "مسح البحث",
-  "uiClosingSoon": "يغلق قريبًا",
-  "uiClosingSoonC287": "يغلق قريبًا",
+  "uiClosingSoon": "ينتهي قريبًا",
+  "uiClosingSoonC287": "ينتهي قريبًا",
   "uiCloudSupportEngineer": "مهندس الدعم السحابي",
   "uiCollaboration": "تعاون",
   "uiCollaborationNeeds": "احتياجات التعاون",
@@ -481,7 +481,7 @@
   "uiConversationDeleted": "تم حذف المحادثة",
   "uiConversations": "المحادثات",
   "uiCoreStory": "القصة الأساسية",
-  "uiCorrect": "صحيح",
+  "uiCorrect": "تصحيح",
   "uiCouldNotOpenTheScholarshipLink": "لا يمكن فتح رابط المنحة الدراسية",
   "uiCouldNotRefreshOpportunities": "لا يمكن تحديث الفرص",
   "uiCount": "{count}",
@@ -586,7 +586,7 @@
   "uiFocusSearch": "بحث مخصص",
   "uiFocusedApplicationView": "عرض مركّز للطلب",
   "uiForgotPassword": "هل نسيت كلمة السر؟",
-  "uiFormalize": "اجعل النص رسميًا",
+  "uiFormalize": "اجعلها رسمية",
   "uiFree": "مجاني",
   "uiFreshRecommendationsAreHighlightedAsNewListingsGoLive": "يتم إبراز التوصيات الجديدة عند نشر فرص جديدة.",
   "uiFullDescription": "الوصف الكامل",
@@ -1338,7 +1338,7 @@
   "uiEditProfilecd280a": "تعديل الملف الشخصي",
   "uiFullDescriptionb43e9e": "الوصف الكامل",
   "uiTeamNeeded343772": "مطلوب فريق",
-  "uiClosingSoonc287b7": "إغلاق قريبا",
+  "uiClosingSoonc287b7": "ينتهي قريبًا",
   "uiApplicationApprovedb0cb9c": "تمت الموافقة\nعلى الطلب",
   "uiExternalLink663054": "رابط خارجي",
   "uiProfileStrength491db6": "قوة الملف الشخصي",
@@ -2092,7 +2092,7 @@
   "uiActiveTracks": "مسارات نشطة",
   "uiNoSponsoredProgramsAvailableRightNow": "لا توجد برامج ممولة متاحة الآن",
   "uiResource": "مورد",
-  "uiCountOpenOpportunitiesCuratedForStudents": "{count} فرصة مفتوحة مختارة للطلاب.",
+  "uiCountOpenOpportunitiesCuratedForStudents": "{count, plural, zero{لا توجد فرص مفتوحة مختارة للطلاب.} one{فرصة واحدة مفتوحة مختارة للطلاب.} two{فرصتان مفتوحتان مختارتان للطلاب.} few{{count} فرص مفتوحة مختارة للطلاب.} many{{count} فرصة مفتوحة مختارة للطلاب.} other{{count} فرصة مفتوحة مختارة للطلاب.}}",
   "uiShowingVisibleFilterFromTotalOpenListings": "عرض {visible} من {filter} المطابقة من أصل {total} إعلانات مفتوحة.",
   "uiBadgeNextStep": "الخطوة التالية",
   "uiBadgeProfileReady": "ملفك {percent}% جاهز",
@@ -2961,7 +2961,7 @@
       }
     }
   },
-  "studentOpenPositionsCount": "{count, plural, zero{لا توجد وظائف مفتوحة} one{وظيفة واحدة مفتوحة} two{وظيفتان مفتوحتان} few{{count} وظائف مفتوحة} many{{count} وظيفة مفتوحة} other{{count} وظيفة مفتوحة}}",
+  "studentOpenPositionsCount": "{count, plural, zero{لا توجد فرص مفتوحة} one{فرصة واحدة مفتوحة} two{فرصتان مفتوحتان} few{{count} فرص مفتوحة} many{{count} فرصة مفتوحة} other{{count} فرصة مفتوحة}}",
   "@studentOpenPositionsCount": {
     "placeholders": {
       "count": {
@@ -3001,7 +3001,7 @@
       }
     }
   },
-  "studentSavedRolesCount": "{count, plural, zero{لا توجد وظائف محفوظة} one{وظيفة محفوظة واحدة} two{وظيفتان محفوظتان} few{{count} وظائف محفوظة} many{{count} وظيفة محفوظة} other{{count} وظيفة محفوظة}}",
+  "studentSavedRolesCount": "{count, plural, zero{لا توجد فرص محفوظة} one{فرصة محفوظة واحدة} two{فرصتان محفوظتان} few{{count} فرص محفوظة} many{{count} فرصة محفوظة} other{{count} فرصة محفوظة}}",
   "@studentSavedRolesCount": {
     "placeholders": {
       "count": {

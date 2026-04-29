@@ -9,6 +9,7 @@ import '../../providers/opportunity_translation_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../services/opportunity_translation_service.dart';
 import '../../utils/content_language.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -265,7 +266,9 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   }
 
   String _domainDisplayLabel(String domain, AppLocalizations l10n) {
-    return domain == 'All' ? l10n.uiAll : domain;
+    return domain == 'All'
+        ? l10n.uiAll
+        : LocalizedDisplay.metadataLabel(context, domain);
   }
 
   bool _matchesSearchQuery(TrainingModel training) {
@@ -545,21 +548,21 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   String _durationLabel(BuildContext context, TrainingModel training) {
     final duration = training.duration.trim();
     return duration.isNotEmpty
-        ? duration
+        ? LocalizedDisplay.duration(context, duration)
         : AppLocalizations.of(context)!.trainingFlexibleLabel;
   }
 
   String _levelLabel(BuildContext context, TrainingModel training) {
     final level = training.level.trim();
     return level.isNotEmpty
-        ? _titleCase(level)
+        ? LocalizedDisplay.metadataLabel(context, _titleCase(level))
         : AppLocalizations.of(context)!.trainingAllLevelsLabel;
   }
 
   String _categoryLabel(BuildContext context, TrainingModel training) {
     final domain = training.domain.trim();
     if (domain.isNotEmpty) {
-      return domain;
+      return LocalizedDisplay.metadataLabel(context, domain);
     }
 
     final l10n = AppLocalizations.of(context)!;

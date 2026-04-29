@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/user_model.dart';
 import '../../services/public_profile_service.dart';
 import '../../utils/admin_identity.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
@@ -154,6 +156,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
     return FutureBuilder<UserModel?>(
       future: _profileFuture,
       builder: (context, snapshot) {
+        final l10n = AppLocalizations.of(context)!;
         final user = snapshot.data;
         final details = _buildDetails(user);
         final about = _about(user);
@@ -199,15 +202,18 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                   const SizedBox(height: 12),
                   _InlineNotice(
                     icon: Icons.sync_problem_outlined,
-                    title: 'Profile sync',
-                    message:
-                        'Live profile details could not be refreshed, so fallback information is shown.',
+                    title: l10n.uiProfileSync,
+                    message: LocalizedDisplay.isArabic(context)
+                        ? 'تعذّر تحديث تفاصيل الملف المباشرة، لذلك تظهر المعلومات الاحتياطية.'
+                        : LocalizedDisplay.isFrench(context)
+                        ? 'Les détails du profil n’ont pas pu être actualisés, les informations de secours sont donc affichées.'
+                        : 'Live profile details could not be refreshed, so fallback information is shown.',
                   ),
                 ],
                 if (about.isNotEmpty) ...[
                   const SizedBox(height: 14),
                   _FloatingSection(
-                    title: 'About',
+                    title: l10n.uiAbout,
                     icon: Icons.notes_rounded,
                     child: _TextPanel(
                       text: DisplayText.capitalizeDisplayValue(about),
@@ -216,7 +222,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                 ],
                 const SizedBox(height: 14),
                 _FloatingSection(
-                  title: 'Details',
+                  title: l10n.uiDetails,
                   icon: Icons.badge_outlined,
                   child: Column(
                     children: [
@@ -236,12 +242,13 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
   }
 
   List<_ProfileDetailItem> _buildDetails(UserModel? user) {
+    final l10n = AppLocalizations.of(context)!;
     final role = _resolvedRole(user);
     final items = <_ProfileDetailItem>[];
     if (widget.showRole) {
       items.add(
         _ProfileDetailItem(
-          title: 'Role',
+          title: l10n.uiRole,
           value: _roleLabel(user),
           icon: Icons.verified_user_outlined,
           preserveCase: true,
@@ -257,7 +264,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
     if (email.isNotEmpty) {
       items.add(
         _ProfileDetailItem(
-          title: 'Email',
+          title: l10n.uiEmail,
           value: email,
           icon: Icons.email_outlined,
           preserveCase: true,
@@ -269,7 +276,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
     if (phone.isNotEmpty) {
       items.add(
         _ProfileDetailItem(
-          title: 'Phone',
+          title: l10n.uiPhone,
           value: phone,
           icon: Icons.phone_outlined,
           preserveCase: true,
@@ -284,7 +291,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
       if (sector.isNotEmpty) {
         items.add(
           _ProfileDetailItem(
-            title: 'Sector',
+            title: l10n.uiSector,
             value: sector,
             icon: Icons.business_center_outlined,
           ),
@@ -295,7 +302,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
       if (academicLevel.isNotEmpty) {
         items.add(
           _ProfileDetailItem(
-            title: 'Academic Level',
+            title: l10n.uiAcademicLevel,
             value: academicLevel,
             icon: Icons.school_outlined,
           ),
@@ -306,7 +313,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
       if (university.isNotEmpty) {
         items.add(
           _ProfileDetailItem(
-            title: 'University',
+            title: l10n.uiUniversity,
             value: university,
             icon: Icons.apartment_outlined,
           ),
@@ -317,7 +324,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
       if (fieldOfStudy.isNotEmpty) {
         items.add(
           _ProfileDetailItem(
-            title: 'Field Of Study',
+            title: l10n.uiFieldOfStudy,
             value: fieldOfStudy,
             icon: Icons.menu_book_outlined,
           ),
@@ -331,7 +338,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
     if (location.isNotEmpty) {
       items.add(
         _ProfileDetailItem(
-          title: 'Location',
+          title: l10n.uiLocation,
           value: location,
           icon: Icons.location_on_outlined,
         ),
@@ -344,7 +351,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
     if (website.isNotEmpty) {
       items.add(
         _ProfileDetailItem(
-          title: 'Website',
+          title: l10n.uiWebsite,
           value: website,
           icon: Icons.language_outlined,
           preserveCase: true,
@@ -356,7 +363,10 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
   }
 
   String _profileTitle(UserModel? user) {
-    return _resolvedRole(user) == 'company' ? 'Company Profile' : 'Profile';
+    final l10n = AppLocalizations.of(context)!;
+    return _resolvedRole(user) == 'company'
+        ? l10n.uiCompanyProfile
+        : l10n.uiProfile;
   }
 
   String _displayName(UserModel? user) {
@@ -378,7 +388,11 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
       return widget.fallbackName.trim();
     }
 
-    return 'Chat Contact';
+    return LocalizedDisplay.isArabic(context)
+        ? 'جهة اتصال'
+        : LocalizedDisplay.isFrench(context)
+        ? 'Contact'
+        : 'Chat Contact';
   }
 
   String _headline(UserModel? user) {
@@ -435,15 +449,16 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
   }
 
   String _roleLabel(UserModel? user) {
+    final l10n = AppLocalizations.of(context)!;
     switch (_resolvedRole(user)) {
       case 'company':
-        return 'COMPANY';
+        return l10n.uiCompany.toUpperCase();
       case 'student':
-        return 'STUDENT';
+        return l10n.uiStudent.toUpperCase();
       case 'admin':
-        return 'ADMIN';
+        return l10n.uiAdmins.toUpperCase();
       default:
-        return 'USER';
+        return l10n.uiUsers.toUpperCase();
     }
   }
 
@@ -497,7 +512,7 @@ class _FloatingHeader extends StatelessWidget {
             ),
             _ToolbarButton(
               icon: Icons.close_rounded,
-              tooltip: 'Close',
+              tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
               onTap: onClose,
             ),
           ],
@@ -535,6 +550,7 @@ class _ProfileIdentityBlock extends StatelessWidget {
     final presence = ChatFormatters.presenceLabel(
       user?.lastSeenAt,
       isOnline: user?.isOnline ?? false,
+      context: context,
     );
     final resolvedHeadline = headline.trim();
     final resolvedContext = contextLabel.trim();

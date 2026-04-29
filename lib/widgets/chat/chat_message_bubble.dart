@@ -7,6 +7,7 @@ import '../../models/message_model.dart';
 import '../../models/secure_document_link.dart';
 import '../../models/user_model.dart';
 import '../../services/document_access_service.dart';
+import '../../utils/localized_display.dart';
 import '../profile_avatar.dart';
 import '../shared/app_feedback.dart';
 import 'chat_action_sheet.dart';
@@ -293,7 +294,7 @@ class _MessageFooter extends StatelessWidget {
           ),
         if (message.isEdited) const SizedBox(width: 3),
         Text(
-          ChatFormatters.messageTime(message.sentAt),
+          ChatFormatters.messageTime(message.sentAt, context: context),
           style: ChatThemeStyles.meta(metaColor).copyWith(fontSize: 10),
         ),
         if (isMe) ...[
@@ -366,7 +367,7 @@ class _ImageAttachmentBubbleState extends State<_ImageAttachmentBubble> {
                   imageUrl: document.viewUrl,
                   downloadUrl: document.downloadUrl,
                   title: widget.message.fileName.trim().isEmpty
-                      ? 'Photo'
+                      ? AppLocalizations.of(context)!.uiPhoto
                       : widget.message.fileName.trim(),
                 ),
               ),
@@ -470,7 +471,7 @@ class _FileAttachmentBubble extends StatelessWidget {
                 children: [
                   Text(
                     message.fileName.trim().isEmpty
-                        ? 'Attachment'
+                        ? AppLocalizations.of(context)!.uiAttachment
                         : message.fileName.trim(),
                     style: ChatThemeStyles.cardTitle(
                       titleColor,
@@ -482,7 +483,11 @@ class _FileAttachmentBubble extends StatelessWidget {
                   Text(
                     [
                       ChatFormatters.fileSizeLabel(message.fileSize),
-                      _fileTypeLabel(message.mimeType, message.fileName),
+                      _fileTypeLabel(
+                        context,
+                        message.mimeType,
+                        message.fileName,
+                      ),
                     ].where((item) => item.trim().isNotEmpty).join(' - '),
                     style: ChatThemeStyles.meta(
                       metaColor,
@@ -523,33 +528,64 @@ class _FileAttachmentBubble extends StatelessWidget {
       }
 
       context.showAppSnackBar(
-        download
-            ? 'We couldn\'t download this attachment. $error'
-            : 'We couldn\'t open this attachment. $error',
+        _attachmentErrorMessage(context, download: download, error: error),
         title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
         type: AppFeedbackType.error,
       );
     }
   }
 
-  String _fileTypeLabel(String mimeType, String fileName) {
+  String _fileTypeLabel(
+    BuildContext context,
+    String mimeType,
+    String fileName,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
     final normalizedMimeType = mimeType.trim().toLowerCase();
     if (normalizedMimeType.isNotEmpty) {
-      if (normalizedMimeType.startsWith('image/')) return 'IMAGE';
-      if (normalizedMimeType == 'application/pdf') return 'PDF FILE';
-      if (normalizedMimeType.contains('word')) return 'DOC FILE';
+      if (normalizedMimeType.startsWith('image/')) return l10n.uiPhoto;
+      if (normalizedMimeType == 'application/pdf') {
+        return LocalizedDisplay.isArabic(context) ? 'ملف PDF' : 'PDF FILE';
+      }
+      if (normalizedMimeType.contains('word')) {
+        return LocalizedDisplay.isArabic(context) ? 'ملف DOC' : 'DOC FILE';
+      }
       if (normalizedMimeType.contains('sheet') ||
           normalizedMimeType.contains('excel')) {
-        return 'SPREADSHEET';
+        return LocalizedDisplay.isArabic(context)
+            ? 'جدول بيانات'
+            : 'SPREADSHEET';
       }
     }
 
     final normalizedFileName = fileName.trim().toLowerCase();
-    if (normalizedFileName.endsWith('.fig')) return 'FIGMA FILE';
+    if (normalizedFileName.endsWith('.fig')) {
+      return LocalizedDisplay.isArabic(context) ? 'ملف Figma' : 'FIGMA FILE';
+    }
     if (normalizedFileName.contains('.')) {
       return normalizedFileName.split('.').last.toUpperCase();
     }
-    return 'FILE';
+    return l10n.uiFile;
+  }
+
+  String _attachmentErrorMessage(
+    BuildContext context, {
+    required bool download,
+    required Object error,
+  }) {
+    if (LocalizedDisplay.isArabic(context)) {
+      return download
+          ? 'تعذّر تنزيل هذا المرفق. $error'
+          : 'تعذّر فتح هذا المرفق. $error';
+    }
+    if (LocalizedDisplay.isFrench(context)) {
+      return download
+          ? 'Impossible de télécharger cette pièce jointe. $error'
+          : 'Impossible d’ouvrir cette pièce jointe. $error';
+    }
+    return download
+        ? 'We couldn\'t download this attachment. $error'
+        : 'We couldn\'t open this attachment. $error';
   }
 }
 
@@ -625,9 +661,7 @@ Future<void> _launchAttachmentUrl(
 
     if (!launched && context.mounted) {
       context.showAppSnackBar(
-        download
-            ? 'We couldn\'t download this attachment.'
-            : 'We couldn\'t open this attachment.',
+        _localizedAttachmentError(context, download: download),
         title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
         type: AppFeedbackType.error,
       );
@@ -638,13 +672,32 @@ Future<void> _launchAttachmentUrl(
     }
 
     context.showAppSnackBar(
-      download
-          ? 'We couldn\'t download this attachment. $error'
-          : 'We couldn\'t open this attachment. $error',
+      _localizedAttachmentError(context, download: download, error: error),
       title: AppLocalizations.of(context)!.uiAttachmentUnavailable,
       type: AppFeedbackType.error,
     );
   }
+}
+
+String _localizedAttachmentError(
+  BuildContext context, {
+  required bool download,
+  Object? error,
+}) {
+  final suffix = error == null ? '' : ' $error';
+  if (LocalizedDisplay.isArabic(context)) {
+    return download
+        ? 'تعذّر تنزيل هذا المرفق.$suffix'
+        : 'تعذّر فتح هذا المرفق.$suffix';
+  }
+  if (LocalizedDisplay.isFrench(context)) {
+    return download
+        ? 'Impossible de télécharger cette pièce jointe.$suffix'
+        : 'Impossible d’ouvrir cette pièce jointe.$suffix';
+  }
+  return download
+      ? 'We couldn\'t download this attachment.$suffix'
+      : 'We couldn\'t open this attachment.$suffix';
 }
 
 class _ImagePreviewScreen extends StatelessWidget {

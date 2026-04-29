@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,6 +16,7 @@ import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/content_language.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -633,9 +633,10 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   String get _locationValue {
     final location = widget.opportunity.location.trim();
     if (location.isNotEmpty) {
-      return location;
+      return LocalizedDisplay.metadataLabel(context, location);
     }
-    return widget.opportunity.readString(<String>[
+    final fallback =
+        widget.opportunity.readString(<String>[
           'city',
           'region',
           'country',
@@ -643,6 +644,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           'address',
         ]) ??
         '';
+    return LocalizedDisplay.metadataLabel(context, fallback);
   }
 
   String? get _deadlineLabel {
@@ -650,10 +652,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         widget.opportunity.applicationDeadline ??
         OpportunityMetadata.parseDateTimeLike(widget.opportunity.deadlineLabel);
     if (deadline != null) {
-      return OpportunityMetadata.formatDateLabel(deadline);
+      return LocalizedDisplay.shortDate(context, deadline, includeYear: true);
     }
     final fallback = widget.opportunity.deadlineLabel.trim();
-    return fallback.isEmpty ? null : fallback;
+    return fallback.isEmpty
+        ? null
+        : LocalizedDisplay.dateText(context, fallback);
   }
 
   String get _primaryCompensationLabel =>
@@ -666,14 +670,22 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       ? AppLocalizations.of(context)!.studentFundingNote
       : AppLocalizations.of(context)!.studentCompensationNote;
 
-  String? get _salaryLabel => OpportunityMetadata.formatSalaryRange(
-    salaryMin: widget.opportunity.salaryMin,
-    salaryMax: widget.opportunity.salaryMax,
-    salaryCurrency: widget.opportunity.salaryCurrency,
-    salaryPeriod: widget.opportunity.salaryPeriod,
-  );
+  String? get _salaryLabel {
+    final label = OpportunityMetadata.formatSalaryRange(
+      salaryMin: widget.opportunity.salaryMin,
+      salaryMax: widget.opportunity.salaryMax,
+      salaryCurrency: widget.opportunity.salaryCurrency,
+      salaryPeriod: widget.opportunity.salaryPeriod,
+    );
+    return label == null ? null : LocalizedDisplay.compensation(context, label);
+  }
 
-  String? get _fundingLabel => widget.opportunity.fundingLabel();
+  String? get _fundingLabel {
+    final label = widget.opportunity.fundingLabel();
+    return label == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, label);
+  }
 
   String? get _primaryCompensationValue =>
       _effectiveType == OpportunityType.sponsoring
@@ -704,19 +716,33 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       widget.opportunity.duration,
     );
     if (normalizedDuration != null) {
-      return normalizedDuration;
+      return LocalizedDisplay.duration(context, normalizedDuration);
     }
-    return OpportunityMetadata.normalizeDuration(
+    final fallback = OpportunityMetadata.normalizeDuration(
       _readText(<String>['programDuration', 'internshipDuration', 'timeline']),
     );
+    return fallback == null
+        ? null
+        : LocalizedDisplay.duration(context, fallback);
   }
 
-  String? get _employmentTypeLabel => OpportunityMetadata.formatEmploymentType(
-    widget.opportunity.employmentType,
-  );
+  String? get _employmentTypeLabel {
+    final label = OpportunityMetadata.formatEmploymentType(
+      widget.opportunity.employmentType,
+    );
+    return label == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, label);
+  }
 
-  String? get _workModeLabel =>
-      OpportunityMetadata.formatWorkMode(widget.opportunity.workMode);
+  String? get _workModeLabel {
+    final label = OpportunityMetadata.formatWorkMode(
+      widget.opportunity.workMode,
+    );
+    return label == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, label);
+  }
 
   String? get _experienceLevelLabel {
     final rawValue = _readText(<String>[
@@ -739,7 +765,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       return null;
     }
 
-    return normalized
+    final titleCased = normalized
         .split(' ')
         .where((part) => part.isNotEmpty)
         .map(
@@ -747,6 +773,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
               '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
         )
         .join(' ');
+    return LocalizedDisplay.metadataLabel(context, titleCased);
   }
 
   String get _overviewTitle => _effectiveType == OpportunityType.sponsoring
@@ -864,7 +891,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       'expectedStartDate',
       'beginsAt',
     ]);
-    return date == null ? null : DateFormat('MMM d, yyyy').format(date);
+    return date == null
+        ? null
+        : LocalizedDisplay.shortDate(context, date, includeYear: true);
   }
 
   Future<void> _openExternalLink(String value) async {
@@ -911,7 +940,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         return SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -1060,7 +1089,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       ),
       bottomNavigationBar: applyBar,
       body: ListView(
-        padding: EdgeInsets.fromLTRB(16, 8, 16, canOpenCompanyChat ? 178 : 132),
+        padding: EdgeInsetsDirectional.fromSTEB(
+          16,
+          8,
+          16,
+          canOpenCompanyChat ? 178 : 132,
+        ),
         children: <Widget>[
           AppDetailHeroCard(
             theme: _theme,
@@ -1104,9 +1138,11 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                   label: AppLocalizations.of(context)!.uiPosted,
                   value: widget.opportunity.createdAt == null
                       ? ''
-                      : DateFormat(
-                          'MMM d, yyyy',
-                        ).format(widget.opportunity.createdAt!.toDate()),
+                      : LocalizedDisplay.shortDate(
+                          context,
+                          widget.opportunity.createdAt!.toDate(),
+                          includeYear: true,
+                        ),
                   icon: Icons.schedule_outlined,
                 ),
               ],
@@ -1338,11 +1374,13 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                 AppMetaRow(
                   theme: _theme,
                   label: AppLocalizations.of(context)!.uiPaidStatus,
-                  value:
-                      OpportunityMetadata.formatPaidLabel(
-                        widget.opportunity.isPaid,
-                      ) ??
-                      '',
+                  value: LocalizedDisplay.metadataLabel(
+                    context,
+                    OpportunityMetadata.formatPaidLabel(
+                          widget.opportunity.isPaid,
+                        ) ??
+                        '',
+                  ),
                 ),
                 AppMetaRow(
                   theme: _theme,

@@ -12687,7 +12687,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count} open opportunities curated for students.'**
-  String uiCountOpenOpportunitiesCuratedForStudents(Object count);
+  String uiCountOpenOpportunitiesCuratedForStudents(num count);
 
   /// No description provided for @uiShowingVisibleFilterFromTotalOpenListings.
   ///

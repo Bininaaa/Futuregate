@@ -11,6 +11,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -344,6 +345,9 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     final duration = OpportunityMetadata.normalizeDuration(
       opportunity.duration,
     );
+    final durationLabel = duration == null
+        ? null
+        : LocalizedDisplay.duration(context, duration);
     final categoryLabel = _categoryLabel(opportunity);
     final searchText = [
       opportunity.title,
@@ -354,7 +358,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       workMode ?? '',
       location ?? '',
       categoryLabel ?? '',
-      duration ?? '',
+      durationLabel ?? duration ?? '',
       compensation ?? '',
       deadline == null ? '' : OpportunityMetadata.formatDateLabel(deadline),
       opportunity.readString([
@@ -392,7 +396,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       applyByText: _applyByText(deadline),
       isPaid: isPaid == true || compensation != null,
       compensation: compensation,
-      duration: duration,
+      duration: durationLabel,
       categoryLabel: categoryLabel,
       isFeaturedPreferred: opportunity.isFeatured,
       matchesSummer: _matchesSummerKeywords(opportunity, searchText),
@@ -554,7 +558,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
     }
 
     return l10n.studentApplyByDate(
-      OpportunityMetadata.formatDateLabel(deadline, pattern: 'MMM d'),
+      LocalizedDisplay.shortDate(context, deadline),
     );
   }
 
@@ -574,7 +578,7 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       return AppLocalizations.of(context)!.dashDaysLeft(daysUntilDeadline);
     }
 
-    return OpportunityMetadata.formatDateLabel(deadline, pattern: 'MMM d');
+    return LocalizedDisplay.shortDate(context, deadline);
   }
 
   String? _compensationText(OpportunityModel opportunity) {
@@ -595,7 +599,10 @@ class _InternshipsScreenState extends State<InternshipsScreen> {
       return null;
     }
 
-    return label;
+    return LocalizedDisplay.compensation(
+      context,
+      LocalizedDisplay.metadataLabel(context, label),
+    );
   }
 
   String? _categoryLabel(OpportunityModel opportunity) {

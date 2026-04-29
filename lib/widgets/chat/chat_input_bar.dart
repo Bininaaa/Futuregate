@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/localized_display.dart';
 import 'chat_formatters.dart';
 import 'chat_theme.dart';
 
@@ -124,7 +125,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+          padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 12, 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -147,32 +148,35 @@ class _ChatInputBarState extends State<ChatInputBar> {
               if (showAiTools) ...[
                 if (isAiProcessing)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsetsDirectional.only(bottom: 8),
                     child: _AiProcessingIndicator(),
                   )
                 else
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      children: [
-                        _AiChip(
-                          icon: Icons.auto_awesome_outlined,
-                          label: AppLocalizations.of(context)!.uiFormalize,
-                          onTap: onAiFormalize,
-                        ),
-                        const SizedBox(width: 6),
-                        _AiChip(
-                          icon: Icons.spellcheck_rounded,
-                          label: AppLocalizations.of(context)!.uiCorrect,
-                          onTap: onAiCorrect,
-                        ),
-                        const SizedBox(width: 6),
-                        _AiChip(
-                          icon: Icons.translate_rounded,
-                          label: AppLocalizations.of(context)!.uiTranslate,
-                          onTap: onAiTranslate,
-                        ),
-                      ],
+                    padding: const EdgeInsetsDirectional.only(bottom: 6),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _AiChip(
+                            icon: Icons.auto_awesome_outlined,
+                            label: AppLocalizations.of(context)!.uiFormalize,
+                            onTap: onAiFormalize,
+                          ),
+                          const SizedBox(width: 6),
+                          _AiChip(
+                            icon: Icons.spellcheck_rounded,
+                            label: AppLocalizations.of(context)!.uiCorrect,
+                            onTap: onAiCorrect,
+                          ),
+                          const SizedBox(width: 6),
+                          _AiChip(
+                            icon: Icons.translate_rounded,
+                            label: AppLocalizations.of(context)!.uiTranslate,
+                            onTap: onAiTranslate,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
               ],
@@ -267,8 +271,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
                         style: ChatThemeStyles.body().copyWith(fontSize: 13.5),
                         decoration: InputDecoration(
                           hintText: isEditing
-                              ? 'Edit your message...'
-                              : 'Message...',
+                              ? AppLocalizations.of(context)!.uiEditMessage
+                              : AppLocalizations.of(context)!.uiMessage,
                           hintStyle: ChatThemeStyles.body(
                             ChatThemePalette.textSecondary,
                           ).copyWith(fontSize: 13.5),
@@ -280,14 +284,18 @@ class _ChatInputBarState extends State<ChatInputBar> {
                           focusedErrorBorder: InputBorder.none,
                           filled: false,
                           isDense: true,
-                          contentPadding: const EdgeInsets.fromLTRB(
+                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
                             14,
                             12,
                             4,
                             12,
                           ),
                           suffixIcon: IconButton(
-                            tooltip: 'Emoji keyboard',
+                            tooltip: LocalizedDisplay.isArabic(context)
+                                ? 'لوحة الرموز التعبيرية'
+                                : LocalizedDisplay.isFrench(context)
+                                ? 'Clavier emoji'
+                                : 'Emoji keyboard',
                             onPressed: _openSystemKeyboard,
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(
@@ -457,7 +465,9 @@ class _AttachmentPreview extends StatelessWidget {
                 Text(
                   [
                     ChatFormatters.fileSizeLabel(attachment.fileSize),
-                    attachment.isImage ? 'IMAGE' : 'FILE',
+                    attachment.isImage
+                        ? AppLocalizations.of(context)!.uiPhoto
+                        : AppLocalizations.of(context)!.uiFile,
                   ].where((part) => part.trim().isNotEmpty).join(' - '),
                   style: ChatThemeStyles.meta().copyWith(fontSize: 10),
                 ),
@@ -542,7 +552,7 @@ class _AiProcessingIndicator extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            'AI is processing...',
+            AppLocalizations.of(context)!.uiAiIsProcessing,
             style: ChatThemeStyles.meta(ChatThemePalette.primary),
           ),
         ],

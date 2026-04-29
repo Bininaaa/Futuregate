@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
@@ -12,6 +11,7 @@ import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -753,7 +753,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       return fallback.isEmpty ? l10n.studentNoDeadline : fallback;
     }
 
-    return DateFormat('MMM d').format(parsed);
+    return LocalizedDisplay.shortDate(context, parsed);
   }
 
   String _relativePostedTime(OpportunityModel opportunity) {
@@ -783,7 +783,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       return l10n.studentWeeksAgoCompact(weeks);
     }
 
-    return DateFormat('MMM d').format(createdAt);
+    return LocalizedDisplay.shortDate(context, createdAt);
   }
 
   String _toTitleCase(String value) {
@@ -1024,7 +1024,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
     }
 
     final compensation = _compensationText(opportunity)?.toLowerCase() ?? '';
-    if (compensation.isNotEmpty && compensation != 'unpaid') {
+    final paid = _effectiveIsPaid(opportunity);
+    if (paid == true ||
+        (paid == null && compensation.isNotEmpty && compensation != 'unpaid')) {
       return l10n.studentPaidTrack;
     }
 
@@ -1242,10 +1244,15 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       salaryPeriod: opportunity.salaryPeriod,
     );
     if (structuredLabel != null) {
-      return structuredLabel;
+      return LocalizedDisplay.compensation(context, structuredLabel);
     }
 
-    return OpportunityMetadata.formatPaidLabel(_effectiveIsPaid(opportunity));
+    final paidLabel = OpportunityMetadata.formatPaidLabel(
+      _effectiveIsPaid(opportunity),
+    );
+    return paidLabel == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, paidLabel);
   }
 
   String? _workModeLabel(OpportunityModel opportunity) {
@@ -1308,7 +1315,12 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
   }
 
   String? _employmentTypeLabel(OpportunityModel opportunity) {
-    return OpportunityMetadata.formatEmploymentType(opportunity.employmentType);
+    final label = OpportunityMetadata.formatEmploymentType(
+      opportunity.employmentType,
+    );
+    return label == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, label);
   }
 
   String? _normalizedWorkMode(OpportunityModel opportunity) {
@@ -1342,7 +1354,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       maxItems: maxItems,
     );
     if (items.isNotEmpty) {
-      return items;
+      return items
+          .map((item) => LocalizedDisplay.metadataLabel(context, item))
+          .toList(growable: false);
     }
 
     final legacyItems = <String>[];

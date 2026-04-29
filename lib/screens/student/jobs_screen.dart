@@ -11,6 +11,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
@@ -695,10 +696,15 @@ class _JobsScreenState extends State<JobsScreen> {
       salaryPeriod: opportunity.salaryPeriod,
     );
     if (structuredLabel != null) {
-      return structuredLabel;
+      return LocalizedDisplay.compensation(context, structuredLabel);
     }
 
-    return OpportunityMetadata.formatPaidLabel(_effectiveIsPaid(opportunity));
+    final paidLabel = OpportunityMetadata.formatPaidLabel(
+      _effectiveIsPaid(opportunity),
+    );
+    return paidLabel == null
+        ? null
+        : LocalizedDisplay.metadataLabel(context, paidLabel);
   }
 
   String? _workModeLabel(OpportunityModel opportunity) {

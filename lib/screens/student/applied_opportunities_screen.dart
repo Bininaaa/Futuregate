@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/student_application_item_model.dart';
@@ -8,6 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_directional.dart';
@@ -290,8 +290,8 @@ class _AppliedOpportunitiesScreenState
                                   children: _ApplicationFilter.values
                                       .map(
                                         (filter) => Padding(
-                                          padding: EdgeInsets.only(
-                                            right:
+                                          padding: EdgeInsetsDirectional.only(
+                                            end:
                                                 filter ==
                                                     _ApplicationFilter
                                                         .values
@@ -795,11 +795,15 @@ class _AppliedHistoryCard extends StatelessWidget {
                   children: [
                     _AppliedMetaChip(
                       icon: Icons.schedule_rounded,
-                      label: _relativeAppliedLabel(item.appliedAt, l10n),
+                      label: _relativeAppliedLabel(
+                        context,
+                        item.appliedAt,
+                        l10n,
+                      ),
                     ),
                     _AppliedMetaChip(
                       icon: _deadlineIcon(deadline),
-                      label: _deadlineLabel(deadline, l10n),
+                      label: _deadlineLabel(context, deadline, l10n),
                       tone: _deadlineTone(deadline),
                     ),
                     if (locationLabel != null)
@@ -871,8 +875,8 @@ class _AppliedCardFrame extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              Positioned(
-                left: 8,
+              PositionedDirectional(
+                start: 8,
                 top: 10,
                 bottom: 10,
                 child: Container(
@@ -1093,7 +1097,11 @@ String _summaryText(StudentApplicationItemModel item, AppLocalizations l10n) {
   };
 }
 
-String _relativeAppliedLabel(DateTime? value, AppLocalizations l10n) {
+String _relativeAppliedLabel(
+  BuildContext context,
+  DateTime? value,
+  AppLocalizations l10n,
+) {
   if (value == null) {
     return l10n.studentDateUnavailable;
   }
@@ -1117,7 +1125,7 @@ String _relativeAppliedLabel(DateTime? value, AppLocalizations l10n) {
     return l10n.studentWeeksAgoCompact(weeks);
   }
 
-  return DateFormat('MMM d').format(value);
+  return LocalizedDisplay.shortDate(context, value);
 }
 
 IconData _deadlineIcon(DateTime? deadline) {
@@ -1133,12 +1141,16 @@ IconData _deadlineIcon(DateTime? deadline) {
       : Icons.flag_outlined;
 }
 
-String _deadlineLabel(DateTime? deadline, AppLocalizations l10n) {
+String _deadlineLabel(
+  BuildContext context,
+  DateTime? deadline,
+  AppLocalizations l10n,
+) {
   if (deadline == null) {
     return l10n.studentNoDeadline;
   }
 
-  return DateFormat('MMM d').format(deadline);
+  return LocalizedDisplay.shortDate(context, deadline);
 }
 
 Color? _deadlineTone(DateTime? deadline) {

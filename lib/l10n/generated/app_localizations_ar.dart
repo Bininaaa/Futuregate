@@ -1452,10 +1452,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiClearSearch => 'مسح البحث';
 
   @override
-  String get uiClosingSoon => 'يغلق قريبًا';
+  String get uiClosingSoon => 'ينتهي قريبًا';
 
   @override
-  String get uiClosingSoonC287 => 'يغلق قريبًا';
+  String get uiClosingSoonC287 => 'ينتهي قريبًا';
 
   @override
   String get uiCloudSupportEngineer => 'مهندس الدعم السحابي';
@@ -1567,7 +1567,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiCoreStory => 'القصة الأساسية';
 
   @override
-  String get uiCorrect => 'صحيح';
+  String get uiCorrect => 'تصحيح';
 
   @override
   String get uiCouldNotOpenTheScholarshipLink =>
@@ -1907,7 +1907,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiForgotPassword => 'هل نسيت كلمة السر؟';
 
   @override
-  String get uiFormalize => 'اجعل النص رسميًا';
+  String get uiFormalize => 'اجعلها رسمية';
 
   @override
   String get uiFree => 'مجاني';
@@ -4805,7 +4805,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiClosingSoonc287b7 => 'إغلاق قريبا';
+  String get uiClosingSoonc287b7 => 'ينتهي قريبًا';
 
   @override
   String get uiSignInToContinueWithYourApplication =>
@@ -7085,8 +7085,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiResource => 'مورد';
 
   @override
-  String uiCountOpenOpportunitiesCuratedForStudents(Object count) {
-    return '$count فرصة مفتوحة مختارة للطلاب.';
+  String uiCountOpenOpportunitiesCuratedForStudents(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فرصة مفتوحة مختارة للطلاب.',
+      many: '$count فرصة مفتوحة مختارة للطلاب.',
+      few: '$count فرص مفتوحة مختارة للطلاب.',
+      two: 'فرصتان مفتوحتان مختارتان للطلاب.',
+      one: 'فرصة واحدة مفتوحة مختارة للطلاب.',
+      zero: 'لا توجد فرص مفتوحة مختارة للطلاب.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -9219,12 +9229,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count وظيفة مفتوحة',
-      many: '$count وظيفة مفتوحة',
-      few: '$count وظائف مفتوحة',
-      two: 'وظيفتان مفتوحتان',
-      one: 'وظيفة واحدة مفتوحة',
-      zero: 'لا توجد وظائف مفتوحة',
+      other: '$count فرصة مفتوحة',
+      many: '$count فرصة مفتوحة',
+      few: '$count فرص مفتوحة',
+      two: 'فرصتان مفتوحتان',
+      one: 'فرصة واحدة مفتوحة',
+      zero: 'لا توجد فرص مفتوحة',
     );
     return '$_temp0';
   }
@@ -9294,12 +9304,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count وظيفة محفوظة',
-      many: '$count وظيفة محفوظة',
-      few: '$count وظائف محفوظة',
-      two: 'وظيفتان محفوظتان',
-      one: 'وظيفة محفوظة واحدة',
-      zero: 'لا توجد وظائف محفوظة',
+      other: '$count فرصة محفوظة',
+      many: '$count فرصة محفوظة',
+      few: '$count فرص محفوظة',
+      two: 'فرصتان محفوظتان',
+      one: 'فرصة محفوظة واحدة',
+      zero: 'لا توجد فرص محفوظة',
     );
     return '$_temp0';
   }

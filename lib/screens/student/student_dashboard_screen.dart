@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,6 +31,7 @@ import '../../theme/app_typography.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
@@ -2474,9 +2474,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           final hasUpcomingDeadline =
               deadline != null && _daysUntil(deadline) >= 0;
           final meta = hasUpcomingDeadline
-              ? AppLocalizations.of(
-                  context,
-                )!.studentClosesMonthDay(DateFormat('MMM d').format(deadline))
+              ? AppLocalizations.of(context)!.studentClosesMonthDay(
+                  LocalizedDisplay.shortDate(context, deadline),
+                )
               : item.location;
 
           return _DashboardActivityEntry(
@@ -2549,7 +2549,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 ? companyName
                 : OpportunityType.label(item.type, l10n));
       final meta = deadline != null
-          ? l10n.closesDateLabel(DateFormat('MMM d').format(deadline))
+          ? l10n.closesDateLabel(LocalizedDisplay.shortDate(context, deadline))
           : item.location.trim();
 
       activities.add(
@@ -2623,10 +2623,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 ? providerName
                 : AppLocalizations.of(context)!.studentScholarshipFallback);
       final meta = deadline != null
-          ? AppLocalizations.of(
+          ? AppLocalizations.of(context)!.studentClosesMonthDay(
+              LocalizedDisplay.shortDate(context, deadline),
+            )
+          : LocalizedDisplay.metadataLabel(
               context,
-            )!.studentClosesMonthDay(DateFormat('MMM d').format(deadline))
-          : _firstNonEmpty([item.level, item.location, item.fundingType]);
+              _firstNonEmpty([item.level, item.location, item.fundingType]),
+            );
 
       activities.add(
         _DashboardActivityEntry(
@@ -2994,8 +2997,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
   String recentTrainingSupportingLine(TrainingModel item) {
     final parts = <String>[
-      if (item.duration.trim().isNotEmpty) item.duration.trim(),
-      if (item.level.trim().isNotEmpty) _recentCompactLabel(item.level),
+      if (item.duration.trim().isNotEmpty)
+        LocalizedDisplay.duration(context, item.duration),
+      if (item.level.trim().isNotEmpty)
+        LocalizedDisplay.metadataLabel(
+          context,
+          _recentCompactLabel(item.level),
+        ),
     ];
 
     if (parts.isEmpty) {
@@ -3041,7 +3049,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     if (deadline != null) {
       return AppLocalizations.of(
         context,
-      )!.studentClosesMonthDay(DateFormat('MMM d').format(deadline));
+      )!.studentClosesMonthDay(LocalizedDisplay.shortDate(context, deadline));
     }
 
     final raw = item.deadlineLabel.trim();
