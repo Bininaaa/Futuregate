@@ -853,7 +853,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final l10n = AppLocalizations.of(context)!;
       return _DashboardFocus(
         badgeLabel: l10n.uiBadgeMomentum,
-        title: l10n.uiApprovedValue1Approved(approved, l10n.applicationStatusApprovedSentence),
+        title:
+            '$approved ${_pluralizedWord(approved, "application", "applications")} approved.',
         subtitle: l10n.uiKeepApplyingWhileTeamsAreAlreadyEngagingWithYourProfile,
         insight: pending > 0
             ? l10n.dashFocusClosingSoonSubtitle(pending)
@@ -876,7 +877,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       final l10n = AppLocalizations.of(context)!;
       return _DashboardFocus(
         badgeLabel: l10n.uiBadgeInReview,
-        title: l10n.uiApprovedValue1Approved(pending, l10n.uiBadgeInReview.toLowerCase()),
+        title:
+            '$pending ${_pluralizedWord(pending, "application", "applications")} in review.',
         subtitle: l10n.dashFocusSubtitleInReview,
         insight: firstUrgent != null && firstUrgentDeadline != null
             ? l10n.dashFocusClosingSoonInsight(
