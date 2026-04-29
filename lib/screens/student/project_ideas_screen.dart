@@ -10,6 +10,7 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/idea_cards.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/ideas/my_ideas_toggle.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
 import '../../widgets/student/student_search_field.dart';
@@ -91,7 +92,7 @@ class _ProjectIdeasScreenState extends State<ProjectIdeasScreen> {
               elevation: 0,
               leading: IconButton(
                 onPressed: () => Navigator.maybePop(context),
-                icon: Icon(
+                icon: AppDirectionalIcon(
                   Icons.arrow_back_ios_new_rounded,
                   color: InnovationHubPalette.textPrimary,
                 ),

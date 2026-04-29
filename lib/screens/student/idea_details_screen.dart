@@ -18,6 +18,7 @@ import '../../widgets/ideas/project_idea_cover_image.dart';
 import '../../widgets/ideas/idea_metrics_row.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
 import 'create_idea_screen.dart';
@@ -98,7 +99,7 @@ class IdeaDetailsScreen extends StatelessWidget {
           scrolledUnderElevation: 0,
           leading: IconButton(
             onPressed: () => Navigator.maybePop(context),
-            icon: Icon(
+            icon: AppDirectionalIcon(
               Icons.arrow_back_ios_new_rounded,
               color: SettingsFlowPalette.textPrimary,
             ),

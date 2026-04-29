@@ -14,6 +14,7 @@ import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/document_access_service.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../widgets/cv_templates/cv_template_preview.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import 'cv_edit_screen.dart';
 import 'cv_preview_screen.dart';
@@ -1213,10 +1214,8 @@ class _DocumentActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveColor = color ?? SettingsFlowPalette.textPrimary;
 
-    return OutlinedButton.icon(
+    return OutlinedButton(
       onPressed: onPressed,
-      icon: Icon(icon, size: 16),
-      label: Text(label, style: SettingsFlowTheme.micro(effectiveColor)),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(44, 44),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -1232,6 +1231,13 @@ class _DocumentActionButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: SettingsFlowTheme.radius(14),
         ),
+      ),
+      child: AppInlineIconLabel(
+        icon: icon,
+        iconSize: 16,
+        iconColor: effectiveColor,
+        gap: 7,
+        label: Text(label, style: SettingsFlowTheme.micro(effectiveColor)),
       ),
     );
   }

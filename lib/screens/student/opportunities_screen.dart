@@ -374,7 +374,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
 
     context.showAppSnackBar(
       error ?? message,
-      title: error == null ? l10n.trainingSavedUpdatedTitle : l10n.uiSaveUnavailable,
+      title: error == null
+          ? l10n.trainingSavedUpdatedTitle
+          : l10n.uiSaveUnavailable,
       type: error == null
           ? (existingSaved != null
                 ? AppFeedbackType.removed
@@ -1806,11 +1808,18 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                       ),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        20,
+                        10,
+                        0,
+                        0,
+                      ),
                       sliver: SliverToBoxAdapter(
                         child: trendingItems.isEmpty
                             ? Padding(
-                                padding: const EdgeInsets.only(right: 20),
+                                padding: const EdgeInsetsDirectional.only(
+                                  end: 20,
+                                ),
                                 child: OpportunityDashboardEmptyState(
                                   icon: Icons.trending_up_rounded,
                                   title: AppLocalizations.of(
@@ -1826,7 +1835,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                                 height: trendingCardHeight,
                                 child: ListView.separated(
                                   scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.only(right: 20),
+                                  padding: const EdgeInsetsDirectional.only(
+                                    end: 20,
+                                  ),
                                   itemCount: trendingItems.length,
                                   separatorBuilder: (context, index) =>
                                       const SizedBox(width: 12),

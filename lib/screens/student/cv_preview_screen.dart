@@ -15,6 +15,7 @@ import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_flow_widgets.dart';
 import '../../services/cv_pdf_service.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 
 class CvPreviewScreen extends StatefulWidget {
@@ -130,7 +131,7 @@ class _CvPreviewScreenState extends State<CvPreviewScreen> {
           scrolledUnderElevation: 0,
           leading: IconButton(
             onPressed: () => Navigator.maybePop(context),
-            icon: Icon(
+            icon: AppDirectionalIcon(
               Icons.arrow_back_ios_new_rounded,
               color: SettingsFlowPalette.textPrimary,
             ),

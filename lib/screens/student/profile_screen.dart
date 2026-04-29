@@ -28,6 +28,7 @@ import '../../utils/display_text.dart';
 import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_directional.dart';
 import 'applied_opportunities_screen.dart';
 import 'cv_screen.dart';
 import 'edit_profile_screen.dart';
@@ -761,7 +762,7 @@ class _FrostedCircle extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
         ),
-        child: Icon(
+        child: AppDirectionalIcon(
           icon,
           color: Colors.white.withValues(alpha: 0.85),
           size: 18,
@@ -903,20 +904,19 @@ class _HeaderButton extends StatelessWidget {
                   : Colors.white.withValues(alpha: 0.16),
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 16, color: foreground),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: AppTypography.product(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: foreground,
-                ),
+          child: AppInlineIconLabel(
+            icon: icon,
+            iconSize: 16,
+            iconColor: foreground,
+            gap: 8,
+            label: Text(
+              label,
+              style: AppTypography.product(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: foreground,
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -2021,7 +2021,7 @@ class _FeaturedActionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
+              AppDirectionalIcon(
                 Icons.chevron_right_rounded,
                 size: 20,
                 color: color.withValues(alpha: 0.85),
@@ -2136,7 +2136,7 @@ class _LinkRow extends StatelessWidget {
                 const SizedBox(width: 4),
               ],
               if (!destructive)
-                Icon(
+                AppDirectionalIcon(
                   Icons.chevron_right_rounded,
                   size: 20,
                   color: SettingsFlowPalette.textSecondary.withValues(
@@ -2344,20 +2344,19 @@ class _SurfaceActionButton extends StatelessWidget {
                   : SettingsFlowPalette.border,
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 18, color: foregroundColor),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: AppTypography.product(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: foregroundColor,
-                ),
+          child: AppInlineIconLabel(
+            icon: icon,
+            iconSize: 18,
+            iconColor: foregroundColor,
+            gap: 10,
+            label: Text(
+              label,
+              style: AppTypography.product(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: foregroundColor,
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -2391,20 +2390,19 @@ class _PillActionButton extends StatelessWidget {
             color: color.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(999),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 14, color: color),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: AppTypography.product(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w700,
-                  color: color,
-                ),
+          child: AppInlineIconLabel(
+            icon: icon,
+            iconSize: 14,
+            iconColor: color,
+            gap: 6,
+            label: Text(
+              label,
+              style: AppTypography.product(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                color: color,
               ),
-            ],
+            ),
           ),
         ),
       ),

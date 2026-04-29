@@ -10,6 +10,7 @@ import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
@@ -826,7 +827,7 @@ class _AppliedHistoryCard extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(11),
             ),
-            child: Icon(
+            child: AppDirectionalIcon(
               onOpen == null
                   ? Icons.block_rounded
                   : Icons.chevron_right_rounded,
@@ -887,7 +888,7 @@ class _AppliedCardFrame extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(18, 12, 12, 12),
+                padding: const EdgeInsetsDirectional.fromSTEB(18, 12, 12, 12),
                 child: child,
               ),
             ],

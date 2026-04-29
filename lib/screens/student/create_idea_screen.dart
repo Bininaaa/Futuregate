@@ -17,6 +17,7 @@ import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/project_idea_cover_image.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 
 class CreateIdeaScreen extends StatefulWidget {
@@ -659,7 +660,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
       scrolledUnderElevation: 0,
       leading: IconButton(
         onPressed: () => Navigator.maybePop(context),
-        icon: Icon(
+        icon: AppDirectionalIcon(
           Icons.arrow_back_ios_new_rounded,
           color: SettingsFlowPalette.textPrimary,
         ),
@@ -1176,7 +1177,7 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
           Row(
             children: [
               Expanded(
-                child: ElevatedButton.icon(
+                child: ElevatedButton(
                   onPressed: _isUploadingImage ? null : _pickAndUploadImage,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: InnovationHubPalette.primary,
@@ -1190,29 +1191,37 @@ class _CreateIdeaScreenState extends State<CreateIdeaScreen> {
                       borderRadius: BorderRadius.circular(18),
                     ),
                   ),
-                  icon: _isUploadingImage
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+                  child: AppInlineIconLabel(
+                    leading: _isUploadingImage
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
-                          ),
-                        )
-                      : Icon(
-                          hasImage
-                              ? Icons.refresh_rounded
-                              : Icons.file_upload_outlined,
-                        ),
-                  label: Text(
-                    _isUploadingImage
-                        ? AppLocalizations.of(context)!.studentUploadingEllipsis
+                          )
+                        : null,
+                    icon: _isUploadingImage
+                        ? null
                         : hasImage
-                        ? AppLocalizations.of(context)!.changeImageLabel
-                        : AppLocalizations.of(context)!.uploadImageLabel,
-                    style: _theme.label(color: Colors.white, size: 13),
+                        ? Icons.refresh_rounded
+                        : Icons.file_upload_outlined,
+                    iconSize: 18,
+                    iconColor: Colors.white,
+                    gap: 8,
+                    label: Text(
+                      _isUploadingImage
+                          ? AppLocalizations.of(
+                              context,
+                            )!.studentUploadingEllipsis
+                          : hasImage
+                          ? AppLocalizations.of(context)!.changeImageLabel
+                          : AppLocalizations.of(context)!.uploadImageLabel,
+                      style: _theme.label(color: Colors.white, size: 13),
+                    ),
                   ),
                 ),
               ),
@@ -1504,7 +1513,7 @@ class _CvValueChip extends StatelessWidget {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: maxWidth),
       child: Container(
-        padding: const EdgeInsets.only(left: 12, right: 6, top: 6, bottom: 6),
+        padding: const EdgeInsetsDirectional.fromSTEB(12, 6, 6, 6),
         decoration: BoxDecoration(
           color: SettingsFlowPalette.primary.withValues(alpha: 0.08),
           borderRadius: SettingsFlowTheme.radius(10),

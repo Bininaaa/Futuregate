@@ -8,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../screens/settings/settings_flow_widgets.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 
 class CvEditScreen extends StatefulWidget {
@@ -725,7 +726,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
         title: AppLocalizations.of(context)!.uiEditCv,
         leading: IconButton(
           onPressed: _handleLeave,
-          icon: Icon(
+          icon: AppDirectionalIcon(
             Icons.arrow_back_ios_new_rounded,
             color: SettingsFlowPalette.textPrimary,
           ),
@@ -1039,7 +1040,7 @@ class _CvEditScreenState extends State<CvEditScreen> {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: maxChipWidth),
       child: Container(
-        padding: const EdgeInsets.only(left: 12, right: 6, top: 6, bottom: 6),
+        padding: const EdgeInsetsDirectional.fromSTEB(12, 6, 6, 6),
         decoration: BoxDecoration(
           color: SettingsFlowPalette.primary.withValues(alpha: 0.08),
           borderRadius: SettingsFlowTheme.radius(10),

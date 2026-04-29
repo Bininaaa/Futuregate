@@ -15,6 +15,7 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
@@ -1614,7 +1615,7 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                                 ),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(
+                              child: AppDirectionalIcon(
                                 Icons.arrow_forward_rounded,
                                 color: palette.chipTextColor.withValues(
                                   alpha: 0.82,
@@ -2333,7 +2334,10 @@ class FeaturedJobCard extends StatelessWidget {
         );
         late final Widget footer;
         if (salaryLabel == null) {
-          footer = Align(alignment: Alignment.centerRight, child: footerButton);
+          footer = Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: footerButton,
+          );
         } else if (denseLayout) {
           footer = Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -2349,7 +2353,10 @@ class FeaturedJobCard extends StatelessWidget {
             children: [
               salaryLabel,
               const SizedBox(height: 9),
-              Align(alignment: Alignment.centerRight, child: footerButton),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: footerButton,
+              ),
             ],
           );
         }
@@ -2634,26 +2641,20 @@ class _ApplyNowButton extends StatelessWidget {
                 border: Border.all(color: resolvedBorderColor),
                 boxShadow: resolvedShadows,
               ),
-              child: Row(
+              child: AppInlineIconLabel(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (icon != null) ...[
-                    Icon(
-                      icon,
-                      size: compact ? 11.5 : 12.5,
-                      color: resolvedTextColor,
-                    ),
-                    SizedBox(width: compact ? 5 : 6),
-                  ],
-                  Text(
-                    label,
-                    style: AppTypography.product(
-                      fontSize: compact ? 10.2 : 11.2,
-                      fontWeight: FontWeight.w800,
-                      color: resolvedTextColor,
-                    ),
+                icon: icon,
+                iconSize: compact ? 11.5 : 12.5,
+                iconColor: resolvedTextColor,
+                gap: compact ? 5 : 6,
+                label: Text(
+                  label,
+                  style: AppTypography.product(
+                    fontSize: compact ? 10.2 : 11.2,
+                    fontWeight: FontWeight.w800,
+                    color: resolvedTextColor,
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -3381,7 +3382,8 @@ class _AvailableRoleCard extends StatelessWidget {
                               Expanded(
                                 child: statusData != null
                                     ? Align(
-                                        alignment: Alignment.centerLeft,
+                                        alignment:
+                                            AlignmentDirectional.centerStart,
                                         child: _JobStatusChip(
                                           label: statusData!.label,
                                           color: statusData!.color,
@@ -3392,7 +3394,8 @@ class _AvailableRoleCard extends StatelessWidget {
                                     : job.levelTag == null
                                     ? const SizedBox.shrink()
                                     : Align(
-                                        alignment: Alignment.centerLeft,
+                                        alignment:
+                                            AlignmentDirectional.centerStart,
                                         child: Container(
                                           padding: EdgeInsets.symmetric(
                                             horizontal: isTight ? 7 : 8,
@@ -3439,7 +3442,7 @@ class _AvailableRoleCard extends StatelessWidget {
                                   ),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(
+                                child: AppDirectionalIcon(
                                   Icons.arrow_forward_rounded,
                                   size: isTight ? 14 : 15,
                                   color: Colors.white,
@@ -3600,7 +3603,7 @@ class _AvailableRoleListCard extends StatelessWidget {
                       ),
                     ),
                   const SizedBox(height: 6),
-                  Icon(
+                  AppDirectionalIcon(
                     Icons.chevron_right_rounded,
                     color: job.category.accentColor,
                     size: compact ? 18 : 20,

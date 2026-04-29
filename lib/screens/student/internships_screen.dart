@@ -15,6 +15,7 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
@@ -1286,7 +1287,7 @@ class _ApplyThisWeekSection extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsetsDirectional.only(end: 10),
         itemCount: items.length,
         separatorBuilder: (context, index) => SizedBox(width: cardSpacing),
         itemBuilder: (context, index) {
@@ -1593,7 +1594,7 @@ class _InternshipFeaturedCard extends StatelessWidget {
                           SizedBox(height: isTight ? 8 : 10),
                         ],
                   Align(
-                    alignment: Alignment.centerRight,
+                    alignment: AlignmentDirectional.centerEnd,
                     child: _InternshipFeaturedCtaButton(
                       label: actionLabel,
                       icon: statusData?.icon,
@@ -1612,7 +1613,7 @@ class _InternshipFeaturedCard extends StatelessWidget {
                     child: compensationWidget == null
                         ? const SizedBox.shrink()
                         : Align(
-                            alignment: Alignment.centerLeft,
+                            alignment: AlignmentDirectional.centerStart,
                             child: compensationWidget,
                           ),
                   ),
@@ -1913,26 +1914,20 @@ class _InternshipFeaturedCtaButton extends StatelessWidget {
                 border: Border.all(color: resolvedBorderColor),
                 boxShadow: resolvedShadows,
               ),
-              child: Row(
+              child: AppInlineIconLabel(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (icon != null) ...[
-                    Icon(
-                      icon,
-                      size: compact ? 11.5 : 12.5,
-                      color: resolvedTextColor,
-                    ),
-                    SizedBox(width: compact ? 5 : 6),
-                  ],
-                  Text(
-                    label,
-                    style: AppTypography.product(
-                      fontSize: compact ? 10.2 : 11.2,
-                      fontWeight: FontWeight.w800,
-                      color: resolvedTextColor,
-                    ),
+                icon: icon,
+                iconSize: compact ? 11.5 : 12.5,
+                iconColor: resolvedTextColor,
+                gap: compact ? 5 : 6,
+                label: Text(
+                  label,
+                  style: AppTypography.product(
+                    fontSize: compact ? 10.2 : 11.2,
+                    fontWeight: FontWeight.w800,
+                    color: resolvedTextColor,
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -2464,7 +2459,8 @@ class _AvailableInternshipCard extends StatelessWidget {
                               Expanded(
                                 child: statusData != null
                                     ? Align(
-                                        alignment: Alignment.centerLeft,
+                                        alignment:
+                                            AlignmentDirectional.centerStart,
                                         child: _InternshipStatusChip(
                                           label: statusData!.label,
                                           color: statusData!.color,
@@ -2474,7 +2470,8 @@ class _AvailableInternshipCard extends StatelessWidget {
                                       )
                                     : item.duration?.trim().isNotEmpty ?? false
                                     ? Align(
-                                        alignment: Alignment.centerLeft,
+                                        alignment:
+                                            AlignmentDirectional.centerStart,
                                         child: Container(
                                           padding: EdgeInsets.symmetric(
                                             horizontal: isTight ? 7 : 8,
@@ -2522,7 +2519,7 @@ class _AvailableInternshipCard extends StatelessWidget {
                                   ),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: const AppDirectionalIcon(
                                   Icons.arrow_forward_rounded,
                                   size: 15,
                                   color: Colors.white,
@@ -2816,7 +2813,7 @@ class _AvailableInternshipListTile extends StatelessWidget {
                               ),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: AppDirectionalIcon(
                               Icons.arrow_forward_rounded,
                               color: palette.accentColor.withValues(
                                 alpha: 0.82,

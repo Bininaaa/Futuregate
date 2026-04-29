@@ -17,6 +17,7 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
@@ -2381,23 +2382,21 @@ class _ApplyButton extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: Row(
+                      child: AppInlineIconLabel(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (icon != null) ...[
-                            Icon(icon, size: 14, color: textColor),
-                            const SizedBox(width: 5),
-                          ],
-                          Text(
-                            label,
-                            style: AppTypography.product(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: textColor,
-                            ),
+                        icon: icon,
+                        iconSize: 14,
+                        iconColor: textColor,
+                        gap: 5,
+                        label: Text(
+                          label,
+                          style: AppTypography.product(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: textColor,
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),

@@ -41,6 +41,7 @@ import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../notifications_screen.dart';
 import '../settings/settings_screen.dart';
@@ -1187,7 +1188,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   color: Colors.white.withValues(alpha: 0.14),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: const AppDirectionalIcon(
                   Icons.arrow_forward_rounded,
                   color: Colors.white,
                   size: 18,
@@ -1569,7 +1570,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (items.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsetsDirectional.only(end: 20),
         child: _buildEmptyState(
           icon: Icons.schedule_outlined,
           message: AppLocalizations.of(context)!.uiNoUrgentDeadlines,
@@ -1584,7 +1585,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       height: 206,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsetsDirectional.only(end: 20),
         itemCount: items.length > 4 ? 4 : items.length,
         separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
@@ -1794,7 +1795,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Icon(
+                    AppDirectionalIcon(
                       Icons.arrow_forward_rounded,
                       size: 16,
                       color: urgencyColor,
@@ -2217,7 +2218,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       color: accent.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(999),
                     ),
-                    child: Icon(
+                    child: AppDirectionalIcon(
                       Icons.arrow_forward_rounded,
                       size: 15,
                       color: accent,
@@ -2406,7 +2407,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         ),
                         if (item.trailingLabel != null)
                           Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 2),
+                            padding: const EdgeInsetsDirectional.only(
+                              start: 8,
+                              top: 2,
+                            ),
                             child: Text(
                               item.trailingLabel!,
                               style: AppTypography.product(
@@ -3108,7 +3112,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         border: Border.all(color: accent.withValues(alpha: 0.12)),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Icon(Icons.arrow_forward_ios_rounded, size: 13, color: accent),
+      child: AppDirectionalIcon(
+        Icons.arrow_forward_ios_rounded,
+        size: 13,
+        color: accent,
+      ),
     );
   }
 

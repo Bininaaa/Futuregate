@@ -6,6 +6,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../profile_avatar.dart';
+import '../shared/app_directional.dart';
 import '../shared/app_nav_scroll_switcher.dart';
 
 class StudentWorkspaceTopBar extends StatelessWidget {
@@ -189,7 +190,7 @@ class StudentWorkspaceActionButton extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: Padding(
-        padding: const EdgeInsets.only(left: 8),
+        padding: const EdgeInsetsDirectional.only(start: 8),
         child: Material(
           color: OpportunityDashboardPalette.surface,
           borderRadius: BorderRadius.circular(18),
@@ -202,15 +203,15 @@ class StudentWorkspaceActionButton extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Icon(
+                  AppDirectionalIcon(
                     icon,
                     color: color ?? OpportunityDashboardPalette.textPrimary,
                     size: 22,
                   ),
                   if (badgeCount > 0)
-                    Positioned(
+                    PositionedDirectional(
                       top: 8,
-                      right: 8,
+                      end: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 5,
@@ -617,7 +618,7 @@ class _TopBarLeadingIcon extends StatelessWidget {
         gradient: gradient,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Icon(icon, color: Colors.white, size: 22),
+      child: AppDirectionalIcon(icon, color: Colors.white, size: 22),
     );
 
     if (onTap == null) {
@@ -704,7 +705,7 @@ class _StudentPillNavItem extends StatelessWidget {
                   key: ValueKey<String>('selected-${destination.label}'),
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    AppDirectionalIcon(
                       destination.activeIcon,
                       size: compact ? 15 : 17,
                       color: Colors.white,
@@ -713,7 +714,7 @@ class _StudentPillNavItem extends StatelessWidget {
                     Expanded(
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
+                        alignment: AlignmentDirectional.centerStart,
                         child: Text(
                           label,
                           maxLines: 1,
@@ -730,7 +731,7 @@ class _StudentPillNavItem extends StatelessWidget {
                 )
               : Center(
                   key: ValueKey<String>('idle-${destination.label}'),
-                  child: Icon(
+                  child: AppDirectionalIcon(
                     destination.icon,
                     size: compact ? 17 : 19,
                     color: OpportunityDashboardPalette.textSecondary.withValues(

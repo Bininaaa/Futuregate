@@ -5,6 +5,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/display_text.dart';
+import 'app_directional.dart';
 import 'app_feedback.dart';
 
 enum AppContentTypography { product, innovation }
@@ -894,7 +895,7 @@ class _AppEditableListChip extends StatelessWidget {
           border: Border.all(color: theme.accent.withValues(alpha: 0.16)),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(left: 10, right: 4, top: 5, bottom: 5),
+          padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 4, 5),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1298,7 +1299,7 @@ class AppPrimaryButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: 50,
-      child: FilledButton.icon(
+      child: FilledButton(
         onPressed: isBusy ? null : onPressed,
         style: FilledButton.styleFrom(
           backgroundColor: theme.accent,
@@ -1308,19 +1309,22 @@ class AppPrimaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
           ),
         ),
-        icon: isBusy
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.2,
-                  color: Colors.white,
-                ),
-              )
-            : icon == null
-            ? const SizedBox.shrink()
-            : Icon(icon, size: 17),
-        label: Text(label, style: theme.label(size: 13, color: Colors.white)),
+        child: AppInlineIconLabel(
+          leading: isBusy
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.2,
+                    color: Colors.white,
+                  ),
+                )
+              : null,
+          icon: isBusy ? null : icon,
+          iconSize: 17,
+          gap: 7,
+          label: Text(label, style: theme.label(size: 13, color: Colors.white)),
+        ),
       ),
     );
   }
@@ -1356,20 +1360,16 @@ class AppSecondaryButton extends StatelessWidget {
         ),
         child: FittedBox(
           fit: BoxFit.scaleDown,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              if (icon != null) ...<Widget>[
-                Icon(icon, size: 17),
-                const SizedBox(width: 6),
-              ],
-              Text(
-                label,
-                maxLines: 1,
-                softWrap: false,
-                style: theme.label(size: 12),
-              ),
-            ],
+          child: AppInlineIconLabel(
+            icon: icon,
+            iconSize: 17,
+            gap: 6,
+            label: Text(
+              label,
+              maxLines: 1,
+              softWrap: false,
+              style: theme.label(size: 12),
+            ),
           ),
         ),
       ),
@@ -1716,18 +1716,15 @@ class AppTagChip extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          if (badge.icon != null) ...<Widget>[
-            Icon(badge.icon, size: 13, color: foregroundColor),
-            const SizedBox(width: 6),
-          ],
-          Text(
-            DisplayText.capitalizeDisplayValue(badge.label),
-            style: theme.label(size: 10.8, color: foregroundColor),
-          ),
-        ],
+      child: AppInlineIconLabel(
+        icon: badge.icon,
+        iconSize: 13,
+        iconColor: foregroundColor,
+        gap: 6,
+        label: Text(
+          DisplayText.capitalizeDisplayValue(badge.label),
+          style: theme.label(size: 10.8, color: foregroundColor),
+        ),
       ),
     );
   }

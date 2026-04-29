@@ -23,6 +23,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/ideas/innovation_hub_theme.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
@@ -1538,7 +1539,11 @@ class _SavedListCard extends StatelessWidget {
                         color: accent,
                       ),
                     )
-                  : Icon(Icons.chevron_right_rounded, color: accent, size: 18),
+                  : AppDirectionalIcon(
+                      Icons.chevron_right_rounded,
+                      color: accent,
+                      size: 18,
+                    ),
             ),
           ),
         ],
@@ -1649,7 +1654,7 @@ class _SavedCardFrame extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(18, 12, 12, 12),
+                padding: const EdgeInsetsDirectional.fromSTEB(18, 12, 12, 12),
                 child: child,
               ),
             ],

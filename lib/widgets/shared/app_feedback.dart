@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_typography.dart';
+import 'app_directional.dart';
 
 enum AppFeedbackType { error, warning, success, info, neutral, removed }
 
@@ -260,7 +261,7 @@ class AppAlert extends StatelessWidget {
                     : variant.accent,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: AppDirectionalIcon(
                 effectiveIcon,
                 color: Colors.white,
                 size: compact ? 18 : 20,
@@ -470,7 +471,11 @@ class AppFieldErrorText extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(top: 1),
-            child: Icon(icon ?? variant.icon, size: 14, color: variant.accent),
+            child: AppDirectionalIcon(
+              icon ?? variant.icon,
+              size: 14,
+              color: variant.accent,
+            ),
           ),
           const SizedBox(width: 6),
           Expanded(
@@ -515,7 +520,7 @@ class AppFeedbackButton extends StatelessWidget {
     ).resolve(context, type, accentColor: accentColor);
 
     if (outlined) {
-      return OutlinedButton.icon(
+      return OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           foregroundColor: variant.actionColor,
@@ -525,19 +530,24 @@ class AppFeedbackButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-        icon: icon == null ? const SizedBox.shrink() : Icon(icon, size: 16),
-        label: Text(
-          label,
-          style: AppTypography.product(
-            fontSize: 12.2,
-            fontWeight: FontWeight.w700,
-            color: variant.actionColor,
+        child: AppInlineIconLabel(
+          icon: icon,
+          iconSize: 16,
+          iconColor: variant.actionColor,
+          gap: 7,
+          label: Text(
+            label,
+            style: AppTypography.product(
+              fontSize: 12.2,
+              fontWeight: FontWeight.w700,
+              color: variant.actionColor,
+            ),
           ),
         ),
       );
     }
 
-    return FilledButton.icon(
+    return FilledButton(
       onPressed: onPressed,
       style: FilledButton.styleFrom(
         backgroundColor: variant.actionColor,
@@ -545,13 +555,18 @@ class AppFeedbackButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      icon: icon == null ? const SizedBox.shrink() : Icon(icon, size: 16),
-      label: Text(
-        label,
-        style: AppTypography.product(
-          fontSize: 12.2,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
+      child: AppInlineIconLabel(
+        icon: icon,
+        iconSize: 16,
+        iconColor: Colors.white,
+        gap: 7,
+        label: Text(
+          label,
+          style: AppTypography.product(
+            fontSize: 12.2,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
         ),
       ),
     );

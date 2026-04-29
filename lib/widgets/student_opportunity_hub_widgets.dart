@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../utils/opportunity_dashboard_palette.dart';
+import 'shared/app_directional.dart';
 import 'shared/app_feedback.dart';
 import 'student/student_search_field.dart';
 
@@ -141,7 +142,11 @@ class StudentOpportunityHubHero extends StatelessWidget {
                       color: Colors.white.withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Icon(icon, color: Colors.white, size: 23),
+                    child: AppDirectionalIcon(
+                      icon,
+                      color: Colors.white,
+                      size: 23,
+                    ),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -346,7 +351,7 @@ class StudentOpportunityMetaPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: resolvedTone),
+          AppDirectionalIcon(icon, size: 14, color: resolvedTone),
           const SizedBox(width: 6),
           Text(
             label,

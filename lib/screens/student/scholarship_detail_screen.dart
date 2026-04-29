@@ -13,6 +13,7 @@ import '../../services/opportunity_translation_service.dart';
 import '../../utils/document_launch_helper.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 
 typedef _P = OpportunityDashboardPalette;
@@ -575,7 +576,7 @@ class ScholarshipDetailScreen extends StatelessWidget {
                             minWidth: 40,
                             minHeight: 40,
                           ),
-                          icon: Icon(
+                          icon: AppDirectionalIcon(
                             Icons.arrow_back_ios_new_rounded,
                             color: _P.textPrimary,
                             size: 24,
@@ -1510,24 +1511,23 @@ class _PrimaryActionButton extends StatelessWidget {
                 : null,
             borderRadius: BorderRadius.circular(18),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 18, color: Colors.white),
-              const SizedBox(width: 10),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.product(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+          child: AppInlineIconLabel(
+            icon: icon,
+            iconSize: 18,
+            iconColor: Colors.white,
+            gap: 10,
+            label: Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.product(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -1565,7 +1565,7 @@ class _TopBarIconButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: _P.border),
           ),
-          child: Icon(
+          child: AppDirectionalIcon(
             icon,
             size: 18,
             color: enabled

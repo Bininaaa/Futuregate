@@ -21,6 +21,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_content_system.dart';
+import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
 import 'chat_screen.dart';
@@ -977,34 +978,36 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                     const SizedBox(height: 6),
                     SizedBox(
                       width: double.infinity,
-                      child: TextButton.icon(
+                      child: TextButton(
                         onPressed: _isWithdrawing ? null : _withdraw,
-                        icon: _isWithdrawing
-                            ? SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.current.danger,
-                                ),
-                              )
-                            : Icon(
-                                Icons.undo_rounded,
-                                size: 16,
-                                color: AppColors.current.danger,
-                              ),
-                        label: Text(
-                          _isWithdrawing
-                              ? 'Withdrawing...'
-                              : 'Withdraw application',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.current.danger,
-                          ),
-                        ),
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: AppInlineIconLabel(
+                          leading: _isWithdrawing
+                              ? SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.current.danger,
+                                  ),
+                                )
+                              : null,
+                          icon: _isWithdrawing ? null : Icons.undo_rounded,
+                          iconSize: 16,
+                          iconColor: AppColors.current.danger,
+                          gap: 7,
+                          label: Text(
+                            _isWithdrawing
+                                ? 'Withdrawing...'
+                                : 'Withdraw application',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.current.danger,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -1517,7 +1520,11 @@ class _WithdrawnApplicationNotice extends StatelessWidget {
               color: accent.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.undo_rounded, size: 18, color: accent),
+            child: AppDirectionalIcon(
+              Icons.undo_rounded,
+              size: 18,
+              color: accent,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(

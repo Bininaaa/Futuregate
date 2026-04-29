@@ -6,6 +6,7 @@ import '../../models/cv_model.dart';
 import '../../screens/settings/settings_flow_theme.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/cv_templates/cv_template_preview.dart';
+import '../../widgets/shared/app_directional.dart';
 
 class CvTemplateSelectorScreen extends StatefulWidget {
   final CvModel cv;
@@ -44,7 +45,7 @@ class _CvTemplateSelectorScreenState extends State<CvTemplateSelectorScreen> {
           scrolledUnderElevation: 0,
           leading: IconButton(
             onPressed: () => Navigator.maybePop(context),
-            icon: Icon(
+            icon: AppDirectionalIcon(
               Icons.arrow_back_ios_new_rounded,
               color: SettingsFlowPalette.textPrimary,
             ),
