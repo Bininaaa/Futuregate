@@ -1933,7 +1933,7 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               compensationText: _compensationText(opportunity),
                               detailChips: _latestStatusItems(opportunity),
                               badgeText: _isNewOpportunity(opportunity)
-                                  ? 'NEW'
+                                  ? AppLocalizations.of(context)!.studentNewBadge
                                   : null,
                               badgeColor: OpportunityDashboardPalette.success,
                               applicationStatus:

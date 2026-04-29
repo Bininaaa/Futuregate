@@ -172,6 +172,70 @@ abstract final class LocalizedDisplay {
       case 'algerie':
       case 'algérie':
         return _byLocale(context, ar: 'الجزائر', fr: 'Algérie', en: 'Algeria');
+      case 'general':
+        return l10n.trainingGeneralDomainLabel;
+      case 'design':
+        return _byLocale(context, ar: 'تصميم', fr: 'Design', en: 'Design');
+      case 'marketing':
+        return _byLocale(context, ar: 'تسويق', fr: 'Marketing', en: 'Marketing');
+      case 'strategy':
+        return _byLocale(
+          context,
+          ar: 'استراتيجية',
+          fr: 'Stratégie',
+          en: 'Strategy',
+        );
+      case 'engineering':
+        return _byLocale(
+          context,
+          ar: 'هندسة',
+          fr: 'Ingénierie',
+          en: 'Engineering',
+        );
+      case 'finance':
+        return _byLocale(context, ar: 'مالية', fr: 'Finance', en: 'Finance');
+      case 'research':
+        return _byLocale(context, ar: 'بحث', fr: 'Recherche', en: 'Research');
+      case 'business':
+        return _byLocale(
+          context,
+          ar: 'أعمال',
+          fr: 'Affaires',
+          en: 'Business',
+        );
+      case 'technology':
+      case 'tech':
+        return _byLocale(
+          context,
+          ar: 'تكنولوجيا',
+          fr: 'Technologie',
+          en: 'Technology',
+        );
+      case 'entry level':
+      case 'entry':
+        return _byLocale(
+          context,
+          ar: 'مستوى مبتدئ',
+          fr: 'Débutant',
+          en: 'Entry level',
+        );
+      case 'junior':
+        return _byLocale(context, ar: 'مبتدئ', fr: 'Junior', en: 'Junior');
+      case 'mid level':
+      case 'mid':
+        return _byLocale(
+          context,
+          ar: 'مستوى متوسط',
+          fr: 'Intermédiaire',
+          en: 'Mid-level',
+        );
+      case 'senior':
+        return _byLocale(context, ar: 'متقدم', fr: 'Senior', en: 'Senior');
+      case 'graduate':
+      case 'grad':
+        return _byLocale(context, ar: 'خريج', fr: 'Diplômé', en: 'Graduate');
+      case 'student':
+        return _byLocale(context, ar: 'طالب', fr: 'Étudiant', en: 'Student');
     }
 
     return value;

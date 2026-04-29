@@ -539,14 +539,23 @@ class _JobsScreenState extends State<JobsScreen> {
   }
 
   String _jobBadgeLabel(OpportunityModel opportunity) {
+    final l10n = AppLocalizations.of(context)!;
     final employmentBadge = _employmentBadgeLabel(opportunity);
     if (employmentBadge != null) {
-      return employmentBadge;
+      return switch (employmentBadge) {
+        'FULL-TIME' => l10n.employmentTypeFullTime,
+        'PART-TIME' => l10n.employmentTypePartTime,
+        'INTERN' => l10n.employmentTypeInternship,
+        'CONTRACT' => l10n.employmentTypeContract,
+        'TEMP' => l10n.employmentTypeTemporary,
+        'FREELANCE' => l10n.employmentTypeFreelance,
+        _ => employmentBadge,
+      };
     }
 
     final workMode = _workModeLabel(opportunity);
     if (workMode != null) {
-      return workMode.toUpperCase();
+      return workMode;
     }
 
     return '';
@@ -658,34 +667,37 @@ class _JobsScreenState extends State<JobsScreen> {
         .replaceAll('_', ' ')
         .replaceAll('-', ' ');
 
+    String? key;
     if (normalized.contains('entry')) {
-      return 'ENTRY';
+      key = 'entry';
+    } else if (normalized.contains('junior')) {
+      key = 'junior';
+    } else if (normalized.contains('student') || normalized.contains('intern')) {
+      key = 'student';
+    } else if (normalized.contains('graduate')) {
+      key = 'grad';
+    } else if (normalized.contains('senior')) {
+      key = 'senior';
+    } else if (normalized.contains('mid')) {
+      key = 'mid';
     }
-    if (normalized.contains('junior')) {
-      return 'JUNIOR';
-    }
-    if (normalized.contains('student') || normalized.contains('intern')) {
-      return 'STUDENT';
-    }
-    if (normalized.contains('graduate')) {
-      return 'GRAD';
-    }
-    if (normalized.contains('senior')) {
-      return 'SENIOR';
-    }
-    if (normalized.contains('mid')) {
-      return 'MID';
+
+    if (key != null) {
+      return LocalizedDisplay.metadataLabel(context, key);
     }
 
     final words = trimmed
         .split(RegExp(r'\s+'))
         .where((word) => word.isNotEmpty);
-    final candidate = words.take(2).join(' ').toUpperCase();
+    final candidate = words.take(2).join(' ');
     if (candidate.isEmpty) {
       return null;
     }
 
-    return candidate.length <= 12 ? candidate : words.first.toUpperCase();
+    return LocalizedDisplay.metadataLabel(
+      context,
+      candidate.length <= 12 ? candidate : words.first,
+    );
   }
 
   String? _compensationText(OpportunityModel opportunity) {
