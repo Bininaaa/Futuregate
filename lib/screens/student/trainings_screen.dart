@@ -266,9 +266,9 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   }
 
   String _domainDisplayLabel(String domain, AppLocalizations l10n) {
-    return domain == 'All'
-        ? l10n.uiAll
-        : LocalizedDisplay.metadataLabel(context, domain);
+    if (domain == 'All') return l10n.uiAll;
+    if (domain == 'General') return l10n.trainingGeneralDomainLabel;
+    return LocalizedDisplay.metadataLabel(context, domain);
   }
 
   bool _matchesSearchQuery(TrainingModel training) {

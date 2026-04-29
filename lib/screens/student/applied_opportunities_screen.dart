@@ -205,6 +205,10 @@ class _AppliedOpportunitiesScreenState
     final withdrawnCount = _countFor(provider, _ApplicationFilter.withdrawn);
     final hasFilters =
         _selectedFilter != _ApplicationFilter.all || _searchQuery.isNotEmpty;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final filterValues = isRtl
+        ? _ApplicationFilter.values.reversed.toList(growable: false)
+        : _ApplicationFilter.values.toList(growable: false);
 
     return AppShellBackground(
       child: Scaffold(
@@ -287,15 +291,11 @@ class _AppliedOpportunitiesScreenState
                               SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
-                                  children: _ApplicationFilter.values
+                                  children: filterValues
                                       .map(
                                         (filter) => Padding(
                                           padding: EdgeInsetsDirectional.only(
-                                            end:
-                                                filter ==
-                                                    _ApplicationFilter
-                                                        .values
-                                                        .last
+                                            end: filter == filterValues.last
                                                 ? 0
                                                 : 8,
                                           ),

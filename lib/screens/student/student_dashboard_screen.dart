@@ -1556,7 +1556,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 
     if (items.isEmpty) {
       return Padding(
-        padding: const EdgeInsetsDirectional.only(end: 20),
+        padding: const EdgeInsets.only(right: 20),
         child: _buildEmptyState(
           icon: Icons.schedule_outlined,
           message: AppLocalizations.of(context)!.uiNoUrgentDeadlines,
@@ -3651,6 +3651,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               fontWeight: FontWeight.w600,
               color: textMedium,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
           Text(
