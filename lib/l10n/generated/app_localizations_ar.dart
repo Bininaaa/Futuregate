@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'بوابة المستقبل';
+  String get appTitle => 'FutureGate';
 
   @override
   String get languageEnglish => 'الإنجليزية';
@@ -111,7 +111,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountBlockedMessage =>
-      'تم حظر حسابك من طرف المشرف. لم يعد بإمكانك استخدام التطبيق. إذا كنت تعتقد أن هذا خطأ، تواصل مع الدعم.';
+      'تم حظر حسابك من قِبل المسؤول. لم يعد بإمكانك استخدام المنصة. إذا كنت تعتقد أن هذا خطأ، يُرجى التواصل مع الدعم.';
 
   @override
   String get backToSignInLabel => 'العودة لتسجيل الدخول';
@@ -256,7 +256,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'اختر الإنجليزية أو الفرنسية أو العربية وطبّقها فورًا في التطبيق.';
 
   @override
-  String get lightVisualSystemLabel => 'الوضع الفاتح';
+  String get lightVisualSystemLabel => 'نظام بصري فاتح';
 
   @override
   String get openNotificationsCenterLabel => 'فتح الإشعارات';
@@ -364,10 +364,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get workModeLabel => 'وضع العمل';
 
   @override
-  String get paidStatusLabel => 'حالة الدفع';
+  String get paidStatusLabel => 'حالة الأجر';
 
   @override
-  String get compensationNoteLabel => 'ملاحظة المقابل';
+  String get compensationNoteLabel => 'ملاحظة التعويض';
 
   @override
   String get durationLabel => 'المدة';
@@ -388,7 +388,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get closedStatusLabel => 'مغلق';
 
   @override
-  String get closedStatusSubtitle => 'غير ظاهرة للطلاب';
+  String get closedStatusSubtitle => 'محفوظة بشكل خاص';
 
   @override
   String get savedHiddenLabel => 'محفوظة ومخفية';
@@ -419,7 +419,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get opportunityTitleHintInternship =>
-      'مثال: تدريب Flutter - فريق الهاتف المحمول';
+      'مثال: تدريب Flutter - فريق تطبيقات الهاتف المحمول';
 
   @override
   String get opportunityTitleHintSponsoring =>
@@ -430,7 +430,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get opportunityLocationHintSponsoring =>
-      'مثال: كل الجزائر أو الجزائر العاصمة';
+      'مثال: في جميع أنحاء الجزائر أو الجزائر العاصمة';
 
   @override
   String get eligibilityLabel => 'الأهلية';
@@ -491,7 +491,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get scholarshipAdditionalInfoSubtitle =>
-      'استخدم هذه الحقول الاختيارية لتحسين الاكتشاف والتصفية ووضوح التقديم الخارجي.';
+      'استخدم هذه الحقول الاختيارية لتحسين الاكتشاف والتصفية ووضوح روابط التقديم الخارجية.';
 
   @override
   String get publishScholarshipTitle => 'نشر المنحة الدراسية';
@@ -512,13 +512,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saveOpportunityChangesLabel => 'حفظ تغييرات الفرصة';
 
   @override
-  String get publishAdminOpportunityTitle => 'نشر فرصة من المشرف';
+  String get publishAdminOpportunityTitle => 'نشر فرصة إدارية';
 
   @override
-  String get editAdminOpportunityTitle => 'تعديل فرصة من المشرف';
+  String get editAdminOpportunityTitle => 'تعديل فرصة إدارية';
 
   @override
-  String get futureGateAdminLabel => 'مشرف بوابة المستقبل';
+  String get futureGateAdminLabel => 'مشرف FutureGate';
 
   @override
   String get publishIdeaTitle => 'نشر فكرة';
@@ -785,7 +785,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sponsoredLowercaseLabel => 'فرصة ممولة';
 
   @override
-  String get opportunityHeadlineJob => 'وظيفة فعلية';
+  String get opportunityHeadlineJob => 'وظّف لدور حقيقي';
 
   @override
   String get opportunityHeadlineInternship => 'درّب مواهب المستقبل';
@@ -979,7 +979,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiActionUser(Object action) {
-    return 'المستخدم $action';
+    return '$action المستخدم';
   }
 
   @override
@@ -1681,7 +1681,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiDeleteConversation => 'هل تريد حذف المحادثة؟';
 
   @override
-  String get uiDeleteForEveryone => 'الحذف لدى الجميع';
+  String get uiDeleteForEveryone => 'حذف لدى الجميع';
 
   @override
   String get uiDeleteMessage => 'هل تريد حذف الرسالة؟';
@@ -1722,7 +1722,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiDisabledWhileLevelFilterIsActive =>
-      'تم تعطيله عندما يكون مرشح المستوى نشطًا';
+      'معطّل أثناء تفعيل مرشح المستوى';
 
   @override
   String get uiDiscover => 'اكتشف';
@@ -1819,7 +1819,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiEverythingImportantIsSurfacedHereBeforeYouOpenTheFull =>
-      'تظهر هنا أهم التفاصيل قبل فتح دعوة التقديم الكاملة.';
+      'تظهر هنا أهم المعلومات قبل فتح تفاصيل التقديم الكاملة.';
 
   @override
   String get uiExternalApplication => 'التقديم عبر رابط خارجي';
@@ -2015,7 +2015,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiIMAStudent => 'أنا طالب';
 
   @override
-  String get uiIVerified => 'لقد تحققت';
+  String get uiIVerified => 'تم التحقق';
 
   @override
   String get uiIdeaBasics => 'أساسيات الفكرة';
@@ -2139,7 +2139,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'انتقل مباشرة إلى أقسام الإدارة التي تستخدمها كثيرًا.';
 
   @override
-  String get uiJuniorFrontendDeveloper => 'مطور الواجهة المبتدئة';
+  String get uiJuniorFrontendDeveloper => 'مطوّر واجهات أمامية مبتدئ';
 
   @override
   String get uiKeepACurrentVerificationDocumentAttachedToMaintainATrustworthy =>
@@ -2189,7 +2189,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiKeepYourCompanyPresenceTrustedWithAnUpToDate =>
-      'حافظ على ثقة وجود شركتك من خلال سجل تجاري محدث.';
+      'حافظ على موثوقية حضور شركتك من خلال سجل تجاري محدّث.';
 
   @override
   String get uiKeepYourStudentContextCurrentSoOpportunityMatchingStaysUseful =>
@@ -2231,7 +2231,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiLearners => 'المتعلمون';
 
   @override
-  String get uiLegal => 'قانوني';
+  String get uiLegal => 'المعلومات القانونية';
 
   @override
   String get uiLevelFilters => 'عوامل تصفية المستوى';
@@ -2317,7 +2317,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiManagedInventory => 'المحتوى المُدار';
 
   @override
-  String get uiMarkPendingReview => 'إعادتها إلى المراجعة';
+  String get uiMarkPendingReview => 'نقل إلى قيد المراجعة';
 
   @override
   String get uiMarketing => 'تسويق';
@@ -2392,7 +2392,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'إعادة الشركة إلى قائمة المراجعة لإعادة التحقق.';
 
   @override
-  String get uiMuted => 'كتم الصوت';
+  String get uiMuted => 'مكتوم';
 
   @override
   String get uiMyCv => 'سيرتي الذاتية';
@@ -2637,7 +2637,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiOrbitAiAiOps => 'Orbit AI - AIOps';
 
   @override
-  String get uiOverview => 'ملخص';
+  String get uiOverview => 'نظرة عامة';
 
   @override
   String get uiWorkspace => 'مساحة العمل';
@@ -2676,20 +2676,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiPendingApprovedAndRejectedCountsFromYourLiveApplications =>
-      'أعداد الطلبات المعلقة والمقبولة والمرفوضة من طلباتك النشطة.';
+      'أعداد الطلبات بانتظار المراجعة والمقبولة والمرفوضة من طلباتك النشطة.';
 
   @override
-  String get uiPendingApps => 'الطلبات المعلقة';
+  String get uiPendingApps => 'الطلبات بانتظار المراجعة';
 
   @override
-  String get uiPendingIdeasNeedReview => 'الأفكار المعلقة بحاجة إلى مراجعة';
+  String get uiPendingIdeasNeedReview => 'الأفكار بانتظار المراجعة';
 
   @override
-  String get uiPendingOpportunitiesNeedAttention =>
-      'الفرص المعلقة بحاجة إلى متابعة';
+  String get uiPendingOpportunitiesNeedAttention => 'الفرص بانتظار المتابعة';
 
   @override
-  String get uiPendingProjectIdeas => 'أفكار المشاريع المعلقة';
+  String get uiPendingProjectIdeas => 'أفكار المشاريع بانتظار المراجعة';
 
   @override
   String get uiPendingReviews => 'قيد المراجعة';
@@ -2701,12 +2700,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiPendingapplicationsPendingApps(Object pendingApplications) {
-    return '$pendingApplications طلبات معلقة';
+    return '$pendingApplications طلبات بانتظار المراجعة';
   }
 
   @override
   String uiPendingideasPendingIdeas(Object pendingIdeas) {
-    return '$pendingIdeas الأفكار المعلقة';
+    return '$pendingIdeas أفكار بانتظار المراجعة';
   }
 
   @override
@@ -2774,7 +2773,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiPositioningAccess => 'طريقة العرض والوصول';
 
   @override
-  String get uiPostAdminIdea => 'نشر فكرة من المشرف';
+  String get uiPostAdminIdea => 'نشر فكرة';
 
   @override
   String get uiPostOpportunity => 'نشر فرصة';
@@ -2817,7 +2816,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiProblemSolutionImpact => 'المشكلة والحل والتأثير';
 
   @override
-  String get uiProblemStatement => 'بيان المشكلة';
+  String get uiProblemStatement => 'وصف المشكلة';
 
   @override
   String get uiProblemStatement1Ebe => 'بيان المشكلة';
@@ -2935,7 +2934,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiQuickSupport => 'الدعم السريع';
 
   @override
-  String get uiRating => 'تصنيف';
+  String get uiRating => 'التقييم';
 
   @override
   String get uiReachOutWithContextSoTheTeamCanHelpFaster =>
@@ -3171,7 +3170,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiRoleOverview => 'نظرة عامة على الدور';
 
   @override
-  String get uiRoleSetup => 'إعداد الدور';
+  String get uiRoleSetup => 'إعداد المنصب';
 
   @override
   String get uiRoles => 'الأدوار';
@@ -3247,7 +3246,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSearchByTypeTitleActorOrStatus =>
-      'البحث حسب النوع أو العنوان أو الممثل أو الحالة...';
+      'البحث حسب النوع أو العنوان أو صاحب الإجراء أو الحالة...';
 
   @override
   String get uiSearchCommonTopicsContactSupportOrReportSomethingThatNeeds =>
@@ -3342,7 +3341,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSeeHowTheStudentPopulationIsDistributedByLevelBefore =>
-      'تعرف على كيفية توزيع عدد الطلاب حسب المستوى قبل الغوص في الرسوم البيانية.';
+      'تعرف على كيفية توزيع الطلاب حسب المستوى قبل الاطلاع على الرسوم البيانية.';
 
   @override
   String get uiSelectYourAcademicLevel => 'اختر مستواك الأكاديمي.';
@@ -3445,26 +3444,26 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiSignOut => 'تسجيل الخروج';
 
   @override
-  String get uiSignOutOfAdmin => 'تسجيل الخروج من المشرف؟';
+  String get uiSignOutOfAdmin => 'تسجيل الخروج من مساحة المشرف؟';
 
   @override
-  String get uiSignOutOfCompany => 'تسجيل الخروج من الشركة؟';
+  String get uiSignOutOfCompany => 'تسجيل الخروج من مساحة الشركة؟';
 
   @override
   String get uiSignOutOfFuturegate => 'تسجيل الخروج من FutureGate؟';
 
   @override
-  String get uiSignOutOfStudent => 'تسجيل الخروج من الطالب؟';
+  String get uiSignOutOfStudent => 'تسجيل الخروج من مساحة الطالب؟';
 
   @override
   String get uiSignOutOfTheCompanyWorkspace =>
       'تسجيل الخروج من مساحة عمل الشركة';
 
   @override
-  String get uiSignalGrowthMarketing => 'نمو الإشارة - التسويق';
+  String get uiSignalGrowthMarketing => 'Signal Growth - التسويق';
 
   @override
-  String get uiSketchroomIllustration => 'رسم توضيحي لغرفة الرسم';
+  String get uiSketchroomIllustration => 'Sketchroom - الرسم التوضيحي';
 
   @override
   String get uiSkills => 'مهارات';
@@ -3522,7 +3521,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiStartYourStudentProfile => 'ابدأ ملف تعريف الطالب الخاص بك.';
 
   @override
-  String get uiStartup => 'بدء';
+  String get uiStartup => 'شركة ناشئة';
 
   @override
   String get uiStatus => 'حالة';
@@ -3626,7 +3625,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiTechnovaGlobalInc => 'شركة تكنوفا العالمية';
 
   @override
-  String get uiTemplate => 'نموذج';
+  String get uiTemplate => 'قالب';
 
   @override
   String get uiTerms => 'شروط';
@@ -3664,7 +3663,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTheProfileAlreadyLooksPolishedAQuickRefreshFromTime =>
-      'الملف الشخصي يبدو مصقولًا بالفعل. التحديث السريع من وقت لآخر يكفي.';
+      'يبدو الملف الشخصي احترافيًا بالفعل. التحديث السريع من وقت لآخر يكفي.';
 
   @override
   String get uiTheResetLinkIsOnItsWay => 'رابط إعادة التعيين في طريقه.';
@@ -3687,7 +3686,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTheseDetailsHelpYouEvaluateHowTheOpportunityIsPositioned =>
-      'تساعدك هذه التفاصيل على تقييم كيفية وضع الفرصة للمتقدمين.';
+      'تساعدك هذه التفاصيل على تقييم طريقة عرض الفرصة للمتقدمين.';
 
   @override
   String get uiTheseDetailsHelpYouReviewWhereTheScholarshipFitsAnd =>
@@ -3707,7 +3706,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiThisGivesTheAdminViewOfWhatMakesTheRole =>
-      'يعرض هذا للمشرف ما يجعل الدور جذابًا.';
+      'يمنح هذا القسم المسؤولين لمحة عمّا يجعل الدور جذابًا.';
 
   @override
   String get uiThisIdeaIsNoLongerAvailable => 'هذه الفكرة لم تعد متوفرة.';
@@ -3717,7 +3716,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiThisSectionHelpsYouReviewHowTheTrainingIsPackaged =>
-      'يساعدك هذا القسم على مراجعة كيفية تجميع التدريب وتقديمه للمستخدمين.';
+      'يساعدك هذا القسم على مراجعة كيفية تنظيم التدريب وعرضه على المستخدمين.';
 
   @override
   String get uiThisSectionShowsWhatTheIdeaIsSolvingHowIt =>
@@ -3728,11 +3727,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBook =>
-      'مساحة العمل هذه مخصصة لاستيراد كتب Google، لذا يظل تنظيم الكتب مركزًا.';
+      'مساحة العمل هذه مخصصة لاستيراد كتب Google، لذلك يبقى تنظيم الكتب مركّزًا.';
 
   @override
   String get uiThisWorkspaceIsDedicatedToYoutubeImportsSoVideoCuration =>
-      'مساحة العمل هذه مخصصة لاستيراد YouTube حتى يبقى تنسيق الفيديو مركزًا.';
+      'مساحة العمل هذه مخصصة لاستيراد YouTube، لذلك يبقى تنظيم مقاطع الفيديو مركّزًا.';
 
   @override
   String get uiTimelineAndLocation => 'الجدول الزمني والموقع';
@@ -3759,7 +3758,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTrackEachSubmissionAndSeeWhatDeservesYourNextMove =>
-      'تتبع كل إرسال وشاهد ما يستحق خطوتك التالية.';
+      'تابع كل طلب وحدد ما يستحق خطوتك التالية.';
 
   @override
   String get uiTrackLatestEvents => 'تتبع آخر الأحداث';
@@ -3770,7 +3769,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTrackTheRolesYouNeedAndTheInterestBuildingAround =>
-      'تتبع الأدوار التي تحتاجها والاهتمام المبني حول هذه الفكرة.';
+      'تابع الأدوار التي تحتاجها ومستوى الاهتمام المتزايد حول هذه الفكرة.';
 
   @override
   String get uiTraining => 'تدريب';
@@ -3845,7 +3844,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiUnderstandWhatInformationIsStoredAndHowItIsUsed =>
-      'فهم المعلومات المخزنة وكيفية استخدامها داخل المنصة.';
+      'افهم المعلومات المخزنة وكيفية استخدامها داخل المنصة.';
 
   @override
   String get uiUniversity => 'جامعة';
@@ -3913,7 +3912,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiUseATopicSearchToBringBackImportReadyVideos =>
-      'استخدم البحث عن موضوع لإعادة مقاطع الفيديو الجاهزة للاستيراد للمراجعة.';
+      'استخدم البحث حسب الموضوع لجلب مقاطع فيديو جاهزة للاستيراد والمراجعة.';
 
   @override
   String
@@ -3954,7 +3953,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiUserDetails => 'تفاصيل المستخدم';
 
   @override
-  String get uiUserManagement => 'إدارة المستخدم';
+  String get uiUserManagement => 'إدارة المستخدمين';
 
   @override
   String get uiUsers => 'المستخدمون';
@@ -3986,7 +3985,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValue1Admins(Object value1) {
-    return '$value1 مشرفين';
+    return '$value1 مشرف';
   }
 
   @override
@@ -4026,7 +4025,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValue1ImportedVideos(Object value1) {
-    return '$value1 مقاطع الفيديو المستوردة';
+    return '$value1 مقطع فيديو مستورد';
   }
 
   @override
@@ -4071,7 +4070,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValue1Users(Object value1) {
-    return '$value1 مستخدمين';
+    return '$value1 مستخدم';
   }
 
   @override
@@ -4088,7 +4087,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiVerification => 'التحقق';
 
   @override
-  String get uiVerificationSent => 'تم إرسال التحقق';
+  String get uiVerificationSent => 'تم إرسال رسالة التحقق';
 
   @override
   String get uiVerifyEmail => 'التحقق من البريد الإلكتروني';
@@ -4108,13 +4107,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiVideoLibraryUnavailable => 'مكتبة الفيديو غير متاحة';
 
   @override
-  String get uiVideos => 'فيديوهات';
+  String get uiVideos => 'مقاطع فيديو';
 
   @override
   String get uiView => 'عرض';
 
   @override
-  String get uiView69Bd => 'منظر';
+  String get uiView69Bd => 'عرض';
 
   @override
   String get uiViewAll => 'عرض الكل';
@@ -4128,7 +4127,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiViewBuiltCv => 'عرض السيرة الذاتية المبنية';
+  String get uiViewBuiltCv => 'عرض السيرة الذاتية المنشأة';
 
   @override
   String get uiViewCv => 'عرض السيرة الذاتية';
@@ -4164,7 +4163,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiWebsite => 'موقع إلكتروني';
 
   @override
-  String get uiWebsiteSocial => 'الموقع الإلكتروني والاجتماعي';
+  String get uiWebsiteSocial => 'الموقع الإلكتروني ووسائل التواصل';
 
   @override
   String get uiWelcomeBack => 'مرحبًا بك في FutureGate';
@@ -4231,7 +4230,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiYourLatestApplicationsSavesAndCvUpdatesAreReflectedHere =>
-      'تظهر هنا أحدث طلباتك وحفظك وتحديثات سيرتك الذاتية.';
+      'تظهر هنا أحدث طلباتك والعناصر التي حفظتها وتحديثات سيرتك الذاتية.';
 
   @override
   String get uiYourShortlist => 'القائمة المختصرة الخاصة بك';
@@ -4347,27 +4346,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValuePendingIdeas(Object value1) {
-    return '$value1 الأفكار المعلقة';
+    return '$value1 أفكار بانتظار المراجعة';
   }
 
   @override
   String uiValuePendingApps(Object value1) {
-    return '$value1 طلبات معلقة';
+    return '$value1 طلبات بانتظار المراجعة';
   }
 
   @override
   String uiValueOpportunities(Object value1) {
-    return 'فرص $value1';
+    return '$value1 فرصة';
   }
 
   @override
   String uiValueScholarships(Object value1) {
-    return 'المنح الدراسية $value1';
+    return '$value1 منحة دراسية';
   }
 
   @override
   String uiValueTrainings(Object value1) {
-    return 'تدريبات $value1';
+    return '$value1 تدريب';
   }
 
   @override
@@ -4395,7 +4394,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiPendingIdeasStillWaiting(Object value1) {
-    return 'الأفكار المعلقة لا تزال تنتظر $value1';
+    return 'الأفكار بانتظار المراجعة لا تزال تنتظر $value1';
   }
 
   @override
@@ -4410,7 +4409,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueApps(Object value1) {
-    return 'طلبات $value1';
+    return '$value1 طلب';
   }
 
   @override
@@ -4422,7 +4421,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiThisDocumentIsNotAValidPdfFile =>
-      'هذه الوثيقة ليست ملف PDF صالح';
+      'هذه الوثيقة ليست ملف PDF صالحًا';
 
   @override
   String get uiWeCouldnTOpenTheDocumentRightNow =>
@@ -4463,7 +4462,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueImportedBooks(Object value1) {
-    return '$value1 الكتب المستوردة';
+    return '$value1 كتاب مستورد';
   }
 
   @override
@@ -4494,7 +4493,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueImportedVideos(Object value1) {
-    return '$value1 مقاطع الفيديو المستوردة';
+    return '$value1 مقطع فيديو مستورد';
   }
 
   @override
@@ -4504,12 +4503,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiDueValue(Object value1) {
-    return 'مستحق $value1';
+    return 'الموعد النهائي: $value1';
   }
 
   @override
   String uiValueUsers(Object value1) {
-    return '$value1 مستخدمين';
+    return '$value1 مستخدم';
   }
 
   @override
@@ -4524,7 +4523,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueAdmins(Object value1) {
-    return '$value1 مشرفين';
+    return '$value1 مشرف';
   }
 
   @override
@@ -4833,7 +4832,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiYouCanNowMessageValue(Object value1) {
-    return 'يمكنك الآن إرسال رسالة $value1';
+    return 'يمكنك الآن إرسال رسالة إلى $value1';
   }
 
   @override
@@ -4868,7 +4867,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiValueInterested(Object value1) {
-    return '$value1 مهتمة';
+    return '$value1 مهتم';
   }
 
   @override
@@ -4969,7 +4968,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authGoogleMissingToken =>
-      'تعذّر على تسجيل الدخول عبر Google جلب رمز الحساب المطلوب.';
+      'تعذّر على عملية تسجيل الدخول عبر Google جلب رمز الحساب المطلوب.';
 
   @override
   String get authGoogleSignInFailedShort => 'فشل تسجيل الدخول عبر Google.';
@@ -5005,7 +5004,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'تغيير كلمة المرور متاح فقط للحسابات التي تستخدم تسجيل الدخول بالبريد الإلكتروني وكلمة المرور.';
 
   @override
-  String get workerNotAuthenticatedMessage => 'غير مصادق عليه';
+  String get workerNotAuthenticatedMessage => 'لم تتم المصادقة';
 
   @override
   String uiSearchFailedValue(Object value1) {
@@ -5198,7 +5197,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiScholarshipsSubtitle => 'فرص تمويل ومواعيد وطرق دراسة عالمية.';
 
   @override
-  String get uiTrainingSubtitle => 'دورات وكتب وشهادات تشحذ مسيرتك.';
+  String get uiTrainingSubtitle => 'دورات وكتب وشهادات تصقل مسيرتك.';
 
   @override
   String get uiIdeasSubtitle =>
@@ -5274,7 +5273,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiEmailNotVerifiedYet => 'لم يتم التحقق من البريد الإلكتروني بعد.';
 
   @override
-  String get uiVerificationEmailSent => 'تم إرسال بريد التحقق.';
+  String get uiVerificationEmailSent => 'تم إرسال رسالة التحقق.';
 
   @override
   String get uiYourUniversity => 'جامعتك';
@@ -5378,7 +5377,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminWorkspaceSectionSubtitle =>
-      'أبقِ عمليات المنصة قريبة دون كشف تعديل الملف الشخصي.';
+      'اجعل عمليات المنصة في متناولك دون إظهار أدوات تعديل الملف الشخصي.';
 
   @override
   String get adminSupportSubtitle => 'معلومات التطبيق والمساعدة لمشرفي المنصة.';
@@ -5492,7 +5491,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get twoStepVerificationGoogleSubtitle =>
-      'إدارتها عبر حساب Google الخاص بك';
+      'إدارته عبر حساب Google الخاص بك';
 
   @override
   String get twoStepVerificationEmailSubtitle =>
@@ -5500,7 +5499,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String twoStepVerificationGoogleBody(Object provider) {
-    return 'يسجّل هذا الحساب الدخول عبر $provider، لذا يتم إدارة التحقق بخطوتين مباشرة عبر Google.';
+    return 'يسجّل هذا الحساب الدخول عبر $provider، لذا يُدار التحقق بخطوتين مباشرة عبر Google.';
   }
 
   @override
@@ -5525,7 +5524,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get privacyControlsSectionSubtitle =>
-      'افهم ما هي المعلومات المخزنة وكيف يتم استخدامها داخل المنصة.';
+      'افهم المعلومات المخزنة وكيفية استخدامها داخل المنصة.';
 
   @override
   String get dataPermissionsTitle => 'أذونات البيانات';
@@ -5547,7 +5546,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get privacyPolicySettingsBody =>
-      'تُستخدم بيانات حسابك لتوفير تسجيل الدخول وإدارة الملف الشخصي والفرص المحفوظة والإشعارات والوصول للسيرة الذاتية والطلبات. الوصول الحساس مقتصر على ميزات المنصة التي تتطلبه.';
+      'تُستخدم بيانات حسابك لتوفير تسجيل الدخول وإدارة الملف الشخصي والفرص المحفوظة والإشعارات والوصول إلى السيرة الذاتية والطلبات. الوصول الحساس مقتصر على ميزات المنصة التي تتطلبه.';
 
   @override
   String get termsOfUseSettingsTitle => 'شروط الاستخدام';
@@ -5662,7 +5661,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get updateEmailLabel => 'تحديث البريد الإلكتروني';
 
   @override
-  String get verificationSentTitle => 'تم إرسال التحقق';
+  String get verificationSentTitle => 'تم إرسال رسالة التحقق';
 
   @override
   String get verificationSentBody =>
@@ -5686,7 +5685,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get quickSupportSubtitle =>
-      'تواصل مع تفاصيل ليتمكن الفريق من مساعدتك بشكل أسرع.';
+      'تواصل مع شرح واضح ليتمكن الفريق من مساعدتك بشكل أسرع.';
 
   @override
   String get contactSupportTitle => 'التواصل مع الدعم';
@@ -5706,7 +5705,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String helpTopicCount(Object count) {
-    return '$count موضوع(مواضيع) مساعدة';
+    return '$count موضوع مساعدة';
   }
 
   @override
@@ -5747,7 +5746,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get helpApplicationDescription =>
-      'تتبع طلباتك المقدمة، وراجع الحالات، وافهم ما يحتاجه المُوظفون لتقييم ملفك الشخصي.';
+      'تتبع طلباتك المقدمة، وراجع الحالات، وافهم ما يحتاجه مسؤولو التوظيف لتقييم ملفك الشخصي.';
 
   @override
   String get helpSavedItemsTitle => 'العناصر المحفوظة';
@@ -5829,7 +5828,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contactAboutTitle => 'التواصل';
 
   @override
-  String get websiteSocialTitle => 'الموقع والتواصل الاجتماعي';
+  String get websiteSocialTitle => 'الموقع الإلكتروني ووسائل التواصل';
 
   @override
   String get websiteSocialSubtitle => 'ستُضاف الروابط العامة هنا عند نشرها';
@@ -6155,7 +6154,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String
   get uiKeepBooksAndVideoResourcesInOneAdminFriendlyLibraryThenOpenTheSourceStudiosOnlyWhenYouNeedNewImports =>
-      'احتفظ بالكتب وموارد الفيديو في مكتبة واحدة سهلة للمشرفين، وافتح استوديوهات المصدر فقط عند الحاجة إلى استيرادات جديدة.';
+      'احتفظ بالكتب وموارد الفيديو في مكتبة واحدة سهلة الإدارة للمشرفين، وافتح استوديوهات المصدر فقط عند الحاجة إلى استيرادات جديدة.';
 
   @override
   String
@@ -6266,7 +6265,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String
   get uiCouldNotLoadApplicationCountRightNowYouCanStillOpenTheApplicationsSheetAndTryAgain =>
-      'تعذّر تحميل عدد الطلبات حاليًا. لا يزال بإمكانك فتح ورقة الطلبات والمحاولة مرة أخرى.';
+      'تعذّر تحميل عدد الطلبات حاليًا. لا يزال بإمكانك فتح نافذة الطلبات والمحاولة مرة أخرى.';
 
   @override
   String get uiStudentProfileAvailableForAdminReview =>
@@ -6328,11 +6327,11 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String
   get uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused =>
-      'مساحة العمل هذه مخصصة لاستيراد Google Books حتى يبقى تنسيق الكتب مركزًا.';
+      'مساحة العمل هذه مخصصة لاستيراد Google Books حتى يبقى تنظيم الكتب مركّزًا.';
 
   @override
   String get uiUseATopicSearchToBringBackImportReadyVideosForReview =>
-      'استخدم بحثًا حسب الموضوع لجلب فيديوهات جاهزة للاستيراد والمراجعة.';
+      'استخدم بحثًا حسب الموضوع لجلب مقاطع فيديو جاهزة للاستيراد والمراجعة.';
 
   @override
   String
@@ -6342,7 +6341,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String
   get uiThisWorkspaceIsDedicatedToYouTubeImportsSoVideoCurationStaysFocused =>
-      'مساحة العمل هذه مخصصة لاستيراد YouTube حتى يبقى تنسيق الفيديو مركزًا.';
+      'مساحة العمل هذه مخصصة لاستيراد YouTube حتى يبقى تنظيم مقاطع الفيديو مركّزًا.';
 
   @override
   String get uiVideoLibrary => 'مكتبة الفيديو';
@@ -6409,7 +6408,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiEmploymentType => 'نوع التوظيف';
 
   @override
-  String get uiPaidStatus => 'حالة الدفع';
+  String get uiPaidStatus => 'حالة الأجر';
 
   @override
   String get uiTags => 'الوسوم';
@@ -6439,7 +6438,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNoRecommendations => 'لا توجد توصيات الآن';
 
   @override
-  String get uiCheckBackSoon => 'تحقق قريباً للعثور على فرص منتقاة جديدة.';
+  String get uiCheckBackSoon => 'عد قريبًا للعثور على فرص منتقاة جديدة.';
 
   @override
   String get uiNoRecentActivity => 'لا يوجد نشاط حديث بعد';
@@ -6595,7 +6594,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notifFilterNewContent => 'محتوى جديد';
 
   @override
-  String get notifFilterUnread => 'غير مقروء';
+  String get notifFilterUnread => 'بحاجة إلى اهتمام';
 
   @override
   String get notifFilterApplications => 'الطلبات';
@@ -6631,7 +6630,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notifOppSponsored => 'مموّل';
 
   @override
-  String get notifAllCaughtUp => 'لا شيء فائت';
+  String get notifAllCaughtUp => 'كل شيء محدّث';
 
   @override
   String get notifTypeMessage => 'رسالة';
@@ -6734,7 +6733,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashSeeOpenRoles => 'عرض الفرص المفتوحة';
 
   @override
-  String get dashOpenSaved => 'فتح المحفوظات';
+  String get dashOpenSaved => 'فتح العناصر المحفوظة';
 
   @override
   String get scholarshipOpportunityFallback => 'فرصة منحة دراسية';
@@ -6754,7 +6753,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scholarshipDeadlineFallback => 'الموعد النهائي المعلن من الجهة';
 
   @override
-  String get scholarshipFundingFallback => 'التمويل مُشارك في الإعلان الرسمي';
+  String get scholarshipFundingFallback =>
+      'تفاصيل التمويل مذكورة في الإعلان الرسمي';
 
   @override
   String get scholarshipFeaturedBadge => 'مميّز';
@@ -6953,18 +6953,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ideaStageBeta => 'نسخة تجريبية';
 
   @override
-  String get scholarshipRemovedSavedMessage => 'تمت إزالته من المنح المحفوظة';
+  String get scholarshipRemovedSavedMessage => 'تمت إزالة المنحة من المحفوظات';
 
   @override
   String get scholarshipSavedMessage => 'تم حفظ المنحة';
 
   @override
   String get scholarshipSnapshotSubtitle =>
-      'كل شيء مهم يظهر هنا قبل فتح طلب التقديم الكامل.';
+      'تظهر هنا كل التفاصيل المهمة قبل فتح تفاصيل التقديم الكاملة.';
 
   @override
   String get scholarshipOverviewSubtitle =>
-      'نظرة عامة مركزة بحيث تبدو الفرصة سهلة الفحص.';
+      'نظرة عامة مركزة تجعل الفرصة سهلة التصفح.';
 
   @override
   String get uiNoArchivedConversations => 'لا توجد محادثات مؤرشفة';
@@ -7052,7 +7052,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiTryDifferentCourseProviderTopicOrSkill =>
-      'جرّب دورة أو مزودًا أو موضوعًا أو مهارة مختلفة.';
+      'جرّب دورة أو جهة مقدمة أو موضوعًا أو مهارة مختلفة.';
 
   @override
   String get uiOpenPosition => 'وظيفة مفتوحة';
@@ -7106,7 +7106,7 @@ class AppLocalizationsAr extends AppLocalizations {
     Object total,
     Object visible,
   ) {
-    return 'عرض $visible من $filter المطابقة من أصل $total إعلانات مفتوحة.';
+    return 'عرض $visible نتيجة مطابقة من $filter من أصل $total إعلان مفتوح.';
   }
 
   @override
@@ -7142,10 +7142,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiActionTrackStatus => 'تتبع الحالة';
 
   @override
-  String get uiActionSeeOpenRoles => 'استعرض الأدوار المفتوحة';
+  String get uiActionSeeOpenRoles => 'استعرض الفرص المفتوحة';
 
   @override
-  String get uiActionOpenSaved => 'فتح المحفوظات';
+  String get uiActionOpenSaved => 'فتح العناصر المحفوظة';
 
   @override
   String get uiSavedScholarshipBadge => 'منحة محفوظة';
@@ -7172,7 +7172,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiReviewedApplicationsBreakdown(Object approved, Object rejected) {
-    return 'حتى الآن، تمت الموافقة على $approved ورفض $rejected.';
+    return 'حتى الآن، تمت الموافقة على $approved وتم رفض $rejected.';
   }
 
   @override
@@ -7199,7 +7199,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiQuickHighlightsPulledFromYourLiveDashboardData =>
-      'ملخصات سريعة مستندة إلى بيانات لوحتك المباشرة.';
+      'ملخصات سريعة مستندة إلى بيانات لوحة التحكم المباشرة.';
 
   @override
   String get uiToday => 'اليوم';
@@ -7232,7 +7232,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiShowPending => 'عرض المعلّق';
+  String get uiShowPending => 'عرض الطلبات بانتظار المراجعة';
 
   @override
   String get uiShowingOnlyTheCandidatesWhoAppliedToThisRole =>
@@ -7247,7 +7247,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'أحدث المرشحين الجاهزين للمراجعة والمراسلة وفحص السيرة الذاتية.';
 
   @override
-  String get uiApplicationSpotlight => 'تسليط الضوء على الطلب';
+  String get uiApplicationSpotlight => 'إبراز الطلب';
 
   @override
   String get uiCandidateQueue => 'قائمة المرشحين';
@@ -7301,7 +7301,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiKeepTheCandidateContextCloseAtHand =>
-      'احتفظ بسياق المرشح قريبًا منك.';
+      'اجعل سياق المرشح في متناولك.';
 
   @override
   String get uiUnnamedCandidate => 'مرشح بدون اسم';
@@ -7333,7 +7333,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight =>
-      'وافق على المرشح للمضي قدمًا أو ارفضه إذا لم يكن مناسبًا.';
+      'وافق على المرشح لنقله إلى المرحلة التالية، أو ارفضه إذا لم يكن مناسبًا.';
 
   @override
   String get uiWorking => 'جارٍ التنفيذ...';
@@ -7348,7 +7348,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get companyFundingSectionTitle => 'تمويل الشركة';
 
   @override
-  String get internshipCompensationSectionTitle => 'مقابل التدريب';
+  String get internshipCompensationSectionTitle => 'تعويض التدريب';
 
   @override
   String get compensationAndFormatSectionTitle => 'التعويض ونمط العمل';
@@ -7402,7 +7402,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiDashboardSubtitle =>
-      'نبض المنصة وحمل الإشراف ونقاط التحكم السريعة.';
+      'نبض المنصة وعبء الإشراف ونقاط التحكم السريعة.';
 
   @override
   String get uiUsersSubtitle =>
@@ -7414,7 +7414,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiActivitySubtitle =>
-      'تتبع تغييرات المنصة وانتقل مباشرة إلى قائمة الانتظار الصحيحة.';
+      'تتبع تغييرات المنصة وانتقل مباشرة إلى قائمة الانتظار المناسبة.';
 
   @override
   String get uiAdmins => 'المشرفون';
@@ -7445,7 +7445,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiBlockUserMessage =>
-      'سيؤدي هذا إلى إزالة الوصول إلى التطبيق فوراً حتى تستعيد الحساب لاحقاً.';
+      'سيؤدي هذا إلى إزالة الوصول إلى التطبيق فوراً إلى أن تتم استعادة الحساب لاحقاً.';
 
   @override
   String get uiUnblockUserMessage =>
@@ -7486,7 +7486,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiApplicationsSuffix => 'طلب';
 
   @override
-  String get uiSavesSuffix => 'حفظ';
+  String get uiSavesSuffix => 'عمليات حفظ';
 
   @override
   String get uiUnknownTime => 'وقت غير معروف';
@@ -7552,18 +7552,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiLoadOlderUpdates =>
-      'تحميل التحديثات الأقدم من الطلبات والعروض والتدريبات والمنح وأفكار المشاريع.';
+      'تحميل التحديثات الأقدم من الطلبات والفرص والتدريبات والمنح وأفكار المشاريع.';
 
   @override
   String get uiAdminCreatedIdeas => 'أفكار المشرف';
 
   @override
   String get uiReviewSubmittedIdeas =>
-      'راجع الأفكار المُقدَّمة، وأبقِ قائمة الانتظار متحركة، وافتح التفاصيل عند الحاجة.';
+      'راجع الأفكار المُقدَّمة، وحافظ على سير قائمة الانتظار، وافتح التفاصيل عند الحاجة.';
 
   @override
   String get uiReviewJobsDescription =>
-      'راجع الوظائف والتدريبات والمنشورات المموّلة. صفّح حسب المصدر أو الحالة أو المراجعات المعلّقة.';
+      'راجع الوظائف والتدريبات والمنشورات المموّلة. صفّح حسب المصدر أو الحالة أو المراجعات بانتظار الإجراء.';
 
   @override
   String get uiAllTypes => 'جميع الأنواع';
@@ -7618,7 +7618,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'افتح هذه المنحة لمراجعة شروط الأهلية وتفاصيل التقديم.';
 
   @override
-  String get uiPendingIdeas => 'الأفكار المعلّقة';
+  String get uiPendingIdeas => 'الأفكار بانتظار المراجعة';
 
   @override
   String get uiApprovedIdeas => 'الأفكار المقبولة';
@@ -7642,7 +7642,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNoAdminIdeasMatch => 'لا توجد أفكار من المشرف تطابق هذا البحث';
 
   @override
-  String get uiNoPendingIdeasMatch => 'لا توجد أفكار معلّقة تطابق هذا البحث';
+  String get uiNoPendingIdeasMatch =>
+      'لا توجد أفكار بانتظار المراجعة تطابق هذا البحث';
 
   @override
   String get uiNoApprovedIdeasMatch => 'لا توجد أفكار مقبولة تطابق هذا البحث';
@@ -7670,7 +7671,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiAdminOpportunities => 'فرص المشرف';
 
   @override
-  String get uiPendingApplications => 'الطلبات المعلّقة';
+  String get uiPendingApplications => 'الطلبات بانتظار المراجعة';
 
   @override
   String get uiClosedOpportunities => 'الفرص المغلقة';
@@ -7694,12 +7695,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiNoAdminPostedItemsMatchSearch(Object items) {
-    return 'لا توجد $items نشرها المشرف تطابق هذا البحث';
+    return 'لا توجد $items منشورة من المشرف تطابق هذا البحث';
   }
 
   @override
   String uiNoItemsWithPendingApplicationsRightNow(Object items) {
-    return 'لا توجد $items لديها طلبات معلّقة حالياً';
+    return 'لا توجد $items لديها طلبات بانتظار المراجعة حاليًا';
   }
 
   @override
@@ -7777,7 +7778,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiStudentProfileDocumentsSubtitle =>
-      'ملف الطالب والمستندات المرسلة.';
+      'ملف الطالب والمستندات المقدمة.';
 
   @override
   String get uiCouldNotLoadFullStudentProfile =>
@@ -7807,7 +7808,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiSearchIdeasByTitleDomainSubmitterOrStatus =>
-      'ابحث في الأفكار حسب العنوان أو المجال أو المرسل أو الحالة...';
+      'ابحث في الأفكار حسب العنوان أو المجال أو مقدم الفكرة أو الحالة...';
 
   @override
   String get uiSearchOpportunitiesByTitleCompanyLocationStatusOrCompensation =>
@@ -7859,7 +7860,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiPendingApprovedIdeasValue(Object pending, Object approved) {
-    return '$pending معلّقة و$approved مقبولة';
+    return '$pending بانتظار المراجعة و$approved مقبولة';
   }
 
   @override
@@ -8107,7 +8108,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentUploadingCoverImage => 'جارٍ رفع صورة الغلاف...';
 
   @override
-  String get studentEditingLockedAfterReview => 'التعديل مقفل بعد المراجعة';
+  String get studentEditingLockedAfterReview => 'التعديل مغلق بعد المراجعة';
 
   @override
   String get studentPublishAgain => 'النشر مرة أخرى';
@@ -8177,7 +8178,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentAddRoleHelper =>
-      'أضف الأشخاص الذين تحتاجهم في الفريق، واحداً تلو الآخر أو مفصولين بفواصل.';
+      'أضف الأدوار التي يحتاجها الفريق، واحداً تلو الآخر أو مفصولة بفواصل.';
 
   @override
   String get studentAddSkillHint => 'مثال: Flutter، Firebase، بحث UX';
@@ -8192,11 +8193,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentResourcesHelper =>
-      'اذكر الدعم الذي تحتاجه: أشخاص، أدوات، وصول، تمويل أو ملاحظات.';
+      'اذكر الدعم الذي تحتاجه: أشخاص، أدوات، إتاحة وصول، تمويل أو ملاحظات.';
 
   @override
   String get studentIdeaLockNotice =>
-      'تبقى الأفكار المعتمدة مقفلة هنا. إذا أعادها مشرف للتعديل فستصبح قابلة للتحرير في هذا النموذج.';
+      'تبقى الأفكار المعتمدة مغلقة هنا. إذا أعادها مشرف للتعديل فستصبح قابلة للتحرير في هذا النموذج.';
 
   @override
   String get studentPleaseAddMoreDetail => 'يرجى إضافة مزيد من التفاصيل.';
@@ -8315,7 +8316,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get studentCvAddEducation => 'أضف أحدث شهادة أو تكوين لديك.';
+  String get studentCvAddEducation => 'أضف أحدث شهادة أو تدريب لديك.';
 
   @override
   String get studentCvExperienceProjects => 'الخبرات أو المشاريع';
@@ -8391,7 +8392,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentCvApplicationFile => 'ملف التقديم';
 
   @override
-  String get studentCvPdfReadyApplications => 'ملف PDF جاهز للتقديمات.';
+  String get studentCvPdfReadyApplications => 'ملف PDF جاهز لطلبات التقديم.';
 
   @override
   String get studentCvSaveBuilderAsPdf => 'احفظ CV المُنشأ كملف PDF.';
@@ -8475,7 +8476,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentCreatePolishedCv =>
-      'أنشئ CV مصقولاً من تفاصيل ملفك المنظمة.';
+      'أنشئ CV احترافياً من تفاصيل ملفك المنظمة.';
 
   @override
   String get studentNotStarted => 'لم يبدأ';
@@ -8527,11 +8528,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentSavedBuilderPdfReady =>
-      'ملف PDF المحفوظ من المنشئ جاهز للتقديمات.';
+      'ملف PDF المحفوظ من المنشئ جاهز لطلبات التقديم.';
 
   @override
   String get studentUploadedFileUsedApplications =>
-      'يُستخدم ملفك المرفوع حالياً في التقديمات.';
+      'يُستخدم ملفك المرفوع حالياً في طلبات التقديم.';
 
   @override
   String get studentPreviewDraftSavePdf =>
@@ -8567,7 +8568,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentCvDownloadOpenedMessage =>
-      'استخدم نافذة النظام لحفظ أو مشاركة ملف PDF الخاص بـ CV.';
+      'استخدم خيارات النظام لحفظ أو مشاركة ملف PDF الخاص بـ CV.';
 
   @override
   String get studentDownloadOpenedTitle => 'تم فتح التنزيل';
@@ -8587,8 +8588,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentProfileUpdatedSuccess => 'تم تحديث ملفك الشخصي بنجاح.';
 
   @override
-  String get studentSignInViewCreatorProfile =>
-      'سجّل الدخول لعرض ملف صاحب الفكرة.';
+  String get studentSignInViewCreatorProfile => 'سجّل الدخول لعرض ملف المنشئ.';
 
   @override
   String get studentProfileUnavailable => 'الملف الشخصي غير متاح';
@@ -8781,7 +8781,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentSavedFilterTrainings => 'التدريبات';
 
   @override
-  String get studentSponsoredFilter => 'مدعومة';
+  String get studentSponsoredFilter => 'ممولة';
 
   @override
   String studentItemsShown(num count) {
@@ -8894,7 +8894,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get studentNoDeadlineShared => 'لم تتم مشاركة موعد نهائي';
+  String get studentNoDeadlineShared => 'لا يوجد موعد نهائي محدد';
 
   @override
   String studentClosedDate(Object date) {
@@ -8996,7 +8996,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentUploadedCvReady => 'CV المرفوع جاهز للإرسال';
 
   @override
-  String get studentHybridCvReady => 'أصول CV المرفوع وCV المُنشأ جاهزة';
+  String get studentHybridCvReady => 'CV المرفوع وCV المُنشأ جاهزان';
 
   @override
   String get studentBuilderCvRefreshed => 'تم تحديث CV المُنشأ لتسريع التقديم';
@@ -9011,10 +9011,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentSkillsPlural => 'مهارات';
 
   @override
-  String get studentExperienceBlockSingular => 'جزء خبرة';
+  String get studentExperienceBlockSingular => 'قسم خبرة';
 
   @override
-  String get studentExperienceBlocksPlural => 'أجزاء خبرة';
+  String get studentExperienceBlocksPlural => 'أقسام خبرة';
 
   @override
   String get studentLanguageSingular => 'لغة';
@@ -9079,7 +9079,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentReset => 'إعادة ضبط';
 
   @override
-  String get studentCvBuilderSteps => 'خطوات منشئ CV';
+  String get studentCvBuilderSteps => 'خطوات الإنشاء';
 
   @override
   String studentCvSectionsComplete(num completed, num total) {
@@ -9134,13 +9134,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentRecommendationRemoteFriendly => 'مناسب للعمل عن بُعد.';
 
   @override
-  String get studentRecommendationHybridSchedule => 'جدول هجين.';
+  String get studentRecommendationHybridSchedule => 'نظام عمل هجين.';
 
   @override
   String get studentRecommendationPaidOpportunity => 'فرصة مدفوعة الأجر.';
 
   @override
-  String get studentRecommendationTeamHighlighted => 'مميزة من الفريق.';
+  String get studentRecommendationTeamHighlighted => 'موصى بها من الفريق.';
 
   @override
   String get studentRecommendationBuildsExperience => 'يبني خبرة حقيقية.';
@@ -9153,7 +9153,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentProfileHintAddCv =>
-      'أضف CV لتصبح طلباتك أسرع عندما تظهر الفرصة المناسبة.';
+      'أضف CV ليصبح التقديم أسرع عند ظهور الفرصة المناسبة.';
 
   @override
   String get studentProfileHintAcademic =>
@@ -9169,7 +9169,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentProfileHintGoodShape =>
-      'ملفك الشخصي في حالة جيدة للفرصة التالية التي تفتحها.';
+      'ملفك الشخصي جاهز للفرصة التالية التي تطّلع عليها.';
 
   @override
   String get studentAddCv => 'إضافة CV';
@@ -9230,12 +9230,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count فرصة مفتوحة',
-      many: '$count فرصة مفتوحة',
-      few: '$count فرص مفتوحة',
-      two: 'فرصتان مفتوحتان',
-      one: 'فرصة واحدة مفتوحة',
-      zero: 'لا توجد فرص مفتوحة',
+      other: '$count منصب مفتوح',
+      many: '$count منصبًا مفتوحًا',
+      few: '$count مناصب مفتوحة',
+      two: 'منصبان مفتوحان',
+      one: 'منصب واحد مفتوح',
+      zero: 'لا توجد مناصب مفتوحة',
     );
     return '$_temp0';
   }
@@ -9515,12 +9515,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count فرصة مرسلة',
-      many: '$count فرصة مرسلة',
-      few: '$count فرص مرسلة',
-      two: 'فرصتان مرسلتان',
-      one: 'فرصة واحدة مرسلة',
-      zero: 'لا توجد فرص مرسلة بعد',
+      other: '$count فرصة تم التقديم عليها',
+      many: '$count فرصة تم التقديم عليها',
+      few: '$count فرص تم التقديم عليها',
+      two: 'فرصتان تم التقديم عليهما',
+      one: 'فرصة واحدة تم التقديم عليها',
+      zero: 'لا توجد فرص تم التقديم عليها بعد',
     );
     return '$_temp0';
   }
@@ -9584,10 +9584,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentHybridSetup => 'نظام عمل هجين';
 
   @override
-  String get studentPaidTrack => 'مسار مدفوع';
+  String get studentPaidTrack => 'مسار مدفوع الأجر';
 
   @override
-  String get studentPaidInternship => 'تدريب مدفوع';
+  String get studentPaidInternship => 'تدريب مدفوع الأجر';
 
   @override
   String get studentStudentGrowth => 'نمو طلابي';
@@ -9599,7 +9599,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentCareerMove => 'خطوة مهنية';
 
   @override
-  String get studentOpenRole => 'وظيفة مفتوحة';
+  String get studentOpenRole => 'منصب مفتوح';
 
   @override
   String get studentFutureGatePartner => 'شريك FutureGate';
@@ -9620,7 +9620,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentCareerOpportunity => 'فرصة مهنية';
 
   @override
-  String get studentStrongOpportunitySubtitle => 'فرصة قوية تستحق نظرة أقرب.';
+  String get studentStrongOpportunitySubtitle =>
+      'فرصة قوية تستحق الاطلاع عليها عن قرب.';
 
   @override
   String get studentSaveFailed => 'تعذّر الحفظ';
@@ -9717,7 +9718,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentProfileCompleteSummary =>
-      'كل العناصر الأساسية موجودة. يبدو الملف مكتملًا وواثقًا.';
+      'كل العناصر الأساسية موجودة. يبدو الملف مكتملًا وجاهزًا.';
 
   @override
   String studentProfileThoughtfulUpdates(Object label) {
@@ -9749,7 +9750,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentBioProfileHint =>
-      'نبذة قصيرة تجعل الملف أكثر إنسانية ووضوحًا وثقة.';
+      'نبذة قصيرة تجعل الملف أكثر شخصية ووضوحًا وموثوقية.';
 
   @override
   String get studentFieldOfStudyProfileHint =>
@@ -9791,7 +9792,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentBioHelpText =>
-      'تساعد النبذة القصيرة ملفك على أن يبدو مقصودًا وتمنح الآخرين فكرة سريعة عن توجهك.';
+      'تساعد النبذة القصيرة ملفك على أن يبدو مدروسًا وتمنح الآخرين فكرة سريعة عن توجهك.';
 
   @override
   String get studentOfficialPage => 'الصفحة الرسمية';
@@ -9888,7 +9889,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'جرّب بحثًا آخر أو امسح فلاتر الفئات لرؤية المزيد من الوظائف.';
 
   @override
-  String get studentListing => 'فرصة';
+  String get studentListing => 'إعلان';
 
   @override
   String get studentNoInternshipsMatchView => 'لا توجد تدريبات تطابق هذا العرض';
@@ -9919,11 +9920,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentNoSponsoredProgramsMatchView =>
-      'لا توجد برامج مدعومة تطابق هذا العرض';
+      'لا توجد برامج ممولة تطابق هذا العرض';
 
   @override
   String get studentCheckBackNewSponsoredPrograms =>
-      'تحقق قريبًا من برامج مدعومة جديدة.';
+      'تحقق قريبًا من برامج ممولة جديدة.';
 
   @override
   String get studentTryAdjustSearchSponsoredPrograms =>
@@ -9934,12 +9935,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count برنامج مطابق في $filter',
-      many: '$count برنامجًا مطابقًا في $filter',
-      few: '$count برامج مطابقة في $filter',
-      two: 'برنامجان مطابقان في $filter',
-      one: 'برنامج واحد مطابق في $filter',
-      zero: 'لا توجد برامج مطابقة في $filter',
+      other: '$count برنامج مطابق ضمن $filter',
+      many: '$count برنامجًا مطابقًا ضمن $filter',
+      few: '$count برامج مطابقة ضمن $filter',
+      two: 'برنامجان مطابقان ضمن $filter',
+      one: 'برنامج واحد مطابق ضمن $filter',
+      zero: 'لا توجد برامج مطابقة ضمن $filter',
     );
     return '$_temp0';
   }
@@ -9970,7 +9971,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String studentTrainingErrorShowingAvailable(Object error) {
-    return '$error يتم عرض محتوى التدريب المتاح حاليًا.';
+    return 'يتم عرض محتوى التدريب المتاح حاليًا. $error';
   }
 
   @override
@@ -9983,7 +9984,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentEmailProfileHint =>
-      'يساعد بريد إلكتروني فعّال في إبقاء الطلبات والإشعارات والمتابعة على المسار الصحيح.';
+      'يساعد بريد إلكتروني فعّال على تنظيم الطلبات والإشعارات والمتابعة.';
 
   @override
   String get studentLocationProfileHint =>
@@ -10094,12 +10095,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String opportunityDeleteConfirmationMessage(Object title) {
-    return 'هل تريد حذف \"$title\"؟ إذا كانت لديها طلبات قيد المراجعة فسيتم إغلاقها بدلًا من حذفها للحفاظ على إمكانية مراجعة الطلاب.';
+    return 'هل تريد حذف \"$title\"؟ إذا كانت لديها طلبات قيد المراجعة فسيتم إغلاقها بدلًا من حذفها للحفاظ على إمكانية مراجعة طلبات الطلاب.';
   }
 
   @override
   String get opportunityClosedDueToPendingMessage =>
-      'تم إغلاق الفرصة لأن هناك طلبات قيد المراجعة لا تزال بحاجة إلى المعالجة.';
+      'تم إغلاق الفرصة لأن هناك طلبات قيد المراجعة لا تزال بحاجة إلى مراجعة.';
 
   @override
   String get opportunityCouldNotRefreshApplicants =>
@@ -10179,7 +10180,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get companyProfileRegisterRejectedSummary =>
-      'تم إرفاق الوثيقة المطلوبة، إلا أن اعتماد الشركة لا يزال يستوجب المعالجة.';
+      'تم إرفاق الوثيقة المطلوبة، إلا أن اعتماد الشركة لا يزال بحاجة إلى مراجعة.';
 
   @override
   String get companyProfileRegisterApprovedSummary =>
@@ -10219,7 +10220,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get companyProfileEditRegisterNeedsAttention =>
-      'السجل التجاري لا يزال بحاجة إلى المعالجة.';
+      'السجل التجاري لا يزال بحاجة إلى مراجعة.';
 
   @override
   String get companyProfileEditCompanyNameHint => 'اسم شركتك الظاهر للعموم';
@@ -10294,7 +10295,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiBuildStrongFirstImpressionSubtitle =>
-      'اصنع انطباعاً أوّل قويّاً بقصّة موجزة عن الشركة وبيانات تواصل واضحة وهويّة بصريّة أنيقة.';
+      'اصنع انطباعًا أوليًا قويًا بقصة موجزة عن الشركة وبيانات تواصل واضحة وهوية بصرية أنيقة.';
 
   @override
   String get uiCouldNotOpenTheWebsite => 'تعذّر فتح الموقع الإلكتروني.';
@@ -10395,14 +10396,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiShapeFirstImpressionFromYourCompany =>
-      'اصنع الانطباع الأوّل الذي يأخذه الطلاب عن شركتك.';
+      'اصنع الانطباع الأول الذي يكوّنه الطلاب عن شركتك.';
 
   @override
-  String get uiYourPublicCompanyName => 'الاسم العلني لشركتك';
+  String get uiYourPublicCompanyName => 'اسم شركتك الظاهر للعموم';
 
   @override
   String get uiTechnologyFinanceDesignEducationHint =>
-      'تقنية، تمويل، تصميم، تعليم...';
+      'تقنية، مالية، تصميم، تعليم...';
 
   @override
   String get uiCompanyDescriptionHint =>
@@ -10424,10 +10425,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiWebsiteCannotContainSpaces =>
-      'لا يمكن أن يحتوي الموقع على مسافات.';
+      'لا يمكن أن يحتوي عنوان الموقع الإلكتروني على مسافات.';
 
   @override
-  String get uiEnterAValidWebsite => 'أدخل عنوان موقع صالح.';
+  String get uiEnterAValidWebsite => 'أدخل عنوان موقع إلكتروني صالحًا.';
 
   @override
   String get uiYourCurrentCompanyVisualIsLive =>
@@ -10448,7 +10449,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiKeepCurrentVerificationDocumentSubtitle =>
-      'أبقِ وثيقة تحقّق سارية مرفقة للحفاظ على ملف شركة موثوق.';
+      'أبقِ وثيقة تحقّق سارية مرفقة للحفاظ على موثوقية ملف الشركة.';
 
   @override
   String get uiLogoRemoved => 'تمّت إزالة الشعار';
@@ -10494,7 +10495,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String uiSizeMbSelected(Object size) {
-    return '$size ميغابايت مُختارة';
+    return 'تم اختيار $size ميغابايت';
   }
 
   @override
@@ -10506,7 +10507,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get uiStrongLogoMakesProfilePolishedSubtitle =>
-      'يُضفي شعارٌ قويّ أو صورةٌ مميّزة للشركة لمسةً أكثر احترافيّة وتمنح الملف طابعاً أسهل للتذكّر.';
+      'يجعل الشعار القوي أو صورة الشركة الملف أكثر احترافية وأسهل تمييزًا.';
 
   @override
   String get adminOpportunityPublisherHint => 'مثال: إدارة FutureGate';
@@ -10560,12 +10561,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminOpportunitySnackTitlePublished => 'تم نشر الفرصة';
 
   @override
-  String get adminOpportunityUpdatedMessage =>
-      'تم تحديث الفرصة الإدارية بنجاح.';
+  String get adminOpportunityUpdatedMessage => 'تم تحديث الفرصة بنجاح.';
 
   @override
-  String get adminOpportunityPublishedMessage =>
-      'تم نشر الفرصة الإدارية بنجاح.';
+  String get adminOpportunityPublishedMessage => 'تم نشر الفرصة بنجاح.';
 
   @override
   String get adminOpportunityRequirementsSubtitleEligibility =>
@@ -10622,7 +10621,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminIdeaCategoryHint => 'مثال: ابتكار، شركة ناشئة، بحث';
 
   @override
-  String get adminIdeaStageHint => 'مثال: فكرة، نموذج أوّلي، تجربة ميدانية';
+  String get adminIdeaStageHint => 'مثال: فكرة، نموذج أولي، مرحلة تجريبية';
 
   @override
   String get adminIdeaToolsHint => 'مثال: Flutter وFirebase وFigma';
@@ -10663,10 +10662,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminIdeaSnackTitlePublished => 'تم نشر الفكرة';
 
   @override
-  String get adminIdeaUpdatedMessage => 'تم تحديث الفكرة الإدارية بنجاح.';
+  String get adminIdeaUpdatedMessage => 'تم تحديث الفكرة بنجاح.';
 
   @override
-  String get adminIdeaPublishedMessage => 'تم نشر الفكرة الإدارية بنجاح.';
+  String get adminIdeaPublishedMessage => 'تم نشر الفكرة بنجاح.';
 
   @override
   String get adminScholarshipScreenTitleEdit => 'تعديل المنحة';
@@ -10682,7 +10681,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminScholarshipScreenSubtitle =>
-      'أَدِر المنح في التطبيق نفسه الذي يكتشفها فيه الطلاب، مع بنية كافية للحصول على بطاقات أكثر ثراءً وتصفية أكثر فائدة.';
+      'نظّم المنح داخل التطبيق نفسه الذي يكتشفها فيه الطلاب، مع تفاصيل كافية لبطاقات أغنى وفلاتر أكثر فائدة.';
 
   @override
   String get adminScholarshipPublishingTitle => 'النشر';
@@ -10696,7 +10695,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminScholarshipFeatureToggleSubtitle =>
-      'استخدم هذا الخيار للمنح ذات الأولوية العالية أو القويّة بشكل خاص.';
+      'استخدم هذا الخيار للمنح ذات الأولوية العالية أو المميزة جدًا.';
 
   @override
   String get adminScholarshipBasicInfoSubtitle =>
@@ -10729,7 +10728,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminScholarshipDescriptionHelper =>
-      'اذكر ما تشمله المنحة وشروط الأهلية والوثائق المطلوبة وما يستفيده الطلاب.';
+      'اذكر ما تشمله المنحة وشروط الأهلية والوثائق المطلوبة والفائدة التي يحصل عليها الطلاب.';
 
   @override
   String get adminScholarshipDescriptionValidatorLabel => 'الوصف';
@@ -10746,11 +10745,11 @@ class AppLocalizationsAr extends AppLocalizations {
       'حدِّد من يحقّ له التقديم والمستندات المطلوبة والشروط الأكاديمية.';
 
   @override
-  String get adminScholarshipLogisticsTitle => 'التفاصيل اللوجستية';
+  String get adminScholarshipLogisticsTitle => 'التفاصيل التنظيمية';
 
   @override
   String get adminScholarshipLogisticsSubtitle =>
-      'اجمع المبلغ والموعد النهائي وتفاصيل الوجهة في قسم واحد ومرتّب.';
+      'اجمع المبلغ والموعد النهائي وتفاصيل الوجهة في قسم واحد واضح.';
 
   @override
   String get adminScholarshipAmountField => 'المبلغ';
@@ -10780,14 +10779,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminScholarshipLocationField => 'تسمية الموقع';
 
   @override
-  String get adminScholarshipLocationHint => 'نصّ احتياطي للموقع';
+  String get adminScholarshipLocationHint => 'نص بديل للموقع';
 
   @override
   String get adminScholarshipAdditionalInfoTitle => 'معلومات إضافية';
 
   @override
   String get adminScholarshipAdditionalInfoSubtitle =>
-      'استخدم هذه الحقول الاختياريّة لتحسين الاكتشاف والتصفية ووضوح التقديم الخارجي.';
+      'استخدم هذه الحقول الاختياريّة لتحسين الاكتشاف والتصفية ووضوح روابط التقديم الخارجية.';
 
   @override
   String get adminScholarshipApplicationLink => 'رابط التقديم';
@@ -10856,11 +10855,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminPreviewItemMetadataSubtitle =>
-      'تمّ تجميع الحقول المهمّة هنا بتنسيق إداري أكثر قابلية للقراءة.';
+      'تُجمع الحقول المهمة هنا ضمن عرض إداري أسهل قراءة.';
 
   @override
   String get adminPreviewLocationLogisticsSubtitle =>
-      'تساعدك هذه التفاصيل على تقييم كيفية تموضع الفرصة أمام المتقدّمين.';
+      'تساعدك هذه التفاصيل على تقييم طريقة عرض الفرصة للمتقدّمين.';
 
   @override
   String get adminPreviewRequirements => 'المتطلّبات';
@@ -10871,18 +10870,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminPreviewBenefitsSubtitle =>
-      'يمنح هذا القسم الإدارة لمحةً عمّا يجعل هذا الدور جذّابًا.';
+      'يمنح هذا القسم المسؤولين لمحةً عمّا يجعل هذا الدور جذّابًا.';
 
   @override
   String get adminPreviewProviderAccessSubtitle =>
-      'تساعدك هذه التفاصيل على مراجعة موقع المنحة وكيف يصل إليها الطلاب.';
+      'تساعدك هذه التفاصيل على مراجعة مدى ملاءمة المنحة وكيف سيصل إليها الطلاب.';
 
   @override
   String get adminPreviewEligibility => 'الأهلية';
 
   @override
   String get adminPreviewProviderDeliverySubtitle =>
-      'يساعدك هذا القسم على مراجعة كيفية تقديم التكوين وعرضه على المستخدمين.';
+      'يساعدك هذا القسم على مراجعة كيفية تنظيم التدريب وعرضه على المستخدمين.';
 
   @override
   String get adminPreviewProblemSolutionImpactSubtitle =>
@@ -10890,7 +10889,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminPreviewAudienceMetadataSubtitle =>
-      'تساعدك هذه الحقول على تقدير موقع الفكرة ومدى جاهزيّتها للمراجعة.';
+      'تساعدك هذه الحقول على تقدير موضع الفكرة ومدى جاهزيتها للمراجعة.';
 
   @override
   String get adminPreviewTeamSkillSignalsSubtitle =>
@@ -10901,7 +10900,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPreviewSubmittedBy(String name) {
-    return 'مقدَّمة من $name';
+    return 'مقدّم من $name';
   }
 
   @override
@@ -10920,7 +10919,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPreviewAppliedToOpportunity(String opportunity) {
-    return 'تقدّم إلى $opportunity.';
+    return 'تم التقديم على $opportunity.';
   }
 
   @override
@@ -10939,13 +10938,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminPreviewSectionResourceDetailsEyebrow => 'تفاصيل المورد';
 
   @override
-  String get adminPreviewSectionRoleSetupEyebrow => 'إعداد الدور';
+  String get adminPreviewSectionRoleSetupEyebrow => 'إعداد المنصب';
 
   @override
-  String get adminPreviewSectionBuildStoryEyebrow => 'قصّة الإنجاز';
+  String get adminPreviewSectionBuildStoryEyebrow => 'قصّة التطوير';
 
   @override
-  String get adminPreviewSectionPositioningEyebrow => 'التموضع';
+  String get adminPreviewSectionPositioningEyebrow => 'طريقة العرض';
 
   @override
   String get adminPreviewSectionCollaborationEyebrow => 'التعاون';
@@ -10984,7 +10983,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminModerateDueLabel(String value) {
-    return 'موعد الاستحقاق: $value';
+    return 'الموعد: $value';
   }
 
   @override
@@ -11027,7 +11026,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPillFeaturedCount(int count) {
-    return '$count مميَّزة';
+    return '$count عنصر مميز';
   }
 
   @override
@@ -11052,7 +11051,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPillPendingDecisionMessage(String summary) {
-    return '$summary يحتاج إلى قرار في قسم المحتوى.';
+    return '$summary بحاجة إلى قرار في قسم المحتوى.';
   }
 
   @override
@@ -11065,7 +11064,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminContentPendingIdeaWarning =>
-      'فكرة معلَّقة. وافِق عليها أو ارفضها قبل أن تظهر كمحتوى تمّت مراجعته.';
+      'فكرة بانتظار المراجعة. وافِق عليها أو ارفضها قبل أن تظهر كمحتوى تمّت مراجعته.';
 
   @override
   String adminContentIdeaApprovedSnack(String title) {
@@ -11085,7 +11084,7 @@ class AppLocalizationsAr extends AppLocalizations {
     String baseTitle,
     String typeLabel,
   ) {
-    return '$baseTitle - $typeLabel';
+    return '$baseTitle: $typeLabel';
   }
 
   @override
@@ -11108,7 +11107,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminPreviewScholarshipFallback => 'منحة';
 
   @override
-  String get adminPreviewTrainingFallback => 'تكوين';
+  String get adminPreviewTrainingFallback => 'تدريب';
 
   @override
   String get adminPreviewProjectIdeaFallback => 'فكرة مشروع';
@@ -11127,12 +11126,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString فكرة معلَّقة',
-      many: '$countString فكرة معلَّقة',
-      few: '$countString أفكار معلَّقة',
-      two: 'فكرتان معلَّقتان',
-      one: 'فكرة واحدة معلَّقة',
-      zero: 'لا أفكار معلَّقة',
+      other: '$countString فكرة بانتظار المراجعة',
+      many: '$countString فكرة بانتظار المراجعة',
+      few: '$countString أفكار بانتظار المراجعة',
+      two: 'فكرتان بانتظار المراجعة',
+      one: 'فكرة واحدة بانتظار المراجعة',
+      zero: 'لا توجد أفكار بانتظار المراجعة',
     );
     return '$_temp0';
   }
@@ -11147,12 +11146,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString طلب معلَّق',
-      many: '$countString طلبًا معلَّقًا',
-      few: '$countString طلبات معلَّقة',
-      two: 'طلبان معلَّقان',
-      one: 'طلب واحد معلَّق',
-      zero: 'لا طلبات معلَّقة',
+      other: '$countString طلب بانتظار المراجعة',
+      many: '$countString طلبًا بانتظار المراجعة',
+      few: '$countString طلبات بانتظار المراجعة',
+      two: 'طلبان بانتظار المراجعة',
+      one: 'طلب واحد بانتظار المراجعة',
+      zero: 'لا توجد طلبات بانتظار المراجعة',
     );
     return '$_temp0';
   }
@@ -11222,14 +11221,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminScholarshipScaffoldSubtitle =>
-      'نسِّق المنح في التطبيق نفسه الذي يكتشفها فيه الطلاب، بهيكلة كافية لبطاقات أغنى وتصفية أكثر فائدة.';
+      'نظّم المنح داخل التطبيق نفسه الذي يكتشفها فيه الطلاب، مع تفاصيل كافية لبطاقات أغنى وفلاتر أكثر فائدة.';
 
   @override
   String get adminScholarshipFeatureTitle => 'إبراز هذه المنحة';
 
   @override
   String get adminScholarshipFeatureSubtitle =>
-      'استخدم هذا الخيار للمنح ذات الأولوية العالية أو القوية بوجه خاص.';
+      'استخدم هذا الخيار للمنح ذات الأولوية العالية أو المميزة جدًا.';
 
   @override
   String get adminScholarshipTitleLabel => 'عنوان المنحة';
@@ -11242,7 +11241,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminScholarshipAmountValidator => 'أدخِل مبلغًا صالحًا';
 
   @override
-  String get adminScholarshipDeadlinePickerHelp => 'اختيار التاريخ النهائي';
+  String get adminScholarshipDeadlinePickerHelp => 'حدّد الموعد النهائي';
 
   @override
   String get adminScholarshipLocationLabelField => 'تسمية الموقع';
@@ -11285,7 +11284,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get moderateWorkingLabel => 'جارٍ التنفيذ...';
 
   @override
-  String get moderateApproveLabel => 'موافقة';
+  String get moderateApproveLabel => 'اعتماد';
 
   @override
   String get moderateRejectLabel => 'رفض';
@@ -11300,11 +11299,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get moderateNoScholarshipsYet => 'لم يتم نشر أي منح بعد';
 
   @override
-  String get moderateNoPendingIdeas => 'لا توجد أفكار معلّقة للمراجعة';
+  String get moderateNoPendingIdeas => 'لا توجد أفكار بانتظار المراجعة';
 
   @override
   String moderatePendingIdeasCount(int count) {
-    return 'الأفكار المعلّقة ($count)';
+    return 'الأفكار بانتظار المراجعة ($count)';
   }
 
   @override
@@ -11316,11 +11315,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get moderateShowAllLabel => 'إظهار الكل';
 
   @override
-  String get moderatePendingOnlyLabel => 'المعلّقة فقط';
+  String get moderatePendingOnlyLabel => 'بانتظار المراجعة فقط';
 
   @override
   String moderateSubmittedByLabel(String name) {
-    return 'أرسلها: $name';
+    return 'مقدّم من: $name';
   }
 
   @override
@@ -11380,7 +11379,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get activitySectionAccounts => 'الحسابات';
 
   @override
-  String get activitySectionPending => 'معلّق';
+  String get activitySectionPending => 'قيد الانتظار';
 
   @override
   String get dashboardPendingCompanies => 'الشركات';
@@ -11409,7 +11408,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contentPendingIdeaInline =>
-      'فكرة معلّقة. وافِق عليها أو ارفضها قبل أن تظهر كمحتوى مُراجع.';
+      'فكرة بانتظار المراجعة. وافِق عليها أو ارفضها قبل أن تظهر كمحتوى مُراجع.';
 
   @override
   String get contentPendingReviewTitle => 'بانتظار المراجعة';
@@ -11424,12 +11423,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count فكرة معلّقة',
-      many: '$count فكرة معلّقة',
-      few: '$count أفكار معلّقة',
-      two: 'فكرتان معلّقتان',
-      one: 'فكرة معلّقة واحدة',
-      zero: 'لا توجد أفكار معلّقة',
+      other: '$count فكرة بانتظار المراجعة',
+      many: '$count فكرة بانتظار المراجعة',
+      few: '$count أفكار بانتظار المراجعة',
+      two: 'فكرتان بانتظار المراجعة',
+      one: 'فكرة واحدة بانتظار المراجعة',
+      zero: 'لا توجد أفكار بانتظار المراجعة',
     );
     return '$_temp0';
   }
@@ -11439,12 +11438,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count طلب معلّق',
-      many: '$count طلبًا معلّقًا',
-      few: '$count طلبات معلّقة',
-      two: 'طلبان معلّقان',
-      one: 'طلب معلّق واحد',
-      zero: 'لا توجد طلبات معلّقة',
+      other: '$count طلب بانتظار المراجعة',
+      many: '$count طلبًا بانتظار المراجعة',
+      few: '$count طلبات بانتظار المراجعة',
+      two: 'طلبان بانتظار المراجعة',
+      one: 'طلب واحد بانتظار المراجعة',
+      zero: 'لا توجد طلبات بانتظار المراجعة',
     );
     return '$_temp0';
   }
@@ -11475,12 +11474,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count فكرة معلّقة',
-      many: '$count فكرة معلّقة',
-      few: '$count أفكار معلّقة',
-      two: 'فكرتان معلّقتان',
-      one: 'فكرة معلّقة واحدة',
-      zero: 'لا توجد أفكار معلّقة',
+      other: '$count فكرة بانتظار المراجعة',
+      many: '$count فكرة بانتظار المراجعة',
+      few: '$count أفكار بانتظار المراجعة',
+      two: 'فكرتان بانتظار المراجعة',
+      one: 'فكرة واحدة بانتظار المراجعة',
+      zero: 'لا توجد أفكار بانتظار المراجعة',
     );
     return '$_temp0';
   }
@@ -11490,12 +11489,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count طلب معلّق',
-      many: '$count طلبًا معلّقًا',
-      few: '$count طلبات معلّقة',
-      two: 'طلبان معلّقان',
-      one: 'طلب معلّق واحد',
-      zero: 'لا توجد طلبات معلّقة',
+      other: '$count طلب بانتظار المراجعة',
+      many: '$count طلبًا بانتظار المراجعة',
+      few: '$count طلبات بانتظار المراجعة',
+      two: 'طلبان بانتظار المراجعة',
+      one: 'طلب واحد بانتظار المراجعة',
+      zero: 'لا توجد طلبات بانتظار المراجعة',
     );
     return '$_temp0';
   }
@@ -11600,12 +11599,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count مقطع',
-      many: '$count مقطعًا',
-      few: '$count مقاطع',
-      two: 'مقطعان',
-      one: 'مقطع واحد',
-      zero: 'لا توجد مقاطع',
+      other: '$count مقطع فيديو',
+      many: '$count مقطع فيديو',
+      few: '$count مقاطع فيديو',
+      two: 'مقطعا فيديو',
+      one: 'مقطع فيديو واحد',
+      zero: 'لا توجد مقاطع فيديو',
     );
     return '$_temp0';
   }
@@ -11630,12 +11629,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count مقطع مستورد',
-      many: '$count مقطعًا مستوردًا',
-      few: '$count مقاطع مستوردة',
-      two: 'مقطعان مستوردان',
-      one: 'مقطع مستورد واحد',
-      zero: 'لا توجد مقاطع مستوردة',
+      other: '$count مقطع فيديو مستورد',
+      many: '$count مقطع فيديو مستورد',
+      few: '$count مقاطع فيديو مستوردة',
+      two: 'مقطعا فيديو مستوردان',
+      one: 'مقطع فيديو مستورد واحد',
+      zero: 'لا توجد مقاطع فيديو مستوردة',
     );
     return '$_temp0';
   }
@@ -11750,7 +11749,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get activityPreviewRoleOverviewTitle => 'نظرة عامة على الدور';
 
   @override
-  String get activityPreviewLocationLogisticsTitle => 'الموقع واللوجستيات';
+  String get activityPreviewLocationLogisticsTitle =>
+      'الموقع والتفاصيل التنظيمية';
 
   @override
   String get activityPreviewRequirementsTitle => 'المتطلبات';
@@ -11793,7 +11793,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get activityPreviewProviderDeliverySetupTitle =>
-      'الجهة المقدِّمة وإعداد التقديم';
+      'الجهة المقدِّمة وطريقة تقديم التدريب';
 
   @override
   String get activityPreviewInterestedLabel => 'المهتمون';
@@ -11803,7 +11803,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'المشكلة والحل والأثر';
 
   @override
-  String get activityPreviewProblemStatementTitle => 'صياغة المشكلة';
+  String get activityPreviewProblemStatementTitle => 'وصف المشكلة';
 
   @override
   String get activityPreviewProposedSolutionTitle => 'الحل المقترح';
@@ -11816,8 +11816,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'الجمهور والبيانات الوصفية';
 
   @override
-  String get activityPreviewTeamSkillSignalsTitle =>
-      'المؤشرات الخاصة بالفريق والمهارات';
+  String get activityPreviewTeamSkillSignalsTitle => 'مؤشرات الفريق والمهارات';
 
   @override
   String get activityPreviewUpdatedRecently => 'تم التحديث مؤخرًا';
@@ -11900,10 +11899,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiUser => 'مستخدم';
 
   @override
-  String get activityPreviewBuildStoryEyebrow => 'قصة البناء';
+  String get activityPreviewBuildStoryEyebrow => 'قصة التطوير';
 
   @override
-  String get activityPreviewPositioningEyebrow => 'التموضع';
+  String get activityPreviewPositioningEyebrow => 'طريقة العرض';
 
   @override
   String get activityPreviewCollaborationEyebrow => 'التعاون';
@@ -11919,11 +11918,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get activityPreviewItemMetadataSubtitle =>
-      'تم تجميع الحقول المهمة هنا في تخطيط إداري أكثر قابلية للقراءة.';
+      'تُجمع الحقول المهمة هنا ضمن عرض إداري أسهل قراءة.';
 
   @override
   String get activityPreviewLocationLogisticsSubtitle =>
-      'تساعدك هذه التفاصيل على تقييم كيفية تقديم الفرصة للمتقدمين.';
+      'تساعدك هذه التفاصيل على تقييم طريقة عرض الفرصة للمتقدمين.';
 
   @override
   String get activityPreviewRequirementsSubtitle =>
@@ -11931,27 +11930,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get activityPreviewBenefitsSubtitle =>
-      'هذا يمنح المسؤول رؤية لما يجعل الدور جذابًا.';
+      'يمنح هذا القسم المسؤولين لمحة عمّا يجعل الدور جذابًا.';
 
   @override
   String get activityPreviewProviderAccessSubtitle =>
-      'تساعدك هذه التفاصيل على مراجعة موقع المنحة وكيفية وصول الطلاب إليها.';
+      'تساعدك هذه التفاصيل على مراجعة مدى ملاءمة المنحة وكيف سيصل إليها الطلاب.';
 
   @override
   String get activityPreviewProviderDeliverySetupSubtitle =>
-      'يساعدك هذا القسم على مراجعة كيفية تجهيز التدريب وتقديمه للمستخدمين.';
+      'يساعدك هذا القسم على مراجعة كيفية تنظيم التدريب وعرضه على المستخدمين.';
 
   @override
   String get activityPreviewProblemSolutionSubtitle =>
-      'يوضح هذا القسم ما تحله الفكرة وكيف تعمل والقيمة التي تهدف إلى تحقيقها.';
+      'يوضح هذا القسم ما تعالجه الفكرة وكيف تعمل والقيمة التي تهدف إلى تحقيقها.';
 
   @override
   String get activityPreviewAudienceMetadataSubtitle =>
-      'تساعدك هذه الحقول على تقييم مكان الفكرة ومدى جاهزيتها للمراجعة.';
+      'تساعدك هذه الحقول على تقييم موضع الفكرة ومدى جاهزيتها للمراجعة.';
 
   @override
   String get activityPreviewTeamSkillSignalsSubtitle =>
-      'استخدم هذه الوسوم لفهم الدعم الذي تحتاجه الفكرة لاحقًا.';
+      'استخدم هذه الوسوم لفهم الدعم الذي تحتاجه الفكرة في المرحلة المقبلة.';
 
   @override
   String activityPreviewWithdrawnFromOpportunity(String opportunity) {
