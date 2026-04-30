@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign in · FutureGate Admin</title>
+  <title data-i18n="login.title" data-i18n-fallback="Sign in · FutureGate Admin">Sign in · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -14,16 +16,16 @@
     <form class="login-card" id="login-form" autocomplete="on">
       <div class="login-brand">
         <div class="login-brand-icon"><i data-lucide="shield-check"></i></div>
-        <h1>FutureGate Admin</h1>
-        <p>Sign in with your admin account.</p>
+        <h1 data-i18n="login.heading" data-i18n-fallback="FutureGate Admin">FutureGate Admin</h1>
+        <p data-i18n="login.subheading" data-i18n-fallback="Sign in with your admin account.">Sign in with your admin account.</p>
       </div>
 
       <div class="form-row">
-        <label for="email">Email</label>
+        <label for="email" data-i18n="login.email" data-i18n-fallback="Email">Email</label>
         <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@futuregate.com">
       </div>
       <div class="form-row">
-        <label for="password">Password</label>
+        <label for="password" data-i18n="login.password" data-i18n-fallback="Password">Password</label>
         <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="••••••••">
       </div>
 
@@ -31,7 +33,7 @@
 
       <button type="submit" class="btn btn-primary" id="submit-btn" style="width: 100%; justify-content: center;">
         <i data-lucide="log-in"></i>
-        <span>Sign in</span>
+        <span data-i18n="login.submit" data-i18n-fallback="Sign in">Sign in</span>
       </button>
     </form>
   </div>
@@ -39,7 +41,10 @@
   <script type="module">
     import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, doc, getDoc } from './js/firebase-config.js';
     import { feedbackCardHtml } from './js/auth.js';
+    import { t, applyTranslations } from './js/i18n.js';
     import './js/ui.js';
+
+    applyTranslations();
 
     const form = document.getElementById('login-form');
     const errorBox = document.getElementById('error');
@@ -48,7 +53,7 @@
 
     function showError(message) {
       errorBox.style.display = 'block';
-      errorBox.innerHTML = feedbackCardHtml(message, { type: 'error', title: 'Sign-in failed' });
+      errorBox.innerHTML = feedbackCardHtml(message, { type: 'error', title: t('login.failed', 'Sign-in failed') });
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -64,12 +69,17 @@
       }
     });
 
+    document.addEventListener('languagechange', () => {
+      applyTranslations();
+      if (!submitting) submitBtn.querySelector('span').textContent = t('login.submit', 'Sign in');
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errorBox.style.display = 'none';
       submitting = true;
       submitBtn.disabled = true;
-      submitBtn.querySelector('span').textContent = 'Signing in...';
+      submitBtn.querySelector('span').textContent = t('login.signingIn', 'Signing in...');
 
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
@@ -79,27 +89,27 @@
         const userDoc = await getDoc(doc(db, 'users', cred.user.uid));
         if (!userDoc.exists() || userDoc.data().role !== 'admin') {
           await auth.signOut();
-          throw new Error('This account is not an admin.');
+          throw new Error(t('login.notAdmin', 'This account is not an admin.'));
         }
         if (userDoc.data().isActive === false) {
           await auth.signOut();
-          throw new Error('Your admin account is inactive.');
+          throw new Error(t('login.inactive', 'Your admin account is inactive.'));
         }
         window.location.replace('/');
       } catch (err) {
         const code = err?.code || '';
-        let msg = err?.message || 'Could not sign in.';
+        let msg = err?.message || t('login.cantSignIn', 'Could not sign in.');
         if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
-          msg = 'Wrong email or password.';
+          msg = t('login.wrongCreds', 'Wrong email or password.');
         } else if (code === 'auth/too-many-requests') {
-          msg = 'Too many attempts. Try again later.';
+          msg = t('login.tooMany', 'Too many attempts. Try again later.');
         } else if (code === 'auth/network-request-failed') {
-          msg = 'Network error. Check your connection.';
+          msg = t('login.network', 'Network error. Check your connection.');
         }
         showError(msg);
         submitting = false;
         submitBtn.disabled = false;
-        submitBtn.querySelector('span').textContent = 'Sign in';
+        submitBtn.querySelector('span').textContent = t('login.submit', 'Sign in');
       }
     });
   </script>

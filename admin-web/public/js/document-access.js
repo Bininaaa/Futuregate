@@ -7,6 +7,7 @@ import {
   where,
 } from './firebase-config.js';
 import { WORKER_BASE_URL } from './google-books-config.js';
+import { t } from './i18n.js';
 
 function trim(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -481,38 +482,39 @@ async function loadStudentCvSummary(userId) {
 
 function friendlyDocumentErrorMessage(
   error,
-  fallback = 'We couldn\'t open the document right now.',
+  fallback,
 ) {
+  const fallbackText = fallback || t('doc.cantOpen', 'We couldn\'t open the document right now.');
   const message = String(error?.message || error || '').toLowerCase();
   const status = Number(error?.status);
 
   if (status === 401 || message.includes('401') || message.includes('auth')) {
-    return 'Your admin session expired. Please sign in again.';
+    return t('doc.sessionExpired', 'Your admin session expired. Please sign in again.');
   }
 
   if (status === 403 || message.includes('403') || message.includes('permission')) {
-    return 'Permission denied while opening the document.';
+    return t('doc.permissionDenied', 'Permission denied while opening the document.');
   }
 
   if (status === 404 || message.includes('404') || message.includes('not found')) {
-    return 'The requested document is no longer available.';
+    return t('doc.notFound', 'The requested document is no longer available.');
   }
 
   if (message.includes('invalid') || message.includes('unavailable')) {
-    return 'This document link is invalid or unavailable.';
+    return t('doc.invalid', 'This document link is invalid or unavailable.');
   }
 
   if (message.includes('secure document access is not configured')) {
-    return 'Secure document access is not configured for this environment.';
+    return t('doc.notConfigured', 'Secure document access is not configured for this environment.');
   }
 
-  return fallback;
+  return fallbackText;
 }
 
 function openDocumentUrl(url, { download = false, fileName = '' } = {}) {
   const safeUrl = normalizeOpenableDocumentUrl(url);
   if (!safeUrl) {
-    throw new Error('Document unavailable.');
+    throw new Error(t('doc.unavailable', 'Document unavailable.'));
   }
 
   const link = document.createElement('a');
@@ -535,7 +537,7 @@ function openResolvedDocument(document, { download = false } = {}) {
   const normalizedDocument = normalizeDocumentRecord(document);
   const safeUrl = resolveDocumentUrl(normalizedDocument, { download });
   if (!safeUrl) {
-    throw new Error('Document unavailable.');
+    throw new Error(t('doc.unavailable', 'Document unavailable.'));
   }
 
   openDocumentUrl(safeUrl, {

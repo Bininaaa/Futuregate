@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard · FutureGate Admin</title>
+  <title data-i18n="page.dashboard.title" data-i18n-fallback="Dashboard · FutureGate Admin">Dashboard · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body data-page="dashboard">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session…</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session…">Verifying session…</p></div>
   <div id="shell"></div>
 
   <script type="module">
@@ -21,9 +23,12 @@
     import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
     import { activityTypeLabel, adminTargetUrl, typeColor, typeIcon } from './js/admin-utils.js';
     import { openDetailsModal } from './js/details.js';
+    import { t, getLang, applyTranslations } from './js/i18n.js';
     import './js/ui.js';
 
     mountShell({ page: 'dashboard' });
+
+    document.addEventListener('languagechange', () => { loadDashboard(); });
 
     const dashState = createActivityState();
 
@@ -124,33 +129,33 @@
                 <i data-lucide="shield-check"></i>
               </div>
               <div>
-                <div class="dash-hero-eyebrow">FutureGate Admin</div>
-                <div class="dash-hero-title">Command Center</div>
+                <div class="dash-hero-eyebrow">${esc(t('dash.brand', 'FutureGate Admin'))}</div>
+                <div class="dash-hero-title">${esc(t('dash.commandCenter', 'Command Center'))}</div>
                 <div class="dash-hero-subtitle">
-                  ${total.toLocaleString()} users · ${totalOpps} opportunities · ${totalPending > 0 ? `<strong style="color:#fff">${totalPending} item${totalPending !== 1 ? 's' : ''} need review</strong>` : 'Everything is up to date'}
+                  ${total.toLocaleString()} ${esc(t('dash.usersCount', 'users'))} · ${totalOpps} ${esc(t('dash.opportunitiesCount', 'opportunities'))} · ${totalPending > 0 ? `<strong style="color:#fff">${totalPending} ${esc(t('dash.itemsNeedReview', 'item' + (totalPending !== 1 ? 's' : '') + ' need review'))}</strong>` : esc(t('dash.upToDate', 'Everything is up to date'))}
                 </div>
               </div>
             </div>
             <div class="dash-hero-actions">
               <a class="dash-hero-btn dash-hero-btn--primary" href="users?role=company&status=pending">
                 <i data-lucide="building-2"></i>
-                Companies${pendingCompanies > 0 ? ` <span style="background:rgba(255,255,255,.28);border-radius:99px;padding:1px 7px;font-size:11px">${pendingCompanies}</span>` : ''}
+                ${esc(t('dash.companies', 'Companies'))}${pendingCompanies > 0 ? ` <span style="background:rgba(255,255,255,.28);border-radius:99px;padding:1px 7px;font-size:11px">${pendingCompanies}</span>` : ''}
               </a>
               <a class="dash-hero-btn" href="moderation?tab=ideas">
                 <i data-lucide="lightbulb"></i>
-                Project ideas${pendingIdeas > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${pendingIdeas}</span>` : ''}
+                ${esc(t('dash.projectIdeas', 'Project ideas'))}${pendingIdeas > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${pendingIdeas}</span>` : ''}
               </a>
               <a class="dash-hero-btn" href="moderation?tab=opportunities&filter=pending_apps">
                 <i data-lucide="file-text"></i>
-                Applications${pendingApps > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${pendingApps}</span>` : ''}
+                ${esc(t('dash.applications', 'Applications'))}${pendingApps > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${pendingApps}</span>` : ''}
               </a>
               <a class="dash-hero-btn" href="activity">
                 <i data-lucide="activity"></i>
-                Activity
+                ${esc(t('dash.activity', 'Activity'))}
               </a>
               <a class="dash-hero-btn" href="moderation?tab=trainings">
                 <i data-lucide="library"></i>
-                Library
+                ${esc(t('dash.library', 'Library'))}
               </a>
             </div>
           </div>
@@ -159,39 +164,39 @@
           <section class="surface-panel">
             <div class="surface-heading">
               <div>
-                <div class="surface-heading-title">Control room</div>
-                <div class="surface-heading-copy">Items that need your attention right now.</div>
+                <div class="surface-heading-title">${esc(t('dash.controlRoom', 'Control room'))}</div>
+                <div class="surface-heading-copy">${esc(t('dash.controlRoomCopy', 'Items that need your attention right now.'))}</div>
               </div>
             </div>
             <div class="control-room">
-              ${controlCard({ count: pendingIdeas,    label: 'Project ideas awaiting review',   icon: 'lightbulb',    color: '#F59E0B', href: 'moderation?tab=ideas' })}
-              ${controlCard({ count: pendingApps,     label: 'Pending applications',            icon: 'file-text',    color: '#7C3AED', href: 'moderation?tab=opportunities&filter=pending_apps' })}
-              ${controlCard({ count: pendingCompanies,label: 'Companies awaiting approval',     icon: 'building-2',   color: '#14B8A6', href: 'users?role=company&status=pending' })}
-              ${controlCard({ count: blockedUsers,    label: 'Blocked users',                   icon: 'shield-alert', color: '#E24A4A', href: 'users?status=blocked' })}
-              ${controlCard({ count: hiddenOpps,      label: 'Hidden opportunities',            icon: 'eye-off',      color: '#64748B', href: 'moderation?tab=opportunities' })}
+              ${controlCard({ count: pendingIdeas,    label: t('dash.pendingIdeas', 'Project ideas awaiting review'),   icon: 'lightbulb',    color: '#F59E0B', href: 'moderation?tab=ideas' })}
+              ${controlCard({ count: pendingApps,     label: t('dash.pendingApps', 'Pending applications'),             icon: 'file-text',    color: '#7C3AED', href: 'moderation?tab=opportunities&filter=pending_apps' })}
+              ${controlCard({ count: pendingCompanies,label: t('dash.pendingCompanies', 'Companies awaiting approval'), icon: 'building-2',   color: '#14B8A6', href: 'users?role=company&status=pending' })}
+              ${controlCard({ count: blockedUsers,    label: t('dash.blockedUsers', 'Blocked users'),                   icon: 'shield-alert', color: '#E24A4A', href: 'users?status=blocked' })}
+              ${controlCard({ count: hiddenOpps,      label: t('dash.hiddenOpps', 'Hidden opportunities'),              icon: 'eye-off',      color: '#64748B', href: 'moderation?tab=opportunities' })}
             </div>
           </section>
 
           <!-- ── Platform overview ── -->
           <section class="surface-panel">
             <div class="surface-heading"><div>
-              <div class="surface-heading-title">Platform overview</div>
-              <div class="surface-heading-copy">Live user counts across all account types.</div>
+              <div class="surface-heading-title">${esc(t('dash.platformOverview', 'Platform overview'))}</div>
+              <div class="surface-heading-copy">${esc(t('dash.platformOverviewCopy', 'Live user counts across all account types.'))}</div>
             </div></div>
             <div class="stats-grid">
-              ${stat('Total users',  total,     'users',            'var(--c-primary)')}
-              ${stat('Active',       active,    'check-circle-2',   'var(--c-success)')}
-              ${stat('Inactive',     inactive,  'x-circle',         'var(--c-danger)')}
-              ${stat('Students',     students,  'graduation-cap',   'var(--c-info)')}
-              ${stat('Companies',    companies, 'building-2',       'var(--c-secondary)')}
+              ${stat(t('dash.totalUsers', 'Total users'),     total,     'users',            'var(--c-primary)')}
+              ${stat(t('dash.activeUsers', 'Active'),         active,    'check-circle-2',   'var(--c-success)')}
+              ${stat(t('dash.inactiveUsers', 'Inactive'),     inactive,  'x-circle',         'var(--c-danger)')}
+              ${stat(t('dash.studentsCount', 'Students'),     students,  'graduation-cap',   'var(--c-info)')}
+              ${stat(t('dash.companiesCount', 'Companies'),   companies, 'building-2',       'var(--c-secondary)')}
             </div>
           </section>
 
           <!-- ── Academic levels ── -->
           <section class="surface-panel">
             <div class="surface-heading"><div>
-              <div class="surface-heading-title">Academic levels</div>
-              <div class="surface-heading-copy">Student distribution by degree level.</div>
+              <div class="surface-heading-title">${esc(t('dash.academicLevels', 'Academic levels'))}</div>
+              <div class="surface-heading-copy">${esc(t('dash.academicLevelsCopy', 'Student distribution by degree level.'))}</div>
             </div></div>
             <div class="stats-grid">
               ${stat('Bac',       bac,      'book',        'var(--c-warning)')}
@@ -206,14 +211,14 @@
             <div class="chart-card">
               <div class="chart-card-header">
                 <div class="chart-card-icon"><i data-lucide="bar-chart-2"></i></div>
-                <h3>Users by academic level</h3>
+                <h3>${esc(t('dash.usersByLevel', 'Users by academic level'))}</h3>
               </div>
               <canvas id="levelChart"></canvas>
             </div>
             <div class="chart-card">
               <div class="chart-card-header">
                 <div class="chart-card-icon"><i data-lucide="pie-chart"></i></div>
-                <h3>Role distribution</h3>
+                <h3>${esc(t('dash.roleDistribution', 'Role distribution'))}</h3>
               </div>
               <canvas id="roleChart"></canvas>
             </div>
@@ -222,7 +227,7 @@
           <section class="chart-card">
             <div class="chart-card-header">
               <div class="chart-card-icon"><i data-lucide="trending-up"></i></div>
-              <h3>Monthly registrations</h3>
+              <h3>${esc(t('dash.monthlyRegistrations', 'Monthly registrations'))}</h3>
             </div>
             <canvas id="monthlyChart"></canvas>
           </section>
@@ -230,29 +235,29 @@
           <!-- ── Content inventory ── -->
           <section class="surface-panel">
             <div class="surface-heading"><div>
-              <div class="surface-heading-title">Content inventory</div>
-              <div class="surface-heading-copy">Total published and active content across all categories.</div>
+              <div class="surface-heading-title">${esc(t('dash.contentInventory', 'Content inventory'))}</div>
+              <div class="surface-heading-copy">${esc(t('dash.contentInventoryCopy', 'Total published and active content across all categories.'))}</div>
             </div></div>
             <div class="stats-grid">
-              ${stat('Opportunities',   totalOpps,        'briefcase',      'var(--c-accent)')}
-              ${stat('Applications',    totalApps,        'file-text',      'var(--c-activity)')}
-              ${stat('Scholarships',    scholarSnap.size, 'graduation-cap', 'var(--c-danger)')}
-              ${stat('Trainings',       trainSnap.size,   'book-open',      'var(--c-secondary)')}
-              ${stat('Project ideas',   ideasSnap.size,   'lightbulb',      'var(--c-warning)')}
-              ${stat('Conversations',   convosSnap.size,  'message-square', 'var(--c-success)')}
+              ${stat(t('dash.opportunities', 'Opportunities'),       totalOpps,        'briefcase',      'var(--c-accent)')}
+              ${stat(t('dash.applicationsLabel', 'Applications'),    totalApps,        'file-text',      'var(--c-activity)')}
+              ${stat(t('dash.scholarships', 'Scholarships'),         scholarSnap.size, 'graduation-cap', 'var(--c-danger)')}
+              ${stat(t('dash.trainings', 'Trainings'),               trainSnap.size,   'book-open',      'var(--c-secondary)')}
+              ${stat(t('dash.projectIdeasLabel', 'Project ideas'),   ideasSnap.size,   'lightbulb',      'var(--c-warning)')}
+              ${stat(t('dash.conversations', 'Conversations'),       convosSnap.size,  'message-square', 'var(--c-success)')}
             </div>
           </section>
 
           <!-- ── Engagement analytics ── -->
           <section class="surface-panel">
             <div class="surface-heading"><div>
-              <div class="surface-heading-title">Engagement analytics</div>
-              <div class="surface-heading-copy">Key platform performance metrics.</div>
+              <div class="surface-heading-title">${esc(t('dash.engagement', 'Engagement analytics'))}</div>
+              <div class="surface-heading-copy">${esc(t('dash.engagementCopy', 'Key platform performance metrics.'))}</div>
             </div></div>
             <div>
-              ${engagement('Application rate',        appRate.toFixed(1) + ' apps per opportunity',            'trending-up',   'var(--c-info)')}
-              ${engagement('CV completion',           `${cvRate.toFixed(0)}% (${totalCvs} of ${students} students)`, 'file-check-2', 'var(--c-success)')}
-              ${engagement('Project ideas pipeline',  `${pendingIdeas} Pending · ${approvedIdeas} Approved`,   'lightbulb',     'var(--c-warning)')}
+              ${engagement(t('dash.applicationRate', 'Application rate'),    appRate.toFixed(1) + ' ' + t('dash.appsPerOpp', 'apps per opportunity'),                                  'trending-up',   'var(--c-info)')}
+              ${engagement(t('dash.cvCompletion', 'CV completion'),          `${cvRate.toFixed(0)}% (${totalCvs} ${getLang() === 'en' ? 'of' : (getLang() === 'fr' ? 'sur' : 'من')} ${students} ${t('dash.cvCompletionFmt', 'students')})`, 'file-check-2', 'var(--c-success)')}
+              ${engagement(t('dash.ideasPipeline', 'Project ideas pipeline'), `${pendingIdeas} ${t('dash.pendingShort', 'Pending')} · ${approvedIdeas} ${t('dash.approvedShort', 'Approved')}`,   'lightbulb',     'var(--c-warning)')}
             </div>
           </section>
 
@@ -265,26 +270,26 @@
           <!-- ── Quick actions ── -->
           <section class="surface-panel">
             <div class="surface-heading"><div>
-              <div class="surface-heading-title">Quick actions</div>
-              <div class="surface-heading-copy">Jump directly into any moderation queue.</div>
+              <div class="surface-heading-title">${esc(t('dash.quickActions', 'Quick actions'))}</div>
+              <div class="surface-heading-copy">${esc(t('dash.quickActionsCopy', 'Jump directly into any moderation queue.'))}</div>
             </div></div>
             <div class="quick-access-grid">
-              ${quick('briefcase',    'Opportunities',  'moderation?tab=opportunities',                     'var(--c-accent)',    'Review jobs, internships, and sponsoring posts.')}
-              ${quick('file-text',    'Pending apps',   'moderation?tab=opportunities&filter=pending_apps', 'var(--c-activity)', 'Review applications inside Admin posts.')}
-              ${quick('graduation-cap','Scholarships',  'moderation?tab=scholarships',                      'var(--c-danger)',    'Publish and curate scholarships.')}
-              ${quick('video',        'Trainings',      'moderation?tab=trainings&librarySource=youtube&libraryMode=search&filter=videos', 'var(--c-secondary)','Import and manage training videos.')}
-              ${quick('library',      'Library',        'moderation?tab=trainings&librarySource=books&libraryMode=search&filter=books',    'var(--c-info)',      'Import and manage book resources.')}
-              ${quick('lightbulb',    'Project ideas',  'moderation?tab=ideas',                             'var(--c-warning)',   'Approve student submissions.')}
-              ${quick('users',        'Users',          'users',                                            'var(--c-primary)',   'Approve companies, manage accounts.')}
-              ${quick('activity',     'Activity',       'activity',                                         'var(--c-success)',   'See the latest platform events.')}
+              ${quick('briefcase',    t('dash.quickOpportunities', 'Opportunities'), 'moderation?tab=opportunities',                     'var(--c-accent)',    t('dash.quickOpportunitiesCopy', 'Review jobs, internships, and sponsoring posts.'))}
+              ${quick('file-text',    t('dash.quickPendingApps', 'Pending apps'),    'moderation?tab=opportunities&filter=pending_apps', 'var(--c-activity)', t('dash.quickPendingAppsCopy', 'Review applications inside Admin posts.'))}
+              ${quick('graduation-cap',t('dash.quickScholarships', 'Scholarships'),  'moderation?tab=scholarships',                      'var(--c-danger)',    t('dash.quickScholarshipsCopy', 'Publish and curate scholarships.'))}
+              ${quick('video',        t('dash.quickTrainings', 'Trainings'),         'moderation?tab=trainings&librarySource=youtube&libraryMode=search&filter=videos', 'var(--c-secondary)', t('dash.quickTrainingsCopy', 'Import and manage training videos.'))}
+              ${quick('library',      t('dash.quickLibrary', 'Library'),             'moderation?tab=trainings&librarySource=books&libraryMode=search&filter=books',    'var(--c-info)',      t('dash.quickLibraryCopy', 'Import and manage book resources.'))}
+              ${quick('lightbulb',    t('dash.quickProjectIdeas', 'Project ideas'),  'moderation?tab=ideas',                             'var(--c-warning)',   t('dash.quickProjectIdeasCopy', 'Approve student submissions.'))}
+              ${quick('users',        t('dash.quickUsers', 'Users'),                 'users',                                            'var(--c-primary)',   t('dash.quickUsersCopy', 'Approve companies, manage accounts.'))}
+              ${quick('activity',     t('dash.quickActivity', 'Activity'),           'activity',                                         'var(--c-success)',   t('dash.quickActivityCopy', 'See the latest platform events.'))}
             </div>
           </section>
 
           <!-- ── Recent activity ── -->
           <section class="surface-panel">
             <div class="section-card-header">
-              <h3>Recent activity</h3>
-              <a class="section-link" href="activity">View all <i data-lucide="arrow-right" class="sm"></i></a>
+              <h3>${esc(t('dash.recentActivity', 'Recent activity'))}</h3>
+              <a class="section-link" href="activity">${esc(t('btn.viewAll', 'View all'))} <i data-lucide="arrow-right" class="sm"></i></a>
             </div>
             <div id="activity-feed" class="list-grid"></div>
           </section>
@@ -292,8 +297,8 @@
           <!-- ── Recent users ── -->
           <section class="surface-panel">
             <div class="section-card-header">
-              <h3>Recent users</h3>
-              <a class="section-link" href="users">All users <i data-lucide="arrow-right" class="sm"></i></a>
+              <h3>${esc(t('dash.recentUsers', 'Recent users'))}</h3>
+              <a class="section-link" href="users">${esc(t('btn.allUsers', 'All users'))} <i data-lucide="arrow-right" class="sm"></i></a>
             </div>
             <div id="recent-users" class="list-grid"></div>
           </section>
@@ -301,15 +306,15 @@
           <!-- ── Recent opportunities ── -->
           <section class="surface-panel">
             <div class="section-card-header">
-              <h3>Recent opportunities</h3>
-              <a class="section-link" href="moderation?tab=opportunities">All <i data-lucide="arrow-right" class="sm"></i></a>
+              <h3>${esc(t('dash.recentOpps', 'Recent opportunities'))}</h3>
+              <a class="section-link" href="moderation?tab=opportunities">${esc(t('btn.all', 'All'))} <i data-lucide="arrow-right" class="sm"></i></a>
             </div>
             <div id="recent-opps" class="list-grid"></div>
           </section>
         `;
 
-        renderTopList('top-applied', 'Most applied',  topApplied, 'apps',  'var(--c-activity)', '#7C3AED');
-        renderTopList('top-saved',   'Most saved',    topSaved,   'saves', 'var(--c-accent)',   '#F59E0B');
+        renderTopList('top-applied', t('dash.mostApplied', 'Most applied'),  topApplied, t('dash.apps', 'apps'),   'var(--c-activity)', '#7C3AED');
+        renderTopList('top-saved',   t('dash.mostSaved', 'Most saved'),      topSaved,   t('dash.saves', 'saves'), 'var(--c-accent)',   '#F59E0B');
         renderCharts({ bac, licence, master, doctorat, students, companies, admins, monthlyMap, months });
         await renderActivity();
         await renderRecentUsers();
@@ -320,8 +325,8 @@
       } catch (error) {
         console.error('Dashboard load error:', error);
         document.getElementById('loading').innerHTML = feedbackCardHtml(
-          'Could not load the dashboard. Please try again.',
-          { type: 'error', title: 'Unable to load' },
+          t('feedback.couldNotLoadDashboard', 'Could not load the dashboard. Please try again.'),
+          { type: 'error', title: t('feedback.unableToLoad', 'Unable to load') },
         );
         if (window.lucide) window.lucide.createIcons();
       }
@@ -355,14 +360,21 @@
       const empty = count === 0;
       return `<a class="control-card${empty ? ' control-empty' : ''}" href="${href}" style="--ca:${color};--control-accent:${color}">
         <div class="control-card-icon"><i data-lucide="${empty ? 'check' : icon}"></i></div>
-        <div class="control-card-count">${empty ? 'All clear' : count}</div>
+        <div class="control-card-count">${empty ? esc(t('dash.allClear', 'All clear')) : count}</div>
         <div class="control-card-label">${esc(label)}</div>
       </a>`;
     }
 
-    function typeLabel(t) {
-      const map = { job: 'Job', internship: 'Internship', contract: 'Contract', volunteer: 'Volunteer', freelance: 'Freelance' };
-      return map[t] || (t ? t.charAt(0).toUpperCase() + t.slice(1) : 'Opportunity');
+    function typeLabel(value) {
+      if (!value) return t('type.opportunity', 'Opportunity');
+      const fallbackMap = { job: 'Job', internship: 'Internship', contract: 'Contract', volunteer: 'Volunteer', freelance: 'Freelance', sponsoring: 'Sponsoring', student: 'Student', company: 'Company', admin: 'Admin', user: 'User' };
+      const key = ['job','internship','contract','volunteer','freelance','sponsoring'].includes(value)
+        ? `type.${value}`
+        : ['student','company','admin','user'].includes(value)
+        ? `label.role.${value}`
+        : null;
+      if (key) return t(key, fallbackMap[value] || value);
+      return value.charAt(0).toUpperCase() + value.slice(1);
     }
 
     /* ── Top lists ────────────────────────────────────── */
@@ -371,7 +383,7 @@
       const el = document.getElementById(id);
       let html = `<div class="surface-heading"><div><div class="surface-heading-title">${esc(title)}</div></div></div>`;
       if (items.length === 0) {
-        html += emptyStateHtml('Highlights appear here once activity grows.', { title: 'No highlights yet', icon: 'sparkles' });
+        html += emptyStateHtml(t('dash.highlightsAppear', 'Highlights appear here once activity grows.'), { title: t('dash.noHighlights', 'No highlights yet'), icon: 'sparkles' });
       } else {
         html += '<div class="list-grid">' + items.map((item, i) => `
           <div class="top-item" data-opp-id="${esc(item.id)}">
@@ -381,10 +393,10 @@
               <div class="top-sub">
                 <span class="mini-badge"><i data-lucide="${typeIcon('opportunity', item.type)}"></i>${esc(typeLabel(item.type))}</span>
                 ${item.companyName ? `<span class="mini-badge"><i data-lucide="building-2"></i>${esc(item.companyName)}</span>` : ''}
-                ${item.isFeatured ? '<span class="mini-badge" style="background:rgba(245,158,11,.15);color:#F59E0B"><i data-lucide="star"></i>Featured</span>' : ''}
+                ${item.isFeatured ? `<span class="mini-badge" style="background:rgba(245,158,11,.15);color:#F59E0B"><i data-lucide="star"></i>${esc(t('dash.featured', 'Featured'))}</span>` : ''}
               </div>
             </div>
-            <div class="top-count" style="background:${hexColor}1a;color:${hexColor}">${item.count} ${label}</div>
+            <div class="top-count" style="background:${hexColor}1a;color:${hexColor}">${item.count} ${esc(label)}</div>
           </div>`).join('') + '</div>';
       }
       el.innerHTML = html;
@@ -430,6 +442,7 @@
         type: 'bar',
         data: {
           labels: ['Bac', 'Licence', 'Master', 'Doctorat'],
+          /* Note: degree names kept as French/Latin abbreviations (Bac/Licence/Master/Doctorat) — they are the canonical names in the source schools. */
           datasets: [{
             data: [bac, licence, master, doctorat],
             backgroundColor: [`${warning}cc`, `${info}cc`, `${activity}cc`, `${secondary}cc`],
@@ -453,7 +466,7 @@
       new Chart(document.getElementById('roleChart'), {
         type: 'doughnut',
         data: {
-          labels: ['Students', 'Companies', 'Admins'],
+          labels: [t('dash.studentsCount', 'Students'), t('dash.companiesCount', 'Companies'), t('users.admins', 'Admins')],
           datasets: [{
             data: [students, companies, admins],
             backgroundColor: [`${info}dd`, `${secondary}dd`, `${warning}dd`],
@@ -517,7 +530,7 @@
       const result = await loadRecentActivitiesPage(dashState, { pageSize: 5, maxItems: 5 });
       const el = document.getElementById('activity-feed');
       if (!result.items.length) {
-        el.innerHTML = emptyStateHtml('Nothing happened recently.', { title: 'No activity', icon: 'activity' });
+        el.innerHTML = emptyStateHtml(t('activity.nothingHappened', 'Nothing happened recently.'), { title: t('activity.noActivity', 'No activity'), icon: 'activity' });
         return;
       }
       el.innerHTML = result.items.map((it) => `
@@ -545,12 +558,12 @@
       const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(5)));
       const el = document.getElementById('recent-users');
       if (snap.empty) {
-        el.innerHTML = emptyStateHtml('No users yet.', { title: 'Empty', icon: 'users' });
+        el.innerHTML = emptyStateHtml(t('dash.noUsersYet', 'No users yet.'), { title: t('dash.empty', 'Empty'), icon: 'users' });
         return;
       }
       el.innerHTML = snap.docs.map((s) => {
         const d = s.data();
-        const name     = d.fullName || d.companyName || 'Unknown';
+        const name     = d.fullName || d.companyName || t('label.notProvided', 'Unknown');
         const initial  = (name[0] || '?').toUpperCase();
         const role     = d.role || 'user';
         const photoUrl = role === 'company' ? (d.logo || d.companyLogo) : (d.profileImage || d.photoURL);
@@ -578,7 +591,7 @@
       const snap = await getDocs(query(collection(db, 'opportunities'), orderBy('createdAt', 'desc'), limit(5)));
       const el = document.getElementById('recent-opps');
       if (snap.empty) {
-        el.innerHTML = emptyStateHtml('No opportunities yet.', { title: 'Empty', icon: 'briefcase' });
+        el.innerHTML = emptyStateHtml(t('dash.noOppsYet', 'No opportunities yet.'), { title: t('dash.empty', 'Empty'), icon: 'briefcase' });
         return;
       }
       el.innerHTML = snap.docs.map((s) => {
@@ -591,7 +604,7 @@
         return `<div class="item-row" data-opp-id="${esc(s.id)}" role="button" tabindex="0" style="cursor:pointer">
           ${avatar}
           <div class="row-body">
-            <div class="row-title">${esc(d.title || 'Untitled')}</div>
+            <div class="row-title">${esc(d.title || t('mod.untitled', 'Untitled'))}</div>
             <div class="row-sub">${esc(d.companyName || '—')} · ${esc(d.location || '—')} · ${esc(typeLabel(subType))}</div>
           </div>
           <div class="activity-time">${esc(formatTimestamp(d.createdAt))}</div>

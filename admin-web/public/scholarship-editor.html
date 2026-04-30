@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scholarship editor &middot; FutureGate Admin</title>
+  <title data-i18n="editor.scholarship.title" data-i18n-fallback="Scholarship editor · FutureGate Admin">Scholarship editor &middot; FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="scholarship-editor">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
   <div id="shell"></div>
 
   <script type="module">
@@ -25,6 +27,7 @@
     import { getQueryParam } from './js/admin-utils.js';
     import { logAdminActivity } from './js/activity-service.js';
     import { WORKER_BASE_URL } from './js/google-books-config.js';
+    import { t, applyTranslations } from './js/i18n.js';
 
     mountShell({ page: 'content' });
     checkAuth(async () => { await initPage(); });
@@ -41,6 +44,11 @@
       ['merit', 'Merit-based'],
       ['needs', 'Needs-based'],
     ];
+
+    document.addEventListener('languagechange', () => {
+      try { applyTranslations(document); } catch {}
+      try { render(); } catch {}
+    });
 
     async function workerBestEffort(path, body) {
       try {
@@ -171,91 +179,98 @@
           ? item.eligibility_items
           : item?.eligibility;
 
+      const langOpts = LANGS.map(([value, fallback]) =>
+        `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${esc(t('editor.lang.' + value, fallback))}</option>`,
+      ).join('');
+      const fundingOpts = FUNDING_TYPES.map(([value, fallback]) =>
+        `<option value="${value}" ${item?.fundingType === value ? 'selected' : ''}>${esc(t('editor.fundingType.' + value, fallback))}</option>`,
+      ).join('');
+
       root.innerHTML = `
         <div class="page-breadcrumb">
-          <a href="moderation?tab=scholarships" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+          <a href="moderation?tab=scholarships" class="btn btn-ghost"><i data-lucide="arrow-left"></i>${esc(t('editor.backToContent', 'Back to content'))}</a>
         </div>
         <header class="page-hero">
           <div>
-            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${isNew ? 'New post' : 'Editing post'}</div>
-            <h1 class="page-hero__title">${isNew ? 'Publish Scholarship' : 'Edit Scholarship'}</h1>
-            <p class="page-hero__subtitle">${isNew ? 'Create a scholarship post students will discover in the app.' : 'Refine this scholarship with cleaner structure and stronger eligibility detail.'}</p>
+            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${esc(isNew ? t('editor.newPost', 'New post') : t('editor.editingPost', 'Editing post'))}</div>
+            <h1 class="page-hero__title">${esc(isNew ? t('editor.scholarship.publishHeading', 'Publish Scholarship') : t('editor.scholarship.editHeading', 'Edit Scholarship'))}</h1>
+            <p class="page-hero__subtitle">${esc(isNew ? t('editor.scholarship.subtitleNew', 'Create a scholarship post students will discover in the app.') : t('editor.scholarship.subtitleEdit', 'Refine this scholarship with cleaner structure and stronger eligibility detail.'))}</p>
           </div>
           <div class="page-hero__actions">
-            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
-            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
+            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>${esc(t('editor.cancel', 'Cancel'))}</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${esc(isNew ? t('editor.publish', 'Publish') : t('editor.saveChanges', 'Save Changes'))}</button>
           </div>
         </header>
 
         <div class="editor-grid">
-          ${sectionBlock('Publishing', 'star', `
+          ${sectionBlock(t('editor.section.publishing', 'Publishing'), 'star', `
             <label class="checkbox-card">
               <input id="f-featured" type="checkbox" ${scholarshipFeatured(item) ? 'checked' : ''}>
               <i data-lucide="star"></i>
               <div>
-                <strong>Feature this scholarship</strong>
-                <div class="form-hint">Stronger placement in the student discovery flow.</div>
+                <strong>${esc(t('editor.scholarship.featureLabel', 'Feature this scholarship'))}</strong>
+                <div class="form-hint">${esc(t('editor.scholarship.featureHint', 'Stronger placement in the student discovery flow.'))}</div>
               </div>
             </label>
           `)}
 
-          ${sectionBlock('Basic Information', 'info', `
+          ${sectionBlock(t('editor.section.basicInfo', 'Basic Information'), 'info', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Scholarship Title *</label><input id="f-title" type="text" placeholder="e.g. Future Builders Global Scholarship" value="${esc(item?.title || '')}"></div>
-              <div class="form-row"><label>Provider *</label><input id="f-provider" type="text" placeholder="Organization offering the scholarship" value="${esc(item?.provider || '')}"></div>
-              <div class="form-row"><label>Language</label>
-                <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              <div class="form-row"><label>${esc(t('editor.field.scholarshipTitle', 'Scholarship Title *'))}</label><input id="f-title" type="text" placeholder="e.g. Future Builders Global Scholarship" value="${esc(item?.title || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.provider', 'Provider *'))}</label><input id="f-provider" type="text" placeholder="Organization offering the scholarship" value="${esc(item?.provider || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.language', 'Language'))}</label>
+                <select id="f-lang">${langOpts}</select>
               </div>
             </div>
           `)}
 
-          ${sectionBlock('Description', 'file-text', `
-            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="5" placeholder="Explain what the scholarship supports and who it is for.">${esc(item?.description || '')}</textarea></div>
+          ${sectionBlock(t('editor.section.description', 'Description'), 'file-text', `
+            <div class="form-row"><label>${esc(t('editor.field.descriptionRequired', 'Description *'))}</label><textarea id="f-description" rows="5" placeholder="Explain what the scholarship supports and who it is for.">${esc(item?.description || '')}</textarea></div>
           `)}
 
-          ${sectionBlock('Eligibility Requirements', 'list-checks', `
+          ${sectionBlock(t('editor.section.eligibility', 'Eligibility Requirements'), 'list-checks', `
             <div class="form-row">
-              <label>Eligibility Items *</label>
+              <label>${esc(t('editor.field.eligibilityItems', 'Eligibility Items *'))}</label>
               <textarea id="f-eligibility" rows="5" placeholder="One item per line&#10;e.g. Enrolled in a Master's programme&#10;GPA of 3.0 or above">${esc(joinLines(eligibility))}</textarea>
-              <div class="form-hint">Enter each eligibility condition on a new line.</div>
+              <div class="form-hint">${esc(t('editor.field.eligibilityHint', 'Enter each eligibility condition on a new line.'))}</div>
             </div>
           `)}
 
-          ${sectionBlock('Logistics', 'map-pin', `
+          ${sectionBlock(t('editor.section.logistics', 'Logistics'), 'map-pin', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Amount *</label><input id="f-amount" type="text" placeholder="e.g. 250 000" value="${esc(item?.amount ?? '')}"></div>
-              <div class="form-row"><label>Deadline *</label><input id="f-deadline" type="date" value="${esc(toDateInput(item?.deadline))}"></div>
-              <div class="form-row"><label>Country</label><input id="f-country" type="text" placeholder="e.g. France" value="${esc(item?.country || '')}"></div>
-              <div class="form-row"><label>City</label><input id="f-city" type="text" placeholder="e.g. Paris" value="${esc(item?.city || '')}"></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Location Label</label><input id="f-location" type="text" placeholder="Displayed location text (if different from city/country)" value="${esc(scholarshipLocation(item))}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.amount', 'Amount *'))}</label><input id="f-amount" type="text" placeholder="e.g. 250 000" value="${esc(item?.amount ?? '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.deadlineRequired', 'Deadline *'))}</label><input id="f-deadline" type="date" value="${esc(toDateInput(item?.deadline))}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.country', 'Country'))}</label><input id="f-country" type="text" placeholder="e.g. France" value="${esc(item?.country || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.city', 'City'))}</label><input id="f-city" type="text" placeholder="e.g. Paris" value="${esc(item?.city || '')}"></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>${esc(t('editor.field.locationLabel', 'Location Label'))}</label><input id="f-location" type="text" placeholder="Displayed location text (if different from city/country)" value="${esc(scholarshipLocation(item))}"></div>
             </div>
           `)}
 
-          ${sectionBlock('Additional Information', 'link', `
+          ${sectionBlock(t('editor.section.additionalInfo', 'Additional Information'), 'link', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Application Link</label><input id="f-link" type="url" placeholder="https://..." value="${esc(scholarshipLink(item))}"></div>
-              <div class="form-row"><label>Funding Type</label>
+              <div class="form-row"><label>${esc(t('editor.field.applicationLink', 'Application Link'))}</label><input id="f-link" type="url" placeholder="https://..." value="${esc(scholarshipLink(item))}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.fundingType', 'Funding Type'))}</label>
                 <select id="f-fundingType">
-                  <option value="">Select funding type</option>
-                  ${FUNDING_TYPES.map(([value, label]) => `<option value="${value}" ${item?.fundingType === value ? 'selected' : ''}>${label}</option>`).join('')}
+                  <option value="">${esc(t('editor.option.selectFundingType', 'Select funding type'))}</option>
+                  ${fundingOpts}
                 </select>
               </div>
-              <div class="form-row"><label>Category</label><input id="f-category" type="text" placeholder="e.g. Masters, Research, Exchange" value="${esc(item?.category || '')}"></div>
-              <div class="form-row"><label>Academic Level</label>
+              <div class="form-row"><label>${esc(t('editor.field.category', 'Category'))}</label><input id="f-category" type="text" placeholder="e.g. Masters, Research, Exchange" value="${esc(item?.category || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.academicLevel', 'Academic Level'))}</label>
                 <select id="f-level">
-                  <option value="">Select level</option>
+                  <option value="">${esc(t('editor.option.selectLevel', 'Select level'))}</option>
                   ${LEVELS.map((level) => `<option value="${level}" ${item?.level === level ? 'selected' : ''}>${level}</option>`).join('')}
                 </select>
               </div>
-              <div class="form-row"><label>Cover Image URL</label><input id="f-imageUrl" type="url" placeholder="https://..." value="${esc(scholarshipImage(item))}"></div>
-              <div class="form-row"><label>Tags</label><input id="f-tags" type="text" placeholder="Comma-separated tags" value="${esc(joinCsv(item?.tags))}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.coverImageUrl', 'Cover Image URL'))}</label><input id="f-imageUrl" type="url" placeholder="https://..." value="${esc(scholarshipImage(item))}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.tags', 'Tags'))}</label><input id="f-tags" type="text" placeholder="Comma-separated tags" value="${esc(joinCsv(item?.tags))}"></div>
             </div>
           `)}
         </div>
 
         <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
-          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
-          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
+          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>${esc(t('editor.cancel', 'Cancel'))}</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${esc(isNew ? t('editor.publish', 'Publish') : t('editor.saveChanges', 'Save Changes'))}</button>
         </div>
       `;
 
@@ -280,23 +295,23 @@
 
     function validatePayload(payload) {
       if (!payload.title || !payload.provider || !payload.description) {
-        showToast('Title, provider, and description are required.', 'warning');
+        showToast(t('editor.scholarship.titleProviderDescRequired', 'Title, provider, and description are required.'), 'warning');
         return false;
       }
       if (!payload.eligibilityItems.length) {
-        showToast('Add at least one eligibility item.', 'warning');
+        showToast(t('editor.opp.eligibilityAtLeast', 'Add at least one eligibility item.'), 'warning');
         return false;
       }
       if (payload.amount === null || payload.amount < 0) {
-        showToast('Enter a valid amount.', 'warning');
+        showToast(t('editor.scholarship.amountInvalid', 'Enter a valid amount.'), 'warning');
         return false;
       }
       if (!payload.deadline) {
-        showToast('Deadline is required.', 'warning');
+        showToast(t('editor.scholarship.deadlineRequired', 'Deadline is required.'), 'warning');
         return false;
       }
       if (isPastDate(payload.deadline)) {
-        showToast('Deadline cannot be in the past.', 'warning');
+        showToast(t('editor.scholarship.deadlinePast', 'Deadline cannot be in the past.'), 'warning');
         return false;
       }
       return true;
@@ -348,7 +363,7 @@
           };
           await setDoc(ref, created);
           await workerBestEffort('/api/notify/scholarship', { scholarshipId: ref.id });
-          showToast('Scholarship published.', 'success');
+          showToast(t('editor.scholarship.publishedToast', 'Scholarship published.'), 'success');
         } else {
           await updateDoc(doc(db, 'scholarships', id), payload);
           await logAdminActivity({
@@ -362,12 +377,12 @@
             subjectName: payload.provider || item?.provider || '',
             status: payload.status || item?.status || '',
           });
-          showToast('Scholarship updated.', 'success');
+          showToast(t('editor.scholarship.updatedToast', 'Scholarship updated.'), 'success');
         }
         back();
       } catch (error) {
         console.error(error);
-        showToast('Save failed: ' + (error?.message || error), 'error');
+        showToast(t('editor.saveFailed', 'Save failed') + ': ' + (error?.message || error), 'error');
         saveButtons.forEach((button) => {
           if (button) button.disabled = false;
         });

@@ -23,13 +23,20 @@ function timestampToMs(value) {
   return timestampToDate(value)?.getTime() || 0;
 }
 
+function localeForLang(lang) {
+  if (lang === 'ar') return 'ar';
+  if (lang === 'fr') return 'fr-FR';
+  return 'en-US';
+}
+
 function formatFullTimestamp(value) {
   const date = timestampToDate(value);
   if (!date) {
     return '';
   }
 
-  return new Intl.DateTimeFormat('en-US', {
+  const lang = (window.FutureGateI18n && window.FutureGateI18n.getLang && window.FutureGateI18n.getLang()) || 'en';
+  return new Intl.DateTimeFormat(localeForLang(lang), {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -89,7 +96,18 @@ function activityTypeLabel(type) {
     user: 'Account',
   };
 
-  return labels[type] || 'Activity';
+  const fallback = labels[type] || 'Activity';
+  const i18n = window.FutureGateI18n;
+  if (!i18n || !i18n.t) return fallback;
+  const keyMap = {
+    application: 'type.application',
+    opportunity: 'type.opportunity',
+    scholarship: 'type.scholarship',
+    training: 'type.training',
+    project_idea: 'type.project_idea',
+    user: 'type.user',
+  };
+  return i18n.t(keyMap[type] || 'type.activity', fallback);
 }
 
 function typeIcon(type, subType) {

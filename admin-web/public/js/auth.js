@@ -9,6 +9,7 @@ import {
   where,
   onSnapshot,
 } from './firebase-config.js';
+import { t, getLang } from './i18n.js';
 
 let unreadNotificationsUnsubscribe = null;
 let chromeInitialized = false;
@@ -103,10 +104,16 @@ function persistSidebarCollapsedPreference(isCollapsed) {
 }
 
 function updateSidebarCollapseControls(isCollapsed) {
-  const label = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
+  const labelKey = isCollapsed ? 'shell.expandSidebar' : 'shell.collapseSidebar';
+  const labelFallback = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
+  const label = t(labelKey, labelFallback);
   const icon = isCollapsed ? 'panel-left-open' : 'panel-left-close';
 
   document.querySelectorAll('[data-sidebar-collapse-toggle]').forEach((button) => {
+    button.setAttribute('data-i18n-aria-label', labelKey);
+    button.setAttribute('data-i18n-aria-label-fallback', labelFallback);
+    button.setAttribute('data-i18n-title', labelKey);
+    button.setAttribute('data-i18n-title-fallback', labelFallback);
     button.setAttribute('aria-label', label);
     button.setAttribute('aria-pressed', isCollapsed ? 'true' : 'false');
     button.setAttribute('title', label);
@@ -633,7 +640,17 @@ function setupSidebar(userData, user) {
   const nameEl = document.getElementById('admin-name');
   const emailEl = document.getElementById('admin-email');
   const avatarEl = document.getElementById('admin-avatar');
-  if (nameEl) nameEl.textContent = userData.fullName || 'Admin';
+  if (nameEl) {
+    if (userData.fullName) {
+      nameEl.removeAttribute('data-i18n');
+      nameEl.removeAttribute('data-i18n-fallback');
+      nameEl.textContent = userData.fullName;
+    } else {
+      nameEl.setAttribute('data-i18n', 'shell.admin');
+      nameEl.setAttribute('data-i18n-fallback', 'Admin');
+      nameEl.textContent = t('shell.admin', 'Admin');
+    }
+  }
   if (emailEl) emailEl.textContent = user.email || '';
   if (avatarEl) avatarEl.textContent = (userData.fullName || 'A')[0].toUpperCase();
 
@@ -668,16 +685,16 @@ function normalizeFeedbackType(type) {
 function feedbackMeta(type) {
   switch (normalizeFeedbackType(type)) {
     case 'success':
-      return { icon: '<i data-lucide="check-circle-2"></i>', title: 'Success', html: true };
+      return { icon: '<i data-lucide="check-circle-2"></i>', title: t('feedback.success', 'Success'), html: true };
     case 'error':
-      return { icon: '<i data-lucide="alert-octagon"></i>', title: 'Something went wrong', html: true };
+      return { icon: '<i data-lucide="alert-octagon"></i>', title: t('feedback.somethingWentWrong', 'Something went wrong'), html: true };
     case 'warning':
-      return { icon: '<i data-lucide="alert-triangle"></i>', title: 'Attention needed', html: true };
+      return { icon: '<i data-lucide="alert-triangle"></i>', title: t('feedback.attentionNeeded', 'Attention needed'), html: true };
     case 'neutral':
-      return { icon: '<i data-lucide="info"></i>', title: 'Update', html: true };
+      return { icon: '<i data-lucide="info"></i>', title: t('feedback.update', 'Update'), html: true };
     case 'info':
     default:
-      return { icon: '<i data-lucide="info"></i>', title: 'Notice', html: true };
+      return { icon: '<i data-lucide="info"></i>', title: t('feedback.notice', 'Notice'), html: true };
   }
 }
 
@@ -709,7 +726,7 @@ function emptyStateHtml(message, options = {}) {
   return `
     <div class="empty-state">
       <div class="icon" aria-hidden="true">${iconHtml}</div>
-      <div class="title">${esc(title || 'Nothing to show yet')}</div>
+      <div class="title">${esc(title || t('feedback.nothingToShow', 'Nothing to show yet'))}</div>
       <p>${esc(message)}</p>
     </div>
   `;
@@ -770,10 +787,22 @@ function formatTimestamp(ts) {
   if (!date || Number.isNaN(date.getTime())) return '';
   const now = new Date();
   const diff = now - date;
-  if (diff < 60000) return 'Just now';
-  if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
-  if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const lang = getLang();
+  if (diff < 60000) return t('time.justNow', 'Just now');
+  if (diff < 3600000) {
+    const m = Math.floor(diff / 60000);
+    if (lang === 'fr') return `il y a ${m} min`;
+    if (lang === 'ar') return `منذ ${m} د`;
+    return m + 'm ago';
+  }
+  if (diff < 86400000) {
+    const h = Math.floor(diff / 3600000);
+    if (lang === 'fr') return `il y a ${h} h`;
+    if (lang === 'ar') return `منذ ${h} س`;
+    return h + 'h ago';
+  }
+  const locale = lang === 'ar' ? 'ar' : lang === 'fr' ? 'fr-FR' : 'en-US';
+  return date.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function roleColor(role) {

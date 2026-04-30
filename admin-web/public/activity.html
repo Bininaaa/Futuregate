@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Activity · FutureGate Admin</title>
+  <title data-i18n="page.activity.title" data-i18n-fallback="Activity · FutureGate Admin">Activity · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="activity">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
   <div id="shell"></div>
 
   <script type="module">
@@ -19,6 +21,7 @@
     import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
     import { activityTypeLabel, typeColor, typeIcon, matchesSearch } from './js/admin-utils.js';
     import { openDetailsModal } from './js/details.js';
+    import { t, applyTranslations } from './js/i18n.js';
     import './js/ui.js';
 
     mountShell({ page: 'activity' });
@@ -27,6 +30,8 @@
 
     checkAuth(async () => { await initActivity(); });
 
+    document.addEventListener('languagechange', () => { render(); });
+
     async function initActivity() {
       const root = document.getElementById('page-content');
       root.innerHTML = `
@@ -34,24 +39,28 @@
           <div class="filter-bar">
             <div class="search-bar">
               <i data-lucide="search"></i>
-              <input id="act-search" type="search" placeholder="Search by title, person, or status..."/>
+              <input id="act-search" type="search"
+                data-i18n-placeholder="activity.searchPlaceholder"
+                data-i18n-placeholder-fallback="Search by title, person, or status..."
+                placeholder="${esc(t('activity.searchPlaceholder', 'Search by title, person, or status...'))}"/>
             </div>
             <select id="act-type">
-              <option value="all">All types</option>
-              <option value="application">Applications</option>
-              <option value="opportunity">Opportunities</option>
-              <option value="scholarship">Scholarships</option>
-              <option value="training">Trainings</option>
-              <option value="project_idea">Project ideas</option>
-              <option value="user">Accounts</option>
+              <option value="all" data-i18n="activity.allTypes" data-i18n-fallback="All types">${esc(t('activity.allTypes', 'All types'))}</option>
+              <option value="application" data-i18n="activity.applications" data-i18n-fallback="Applications">${esc(t('activity.applications', 'Applications'))}</option>
+              <option value="opportunity" data-i18n="activity.opportunities" data-i18n-fallback="Opportunities">${esc(t('activity.opportunities', 'Opportunities'))}</option>
+              <option value="scholarship" data-i18n="activity.scholarships" data-i18n-fallback="Scholarships">${esc(t('activity.scholarships', 'Scholarships'))}</option>
+              <option value="training" data-i18n="activity.trainings" data-i18n-fallback="Trainings">${esc(t('activity.trainings', 'Trainings'))}</option>
+              <option value="project_idea" data-i18n="activity.projectIdeas" data-i18n-fallback="Project ideas">${esc(t('activity.projectIdeas', 'Project ideas'))}</option>
+              <option value="user" data-i18n="activity.accounts" data-i18n-fallback="Accounts">${esc(t('activity.accounts', 'Accounts'))}</option>
             </select>
           </div>
           <div id="act-list" class="list-grid"></div>
           <div class="load-more-wrap">
-            <button id="act-load" class="btn"><i data-lucide="plus"></i>Load more</button>
+            <button id="act-load" class="btn"><i data-lucide="plus"></i><span data-i18n="btn.loadMore" data-i18n-fallback="Load more">${esc(t('btn.loadMore', 'Load more'))}</span></button>
           </div>
         </section>
       `;
+      applyTranslations(root);
 
       document.getElementById('act-search').addEventListener('input', (e) => { state.search = e.target.value; render(); });
       document.getElementById('act-type').addEventListener('change', (e) => { state.type = e.target.value; render(); });
@@ -71,7 +80,7 @@
         render();
       } catch (e) {
         console.error(e);
-        document.getElementById('act-list').innerHTML = feedbackCardHtml('Could not load activity.', { type: 'error' });
+        document.getElementById('act-list').innerHTML = feedbackCardHtml(t('feedback.couldNotLoadActivity', 'Could not load activity.'), { type: 'error' });
         if (window.lucide) window.lucide.createIcons();
       }
     }
@@ -98,12 +107,13 @@
 
     function render() {
       const list = document.getElementById('act-list');
+      if (!list) return;
       let items = state.items.slice();
       if (state.type !== 'all') items = items.filter((it) => it.type === state.type);
       if (state.search.trim()) items = items.filter((it) => matchesSearch([it.title, it.actorName, it.status, it.typeLabel, it.subTypeLabel, it.action], state.search));
 
       if (!items.length) {
-        list.innerHTML = emptyStateHtml('Try changing the type or clearing the search.', { title: 'No matching activity', icon: 'activity' });
+        list.innerHTML = emptyStateHtml(t('activity.tryChange', 'Try changing the type or clearing the search.'), { title: t('activity.noMatching', 'No matching activity'), icon: 'activity' });
       } else {
         list.innerHTML = items.map((it) => `
           <div class="activity-row" data-type="${esc(it.type)}" data-id="${esc(it.targetId || '')}" role="button" tabindex="0">

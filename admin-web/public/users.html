@@ -3,22 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Users - FutureGate Admin</title>
+  <title data-i18n="users.title" data-i18n-fallback="Users - FutureGate Admin">Users - FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="users">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
   <div id="shell"></div>
 
   <!-- Profile sheet -->
   <div class="modal-backdrop" id="profile-modal">
     <div class="modal modal-lg">
       <div class="modal-header">
-        <h3 id="profile-title">User profile</h3>
-        <button class="modal-close" data-close-modal="profile-modal" aria-label="Close"><i data-lucide="x"></i></button>
+        <h3 id="profile-title" data-i18n="users.userProfile" data-i18n-fallback="User profile">User profile</h3>
+        <button class="modal-close" data-close-modal="profile-modal" data-i18n-aria-label="btn.close" data-i18n-aria-label-fallback="Close" aria-label="Close"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body" id="profile-body"><div class="loading"><div class="spinner"></div></div></div>
     </div>
@@ -28,8 +30,8 @@
   <div class="modal-backdrop" id="apps-modal">
     <div class="modal">
       <div class="modal-header">
-        <h3 id="apps-title">Applications</h3>
-        <button class="modal-close" data-close-modal="apps-modal" aria-label="Close"><i data-lucide="x"></i></button>
+        <h3 id="apps-title" data-i18n="users.applications" data-i18n-fallback="Applications">Applications</h3>
+        <button class="modal-close" data-close-modal="apps-modal" data-i18n-aria-label="btn.close" data-i18n-aria-label-fallback="Close" aria-label="Close"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body" id="apps-body"><div class="loading"><div class="spinner"></div></div></div>
     </div>

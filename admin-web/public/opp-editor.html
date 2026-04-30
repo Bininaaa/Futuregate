@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Opportunity editor &middot; FutureGate Admin</title>
+  <title data-i18n="editor.opp.title" data-i18n-fallback="Opportunity editor · FutureGate Admin">Opportunity editor &middot; FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="opp-editor">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
   <div id="shell"></div>
 
   <script type="module">
@@ -25,6 +27,7 @@
     import { getQueryParam } from './js/admin-utils.js';
     import { logAdminActivity } from './js/activity-service.js';
     import { WORKER_BASE_URL } from './js/google-books-config.js';
+    import { t, applyTranslations } from './js/i18n.js';
 
     mountShell({ page: 'content' });
     checkAuth(async () => { await initPage(); });
@@ -47,6 +50,11 @@
     ];
     const WORK_MODES = [['onsite', 'On-site'], ['remote', 'Remote'], ['hybrid', 'Hybrid']];
     const CURRENCIES = ['DZD', 'EUR', 'USD'];
+
+    document.addEventListener('languagechange', () => {
+      try { applyTranslations(document); } catch {}
+      try { render(); } catch {}
+    });
 
     async function workerBestEffort(path, body) {
       try {
@@ -74,7 +82,7 @@
         }
       }
       if (!isNew && item && !canEditExistingOpportunity()) {
-        renderBlocked('You can only edit opportunities you posted as admin.');
+        renderBlocked(t('editor.opp.canEditOnlyOwn', 'You can only edit opportunities you posted as admin.'));
         showPage();
         return;
       }
@@ -95,11 +103,11 @@
         <section class="surface-panel">
           <div class="surface-heading">
             <div>
-              <div class="surface-heading-title">Opportunity unavailable</div>
+              <div class="surface-heading-title">${esc(t('editor.opp.unavailable', 'Opportunity unavailable'))}</div>
               <div class="surface-heading-copy">${esc(message)}</div>
             </div>
           </div>
-          <a href="moderation?tab=opportunities" class="btn btn-primary"><i data-lucide="arrow-left"></i>Back to opportunities</a>
+          <a href="moderation?tab=opportunities" class="btn btn-primary"><i data-lucide="arrow-left"></i>${esc(t('editor.backToOpportunities', 'Back to opportunities'))}</a>
         </section>
       `;
       if (window.lucide) window.lucide.createIcons();
@@ -195,66 +203,73 @@
         : item?.requirements;
       const defaultPublisher = String(item?.companyName || ADMIN_NAME).trim() || ADMIN_NAME;
 
+      const langOpts = LANGS.map(([value, fallback]) =>
+        `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${esc(t('editor.lang.' + value, fallback))}</option>`,
+      ).join('');
+      const typeOpts = TYPES.map(([value, fallback]) =>
+        `<option value="${value}" ${opportunityType === value ? 'selected' : ''}>${esc(t('editor.type.' + value, fallback))}</option>`,
+      ).join('');
+
       root.innerHTML = `
         <div class="page-breadcrumb">
-          <a href="moderation?tab=opportunities" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+          <a href="moderation?tab=opportunities" class="btn btn-ghost"><i data-lucide="arrow-left"></i>${esc(t('editor.backToContent', 'Back to content'))}</a>
         </div>
         <header class="page-hero">
           <div>
-            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${isNew ? 'New post' : 'Editing post'}</div>
-            <h1 class="page-hero__title">${isNew ? 'Publish Opportunity' : 'Edit Opportunity'}</h1>
-            <p class="page-hero__subtitle">${isNew ? 'Create a professional opportunity post students will discover in the app.' : 'Refine this opportunity with cleaner structure and stronger student-facing detail.'}</p>
+            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${esc(isNew ? t('editor.newPost', 'New post') : t('editor.editingPost', 'Editing post'))}</div>
+            <h1 class="page-hero__title">${esc(isNew ? t('editor.opp.publishHeading', 'Publish Opportunity') : t('editor.opp.editHeading', 'Edit Opportunity'))}</h1>
+            <p class="page-hero__subtitle">${esc(isNew ? t('editor.opp.subtitleNew', 'Create a professional opportunity post students will discover in the app.') : t('editor.opp.subtitleEdit', 'Refine this opportunity with cleaner structure and stronger student-facing detail.'))}</p>
           </div>
           <div class="page-hero__actions">
-            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
-            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
+            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>${esc(t('editor.cancel', 'Cancel'))}</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${esc(isNew ? t('editor.publish', 'Publish') : t('editor.saveChanges', 'Save Changes'))}</button>
           </div>
         </header>
 
         <div class="editor-grid">
-          ${sectionBlock('Basic Information', 'info', `
+          ${sectionBlock(t('editor.section.basicInfo', 'Basic Information'), 'info', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Publisher Name *</label><input id="f-company" type="text" placeholder="${ADMIN_NAME}" value="${esc(defaultPublisher)}"></div>
-              <div class="form-row"><label>Status *</label>
+              <div class="form-row"><label>${esc(t('editor.field.publisherName', 'Publisher Name'))} *</label><input id="f-company" type="text" placeholder="${ADMIN_NAME}" value="${esc(defaultPublisher)}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.statusLabel', 'Status'))} *</label>
                 <select id="f-status">
-                  <option value="open" ${(item?.status || 'open') === 'open' ? 'selected' : ''}>Open</option>
-                  <option value="closed" ${item?.status === 'closed' ? 'selected' : ''}>Closed</option>
+                  <option value="open" ${(item?.status || 'open') === 'open' ? 'selected' : ''}>${esc(t('editor.option.open', 'Open'))}</option>
+                  <option value="closed" ${item?.status === 'closed' ? 'selected' : ''}>${esc(t('editor.option.closed', 'Closed'))}</option>
                 </select>
               </div>
-              <div class="form-row"><label>Title *</label><input id="f-title" type="text" placeholder="e.g. Frontend Developer Internship" value="${esc(item?.title || '')}"></div>
-              <div class="form-row"><label>Language</label>
-                <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              <div class="form-row"><label>${esc(t('editor.field.title', 'Title'))} *</label><input id="f-title" type="text" placeholder="e.g. Frontend Developer Internship" value="${esc(item?.title || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.language', 'Language'))}</label>
+                <select id="f-lang">${langOpts}</select>
               </div>
-              <div class="form-row"><label>Type *</label>
-                <select id="f-type">${TYPES.map(([value, label]) => `<option value="${value}" ${opportunityType === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              <div class="form-row"><label>${esc(t('editor.field.type', 'Type'))} *</label>
+                <select id="f-type">${typeOpts}</select>
               </div>
-              <div class="form-row"><label>Location *</label><input id="f-location" type="text" placeholder="e.g. Algiers / Remote" value="${esc(item?.location || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.location', 'Location'))} *</label><input id="f-location" type="text" placeholder="e.g. Algiers / Remote" value="${esc(item?.location || '')}"></div>
             </div>
           `)}
 
-          ${sectionBlock('Description', 'file-text', `
-            <div class="form-row"><label>Description *</label><textarea id="f-description" rows="6" placeholder="Describe the role, its scope, and what the candidate will gain.">${esc(item?.description || '')}</textarea></div>
+          ${sectionBlock(t('editor.section.description', 'Description'), 'file-text', `
+            <div class="form-row"><label>${esc(t('editor.field.descriptionRequired', 'Description *'))}</label><textarea id="f-description" rows="6" placeholder="Describe the role, its scope, and what the candidate will gain.">${esc(item?.description || '')}</textarea></div>
           `)}
 
-          ${sectionBlock('Requirements', 'list-checks', `
+          ${sectionBlock(t('editor.section.requirements', 'Requirements'), 'list-checks', `
             <div class="form-row">
-              <label>Requirements *</label>
+              <label>${esc(t('editor.field.requirementsRequired', 'Requirements *'))}</label>
               <textarea id="f-requirements" rows="5" placeholder="One requirement per line&#10;e.g. Bachelor's degree in Computer Science&#10;Strong communication skills">${esc(joinLines(requirements))}</textarea>
-              <div class="form-hint">Enter each requirement on a new line.</div>
+              <div class="form-hint">${esc(t('editor.field.requirementsHint', 'Enter each requirement on a new line.'))}</div>
             </div>
           `)}
 
-          ${sectionBlock('Logistics & Compensation', 'calendar', `
+          ${sectionBlock(t('editor.section.logisticsCompensation', 'Logistics & Compensation'), 'calendar', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Application Deadline *</label><input id="f-deadline" type="date" value="${esc(deadline)}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.applicationDeadline', 'Application Deadline'))} *</label><input id="f-deadline" type="date" value="${esc(deadline)}"></div>
             </div>
             <div id="type-fields" style="margin-top:14px;"></div>
           `)}
         </div>
 
         <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
-          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
-          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
+          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>${esc(t('editor.cancel', 'Cancel'))}</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${esc(isNew ? t('editor.publish', 'Publish') : t('editor.saveChanges', 'Save Changes'))}</button>
         </div>
       `;
 
@@ -279,39 +294,39 @@
       if (type === 'sponsoring') {
         target.innerHTML = `
           <div class="form-grid-2">
-            <div class="form-row"><label>Funding Amount</label><input id="f-fundingAmount" type="text" placeholder="e.g. 250000" value="${esc(item?.fundingAmount ?? item?.salaryMin ?? '')}"></div>
-            <div class="form-row"><label>Funding Currency</label>
+            <div class="form-row"><label>${esc(t('editor.field.fundingAmount', 'Funding Amount'))}</label><input id="f-fundingAmount" type="text" placeholder="e.g. 250000" value="${esc(item?.fundingAmount ?? item?.salaryMin ?? '')}"></div>
+            <div class="form-row"><label>${esc(t('editor.field.fundingCurrency', 'Funding Currency'))}</label>
               <select id="f-fundingCurrency">${CURRENCIES.map((currency) => `<option value="${currency}" ${salaryCurrency === currency ? 'selected' : ''}>${currency}</option>`).join('')}</select>
             </div>
-            <div class="form-row" style="grid-column:1/-1;"><label>Funding Note</label><textarea id="f-fundingNote" rows="3" placeholder="Optional support details shown to students">${esc(item?.fundingNote || item?.compensationText || '')}</textarea></div>
+            <div class="form-row" style="grid-column:1/-1;"><label>${esc(t('editor.field.fundingNote', 'Funding Note'))}</label><textarea id="f-fundingNote" rows="3" placeholder="Optional support details shown to students">${esc(item?.fundingNote || item?.compensationText || '')}</textarea></div>
           </div>
         `;
       } else {
         target.innerHTML = `
           <div class="form-grid-2">
-            <div class="form-row"><label>Salary Minimum</label><input id="f-salaryMin" type="text" placeholder="e.g. 60 000" value="${esc(item?.salaryMin ?? '')}"></div>
-            <div class="form-row"><label>Salary Maximum</label><input id="f-salaryMax" type="text" placeholder="e.g. 90 000" value="${esc(item?.salaryMax ?? '')}"></div>
-            <div class="form-row"><label>Currency</label>
+            <div class="form-row"><label>${esc(t('editor.field.salaryMin', 'Salary Minimum'))}</label><input id="f-salaryMin" type="text" placeholder="e.g. 60 000" value="${esc(item?.salaryMin ?? '')}"></div>
+            <div class="form-row"><label>${esc(t('editor.field.salaryMax', 'Salary Maximum'))}</label><input id="f-salaryMax" type="text" placeholder="e.g. 90 000" value="${esc(item?.salaryMax ?? '')}"></div>
+            <div class="form-row"><label>${esc(t('editor.field.currency', 'Currency'))}</label>
               <select id="f-salaryCurrency">${CURRENCIES.map((currency) => `<option value="${currency}" ${salaryCurrency === currency ? 'selected' : ''}>${currency}</option>`).join('')}</select>
             </div>
-            <div class="form-row"><label>Salary Period</label>
-              <select id="f-salaryPeriod">${PERIODS.map(([value, label]) => `<option value="${value}" ${salaryPeriod === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
+            <div class="form-row"><label>${esc(t('editor.field.salaryPeriod', 'Salary Period'))}</label>
+              <select id="f-salaryPeriod">${PERIODS.map(([value, fallback]) => `<option value="${value}" ${salaryPeriod === value ? 'selected' : ''}>${esc(t('editor.period.' + value, fallback))}</option>`).join('')}</select>
             </div>
-            <div class="form-row"><label>Employment Type</label>
-              <select id="f-employmentType">${EMPLOYMENT.map(([value, label]) => `<option value="${value}" ${employmentType === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
+            <div class="form-row"><label>${esc(t('editor.field.employmentType', 'Employment Type'))}</label>
+              <select id="f-employmentType">${EMPLOYMENT.map(([value, fallback]) => `<option value="${value}" ${employmentType === value ? 'selected' : ''}>${esc(t('editor.employment.' + value, fallback))}</option>`).join('')}</select>
             </div>
-            <div class="form-row"><label>Work Mode</label>
-              <select id="f-workMode">${WORK_MODES.map(([value, label]) => `<option value="${value}" ${workMode === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
+            <div class="form-row"><label>${esc(t('editor.field.workMode', 'Work Mode'))}</label>
+              <select id="f-workMode">${WORK_MODES.map(([value, fallback]) => `<option value="${value}" ${workMode === value ? 'selected' : ''}>${esc(t('editor.workMode.' + value, fallback))}</option>`).join('')}</select>
             </div>
-            <div class="form-row"><label>Paid Status</label>
+            <div class="form-row"><label>${esc(t('editor.field.paidStatus', 'Paid Status'))}</label>
               <select id="f-isPaid">
-                <option value="" ${isPaid === undefined || isPaid === null ? 'selected' : ''}>Select status</option>
-                <option value="true" ${isPaid === true ? 'selected' : ''}>Paid</option>
-                <option value="false" ${isPaid === false ? 'selected' : ''}>Unpaid</option>
+                <option value="" ${isPaid === undefined || isPaid === null ? 'selected' : ''}>${esc(t('editor.option.selectStatus', 'Select status'))}</option>
+                <option value="true" ${isPaid === true ? 'selected' : ''}>${esc(t('editor.option.paid', 'Paid'))}</option>
+                <option value="false" ${isPaid === false ? 'selected' : ''}>${esc(t('editor.option.unpaid', 'Unpaid'))}</option>
               </select>
             </div>
-            ${type === 'internship' ? `<div class="form-row"><label>Duration</label><input id="f-duration" type="text" placeholder="e.g. 3 months" value="${esc(item?.duration || '')}"></div>` : ''}
-            <div class="form-row" style="grid-column:1/-1;"><label>Compensation Note</label><textarea id="f-compensationText" rows="3" placeholder="Optional details shown to students (e.g. benefits, allowances)">${esc(item?.compensationText || '')}</textarea></div>
+            ${type === 'internship' ? `<div class="form-row"><label>${esc(t('editor.field.duration', 'Duration'))}</label><input id="f-duration" type="text" placeholder="e.g. 3 months" value="${esc(item?.duration || '')}"></div>` : ''}
+            <div class="form-row" style="grid-column:1/-1;"><label>${esc(t('editor.field.compensationNote', 'Compensation Note'))}</label><textarea id="f-compensationText" rows="3" placeholder="Optional details shown to students (e.g. benefits, allowances)">${esc(item?.compensationText || '')}</textarea></div>
           </div>
         `;
       }
@@ -333,19 +348,19 @@
 
     function validatePayload(basePayload) {
       if (!basePayload.companyName || !basePayload.title || !basePayload.location || !basePayload.description) {
-        showToast('Publisher, title, location, and description are required.', 'warning');
+        showToast(t('editor.opp.requiredFields', 'Publisher, title, location, and description are required.'), 'warning');
         return false;
       }
       if (!basePayload.deadline) {
-        showToast('Application deadline is required.', 'warning');
+        showToast(t('editor.opp.deadlineRequired', 'Application deadline is required.'), 'warning');
         return false;
       }
       if (deadlineIsPast(basePayload.deadline)) {
-        showToast('Deadline cannot be in the past.', 'warning');
+        showToast(t('editor.opp.deadlinePast', 'Deadline cannot be in the past.'), 'warning');
         return false;
       }
       if (!basePayload.requirementItems.length) {
-        showToast(basePayload.type === 'sponsoring' ? 'Add at least one eligibility item.' : 'Add at least one requirement.', 'warning');
+        showToast(basePayload.type === 'sponsoring' ? t('editor.opp.eligibilityAtLeast', 'Add at least one eligibility item.') : t('editor.opp.requirementsAtLeast', 'Add at least one requirement.'), 'warning');
         return false;
       }
 
@@ -353,26 +368,26 @@
         const fundingAmount = parseNumber(val('f-fundingAmount'));
         const fundingNote = val('f-fundingNote');
         if (val('f-fundingAmount') && fundingAmount === null) {
-          showToast('Enter a valid funding amount.', 'warning');
+          showToast(t('editor.opp.fundingInvalid', 'Enter a valid funding amount.'), 'warning');
           return false;
         }
         if (!val('f-fundingAmount') && !fundingNote) {
-          showToast('Add a funding amount or note.', 'warning');
+          showToast(t('editor.opp.fundingOrNote', 'Add a funding amount or note.'), 'warning');
           return false;
         }
       } else {
         const salaryMin = parseNumber(val('f-salaryMin'));
         const salaryMax = parseNumber(val('f-salaryMax'));
         if (val('f-salaryMin') && salaryMin === null) {
-          showToast('Enter a valid salary minimum.', 'warning');
+          showToast(t('editor.opp.salaryMinInvalid', 'Enter a valid salary minimum.'), 'warning');
           return false;
         }
         if (val('f-salaryMax') && salaryMax === null) {
-          showToast('Enter a valid salary maximum.', 'warning');
+          showToast(t('editor.opp.salaryMaxInvalid', 'Enter a valid salary maximum.'), 'warning');
           return false;
         }
         if (salaryMin !== null && salaryMax !== null && salaryMax < salaryMin) {
-          showToast('Salary max must be at least salary min.', 'warning');
+          showToast(t('editor.opp.salaryMaxLessMin', 'Salary max must be at least salary min.'), 'warning');
           return false;
         }
       }
@@ -453,7 +468,7 @@
           };
           await setDoc(ref, created);
           await workerBestEffort('/api/notify/opportunity', { opportunityId: ref.id });
-          showToast('Admin opportunity published.', 'success');
+          showToast(t('editor.opp.publishedToast', 'Admin opportunity published.'), 'success');
         } else {
           await updateDoc(doc(db, 'opportunities', id), payload);
           await logAdminActivity({
@@ -468,12 +483,12 @@
             status: payload.status || item?.status || '',
           });
           await workerBestEffort('/api/notify/opportunity', { opportunityId: id });
-          showToast('Admin opportunity updated.', 'success');
+          showToast(t('editor.opp.updatedToast', 'Admin opportunity updated.'), 'success');
         }
         back();
       } catch (error) {
         console.error(error);
-        showToast('Save failed: ' + (error?.message || error), 'error');
+        showToast(t('editor.saveFailed', 'Save failed') + ': ' + (error?.message || error), 'error');
         saveButtons.forEach((button) => {
           if (button) button.disabled = false;
         });

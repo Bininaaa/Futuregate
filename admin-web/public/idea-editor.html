@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Idea editor &middot; FutureGate Admin</title>
+  <title data-i18n="editor.idea.title" data-i18n-fallback="Idea editor · FutureGate Admin">Idea editor &middot; FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="idea-editor">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
   <div id="shell"></div>
 
   <script type="module">
@@ -24,6 +26,7 @@
     } from './js/firebase-config.js';
     import { getQueryParam } from './js/admin-utils.js';
     import { logAdminActivity } from './js/activity-service.js';
+    import { t, applyTranslations } from './js/i18n.js';
 
     mountShell({ page: 'content' });
     checkAuth(async () => { await initPage(); });
@@ -42,6 +45,11 @@
       ['doctorat', 'Doctorat'],
     ];
 
+    document.addEventListener('languagechange', () => {
+      try { applyTranslations(document); } catch {}
+      try { render(); } catch {}
+    });
+
     async function initPage() {
       if (!isNew) {
         try {
@@ -53,7 +61,7 @@
       }
       ideaStatus = item?.status === 'pending' ? 'pending' : 'approved';
       if (!isNew && item && !canEditExistingIdea()) {
-        renderBlocked('You can only edit ideas you posted as admin.');
+        renderBlocked(t('editor.idea.canEditOnlyOwn', 'You can only edit ideas you posted as admin.'));
         showPage();
         return;
       }
@@ -72,11 +80,11 @@
         <section class="surface-panel">
           <div class="surface-heading">
             <div>
-              <div class="surface-heading-title">Idea unavailable</div>
+              <div class="surface-heading-title">${esc(t('editor.idea.unavailable', 'Idea unavailable'))}</div>
               <div class="surface-heading-copy">${esc(message)}</div>
             </div>
           </div>
-          <a href="moderation?tab=ideas" class="btn btn-primary"><i data-lucide="arrow-left"></i>Back to ideas</a>
+          <a href="moderation?tab=ideas" class="btn btn-primary"><i data-lucide="arrow-left"></i>${esc(t('editor.backToIdeas', 'Back to ideas'))}</a>
         </section>
       `;
       if (window.lucide) window.lucide.createIcons();
@@ -120,73 +128,80 @@
       const isHidden = item?.isHidden === true || item?.status === 'rejected';
       const level = String(item?.level || 'licence').trim() || 'licence';
 
+      const langOpts = LANGS.map(([value, fallback]) =>
+        `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${esc(t('editor.lang.' + value, fallback))}</option>`,
+      ).join('');
+      const levelOpts = LEVELS.map(([value, label]) =>
+        `<option value="${value}" ${level === value ? 'selected' : ''}>${esc(label)}</option>`,
+      ).join('');
+
       root.innerHTML = `
         <div class="page-breadcrumb">
-          <a href="moderation?tab=ideas" class="btn btn-ghost"><i data-lucide="arrow-left"></i>Back to content</a>
+          <a href="moderation?tab=ideas" class="btn btn-ghost"><i data-lucide="arrow-left"></i>${esc(t('editor.backToContent', 'Back to content'))}</a>
         </div>
         <header class="page-hero">
           <div>
-            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${isNew ? 'New post' : 'Editing post'}</div>
-            <h1 class="page-hero__title">${isNew ? 'Publish Idea' : 'Edit Idea'}</h1>
-            <p class="page-hero__subtitle">${isNew ? 'Create a project idea post students can discover with clear context and strong discovery metadata.' : 'Refine this idea with cleaner copy, stronger discovery metadata, and sharper structure.'}</p>
+            <div class="editor-mode-badge ${isNew ? '' : 'is-edit'}"><i data-lucide="${isNew ? 'plus' : 'pencil'}"></i>${esc(isNew ? t('editor.newPost', 'New post') : t('editor.editingPost', 'Editing post'))}</div>
+            <h1 class="page-hero__title">${esc(isNew ? t('editor.idea.publishHeading', 'Publish Idea') : t('editor.idea.editHeading', 'Edit Idea'))}</h1>
+            <p class="page-hero__subtitle">${esc(isNew ? t('editor.idea.subtitleNew', 'Create a project idea post students can discover with clear context and strong discovery metadata.') : t('editor.idea.subtitleEdit', 'Refine this idea with cleaner copy, stronger discovery metadata, and sharper structure.'))}</p>
           </div>
           <div class="page-hero__actions">
-            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>Cancel</button>
-            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
+            <button class="btn" id="cancel-btn"><i data-lucide="x"></i>${esc(t('editor.cancel', 'Cancel'))}</button>
+            <button class="btn btn-primary" id="save-btn"><i data-lucide="save"></i>${esc(isNew ? t('editor.publish', 'Publish') : t('editor.saveChanges', 'Save Changes'))}</button>
           </div>
         </header>
 
         <div class="editor-grid">
-          ${sectionBlock('Publishing', 'eye', `
+          ${sectionBlock(t('editor.section.publishing', 'Publishing'), 'eye', `
             <div class="toggle-group">
               <label class="toggle-option ${!isHidden ? 'is-active' : ''}">
                 <input id="f-visible" type="radio" name="idea-visibility" ${!isHidden ? 'checked' : ''}>
-                <i data-lucide="eye"></i>Visible
+                <i data-lucide="eye"></i>${esc(t('editor.option.visible', 'Visible'))}
               </label>
               <label class="toggle-option ${isHidden ? 'is-active' : ''}">
                 <input id="f-hidden" type="radio" name="idea-visibility" ${isHidden ? 'checked' : ''}>
-                <i data-lucide="eye-off"></i>Hidden
+                <i data-lucide="eye-off"></i>${esc(t('editor.option.hidden', 'Hidden'))}
               </label>
             </div>
           `)}
 
-          ${sectionBlock('Core Story', 'book-open', `
-            <div class="form-row"><label>Idea Title *</label><input id="f-title" type="text" placeholder="e.g. Campus Innovation Partner Program" value="${esc(item?.title || '')}"></div>
-            <div class="form-row"><label>Tagline</label><input id="f-tagline" type="text" placeholder="One-line hook shown in the discovery feed" value="${esc(item?.tagline || '')}"></div>
-            <div class="form-row"><label>Idea Overview *</label><textarea id="f-description" rows="6" placeholder="Describe the concept, what it does, and how it comes to life.">${esc(item?.description || item?.shortDescription || '')}</textarea></div>
+          ${sectionBlock(t('editor.section.coreStory', 'Core Story'), 'book-open', `
+            <div class="form-row"><label>${esc(t('editor.field.ideaTitle', 'Idea Title *'))}</label><input id="f-title" type="text" placeholder="e.g. Campus Innovation Partner Program" value="${esc(item?.title || '')}"></div>
+            <div class="form-row"><label>${esc(t('editor.field.tagline', 'Tagline'))}</label><input id="f-tagline" type="text" placeholder="One-line hook shown in the discovery feed" value="${esc(item?.tagline || '')}"></div>
+            <div class="form-row"><label>${esc(t('editor.field.ideaOverview', 'Idea Overview *'))}</label><textarea id="f-description" rows="6" placeholder="Describe the concept, what it does, and how it comes to life.">${esc(item?.description || item?.shortDescription || '')}</textarea></div>
           `)}
 
-          ${sectionBlock('Metadata & Discovery', 'tag', `
+          ${sectionBlock(t('editor.section.metadataDiscovery', 'Metadata & Discovery'), 'tag', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Category *</label><input id="f-category" type="text" placeholder="e.g. EdTech, AI, Sustainability" value="${esc(item?.category || item?.domain || '')}"></div>
-              <div class="form-row"><label>Academic Level</label>
-                <select id="f-level">${LEVELS.map(([value, label]) => `<option value="${value}" ${level === value ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              <div class="form-row"><label>${esc(t('editor.field.category', 'Category'))} *</label><input id="f-category" type="text" placeholder="e.g. EdTech, AI, Sustainability" value="${esc(item?.category || item?.domain || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.academicLevel', 'Academic Level'))}</label>
+                <select id="f-level">${levelOpts}</select>
               </div>
-              <div class="form-row"><label>Language</label>
-                <select id="f-lang">${LANGS.map(([value, label]) => `<option value="${value}" ${((item?.originalLanguage || 'fr') === value) ? 'selected' : ''}>${label}</option>`).join('')}</select>
+              <div class="form-row"><label>${esc(t('editor.field.language', 'Language'))}</label>
+                <select id="f-lang">${langOpts}</select>
               </div>
-              <div class="form-row"><label>Stage</label><input id="f-stage" type="text" placeholder="e.g. Concept, Prototype, Pilot" value="${esc(item?.stage || '')}"></div>
-              <div class="form-row"><label>Skills Needed</label><input id="f-skillsNeeded" type="text" placeholder="Comma-separated skills" value="${esc(joinCsv(item?.skillsNeeded?.length ? item.skillsNeeded : splitCsv(item?.tools)))}"></div>
-              <div class="form-row"><label>Team Roles Needed</label><input id="f-teamNeeded" type="text" placeholder="Comma-separated roles" value="${esc(joinCsv(item?.teamNeeded))}"></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Target Audience</label><textarea id="f-targetAudience" rows="3" placeholder="Who benefits most from this idea?">${esc(item?.targetAudience || '')}</textarea></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Problem Statement</label><textarea id="f-problemStatement" rows="4" placeholder="What specific challenge does this idea solve?">${esc(item?.problemStatement || '')}</textarea></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Proposed Solution</label><textarea id="f-solution" rows="4" placeholder="How does the idea address the problem?">${esc(item?.solution || '')}</textarea></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Resources Needed</label><textarea id="f-resourcesNeeded" rows="3" placeholder="What support, partners, or assets are required?">${esc(item?.resourcesNeeded || '')}</textarea></div>
-              <div class="form-row" style="grid-column:1/-1;"><label>Benefits & Impact</label><textarea id="f-benefits" rows="3" placeholder="What outcomes make this idea worth pursuing?">${esc(item?.benefits || '')}</textarea></div>
+              <div class="form-row"><label>${esc(t('editor.field.stage', 'Stage'))}</label><input id="f-stage" type="text" placeholder="e.g. Concept, Prototype, Pilot" value="${esc(item?.stage || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.skillsNeeded', 'Skills Needed'))}</label><input id="f-skillsNeeded" type="text" placeholder="Comma-separated skills" value="${esc(joinCsv(item?.skillsNeeded?.length ? item.skillsNeeded : splitCsv(item?.tools)))}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.teamRoles', 'Team Roles Needed'))}</label><input id="f-teamNeeded" type="text" placeholder="Comma-separated roles" value="${esc(joinCsv(item?.teamNeeded))}"></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>${esc(t('editor.field.targetAudience', 'Target Audience'))}</label><textarea id="f-targetAudience" rows="3" placeholder="Who benefits most from this idea?">${esc(item?.targetAudience || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>${esc(t('editor.field.problemStatement', 'Problem Statement'))}</label><textarea id="f-problemStatement" rows="4" placeholder="What specific challenge does this idea solve?">${esc(item?.problemStatement || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>${esc(t('editor.field.solution', 'Proposed Solution'))}</label><textarea id="f-solution" rows="4" placeholder="How does the idea address the problem?">${esc(item?.solution || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>${esc(t('editor.field.resourcesNeeded', 'Resources Needed'))}</label><textarea id="f-resourcesNeeded" rows="3" placeholder="What support, partners, or assets are required?">${esc(item?.resourcesNeeded || '')}</textarea></div>
+              <div class="form-row" style="grid-column:1/-1;"><label>${esc(t('editor.field.benefits', 'Benefits & Impact'))}</label><textarea id="f-benefits" rows="3" placeholder="What outcomes make this idea worth pursuing?">${esc(item?.benefits || '')}</textarea></div>
             </div>
           `)}
 
-          ${sectionBlock('Optional Extras', 'image', `
+          ${sectionBlock(t('editor.section.optionalExtras', 'Optional Extras'), 'image', `
             <div class="form-grid-2">
-              <div class="form-row"><label>Cover Image URL</label><input id="f-imageUrl" type="url" placeholder="https://..." value="${esc(item?.imageUrl || '')}"></div>
-              <div class="form-row"><label>Deck / Demo Link</label><input id="f-attachmentUrl" type="url" placeholder="Figma, Notion, pitch deck, landing page..." value="${esc(item?.attachmentUrl || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.coverImageUrl', 'Cover Image URL'))}</label><input id="f-imageUrl" type="url" placeholder="https://..." value="${esc(item?.imageUrl || '')}"></div>
+              <div class="form-row"><label>${esc(t('editor.field.deckLink', 'Deck / Demo Link'))}</label><input id="f-attachmentUrl" type="url" placeholder="Figma, Notion, pitch deck, landing page..." value="${esc(item?.attachmentUrl || '')}"></div>
             </div>
           `)}
         </div>
 
         <div class="page-hero__actions" style="justify-content:flex-end;margin-top:18px;">
-          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>Cancel</button>
-          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${isNew ? 'Publish' : 'Save Changes'}</button>
+          <button class="btn" id="cancel-btn-2"><i data-lucide="x"></i>${esc(t('editor.cancel', 'Cancel'))}</button>
+          <button class="btn btn-primary" id="save-btn-2"><i data-lucide="save"></i>${esc(isNew ? t('editor.publish', 'Publish') : t('editor.saveChanges', 'Save Changes'))}</button>
         </div>
       `;
 
@@ -220,15 +235,15 @@
 
     function validatePayload(payload) {
       if (!payload.title || payload.title.length < 4) {
-        showToast('Idea title must be at least 4 characters.', 'warning');
+        showToast(t('editor.idea.titleMin', 'Idea title must be at least 4 characters.'), 'warning');
         return false;
       }
       if (!payload.description || payload.description.length < 60) {
-        showToast('Please add more detail to the idea overview.', 'warning');
+        showToast(t('editor.idea.descMin', 'Please add more detail to the idea overview.'), 'warning');
         return false;
       }
       if (!payload.domain) {
-        showToast('Category is required.', 'warning');
+        showToast(t('editor.idea.categoryRequired', 'Category is required.'), 'warning');
         return false;
       }
       return true;
@@ -290,7 +305,7 @@
             createdAt: serverTimestamp(),
           };
           await setDoc(ref, created);
-          showToast('Admin idea published.', 'success');
+          showToast(t('editor.idea.publishedToast', 'Admin idea published.'), 'success');
         } else {
           await updateDoc(doc(db, 'projectIdeas', id), payload);
           await logAdminActivity({
@@ -304,12 +319,12 @@
             subjectName: payload.submittedByName || item?.submittedByName || '',
             status: payload.status || item?.status || '',
           });
-          showToast('Admin idea updated.', 'success');
+          showToast(t('editor.idea.updatedToast', 'Admin idea updated.'), 'success');
         }
         back();
       } catch (error) {
         console.error(error);
-        showToast('Save failed: ' + (error?.message || error), 'error');
+        showToast(t('editor.saveFailed', 'Save failed') + ': ' + (error?.message || error), 'error');
         saveButtons.forEach((button) => {
           if (button) button.disabled = false;
         });

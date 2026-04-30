@@ -3,27 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Content · FutureGate Admin</title>
+  <title data-i18n="page.content.title" data-i18n-fallback="Content · FutureGate Admin">Content · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="moderation">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
   <div id="shell"></div>
 
   <!-- Editor modal -->
   <div class="modal-backdrop" id="editor-modal">
     <div class="modal modal-lg">
       <div class="modal-header">
-        <h3 id="editor-title">Edit</h3>
-        <button class="modal-close" data-close-modal="editor-modal" aria-label="Close"><i data-lucide="x"></i></button>
+        <h3 id="editor-title" data-i18n="mod.editorEdit" data-i18n-fallback="Edit">Edit</h3>
+        <button class="modal-close" data-close-modal="editor-modal" data-i18n-aria-label="btn.close" data-i18n-aria-label-fallback="Close" aria-label="Close"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body" id="editor-body"></div>
       <div class="modal-footer">
-        <button class="btn" data-close-modal="editor-modal">Cancel</button>
-        <button class="btn btn-primary" id="editor-save"><i data-lucide="save"></i>Save</button>
+        <button class="btn" data-close-modal="editor-modal" data-i18n="btn.cancel" data-i18n-fallback="Cancel">Cancel</button>
+        <button class="btn btn-primary" id="editor-save"><i data-lucide="save"></i><span data-i18n="btn.save" data-i18n-fallback="Save">Save</span></button>
       </div>
     </div>
   </div>
@@ -32,8 +34,8 @@
   <div class="modal-backdrop" id="cv-modal">
     <div class="modal modal-lg">
       <div class="modal-header">
-        <h3>Application CV</h3>
-        <button class="modal-close" data-close-modal="cv-modal" aria-label="Close"><i data-lucide="x"></i></button>
+        <h3 data-i18n="mod.applicationCv" data-i18n-fallback="Application CV">Application CV</h3>
+        <button class="modal-close" data-close-modal="cv-modal" data-i18n-aria-label="btn.close" data-i18n-aria-label-fallback="Close" aria-label="Close"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body" id="cv-body"></div>
     </div>
@@ -58,50 +60,54 @@
       resolvePrimaryDocumentFields,
     } from './js/document-access.js';
     import { openModal, closeModal } from './js/ui.js';
+    import { t, applyTranslations } from './js/i18n.js';
     const ADMIN_PUBLISHER_NAME = 'FutureGate Content Team';
 
     const TABS = [
-      { id: 'ideas',        label: 'Project ideas', icon: 'lightbulb' },
-      { id: 'opportunities',label: 'Opportunities', icon: 'briefcase' },
-      { id: 'scholarships', label: 'Scholarships',  icon: 'graduation-cap' },
-      { id: 'trainings',    label: 'Library',       icon: 'book-open' },
+      { id: 'ideas',        labelKey: 'mod.tab.ideas',         labelFallback: 'Project ideas', icon: 'lightbulb' },
+      { id: 'opportunities',labelKey: 'mod.tab.opportunities', labelFallback: 'Opportunities', icon: 'briefcase' },
+      { id: 'scholarships', labelKey: 'mod.tab.scholarships',  labelFallback: 'Scholarships',  icon: 'graduation-cap' },
+      { id: 'trainings',    labelKey: 'mod.tab.library',       labelFallback: 'Library',       icon: 'book-open' },
     ];
+
+    function tabLabel(tab) { return t(tab.labelKey, tab.labelFallback); }
+    function chipLabel(c) { return t(c.lk, c.l); }
 
     // Per-tab chip filter definitions (mirrors Flutter content center)
     const FILTERS = {
       ideas: [
-        { v: 'all',      l: 'All',      i: 'list' },
-        { v: 'admin',    l: 'Admin posts', i: 'shield' },
-        { v: 'pending',  l: 'Pending',  i: 'clock' },
-        { v: 'approved', l: 'Approved', i: 'check' },
-        { v: 'rejected', l: 'Rejected', i: 'x-circle' },
-        { v: 'hidden',   l: 'Hidden',   i: 'eye-off' },
+        { v: 'all',      lk: 'mod.filter.all',           l: 'All',         i: 'list' },
+        { v: 'admin',    lk: 'mod.filter.adminPosts',    l: 'Admin posts', i: 'shield' },
+        { v: 'pending',  lk: 'status.pending',           l: 'Pending',     i: 'clock' },
+        { v: 'approved', lk: 'status.approved',          l: 'Approved',    i: 'check' },
+        { v: 'rejected', lk: 'status.rejected',          l: 'Rejected',    i: 'x-circle' },
+        { v: 'hidden',   lk: 'status.hidden',            l: 'Hidden',      i: 'eye-off' },
       ],
       opportunities: [
-        { v: 'all',         l: 'All opportunities', i: 'list' },
-        { v: 'admin',       l: 'Admin posts',       i: 'shield' },
-        { v: 'pendingApps', l: 'Has Pending Apps',  i: 'hourglass' },
-        { v: 'featured',    l: 'Featured',          i: 'star' },
-        { v: 'closed',      l: 'Closed',            i: 'lock' },
-        { v: 'hidden',      l: 'Hidden',            i: 'eye-off' },
+        { v: 'all',         lk: 'mod.filter.allOpportunities', l: 'All opportunities', i: 'list' },
+        { v: 'admin',       lk: 'mod.filter.adminPosts',       l: 'Admin posts',       i: 'shield' },
+        { v: 'pendingApps', lk: 'mod.filter.hasPendingApps',   l: 'Has Pending Apps',  i: 'hourglass' },
+        { v: 'featured',    lk: 'status.featured',             l: 'Featured',          i: 'star' },
+        { v: 'closed',      lk: 'status.closed',               l: 'Closed',            i: 'lock' },
+        { v: 'hidden',      lk: 'status.hidden',               l: 'Hidden',            i: 'eye-off' },
       ],
       opportunityTypes: [
-        { v: 'all',         l: 'Any type',    i: 'layers' },
-        { v: 'job',         l: 'Jobs',        i: 'briefcase' },
-        { v: 'internship',  l: 'Internships', i: 'backpack' },
-        { v: 'sponsoring',  l: 'Sponsoring',  i: 'gift' },
+        { v: 'all',         lk: 'mod.filter.anyType',  l: 'Any type',    i: 'layers' },
+        { v: 'job',         lk: 'plural.jobs',         l: 'Jobs',        i: 'briefcase' },
+        { v: 'internship',  lk: 'plural.internships',  l: 'Internships', i: 'backpack' },
+        { v: 'sponsoring',  lk: 'plural.sponsoring',   l: 'Sponsoring',  i: 'gift' },
       ],
       scholarships: [
-        { v: 'all',      l: 'All',      i: 'list' },
-        { v: 'featured', l: 'Featured', i: 'star' },
-        { v: 'hidden',   l: 'Hidden',   i: 'eye-off' },
+        { v: 'all',      lk: 'mod.filter.all',  l: 'All',      i: 'list' },
+        { v: 'featured', lk: 'status.featured', l: 'Featured', i: 'star' },
+        { v: 'hidden',   lk: 'status.hidden',   l: 'Hidden',   i: 'eye-off' },
       ],
       trainings: [
-        { v: 'all',      l: 'All',      i: 'list' },
-        { v: 'featured', l: 'Featured', i: 'star' },
-        { v: 'hidden',   l: 'Hidden',   i: 'eye-off' },
-        { v: 'books',    l: 'Books',    i: 'book' },
-        { v: 'videos',   l: 'Videos',   i: 'video' },
+        { v: 'all',      lk: 'mod.filter.all',   l: 'All',      i: 'list' },
+        { v: 'featured', lk: 'status.featured',  l: 'Featured', i: 'star' },
+        { v: 'hidden',   lk: 'status.hidden',    l: 'Hidden',   i: 'eye-off' },
+        { v: 'books',    lk: 'plural.books',     l: 'Books',    i: 'book' },
+        { v: 'videos',   lk: 'plural.videos',    l: 'Videos',   i: 'video' },
       ],
     };
 
@@ -356,7 +362,7 @@
           <div class="content-card__media">${mediaHtml || `<i data-lucide="${esc(icon)}"></i>`}</div>
           <div class="content-card__body">
             <div class="content-card__title-row">
-              <h3 class="content-card__title">${esc(title || 'Untitled')}</h3>
+              <h3 class="content-card__title">${esc(title || t('mod.untitled', 'Untitled'))}</h3>
               ${safeMeta ? `<span class="content-card__meta"><i data-lucide="clock-3"></i>${esc(safeMeta)}</span>` : ''}
             </div>
             ${subtitle ? `<p class="content-card__subtitle">${esc(subtitle)}</p>` : ''}
@@ -376,10 +382,10 @@
 
     function applicationSummaryHtml({ total, pending, accepted, rejected }) {
       return `<div class="application-summary-row">
-        <span class="badge badge-info"><i data-lucide="users"></i>${Number(total || 0).toLocaleString()} Total</span>
-        <span class="badge badge-warning"><i data-lucide="hourglass"></i>${Number(pending || 0).toLocaleString()} Pending</span>
-        <span class="badge badge-success"><i data-lucide="check"></i>${Number(accepted || 0).toLocaleString()} Approved</span>
-        <span class="badge badge-danger"><i data-lucide="x"></i>${Number(rejected || 0).toLocaleString()} Rejected</span>
+        <span class="badge badge-info"><i data-lucide="users"></i>${Number(total || 0).toLocaleString()} ${esc(t('count.totalLabel', 'Total'))}</span>
+        <span class="badge badge-warning"><i data-lucide="hourglass"></i>${Number(pending || 0).toLocaleString()} ${esc(t('count.pending', 'Pending'))}</span>
+        <span class="badge badge-success"><i data-lucide="check"></i>${Number(accepted || 0).toLocaleString()} ${esc(t('count.approved', 'Approved'))}</span>
+        <span class="badge badge-danger"><i data-lucide="x"></i>${Number(rejected || 0).toLocaleString()} ${esc(t('count.rejected', 'Rejected'))}</span>
       </div>`;
     }
 
@@ -445,7 +451,7 @@
       if (!id) return;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
-      document.getElementById('editor-title').textContent = 'Publisher profile';
+      document.getElementById('editor-title').textContent = t('btn.publisherProfile', 'Publisher profile');
       document.getElementById('editor-body').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
       openModal('editor-modal');
       try {
@@ -457,7 +463,7 @@
         if (window.lucide) window.lucide.createIcons();
       } catch (error) {
         console.error('Publisher profile failed:', error);
-        document.getElementById('editor-body').innerHTML = feedbackCardHtml('Could not load publisher profile.', { type: 'error' });
+        document.getElementById('editor-body').innerHTML = feedbackCardHtml(t('mod.couldNotLoadPublisher', 'Could not load publisher profile.'), { type: 'error' });
         if (window.lucide) window.lucide.createIcons();
       }
     }
@@ -575,9 +581,9 @@
         return cleanText(`${item.salaryMin}-${item.salaryMax} ${suffix}`);
       }
       if (item?.salaryMin != null) {
-        return cleanText(`From ${item.salaryMin} ${suffix}`);
+        return cleanText(`${t('label.from', 'From')} ${item.salaryMin} ${suffix}`);
       }
-      if (type === 'internship' && item?.isPaid === false) return 'Unpaid';
+      if (type === 'internship' && item?.isPaid === false) return t('label.unpaid', 'Unpaid');
       return cleanText(item?.compensationText || item?.compensationNote);
     }
 
@@ -663,7 +669,13 @@
       oppType: normalizeOpportunityType(getQueryParam('opportunityType') || 'all'),
       search: '',
     };
-    if (!TABS.find((t) => t.id === state.activeTab)) state.activeTab = 'ideas';
+    if (!TABS.find((tab) => tab.id === state.activeTab)) state.activeTab = 'ideas';
+
+    document.addEventListener('languagechange', () => {
+      try { applyTranslations(document); } catch {}
+      try { renderStats(); } catch {}
+      try { renderTab(); } catch {}
+    });
 
     checkAuth(async () => { await initPage(); });
 
@@ -673,7 +685,7 @@
       root.innerHTML = `
         <div id="stats-pills" class="summary-pills"></div>
         <div class="tabs" id="tab-bar">
-          ${TABS.map((t) => `<button class="tab${t.id === state.activeTab ? ' active' : ''}" data-tab="${t.id}"><i data-lucide="${t.icon}"></i><span>${esc(t.label)}</span></button>`).join('')}
+          ${TABS.map((tab) => `<button class="tab${tab.id === state.activeTab ? ' active' : ''}" data-tab="${tab.id}"><i data-lucide="${tab.icon}"></i><span>${esc(tabLabel(tab))}</span></button>`).join('')}
         </div>
         <section class="surface-panel" id="tab-panel"></section>
       `;
@@ -736,11 +748,11 @@
         scholarships:  { p: 'scholarshipId',  list: state.scholarships,  open: (it) => openScholarEditor(it) },
         trainings:     { p: 'trainingId',     list: state.trainings,     open: null },
       };
-      const t = targets[state.activeTab];
-      if (!t) return;
-      const id = getQueryParam(t.p);
+      const target = targets[state.activeTab];
+      if (!target) return;
+      const id = getQueryParam(target.p);
       if (!id) return;
-      const item = t.list.find((x) => x.id === id);
+      const item = target.list.find((x) => x.id === id);
       if (!item) return;
       requestAnimationFrame(() => {
         const row = document.querySelector(`#list [data-row-id="${CSS.escape(id)}"]`);
@@ -750,7 +762,7 @@
           setTimeout(() => { row.style.outline = ''; }, 2400);
         }
       });
-      if (t.open) t.open(item);
+      if (target.open) target.open(item);
     }
 
     async function loadAll() {
@@ -771,7 +783,7 @@
       } catch (e) {
         console.error(e);
         const panel = document.getElementById('tab-panel');
-        if (panel) panel.innerHTML = feedbackCardHtml('Could not load content.', { type: 'error' });
+        if (panel) panel.innerHTML = feedbackCardHtml(t('mod.couldNotLoadContent', 'Could not load content.'), { type: 'error' });
       }
     }
 
@@ -793,12 +805,12 @@
       const scholarships = state.scholarships.length;
       const resources = state.trainings.length;
       el.innerHTML = `
-        <span class="summary-pill is-primary"><i data-lucide="lightbulb"></i><strong>${state.ideas.length}</strong> ideas</span>
-        ${pendingIdeas ? `<span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${pendingIdeas}</strong> Pending Ideas</span>` : ''}
-        ${pendingApps ? `<span class="summary-pill is-danger"><i data-lucide="hourglass"></i><strong>${pendingApps}</strong> Pending Apps</span>` : ''}
-        <span class="summary-pill is-info"><i data-lucide="briefcase"></i><strong>${opps}</strong> opportunities</span>
-        <span class="summary-pill"><i data-lucide="graduation-cap"></i><strong>${scholarships}</strong> scholarships</span>
-        <span class="summary-pill is-success"><i data-lucide="book-open"></i><strong>${resources}</strong> resources</span>
+        <span class="summary-pill is-primary"><i data-lucide="lightbulb"></i><strong>${state.ideas.length}</strong> ${esc(t('plural.ideas', 'ideas'))}</span>
+        ${pendingIdeas ? `<span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${pendingIdeas}</strong> ${esc(t('mod.pill.pendingIdeas', 'Pending Ideas'))}</span>` : ''}
+        ${pendingApps ? `<span class="summary-pill is-danger"><i data-lucide="hourglass"></i><strong>${pendingApps}</strong> ${esc(t('mod.pill.pendingApps', 'Pending Apps'))}</span>` : ''}
+        <span class="summary-pill is-info"><i data-lucide="briefcase"></i><strong>${opps}</strong> ${esc(t('plural.opportunities', 'opportunities'))}</span>
+        <span class="summary-pill"><i data-lucide="graduation-cap"></i><strong>${scholarships}</strong> ${esc(t('plural.scholarships', 'scholarships'))}</span>
+        <span class="summary-pill is-success"><i data-lucide="book-open"></i><strong>${resources}</strong> ${esc(t('plural.resources', 'resources'))}</span>
       `;
       if (window.lucide) window.lucide.createIcons();
     }
@@ -825,14 +837,15 @@
               const countHtml = Number.isFinite(Number(count))
                 ? `<span class="badge" style="margin-left:2px;">${Number(count).toLocaleString()}</span>`
                 : '';
-              return `<button class="chip${state.filter===c.v?' active':''}" data-filter-value="${c.v}">${c.i?`<i data-lucide="${c.i}"></i>`:''}${esc(c.l)}${countHtml}</button>`;
+              return `<button class="chip${state.filter===c.v?' active':''}" data-filter-value="${c.v}">${c.i?`<i data-lucide="${c.i}"></i>`:''}${esc(chipLabel(c))}${countHtml}</button>`;
             }).join('')}
           </div>
         </div>`;
     }
     function searchBar(placeholder) {
+      const ph = placeholder || t('mod.searchPlaceholder', 'Search...');
       return `<div class="filter-bar">
-        <div class="search-bar" style="flex:1;"><i data-lucide="search"></i><input id="search" type="search" placeholder="${esc(placeholder)}" value="${esc(state.search)}"/></div>
+        <div class="search-bar" style="flex:1;"><i data-lucide="search"></i><input id="search" type="search" placeholder="${esc(ph)}" value="${esc(state.search)}"/></div>
       </div>`;
     }
     function bindCommon() {
@@ -985,7 +998,7 @@
             status: 'approved',
           });
           await workerBestEffort('/api/notify/idea-status-changed', { ideaId: id });
-          showToast('Idea Approved.', 'success');
+          showToast(t('toast.ideaApproved', 'Idea Approved.'), 'success');
         } else if (action === 'reject') {
           await updateDoc(ref, { status: 'rejected' });
           it.status = 'rejected';
@@ -1001,7 +1014,7 @@
             status: 'rejected',
           });
           await workerBestEffort('/api/notify/idea-status-changed', { ideaId: id });
-          showToast('Idea Rejected.', 'success');
+          showToast(t('toast.ideaRejected', 'Idea Rejected.'), 'success');
         } else if (action === 'toggle-hide') {
           const next = !it.isHidden;
           await updateDoc(ref, { isHidden: next, updatedAt: serverTimestamp() });
@@ -1017,10 +1030,10 @@
             subjectName: it.submittedByName || '',
             status: next ? 'hidden' : 'visible',
           });
-          showToast(next ? 'Idea hidden.' : 'Idea visible again.', 'success');
+          showToast(next ? t('toast.ideaHidden', 'Idea hidden.') : t('toast.ideaVisible', 'Idea visible again.'), 'success');
         } else if (action === 'edit') {
           if (!isOwnAdminIdea(it)) {
-            showToast('You can only edit ideas you posted as admin.', 'warning');
+            showToast(t('toast.canEditOwnIdea', 'You can only edit ideas you posted as admin.'), 'warning');
             return;
           }
           navigateTo('idea-editor?id=' + encodeURIComponent(id));
@@ -1040,13 +1053,13 @@
             subjectName: it.submittedByName || '',
             status: 'deleted',
           });
-          showToast('Idea deleted.', 'success');
+          showToast(t('toast.ideaDeleted', 'Idea deleted.'), 'success');
         }
         renderStats();
         renderTab();
       } catch (e) {
         console.error(e);
-        showToast('Action failed.', 'error');
+        showToast(t('toast.actionFailed', 'Action failed.'), 'error');
       }
     }
 
@@ -1313,17 +1326,17 @@
           }
           if (action !== 'accept' && action !== 'reject') return;
           if (!canEditOpportunity(actionOpportunity)) {
-            showToast('You can only update applications for opportunities you posted as admin.', 'warning');
+            showToast(t('toast.canEditOwnApp', 'You can only update applications for opportunities you posted as admin.'), 'warning');
             return;
           }
           try {
             const nextStatus = action === 'accept' ? 'accepted' : 'rejected';
             await updateApplicationDecision(application, actionOpportunity, nextStatus);
-            showToast('Application ' + displayLabel(nextStatus) + '.', 'success');
+            showToast(t('status.' + String(nextStatus).toLowerCase(), displayLabel(nextStatus)) + '.', 'success');
             if (typeof refresh === 'function') refresh(appId);
           } catch (e) {
             console.error(e);
-            showToast('Action failed: ' + (e?.message || e), 'error');
+            showToast(t('toast.actionFailed', 'Action failed') + ': ' + (e?.message || e), 'error');
           }
         });
       });
@@ -1520,10 +1533,10 @@
             subjectName: item.companyName || '',
             status: next ? 'hidden' : 'visible',
           });
-          showToast(next ? 'Opportunity hidden.' : 'Opportunity visible.', 'success');
+          showToast(next ? t('toast.opportunityHidden', 'Opportunity hidden.') : t('toast.opportunityVisible', 'Opportunity visible.'), 'success');
         } else if (action === 'edit') {
           if (!canEditOpportunity(item)) {
-            showToast('You can only edit opportunities you posted as admin.', 'warning');
+            showToast(t('toast.canEditOwnOpp', 'You can only edit opportunities you posted as admin.'), 'warning');
             return;
           }
           return openOppEditor(item);
@@ -1546,13 +1559,13 @@
             subjectName: item.companyName || '',
             status: 'deleted',
           });
-          showToast('Opportunity deleted.', 'success');
+          showToast(t('toast.opportunityDeleted', 'Opportunity deleted.'), 'success');
         }
         renderStats();
         renderTab();
       } catch (e) {
         console.error(e);
-        showToast('Action failed.', 'error');
+        showToast(t('toast.actionFailed', 'Action failed.'), 'error');
       }
     }
 
@@ -1661,7 +1674,7 @@
             subjectName: item.provider || '',
             status: next ? 'hidden' : 'visible',
           });
-          showToast(next ? 'Hidden.' : 'Visible.', 'success');
+          showToast(next ? t('toast.hidden', 'Hidden.') : t('toast.visible', 'Visible.'), 'success');
         } else if (action === 'edit') {
           return openScholarEditor(item);
         } else if (action === 'delete') {
@@ -1679,13 +1692,13 @@
             subjectName: item.provider || '',
             status: 'deleted',
           });
-          showToast('Scholarship deleted.', 'success');
+          showToast(t('toast.scholarshipDeleted', 'Scholarship deleted.'), 'success');
         }
         renderStats();
         renderTab();
       } catch (e) {
         console.error(e);
-        showToast('Action failed.', 'error');
+        showToast(t('toast.actionFailed', 'Action failed.'), 'error');
       }
     }
 
@@ -1934,13 +1947,13 @@
             subjectName: it.provider || '',
             status: next ? 'hidden' : 'visible',
           });
-          showToast(next ? 'Hidden.' : 'Visible.', 'success');
+          showToast(next ? t('toast.hidden', 'Hidden.') : t('toast.visible', 'Visible.'), 'success');
         }
         renderStats();
         renderTab();
       } catch (e) {
         console.error(e);
-        showToast('Action failed.', 'error');
+        showToast(t('toast.actionFailed', 'Action failed.'), 'error');
       }
     }
 
@@ -2032,18 +2045,18 @@
           const next = !item.isFeatured;
           await workerRequest(`/api/trainings/${encodeURIComponent(id)}/featured`, { body: { isFeatured: next } });
           item.isFeatured = next;
-          showToast(next ? 'Featured.' : 'Unfeatured.', 'success');
+          showToast(next ? t('toast.featured', 'Featured.') : t('toast.unfeatured', 'Unfeatured.'), 'success');
         } else if (action === 'delete') {
           if (!confirm('Delete this resource?')) return;
           await workerRequest(`/api/trainings/${encodeURIComponent(id)}`, { method: 'DELETE' });
           state.trainings = state.trainings.filter((entry) => entry.id !== id);
-          showToast('Resource deleted.', 'success');
+          showToast(t('toast.resourceDeleted', 'Resource deleted.'), 'success');
         }
         renderStats();
         renderImportPanel(state.librarySource);
       } catch (e) {
         console.error(e);
-        showToast('Action failed.', 'error');
+        showToast(t('toast.actionFailed', 'Action failed.'), 'error');
       }
     }
 
@@ -2099,7 +2112,7 @@
       try {
         const meta = importMeta();
         if (!meta.domain) {
-          showToast('Choose a domain before importing.', 'warning');
+          showToast(t('toast.chooseDomain', 'Choose a domain before importing.'), 'warning');
           return;
         }
         await workerRequest('/api/trainings/import/google-book', {
@@ -2114,10 +2127,10 @@
         await loadTrainings();
         renderStats();
         renderImportPanel('books');
-        showToast('Book imported to library.', 'success');
+        showToast(t('toast.bookImported', 'Book imported to library.'), 'success');
       } catch (e) {
         console.error(e);
-        showToast(e?.message || 'Import failed.', 'error');
+        showToast(e?.message || t('toast.importFailed', 'Import failed.'), 'error');
       }
     }
 
@@ -2165,11 +2178,11 @@
       try {
         const meta = importMeta();
         if (!meta.domain) {
-          showToast('Choose a domain before importing.', 'warning');
+          showToast(t('toast.chooseDomain', 'Choose a domain before importing.'), 'warning');
           return;
         }
         if (!meta.language) {
-          showToast('Choose a language before importing a YouTube resource.', 'warning');
+          showToast(t('toast.chooseLanguageYt', 'Choose a language before importing a YouTube resource.'), 'warning');
           return;
         }
         await workerRequest('/api/trainings/import/youtube-video', {
@@ -2184,10 +2197,10 @@
         await loadTrainings();
         renderStats();
         renderImportPanel('youtube');
-        showToast('Video imported to library.', 'success');
+        showToast(t('toast.videoImported', 'Video imported to library.'), 'success');
       } catch (e) {
         console.error(e);
-        showToast(e?.message || 'Import failed.', 'error');
+        showToast(e?.message || t('toast.importFailed', 'Import failed.'), 'error');
       }
     }
 

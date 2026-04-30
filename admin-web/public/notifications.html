@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notifications · FutureGate Admin</title>
+  <title data-i18n="page.notifications.title" data-i18n-fallback="Notifications · FutureGate Admin">Notifications · FutureGate Admin</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
   <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body data-page="notifications">
-  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p>Verifying session...</p></div>
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
   <div id="shell"></div>
 
   <script type="module">
@@ -18,6 +20,7 @@
     import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, showToast, formatTimestamp } from './js/auth.js';
     import { loadNotificationsPage, markNotificationRead, markNotificationsRead } from './js/notification-service.js';
     import { adminTargetUrl } from './js/admin-utils.js';
+    import { t, applyTranslations } from './js/i18n.js';
     import './js/ui.js';
 
     function resolveNotificationTarget(n) {
@@ -44,24 +47,27 @@
       await initNotifs();
     });
 
+    document.addEventListener('languagechange', () => { render(); });
+
     async function initNotifs() {
       const root = document.getElementById('page-content');
       root.innerHTML = `
         <section class="surface-panel">
           <div class="filter-bar">
             <select id="notif-filter">
-              <option value="all">All</option>
-              <option value="unread">Unread</option>
-              <option value="read">Read</option>
+              <option value="all" data-i18n="notif.all" data-i18n-fallback="All">${esc(t('notif.all', 'All'))}</option>
+              <option value="unread" data-i18n="notif.unread" data-i18n-fallback="Unread">${esc(t('notif.unread', 'Unread'))}</option>
+              <option value="read" data-i18n="notif.read" data-i18n-fallback="Read">${esc(t('notif.read', 'Read'))}</option>
             </select>
-            <button id="mark-all" class="btn" style="margin-left:auto;"><i data-lucide="check-check"></i>Mark all as read</button>
+            <button id="mark-all" class="btn" style="margin-left:auto;"><i data-lucide="check-check"></i><span data-i18n="btn.markAllRead" data-i18n-fallback="Mark all as read">${esc(t('btn.markAllRead', 'Mark all as read'))}</span></button>
           </div>
           <div id="notif-list" class="list-grid"></div>
           <div class="load-more-wrap">
-            <button id="notif-load" class="btn"><i data-lucide="plus"></i>Load more</button>
+            <button id="notif-load" class="btn"><i data-lucide="plus"></i><span data-i18n="btn.loadMore" data-i18n-fallback="Load more">${esc(t('btn.loadMore', 'Load more'))}</span></button>
           </div>
         </section>
       `;
+      applyTranslations(root);
 
       document.getElementById('notif-filter').addEventListener('change', (e) => { state.filter = e.target.value; render(); });
       document.getElementById('mark-all').addEventListener('click', markAll);
@@ -80,7 +86,7 @@
         render();
       } catch (e) {
         console.error(e);
-        document.getElementById('notif-list').innerHTML = feedbackCardHtml('Could not load notifications.', { type: 'error' });
+        document.getElementById('notif-list').innerHTML = feedbackCardHtml(t('feedback.couldNotLoadNotifications', 'Could not load notifications.'), { type: 'error' });
         if (window.lucide) window.lucide.createIcons();
       }
     }
@@ -92,18 +98,19 @@
         await markNotificationsRead(ids);
         state.items.forEach((n) => { if (ids.includes(n.id)) n.isRead = true; });
         render();
-        showToast('All notifications marked as read.', 'success');
-      } catch (e) { showToast('Could not mark all as read.', 'error'); }
+        showToast(t('notif.markedAllRead', 'All notifications marked as read.'), 'success');
+      } catch (e) { showToast(t('notif.couldNotMarkAll', 'Could not mark all as read.'), 'error'); }
     }
 
     function render() {
       const list = document.getElementById('notif-list');
+      if (!list) return;
       let items = state.items.slice();
       if (state.filter === 'unread') items = items.filter((n) => !n.isRead);
       else if (state.filter === 'read') items = items.filter((n) => n.isRead);
 
       if (!items.length) {
-        list.innerHTML = emptyStateHtml('You are all caught up.', { title: 'Inbox empty', icon: 'bell-off' });
+        list.innerHTML = emptyStateHtml(t('notif.allCaughtUp', 'You are all caught up.'), { title: t('notif.inboxEmpty', 'Inbox empty'), icon: 'bell-off' });
       } else {
         list.innerHTML = items.map((n) => `
           <div class="notif-row${n.isRead ? '' : ' unread'}" data-id="${n.id}">

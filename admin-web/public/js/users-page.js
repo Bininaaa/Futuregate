@@ -30,8 +30,26 @@ import { matchesSearch } from './admin-utils.js';
 import { logAdminActivity } from './activity-service.js';
 import { openModal } from './ui.js';
 import { WORKER_BASE_URL } from './google-books-config.js';
+import { t, applyTranslations } from './i18n.js';
 
 mountShell({ page: 'users' });
+
+document.addEventListener('languagechange', () => {
+  try { applyTranslations(document); } catch {}
+  try {
+    if (document.getElementById('user-list')) {
+      renderShell();
+      applyFilters();
+    }
+    const profileModal = document.getElementById('profile-modal');
+    if (profileModal && profileModal.classList.contains('open')) {
+      const openId = profileModal.getAttribute('data-user-id');
+      if (openId) viewUser(openId);
+    }
+  } catch (error) {
+    console.warn('Re-render after language change failed:', error);
+  }
+});
 
 const queryParams = new URLSearchParams(window.location.search);
 const state = buildInitialState();
@@ -116,7 +134,7 @@ async function loadUsers() {
   } catch (error) {
     console.error(error);
     const root = document.getElementById('page-content');
-    root.innerHTML = feedbackCardHtml('Could not load users.', {
+    root.innerHTML = feedbackCardHtml(t('users.couldNotLoad', 'Could not load users.'), {
       type: 'error',
     });
     showPage();
@@ -156,11 +174,11 @@ function computeStats() {
 function renderSummaryPills() {
   const stats = computeStats();
   return `
-    <span class="summary-pill"><i data-lucide="users"></i><strong>${stats.total}</strong> Total</span>
-    <span class="summary-pill is-success"><i data-lucide="check-circle"></i><strong>${stats.active}</strong> Active</span>
-    <span class="summary-pill is-danger"><i data-lucide="ban"></i><strong>${stats.blocked}</strong> Blocked</span>
-    <span class="summary-pill is-info"><i data-lucide="shield"></i><strong>${stats.admins}</strong> Admins</span>
-    <span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${stats.pending}</strong> Pending review</span>`;
+    <span class="summary-pill"><i data-lucide="users"></i><strong>${stats.total}</strong> ${esc(t('users.summary.total', 'Total'))}</span>
+    <span class="summary-pill is-success"><i data-lucide="check-circle"></i><strong>${stats.active}</strong> ${esc(t('users.summary.active', 'Active'))}</span>
+    <span class="summary-pill is-danger"><i data-lucide="ban"></i><strong>${stats.blocked}</strong> ${esc(t('users.summary.blocked', 'Blocked'))}</span>
+    <span class="summary-pill is-info"><i data-lucide="shield"></i><strong>${stats.admins}</strong> ${esc(t('users.summary.admins', 'Admins'))}</span>
+    <span class="summary-pill is-warning"><i data-lucide="clock"></i><strong>${stats.pending}</strong> ${esc(t('users.summary.pendingReview', 'Pending review'))}</span>`;
 }
 
 function renderShell() {
@@ -172,38 +190,38 @@ function renderShell() {
       <div class="filter-bar">
         <div class="search-bar" style="flex:1;">
           <i data-lucide="search"></i>
-          <input id="user-search" type="search" value="${esc(state.search)}" placeholder="Search by name, email, or company..."/>
+          <input id="user-search" type="search" value="${esc(state.search)}" placeholder="${esc(t('users.searchPlaceholder', 'Search by name, email, or company...'))}"/>
         </div>
       </div>
 
       <div class="chip-row">
         <div class="chip-group" role="tablist" aria-label="Role filter">
-          <button type="button" class="chip" data-filter="role" data-value="all"><i data-lucide="users"></i>All</button>
-          <button type="button" class="chip" data-filter="role" data-value="student"><i data-lucide="graduation-cap"></i>Students</button>
-          <button type="button" class="chip" data-filter="role" data-value="company"><i data-lucide="building-2"></i>Companies</button>
-          <button type="button" class="chip" data-filter="role" data-value="admin"><i data-lucide="shield"></i>Admins</button>
+          <button type="button" class="chip" data-filter="role" data-value="all"><i data-lucide="users"></i>${esc(t('users.chip.role.all', 'All'))}</button>
+          <button type="button" class="chip" data-filter="role" data-value="student"><i data-lucide="graduation-cap"></i>${esc(t('users.chip.role.students', 'Students'))}</button>
+          <button type="button" class="chip" data-filter="role" data-value="company"><i data-lucide="building-2"></i>${esc(t('users.chip.role.companies', 'Companies'))}</button>
+          <button type="button" class="chip" data-filter="role" data-value="admin"><i data-lucide="shield"></i>${esc(t('users.chip.role.admins', 'Admins'))}</button>
         </div>
         <div class="chip-group" id="status-chips" role="tablist" aria-label="Account status">
-          <span class="chip-group__label">Account state</span>
-          <button type="button" class="chip" data-filter="status" data-value="all">All</button>
-          <button type="button" class="chip" data-filter="status" data-value="active"><i data-lucide="check"></i>Active</button>
-          <button type="button" class="chip" data-filter="status" data-value="blocked"><i data-lucide="ban"></i>Blocked</button>
+          <span class="chip-group__label">${esc(t('users.chip.accountState', 'Account state'))}</span>
+          <button type="button" class="chip" data-filter="status" data-value="all">${esc(t('users.chip.all', 'All'))}</button>
+          <button type="button" class="chip" data-filter="status" data-value="active"><i data-lucide="check"></i>${esc(t('users.chip.active', 'Active'))}</button>
+          <button type="button" class="chip" data-filter="status" data-value="blocked"><i data-lucide="ban"></i>${esc(t('users.chip.blocked', 'Blocked'))}</button>
         </div>
         <div class="chip-group" id="level-chips" role="tablist" aria-label="Academic level">
-          <span class="chip-group__label">Level</span>
-          <button type="button" class="chip" data-filter="level" data-value="all">All</button>
-          <button type="button" class="chip" data-filter="level" data-value="bac">Bac</button>
-          <button type="button" class="chip" data-filter="level" data-value="licence">Licence</button>
-          <button type="button" class="chip" data-filter="level" data-value="master">Master</button>
-          <button type="button" class="chip" data-filter="level" data-value="doctorat">Doctorat</button>
+          <span class="chip-group__label">${esc(t('users.chip.level', 'Level'))}</span>
+          <button type="button" class="chip" data-filter="level" data-value="all">${esc(t('users.chip.all', 'All'))}</button>
+          <button type="button" class="chip" data-filter="level" data-value="bac">${esc(t('users.level.bac', 'Bac'))}</button>
+          <button type="button" class="chip" data-filter="level" data-value="licence">${esc(t('users.level.licence', 'Licence'))}</button>
+          <button type="button" class="chip" data-filter="level" data-value="master">${esc(t('users.level.master', 'Master'))}</button>
+          <button type="button" class="chip" data-filter="level" data-value="doctorat">${esc(t('users.level.doctorat', 'Doctorat'))}</button>
         </div>
         <div class="chip-group" id="approval-chips" role="tablist" aria-label="Company review">
-          <span class="chip-group__label">Company review</span>
-          <span class="chip-group__label" id="approval-disabled-note" hidden>Disabled while level filter is active</span>
-          <button type="button" class="chip" data-filter="approval" data-value="all">All</button>
-          <button type="button" class="chip" data-filter="approval" data-value="pending"><i data-lucide="clock"></i>Pending</button>
-          <button type="button" class="chip" data-filter="approval" data-value="approved"><i data-lucide="check"></i>Approved</button>
-          <button type="button" class="chip" data-filter="approval" data-value="rejected"><i data-lucide="x-circle"></i>Rejected</button>
+          <span class="chip-group__label">${esc(t('users.chip.companyReview', 'Company review'))}</span>
+          <span class="chip-group__label" id="approval-disabled-note" hidden>${esc(t('users.chip.disabledNote', 'Disabled while level filter is active'))}</span>
+          <button type="button" class="chip" data-filter="approval" data-value="all">${esc(t('users.chip.all', 'All'))}</button>
+          <button type="button" class="chip" data-filter="approval" data-value="pending"><i data-lucide="clock"></i>${esc(t('users.chip.pending', 'Pending'))}</button>
+          <button type="button" class="chip" data-filter="approval" data-value="approved"><i data-lucide="check"></i>${esc(t('users.chip.approved', 'Approved'))}</button>
+          <button type="button" class="chip" data-filter="approval" data-value="rejected"><i data-lucide="x-circle"></i>${esc(t('users.chip.rejected', 'Rejected'))}</button>
         </div>
       </div>
 
@@ -305,12 +323,17 @@ function applyFilters() {
 function renderUsers() {
   const list = document.getElementById('user-list');
   const summary = document.getElementById('user-summary');
-  const noun = state.filtered.length === 1 ? 'user' : 'users';
-  summary.textContent = `${state.filtered.length} ${noun} shown of ${state.all.length} total.`;
+  const tplKey = state.filtered.length === 1 ? 'users.summaryShownSingular' : 'users.summaryShown';
+  const tplFallback = state.filtered.length === 1
+    ? '{n} user shown of {total} total.'
+    : '{n} users shown of {total} total.';
+  summary.textContent = t(tplKey, tplFallback)
+    .replace('{n}', state.filtered.length)
+    .replace('{total}', state.all.length);
 
   if (!state.filtered.length) {
-    list.innerHTML = emptyStateHtml('Adjust the filters or search differently.', {
-      title: 'No users match',
+    list.innerHTML = emptyStateHtml(t('users.notFoundDesc', 'Adjust the filters or search differently.'), {
+      title: t('users.notFoundTitle', 'No users match'),
       icon: 'search-x',
     });
     if (window.lucide) window.lucide.createIcons();
@@ -329,32 +352,28 @@ function renderUsers() {
         return confirmAction(
           id,
           { approvalStatus: 'approved' },
-          'Approve company',
-          'The company will be able to post opportunities.',
+          'approveCompany',
         );
       }
       if (action === 'reject') {
         return confirmAction(
           id,
           { approvalStatus: 'rejected' },
-          'Reject company',
-          'The company will stay visible to admins but cannot post approved content.',
+          'rejectCompany',
         );
       }
       if (action === 'block') {
         return confirmAction(
           id,
           { isActive: false },
-          'Block user',
-          'The user will lose access to the app.',
+          'blockUser',
         );
       }
       if (action === 'unblock') {
         return confirmAction(
           id,
           { isActive: true },
-          'Unblock user',
-          'The user will regain access.',
+          'unblockUser',
         );
       }
     });
@@ -375,7 +394,7 @@ function renderUsers() {
 function userRow(user) {
   const role = cleanText(user.role) || 'user';
   const name = displayName(user);
-  const email = cleanText(user.email) || 'Not provided';
+  const email = cleanText(user.email) || t('users.notProvided', 'Not provided');
   const approval = normalizedApproval(user);
   const isActive = user.isActive !== false;
   const dotClass = !isActive
@@ -399,22 +418,22 @@ function userRow(user) {
   if (role === 'company') {
     if (approval !== 'approved') {
       actions.push(
-        `<button class="btn btn-sm btn-success" data-action="approve" data-id="${esc(uidForUser(user))}"><i data-lucide="check"></i>Approve</button>`,
+        `<button class="btn btn-sm btn-success" data-action="approve" data-id="${esc(uidForUser(user))}"><i data-lucide="check"></i>${esc(t('users.action.approve', 'Approve'))}</button>`,
       );
     }
     if (approval === 'pending') {
       actions.push(
-        `<button class="btn btn-sm btn-danger" data-action="reject" data-id="${esc(uidForUser(user))}"><i data-lucide="x"></i>Reject</button>`,
+        `<button class="btn btn-sm btn-danger" data-action="reject" data-id="${esc(uidForUser(user))}"><i data-lucide="x"></i>${esc(t('users.action.reject', 'Reject'))}</button>`,
       );
     }
   }
   actions.push(
     isActive
-      ? `<button class="btn btn-sm btn-danger" data-action="block" data-id="${esc(uidForUser(user))}"><i data-lucide="ban"></i>Block</button>`
-      : `<button class="btn btn-sm btn-success" data-action="unblock" data-id="${esc(uidForUser(user))}"><i data-lucide="check"></i>Unblock</button>`,
+      ? `<button class="btn btn-sm btn-danger" data-action="block" data-id="${esc(uidForUser(user))}"><i data-lucide="ban"></i>${esc(t('users.action.block', 'Block'))}</button>`
+      : `<button class="btn btn-sm btn-success" data-action="unblock" data-id="${esc(uidForUser(user))}"><i data-lucide="check"></i>${esc(t('users.action.unblock', 'Unblock'))}</button>`,
   );
   actions.push(
-    `<button class="btn btn-sm" data-action="view" data-id="${esc(uidForUser(user))}"><i data-lucide="eye"></i>View</button>`,
+    `<button class="btn btn-sm" data-action="view" data-id="${esc(uidForUser(user))}"><i data-lucide="eye"></i>${esc(t('users.action.view', 'View'))}</button>`,
   );
 
   return `<div class="user-row" data-user-id="${esc(uidForUser(user))}" role="button" tabindex="0" style="cursor:pointer;">
@@ -433,16 +452,32 @@ function userRow(user) {
   </div>`;
 }
 
-function confirmAction(id, payload, title, message) {
-  if (!confirm(`${title}\n\n${message}`)) return;
-  const successMap = {
-    'Approve company': 'Company approved.',
-    'Reject company': 'Company rejected.',
-    'Move to pending': 'Company moved to pending review.',
-    'Block user': 'User blocked.',
-    'Unblock user': 'User unblocked.',
+function confirmAction(id, payload, actionKey) {
+  const titleMap = {
+    approveCompany: t('users.confirm.approveCompany.title', 'Approve company'),
+    rejectCompany: t('users.confirm.rejectCompany.title', 'Reject company'),
+    movePending: t('users.confirm.movePending.title', 'Move to pending'),
+    blockUser: t('users.confirm.blockUser.title', 'Block user'),
+    unblockUser: t('users.confirm.unblockUser.title', 'Unblock user'),
   };
-  return updateUser(id, payload, successMap[title] || 'Updated.');
+  const msgMap = {
+    approveCompany: t('users.confirm.approveCompany.msg', 'The company will be able to post opportunities.'),
+    rejectCompany: t('users.confirm.rejectCompany.msg', 'The company will stay visible to admins but cannot post approved content.'),
+    movePending: t('users.confirm.movePending.msg', 'The company will require review again.'),
+    blockUser: t('users.confirm.blockUser.msg', 'The user will lose access to the app.'),
+    unblockUser: t('users.confirm.unblockUser.msg', 'The user will regain access.'),
+  };
+  const successMap = {
+    approveCompany: t('users.toast.companyApproved', 'Company approved.'),
+    rejectCompany: t('users.toast.companyRejected', 'Company rejected.'),
+    movePending: t('users.toast.companyMovedPending', 'Company moved to pending review.'),
+    blockUser: t('users.toast.userBlocked', 'User blocked.'),
+    unblockUser: t('users.toast.userUnblocked', 'User unblocked.'),
+  };
+  const title = titleMap[actionKey] || actionKey;
+  const message = msgMap[actionKey] || '';
+  if (!confirm(`${title}\n\n${message}`)) return;
+  return updateUser(id, payload, successMap[actionKey] || t('users.toast.updated', 'Updated.'));
 }
 
 async function notifyCompanyApprovalStatus(id) {
@@ -485,7 +520,7 @@ async function updateUser(id, payload, successMessage) {
     showToast(successMessage, 'success');
   } catch (error) {
     console.error(error);
-    showToast('Update failed. Try again.', 'error');
+    showToast(t('users.toast.updateFailed', 'Update failed. Try again.'), 'error');
   }
 }
 
@@ -547,10 +582,10 @@ async function viewUser(id) {
     const name = displayName(user);
     const subtitle =
       role === 'company'
-        ? cleanText(user.sector) || cleanText(user.location) || 'Company profile'
+        ? cleanText(user.sector) || cleanText(user.location) || t('users.subtitle.companyProfile', 'Company profile')
         : role === 'student'
-          ? cleanText(user.university) || 'Student profile'
-          : 'Admin profile';
+          ? cleanText(user.university) || t('users.subtitle.studentProfile', 'Student profile')
+          : t('users.subtitle.adminProfile', 'Admin profile');
 
     titleEl.textContent = name;
 
@@ -573,39 +608,40 @@ async function viewUser(id) {
         </div>
       </div>`;
 
+    const NP = t('users.notProvided', 'Not provided');
     const contactRows = [
-      profileBlock('Email', cleanText(user.email) || 'Not provided', {
+      profileBlock(t('users.field.email', 'Email'), cleanText(user.email) || NP, {
         muted: !cleanText(user.email),
       }),
     ];
     if (role !== 'admin') {
       contactRows.push(
         profileBlock(
-          'Phone',
+          t('users.field.phone', 'Phone'),
           cleanText(user.phone)
             ? `<a href="tel:${esc(user.phone)}">${esc(user.phone)}</a>`
-            : 'Not provided',
+            : NP,
           { html: Boolean(cleanText(user.phone)), muted: !cleanText(user.phone) },
         ),
-        profileBlock('Location', cleanText(user.location) || 'Not provided', {
+        profileBlock(t('users.field.location', 'Location'), cleanText(user.location) || NP, {
           muted: !cleanText(user.location),
         }),
       );
     }
-    const contactHtml = profileSection('contact', 'Contact', contactRows.join(''));
+    const contactHtml = profileSection('contact', t('users.section.contact', 'Contact'), contactRows.join(''));
 
     let roleSection = '';
     if (role === 'student') {
       const rows = [
         profileBlock(
-          'Academic level',
-          cleanText(user.academicLevel) ? capitalizeLabel(user.academicLevel) : 'Not provided',
+          t('users.field.academicLevel', 'Academic level'),
+          cleanText(user.academicLevel) ? capitalizeLabel(user.academicLevel) : NP,
           { muted: !cleanText(user.academicLevel) },
         ),
-        profileBlock('University', cleanText(user.university) || 'Not provided', {
+        profileBlock(t('users.field.university', 'University'), cleanText(user.university) || NP, {
           muted: !cleanText(user.university),
         }),
-        profileBlock('Field of study', cleanText(user.fieldOfStudy) || 'Not provided', {
+        profileBlock(t('users.field.fieldOfStudy', 'Field of study'), cleanText(user.fieldOfStudy) || NP, {
           muted: !cleanText(user.fieldOfStudy),
         }),
       ];
@@ -613,44 +649,44 @@ async function viewUser(id) {
       const isDoctorate = academicLevel === 'doctorat' || academicLevel.includes('doctor');
       if (isDoctorate) {
         rows.push(
-          profileBlock('Research topic', cleanText(user.researchTopic) || 'Not provided', {
+          profileBlock(t('users.field.researchTopic', 'Research topic'), cleanText(user.researchTopic) || NP, {
             muted: !cleanText(user.researchTopic),
           }),
-          profileBlock('Laboratory', cleanText(user.laboratory) || 'Not provided', {
+          profileBlock(t('users.field.laboratory', 'Laboratory'), cleanText(user.laboratory) || NP, {
             muted: !cleanText(user.laboratory),
           }),
-          profileBlock('Supervisor', cleanText(user.supervisor) || 'Not provided', {
+          profileBlock(t('users.field.supervisor', 'Supervisor'), cleanText(user.supervisor) || NP, {
             muted: !cleanText(user.supervisor),
           }),
-          profileBlock('Research domain', cleanText(user.researchDomain) || 'Not provided', {
+          profileBlock(t('users.field.researchDomain', 'Research domain'), cleanText(user.researchDomain) || NP, {
             muted: !cleanText(user.researchDomain),
           }),
         );
       }
-      roleSection = profileSection('graduation-cap', 'Academic', rows.join(''));
+      roleSection = profileSection('graduation-cap', t('users.section.academic', 'Academic'), rows.join(''));
     } else if (role === 'company') {
       const website = cleanText(user.website);
       const rows = [
-        profileBlock('Company name', cleanText(user.companyName) || cleanText(user.fullName) || 'Not provided', {
+        profileBlock(t('users.field.companyName', 'Company name'), cleanText(user.companyName) || cleanText(user.fullName) || NP, {
           muted: !cleanText(user.companyName || user.fullName),
         }),
-        profileBlock('Approval status', approvalBadgeHtml(approval), { html: true }),
-        profileBlock('Sector', cleanText(user.sector) || 'Not provided', {
+        profileBlock(t('users.field.approvalStatus', 'Approval status'), approvalBadgeHtml(approval), { html: true }),
+        profileBlock(t('users.field.sector', 'Sector'), cleanText(user.sector) || NP, {
           muted: !cleanText(user.sector),
         }),
-        profileBlock('Website', website ? externalLinkHtml(website) : 'Not provided', {
+        profileBlock(t('users.field.website', 'Website'), website ? externalLinkHtml(website) : NP, {
           html: Boolean(website),
           muted: !website,
         }),
       ];
-      roleSection = profileSection('building-2', 'Company', rows.join(''));
+      roleSection = profileSection('building-2', t('users.section.company', 'Company'), rows.join(''));
     }
 
     const companyDescription = role === 'company' ? cleanText(user.description) : '';
     const companyDescriptionSection = companyDescription
       ? `
         <div class="profile-section">
-          <div class="profile-section__title"><i data-lucide="text"></i>Description</div>
+          <div class="profile-section__title"><i data-lucide="text"></i>${esc(t('users.section.description', 'Description'))}</div>
           <div class="profile-block"><div class="profile-block-value" style="white-space:pre-wrap;">${esc(companyDescription)}</div></div>
         </div>`
       : '';
@@ -658,7 +694,7 @@ async function viewUser(id) {
     const bioSection = bioText
       ? `
         <div class="profile-section">
-          <div class="profile-section__title"><i data-lucide="text"></i>Bio</div>
+          <div class="profile-section__title"><i data-lucide="text"></i>${esc(t('users.section.bio', 'Bio'))}</div>
           <div class="profile-block"><div class="profile-block-value" style="white-space:pre-wrap;">${esc(bioText)}</div></div>
         </div>`
       : '';
@@ -667,11 +703,11 @@ async function viewUser(id) {
       role === 'student'
         ? `
           <div class="profile-section" id="cv-section">
-            <div class="profile-section__title"><i data-lucide="file-text"></i>CV</div>
+            <div class="profile-section__title"><i data-lucide="file-text"></i>${esc(t('users.section.cv', 'CV'))}</div>
             <div id="cv-block" class="profile-block"><div class="loading" style="padding:10px;"><div class="spinner"></div></div></div>
           </div>
           <div class="profile-section" id="apps-section">
-            <div class="profile-section__title"><i data-lucide="send"></i>Applications</div>
+            <div class="profile-section__title"><i data-lucide="send"></i>${esc(t('users.section.applications', 'Applications'))}</div>
             <div id="apps-block" class="profile-block"><div class="loading" style="padding:10px;"><div class="spinner"></div></div></div>
           </div>`
         : '';
@@ -706,7 +742,7 @@ async function viewUser(id) {
     if (window.lucide) window.lucide.createIcons();
   } catch (error) {
     console.error(error);
-    body.innerHTML = feedbackCardHtml('Could not load this profile.', { type: 'error' });
+    body.innerHTML = feedbackCardHtml(t('users.profile.couldNotLoad', 'Could not load this profile.'), { type: 'error' });
     if (window.lucide) window.lucide.createIcons();
   }
 }
@@ -716,34 +752,19 @@ function bindProfileActions(id) {
     button.addEventListener('click', () => {
       const action = button.getAttribute('data-mod');
       if (action === 'approve') {
-        confirmAction(
-          id,
-          { approvalStatus: 'approved' },
-          'Approve company',
-          'The company will be able to post opportunities.',
-        );
+        confirmAction(id, { approvalStatus: 'approved' }, 'approveCompany');
       }
       if (action === 'reject') {
-        confirmAction(
-          id,
-          { approvalStatus: 'rejected' },
-          'Reject company',
-          'The company will stay visible to admins but cannot post approved content.',
-        );
+        confirmAction(id, { approvalStatus: 'rejected' }, 'rejectCompany');
       }
       if (action === 'set-pending') {
-        confirmAction(
-          id,
-          { approvalStatus: 'pending' },
-          'Move to pending',
-          'The company will require review again.',
-        );
+        confirmAction(id, { approvalStatus: 'pending' }, 'movePending');
       }
       if (action === 'block') {
-        confirmAction(id, { isActive: false }, 'Block user', 'The user will lose access to the app.');
+        confirmAction(id, { isActive: false }, 'blockUser');
       }
       if (action === 'unblock') {
-        confirmAction(id, { isActive: true }, 'Unblock user', 'The user will regain access.');
+        confirmAction(id, { isActive: true }, 'unblockUser');
       }
     });
   });
@@ -767,24 +788,24 @@ async function loadStudentCvBlock(id) {
     const buttons = [];
     if (primary?.isAvailable) {
       buttons.push(
-        `<button class="btn btn-sm" data-cv="primary" data-document-action="view" ${primary.isPdf === false ? 'disabled title="Preview requires a PDF file"' : ''}><i data-lucide="file"></i>View uploaded CV</button>`,
+        `<button class="btn btn-sm" data-cv="primary" data-document-action="view" ${primary.isPdf === false ? `disabled title="${esc(t('users.cv.previewRequiresPdf', 'Preview requires a PDF file'))}"` : ''}><i data-lucide="file"></i>${esc(t('users.cv.viewUploaded', 'View uploaded CV'))}</button>`,
       );
       buttons.push(
-        '<button class="btn btn-sm" data-cv="primary" data-document-action="download"><i data-lucide="download"></i>Download uploaded CV</button>',
+        `<button class="btn btn-sm" data-cv="primary" data-document-action="download"><i data-lucide="download"></i>${esc(t('users.cv.downloadUploaded', 'Download uploaded CV'))}</button>`,
       );
     }
     if (built?.isAvailable) {
       buttons.push(
-        '<button class="btn btn-sm" data-cv="built" data-document-action="view"><i data-lucide="file-text"></i>View built CV</button>',
+        `<button class="btn btn-sm" data-cv="built" data-document-action="view"><i data-lucide="file-text"></i>${esc(t('users.cv.viewBuilt', 'View built CV'))}</button>`,
       );
       buttons.push(
-        '<button class="btn btn-sm" data-cv="built" data-document-action="download"><i data-lucide="download"></i>Download built CV</button>',
+        `<button class="btn btn-sm" data-cv="built" data-document-action="download"><i data-lucide="download"></i>${esc(t('users.cv.downloadBuilt', 'Download built CV'))}</button>`,
       );
     }
     if (!buttons.length) {
       const builtText = built?.hasBuilderContent
-        ? 'Builder data exists, but no exported PDF is available.'
-        : 'No CV uploaded yet.';
+        ? t('users.cv.builderDataExists', 'Builder data exists, but no exported PDF is available.')
+        : t('users.cv.noUploaded', 'No CV uploaded yet.');
       block.innerHTML = `<div class="profile-block-value" style="color:var(--c-text-faint);">${esc(builtText)}</div>`;
     } else {
       block.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;">${buttons.join('')}</div>`;
@@ -805,7 +826,7 @@ async function loadStudentCvBlock(id) {
   } catch (error) {
     console.warn('CV summary failed:', error);
     block.innerHTML =
-      '<div class="profile-block-value" style="color:var(--c-text-faint);">No CV record.</div>';
+      `<div class="profile-block-value" style="color:var(--c-text-faint);">${esc(t('users.cv.noRecord', 'No CV record.'))}</div>`;
   }
 }
 
@@ -819,8 +840,8 @@ async function loadStudentAppsBlock(id) {
       .sort((left, right) => timestampMs(right.data().appliedAt) - timestampMs(left.data().appliedAt));
     if (docs.length === 0) {
       block.innerHTML = `
-        <div class="profile-block-value" style="color:var(--c-text-faint);margin-bottom:12px;">No applications yet.</div>
-        <button class="btn btn-sm" id="view-apps-btn"><i data-lucide="list"></i>View all</button>`;
+        <div class="profile-block-value" style="color:var(--c-text-faint);margin-bottom:12px;">${esc(t('users.apps.noneYet', 'No applications yet.'))}</div>
+        <button class="btn btn-sm" id="view-apps-btn"><i data-lucide="list"></i>${esc(t('users.apps.viewAll', 'View all'))}</button>`;
       document.getElementById('view-apps-btn').addEventListener('click', () => openAppsList(docs));
       if (window.lucide) window.lucide.createIcons();
       return;
@@ -828,23 +849,23 @@ async function loadStudentAppsBlock(id) {
     block.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
         <div>
-          <div class="profile-block-label">Total applications</div>
+          <div class="profile-block-label">${esc(t('users.field.totalApplications', 'Total applications'))}</div>
           <div class="profile-block-value" style="font-size:20px;font-weight:700;">${docs.length}</div>
         </div>
-        <button class="btn btn-sm" id="view-apps-btn"><i data-lucide="list"></i>View all</button>
+        <button class="btn btn-sm" id="view-apps-btn"><i data-lucide="list"></i>${esc(t('users.apps.viewAll', 'View all'))}</button>
       </div>`;
     document.getElementById('view-apps-btn').addEventListener('click', () => openAppsList(docs));
     if (window.lucide) window.lucide.createIcons();
   } catch (error) {
     console.warn('Applications summary failed:', error);
     block.innerHTML =
-      '<div class="profile-block-value" style="color:var(--c-text-faint);">Could not load applications.</div>';
+      `<div class="profile-block-value" style="color:var(--c-text-faint);">${esc(t('users.apps.summaryUnavailable', 'Could not load applications.'))}</div>`;
   }
 }
 
 async function openAppsList(docs) {
   openModal('apps-modal');
-  document.getElementById('apps-title').textContent = 'Applications';
+  document.getElementById('apps-title').textContent = t('users.apps.title', 'Applications');
   const body = document.getElementById('apps-body');
   body.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
@@ -868,17 +889,17 @@ async function openAppsList(docs) {
     if (window.lucide) window.lucide.createIcons();
   } catch (error) {
     console.error(error);
-    body.innerHTML = feedbackCardHtml('Could not load applications.', { type: 'error' });
+    body.innerHTML = feedbackCardHtml(t('users.apps.couldNotLoad', 'Could not load applications.'), { type: 'error' });
     if (window.lucide) window.lucide.createIcons();
   }
 }
 
 function renderAppsList(appData, oppsMap) {
-  document.getElementById('apps-title').textContent = 'Applications';
+  document.getElementById('apps-title').textContent = t('users.apps.title', 'Applications');
   const body = document.getElementById('apps-body');
   if (!appData.length) {
-    body.innerHTML = emptyStateHtml('This student has not applied anywhere yet.', {
-      title: 'No applications',
+    body.innerHTML = emptyStateHtml(t('users.apps.noApplicationsDesc', 'This student has not applied anywhere yet.'), {
+      title: t('users.apps.noApplicationsTitle', 'No applications'),
       icon: 'inbox',
     });
     if (window.lucide) window.lucide.createIcons();
@@ -888,11 +909,11 @@ function renderAppsList(appData, oppsMap) {
   body.innerHTML = `<div class="list-grid">${appData
     .map((application, index) => {
       const opportunity = oppsMap.get(cleanText(application.opportunityId));
-      const title = cleanText(opportunity?.title || application.opportunityTitle) || 'Opportunity unavailable';
-      const company = cleanText(opportunity?.companyName || application.companyName) || 'Company unavailable';
+      const title = cleanText(opportunity?.title || application.opportunityTitle) || t('users.apps.opportunityUnavailable', 'Opportunity unavailable');
+      const company = cleanText(opportunity?.companyName || application.companyName) || t('users.apps.companyUnavailable', 'Company unavailable');
       const applied = formatTimestamp(application.appliedAt);
       const status = parseApplicationStatus(application.status);
-      const location = cleanText(opportunity?.location) || 'Location not specified';
+      const location = cleanText(opportunity?.location) || t('users.apps.locationNotSpecified', 'Location not specified');
       return `<div class="item-row" data-application-index="${index}" role="button" tabindex="0" style="cursor:pointer;">
         <div class="activity-icon" style="background:rgba(99,102,241,0.12);color:#6366F1"><i data-lucide="send"></i></div>
         <div class="row-body">
@@ -929,13 +950,13 @@ function renderAppsList(appData, oppsMap) {
 }
 
 function openApplicationDetail(application, opportunity, onBack) {
-  document.getElementById('apps-title').textContent = 'Application details';
+  document.getElementById('apps-title').textContent = t('users.apps.detailsTitle', 'Application details');
   const body = document.getElementById('apps-body');
   const status = parseApplicationStatus(application?.status);
-  const title = cleanText(opportunity?.title || application?.opportunityTitle) || 'Opportunity unavailable';
-  const company = cleanText(opportunity?.companyName || application?.companyName) || 'Company unavailable';
-  const location = cleanText(opportunity?.location) || 'Location not specified';
-  const applied = formatTimestamp(application?.appliedAt) || 'Applied date unavailable';
+  const title = cleanText(opportunity?.title || application?.opportunityTitle) || t('users.apps.opportunityUnavailable', 'Opportunity unavailable');
+  const company = cleanText(opportunity?.companyName || application?.companyName) || t('users.apps.companyUnavailable', 'Company unavailable');
+  const location = cleanText(opportunity?.location) || t('users.apps.locationNotSpecified', 'Location not specified');
+  const applied = formatTimestamp(application?.appliedAt) || t('users.apps.appliedUnavailable', 'Applied date unavailable');
   const compensation = opportunityAmountLabel(opportunity);
   const description = cleanText(opportunity?.description);
   const requirements = detailListValues(
@@ -945,7 +966,7 @@ function openApplicationDetail(application, opportunity, onBack) {
   const opportunityState = opportunityStateLabel(opportunity);
 
   body.innerHTML = `
-    <button class="btn btn-sm" id="apps-back-btn" style="margin-bottom:12px;"><i data-lucide="arrow-left"></i>Back</button>
+    <button class="btn btn-sm" id="apps-back-btn" style="margin-bottom:12px;"><i data-lucide="arrow-left"></i>${esc(t('users.apps.back', 'Back'))}</button>
     <div class="profile-hero">
       <div class="activity-icon" style="background:rgba(99,102,241,0.12);color:#6366F1"><i data-lucide="send"></i></div>
       <div>
@@ -960,29 +981,29 @@ function openApplicationDetail(application, opportunity, onBack) {
     </div>
     ${profileSection(
       'flag',
-      'Application details',
+      t('users.section.applicationDetails', 'Application details'),
       [
-        profileBlock('Status', applicationStatusLabel(status)),
-        profileBlock('Applied', applied),
+        profileBlock(t('users.field.status', 'Status'), applicationStatusLabel(status)),
+        profileBlock(t('users.field.applied', 'Applied'), applied),
       ].join(''),
     )}
     ${profileSection(
       'briefcase',
-      'Opportunity details',
+      t('users.section.opportunityDetails', 'Opportunity details'),
       [
-        profileBlock('Type', opportunity ? formatChoiceLabel(normalizedOpportunityType(opportunity) || 'job') : 'Not provided', {
+        profileBlock(t('users.field.type', 'Type'), opportunity ? formatChoiceLabel(normalizedOpportunityType(opportunity) || 'job') : t('users.notProvided', 'Not provided'), {
           muted: !opportunity,
         }),
-        profileBlock('Company', company),
-        profileBlock('Location', location),
-        profileBlock('Deadline', deadlineLabel(opportunity)),
-        compensation ? profileBlock('Compensation', compensation) : '',
-        opportunityState ? profileBlock('Status', opportunityState) : '',
+        profileBlock(t('users.section.company', 'Company'), company),
+        profileBlock(t('users.field.location', 'Location'), location),
+        profileBlock(t('users.field.deadline', 'Deadline'), deadlineLabel(opportunity)),
+        compensation ? profileBlock(t('users.field.compensation', 'Compensation'), compensation) : '',
+        opportunityState ? profileBlock(t('users.field.status', 'Status'), opportunityState) : '',
       ].join(''),
     )}
-    ${description ? longTextSection('Description', description, 'file-text') : ''}
-    ${detailListSection('Requirements', requirements, 'list-checks')}
-    ${detailListSection('Benefits', benefits, 'sparkles')}`;
+    ${description ? longTextSection(t('users.section.description', 'Description'), description, 'file-text') : ''}
+    ${detailListSection(t('editor.section.requirements', 'Requirements'), requirements, 'list-checks')}
+    ${detailListSection(t('editor.field.benefits', 'Benefits'), benefits, 'sparkles')}`;
 
   document.getElementById('apps-back-btn').addEventListener('click', onBack);
   if (window.lucide) window.lucide.createIcons();
@@ -997,14 +1018,14 @@ async function loadCompanyOpportunitiesBlock(companyId, companyName) {
     if (block.dataset.companyId !== companyId) return;
     const countLabel =
       opportunities.length === 0
-        ? 'No opportunities posted yet.'
+        ? t('users.opps.noPosted', 'No opportunities posted yet.')
         : opportunities.length === 1
-          ? '1 posted opportunity'
-          : `${opportunities.length} posted opportunities`;
+          ? t('users.opps.onePosted', '1 posted opportunity')
+          : t('users.opps.manyPosted', '{n} posted opportunities').replace('{n}', opportunities.length);
     block.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
         <div class="profile-block-value">${esc(countLabel)}</div>
-        <button class="btn btn-sm" id="view-company-opps-btn"><i data-lucide="briefcase"></i>View opportunities</button>
+        <button class="btn btn-sm" id="view-company-opps-btn"><i data-lucide="briefcase"></i>${esc(t('users.opps.viewOpportunities', 'View opportunities'))}</button>
       </div>`;
     document
       .getElementById('view-company-opps-btn')
@@ -1013,7 +1034,7 @@ async function loadCompanyOpportunitiesBlock(companyId, companyName) {
   } catch (error) {
     console.warn('Company opportunities failed:', error);
     block.innerHTML =
-      '<div class="profile-block-value" style="color:var(--c-text-faint);">Opportunity history is unavailable right now.</div>';
+      `<div class="profile-block-value" style="color:var(--c-text-faint);">${esc(t('users.opps.historyUnavailable', 'Opportunity history is unavailable right now.'))}</div>`;
   }
 }
 
@@ -1031,12 +1052,12 @@ function openCompanyOpportunitiesList(companyName, opportunities) {
 
 function renderCompanyOpportunitiesList(companyName, opportunities) {
   document.getElementById('apps-title').textContent = cleanText(companyName)
-    ? `${companyName} opportunities`
-    : 'Company opportunities';
+    ? `${companyName} ${t('users.opps.list.suffix', 'opportunities')}`
+    : t('users.opps.companyOpportunities', 'Company opportunities');
   const body = document.getElementById('apps-body');
   if (!opportunities.length) {
-    body.innerHTML = emptyStateHtml('This company has not posted any opportunities yet.', {
-      title: 'No opportunities',
+    body.innerHTML = emptyStateHtml(t('users.opps.noDesc', 'This company has not posted any opportunities yet.'), {
+      title: t('users.opps.noTitle', 'No opportunities'),
       icon: 'briefcase',
     });
   } else {
@@ -1045,15 +1066,18 @@ function renderCompanyOpportunitiesList(companyName, opportunities) {
         const status = effectiveOpportunityStatus(opportunity);
         const type = cleanText(opportunity.type) || 'job';
         const location = cleanText(opportunity.location);
+        const statusLabel = status === 'open'
+          ? t('users.opps.open', 'Open')
+          : t('users.opps.closedLabel', 'Closed');
         return `<div class="item-row" data-opportunity-index="${index}" role="button" tabindex="0" style="cursor:pointer;">
           <div class="activity-icon" style="background:${roleBg('company')};color:${roleColor('company')}"><i data-lucide="${opportunityTypeIcon(type)}"></i></div>
           <div class="row-body">
-            <div class="row-title">${esc(cleanText(opportunity.title) || 'Untitled opportunity')}</div>
+            <div class="row-title">${esc(cleanText(opportunity.title) || t('users.opps.untitled', 'Untitled opportunity'))}</div>
             ${location ? `<div class="row-sub">${esc(location)}</div>` : ''}
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
               <span class="badge badge-info"><i data-lucide="${opportunityTypeIcon(type)}"></i>${esc(formatChoiceLabel(type))}</span>
-              <span class="badge ${status === 'open' ? 'badge-success' : 'badge-warning'}">${esc(formatChoiceLabel(status))}</span>
-              ${opportunity.isHidden === true ? '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+              <span class="badge ${status === 'open' ? 'badge-success' : 'badge-warning'}">${esc(statusLabel)}</span>
+              ${opportunity.isHidden === true ? `<span class="badge badge-warning"><i data-lucide="eye-off"></i>${esc(t('users.opps.hiddenBadge', 'Hidden'))}</span>` : ''}
             </div>
           </div>
           <i data-lucide="chevron-right" style="color:var(--c-text-faint);"></i>
@@ -1082,13 +1106,13 @@ function renderCompanyOpportunitiesList(companyName, opportunities) {
 }
 
 function openCompanyOpportunityDetail(companyName, opportunity, onBack) {
-  document.getElementById('apps-title').textContent = 'Opportunity details';
+  document.getElementById('apps-title').textContent = t('users.opps.detailTitle', 'Opportunity details');
   const body = document.getElementById('apps-body');
   const type = normalizedOpportunityType(opportunity) || 'job';
   const typeLabel = formatChoiceLabel(type);
   const status = effectiveOpportunityStatus(opportunity);
-  const statusLabel = status === 'open' ? 'Open' : 'Closed';
-  const title = cleanText(opportunity?.title) || 'Untitled opportunity';
+  const statusLabel = status === 'open' ? t('users.opps.open', 'Open') : t('users.opps.closedLabel', 'Closed');
+  const title = cleanText(opportunity?.title) || t('users.opps.untitled', 'Untitled opportunity');
   const location = cleanText(opportunity?.location);
   const compensation = opportunityAmountLabel(opportunity);
   const workMode = formatChoiceLabel(opportunity?.workMode);
@@ -1104,38 +1128,38 @@ function openCompanyOpportunityDetail(companyName, opportunity, onBack) {
   const tags = detailListValues(opportunity?.tags);
 
   body.innerHTML = `
-    <button class="btn btn-sm" id="apps-back-btn" style="margin-bottom:12px;"><i data-lucide="arrow-left"></i>Back</button>
+    <button class="btn btn-sm" id="apps-back-btn" style="margin-bottom:12px;"><i data-lucide="arrow-left"></i>${esc(t('users.apps.back', 'Back'))}</button>
     <div class="profile-hero">
       <div class="activity-icon" style="background:${roleBg('company')};color:${roleColor('company')}"><i data-lucide="${opportunityTypeIcon(type)}"></i></div>
       <div>
         <div class="profile-hero__name">${esc(title)}</div>
-        <div class="row-sub" style="margin-bottom:8px;">${esc(cleanText(companyName) || cleanText(opportunity?.companyName) || 'Company unavailable')}</div>
+        <div class="row-sub" style="margin-bottom:8px;">${esc(cleanText(companyName) || cleanText(opportunity?.companyName) || t('users.apps.companyUnavailable', 'Company unavailable'))}</div>
         <div class="profile-hero__badges">
           <span class="badge badge-info"><i data-lucide="${opportunityTypeIcon(type)}"></i>${esc(typeLabel)}</span>
           <span class="badge ${status === 'open' ? 'badge-success' : 'badge-warning'}">${esc(statusLabel)}</span>
-          ${opportunity?.isFeatured === true ? '<span class="badge"><i data-lucide="award"></i>Featured</span>' : ''}
-          ${opportunity?.isHidden === true ? '<span class="badge badge-warning"><i data-lucide="eye-off"></i>Hidden</span>' : ''}
+          ${opportunity?.isFeatured === true ? `<span class="badge"><i data-lucide="award"></i>${esc(t('users.opps.featured', 'Featured'))}</span>` : ''}
+          ${opportunity?.isHidden === true ? `<span class="badge badge-warning"><i data-lucide="eye-off"></i>${esc(t('users.opps.hiddenBadge', 'Hidden'))}</span>` : ''}
         </div>
       </div>
     </div>
     ${profileSection(
       'layout-grid',
-      'Details',
+      t('users.section.details', 'Details'),
       [
-        profileBlock('Location', location || 'Location not specified', { muted: !location }),
-        profileBlock('Deadline', deadlineLabel(opportunity)),
-        compensation ? profileBlock('Compensation', compensation) : '',
-        workMode ? profileBlock('Work mode', workMode) : '',
-        employmentType ? profileBlock('Employment type', employmentType) : '',
-        paidStatus ? profileBlock('Paid status', paidStatus) : '',
-        duration ? profileBlock('Duration', duration) : '',
-        posted ? profileBlock('Posted', posted) : '',
+        profileBlock(t('users.field.location', 'Location'), location || t('users.apps.locationNotSpecified', 'Location not specified'), { muted: !location }),
+        profileBlock(t('users.field.deadline', 'Deadline'), deadlineLabel(opportunity)),
+        compensation ? profileBlock(t('users.field.compensation', 'Compensation'), compensation) : '',
+        workMode ? profileBlock(t('users.field.workMode', 'Work mode'), workMode) : '',
+        employmentType ? profileBlock(t('users.field.employmentType', 'Employment type'), employmentType) : '',
+        paidStatus ? profileBlock(t('users.field.paidStatus', 'Paid status'), paidStatus) : '',
+        duration ? profileBlock(t('users.field.duration', 'Duration'), duration) : '',
+        posted ? profileBlock(t('users.field.posted', 'Posted'), posted) : '',
       ].join(''),
     )}
-    ${description ? longTextSection('Description', description, 'file-text') : ''}
-    ${detailListSection('Requirements', requirements, 'list-checks')}
-    ${detailListSection('Benefits', benefits, 'sparkles')}
-    ${detailListSection('Tags', tags, 'tags')}`;
+    ${description ? longTextSection(t('users.section.description', 'Description'), description, 'file-text') : ''}
+    ${detailListSection(t('editor.section.requirements', 'Requirements'), requirements, 'list-checks')}
+    ${detailListSection(t('editor.field.benefits', 'Benefits'), benefits, 'sparkles')}
+    ${detailListSection(t('editor.field.tags', 'Tags'), tags, 'tags')}`;
 
   document.getElementById('apps-back-btn').addEventListener('click', onBack);
   if (window.lucide) window.lucide.createIcons();
@@ -1154,37 +1178,37 @@ function companyModerationHtml(approval, isActive) {
   const buttons = [];
   if (approval !== 'approved') {
     buttons.push(
-      '<button class="btn btn-success" data-mod="approve"><i data-lucide="check"></i>Approve company</button>',
+      `<button class="btn btn-success" data-mod="approve"><i data-lucide="check"></i>${esc(t('users.companyMod.approve', 'Approve company'))}</button>`,
     );
   }
   if (approval !== 'rejected') {
     buttons.push(
-      '<button class="btn btn-danger" data-mod="reject"><i data-lucide="x"></i>Reject company</button>',
+      `<button class="btn btn-danger" data-mod="reject"><i data-lucide="x"></i>${esc(t('users.companyMod.reject', 'Reject company'))}</button>`,
     );
   }
   if (approval !== 'pending') {
     buttons.push(
-      '<button class="btn btn-warning" data-mod="set-pending"><i data-lucide="clock"></i>Move to pending</button>',
+      `<button class="btn btn-warning" data-mod="set-pending"><i data-lucide="clock"></i>${esc(t('users.companyMod.movePending', 'Move to pending'))}</button>`,
     );
   }
   if (!buttons.length) return '';
   return `
     <div class="profile-section">
-      <div class="profile-section__title"><i data-lucide="shield-check"></i>Company review</div>
+      <div class="profile-section__title"><i data-lucide="shield-check"></i>${esc(t('users.section.companyReview', 'Company review'))}</div>
       <div class="profile-block">
         <div style="display:flex;flex-wrap:wrap;gap:8px;">${buttons.join('')}</div>
-        ${!isActive ? '<div class="profile-block-label" style="margin-top:10px;">Account is currently blocked.</div>' : ''}
+        ${!isActive ? `<div class="profile-block-label" style="margin-top:10px;">${esc(t('users.companyMod.accountBlockedNote', 'Account is currently blocked.'))}</div>` : ''}
       </div>
     </div>`;
 }
 
 function accountModerationHtml(isActive) {
   const button = isActive
-    ? '<button class="btn btn-danger" data-mod="block"><i data-lucide="ban"></i>Block user</button>'
-    : '<button class="btn btn-success" data-mod="unblock"><i data-lucide="check"></i>Unblock user</button>';
+    ? `<button class="btn btn-danger" data-mod="block"><i data-lucide="ban"></i>${esc(t('users.access.blockUser', 'Block user'))}</button>`
+    : `<button class="btn btn-success" data-mod="unblock"><i data-lucide="check"></i>${esc(t('users.access.unblockUser', 'Unblock user'))}</button>`;
   return `
     <div class="profile-section">
-      <div class="profile-section__title"><i data-lucide="settings"></i>Access</div>
+      <div class="profile-section__title"><i data-lucide="settings"></i>${esc(t('users.section.access', 'Access'))}</div>
       <div class="profile-block"><div style="display:flex;flex-wrap:wrap;gap:8px;">${button}</div></div>
     </div>`;
 }
@@ -1192,29 +1216,29 @@ function accountModerationHtml(isActive) {
 function companyOpportunitiesHtml() {
   return `
     <div class="profile-section">
-      <div class="profile-section__title"><i data-lucide="briefcase"></i>Posted opportunities</div>
+      <div class="profile-section__title"><i data-lucide="briefcase"></i>${esc(t('users.section.postedOpportunities', 'Posted opportunities'))}</div>
       <div id="company-opportunities-block" class="profile-block"><div class="loading" style="padding:10px;"><div class="spinner"></div></div></div>
     </div>`;
 }
 
 function commercialRegisterHtml(user) {
   const hasRegister = hasCommercialRegister(user);
-  const uploaded = formatTimestamp(user.commercialRegisterUploadedAt) || 'Not provided';
-  const fileName = cleanText(user.commercialRegisterFileName) || 'Commercial register';
+  const uploaded = formatTimestamp(user.commercialRegisterUploadedAt) || t('users.notProvided', 'Not provided');
+  const fileName = cleanText(user.commercialRegisterFileName) || t('users.commercial.defaultName', 'Commercial register');
   return `
     <div class="profile-section">
-      <div class="profile-section__title"><i data-lucide="file-check-2"></i>Commercial register</div>
+      <div class="profile-section__title"><i data-lucide="file-check-2"></i>${esc(t('users.section.commercialRegister', 'Commercial register'))}</div>
       <div class="profile-block">
         ${
           hasRegister
             ? `
               <div class="profile-block-label">${esc(fileName)}</div>
-              <div class="profile-block-value" style="margin-bottom:12px;color:var(--c-text-faint);font-size:12px;">Uploaded ${esc(uploaded)}</div>
+              <div class="profile-block-value" style="margin-bottom:12px;color:var(--c-text-faint);font-size:12px;">${esc(t('users.commercial.uploadedPrefix', 'Uploaded'))} ${esc(uploaded)}</div>
               <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                <button class="btn btn-sm" data-commercial-register="view"><i data-lucide="eye"></i>View register</button>
-                <button class="btn btn-sm" data-commercial-register="download"><i data-lucide="download"></i>Download register</button>
+                <button class="btn btn-sm" data-commercial-register="view"><i data-lucide="eye"></i>${esc(t('users.commercial.viewRegister', 'View register'))}</button>
+                <button class="btn btn-sm" data-commercial-register="download"><i data-lucide="download"></i>${esc(t('users.commercial.downloadRegister', 'Download register'))}</button>
               </div>`
-            : '<div class="profile-block-value" style="color:var(--c-danger);">Commercial register missing.</div>'
+            : `<div class="profile-block-value" style="color:var(--c-danger);">${esc(t('users.commercial.missing', 'Commercial register missing.'))}</div>`
         }
       </div>
     </div>`;
@@ -1294,12 +1318,12 @@ function roleBadgeHtml(role) {
   const safeRole = cleanText(role) || 'user';
   const label =
     safeRole === 'student'
-      ? 'Student'
+      ? t('users.role.student', 'Student')
       : safeRole === 'company'
-        ? 'Company'
+        ? t('users.role.company', 'Company')
         : safeRole === 'admin'
-          ? 'Admin'
-          : 'User';
+          ? t('users.role.admin', 'Admin')
+          : t('users.role.user', 'User');
   const cls =
     safeRole === 'student'
       ? 'badge-info'
@@ -1331,17 +1355,17 @@ function approvalBadgeHtml(status) {
     safeStatus === 'pending' ? 'clock' : safeStatus === 'rejected' ? 'x-circle' : 'badge-check';
   const label =
     safeStatus === 'pending'
-      ? 'Pending review'
+      ? t('users.approval.pendingReview', 'Pending review')
       : safeStatus === 'rejected'
-        ? 'Rejected'
-        : 'Approved';
-  return `<span class="badge ${cls}"><i data-lucide="${icon}"></i>${label}</span>`;
+        ? t('users.approval.rejected', 'Rejected')
+        : t('users.approval.approved', 'Approved');
+  return `<span class="badge ${cls}"><i data-lucide="${icon}"></i>${esc(label)}</span>`;
 }
 
 function accountBadgeHtml(isActive) {
   return isActive
-    ? '<span class="badge badge-success"><i data-lucide="check"></i>Active</span>'
-    : '<span class="badge badge-danger"><i data-lucide="ban"></i>Blocked</span>';
+    ? `<span class="badge badge-success"><i data-lucide="check"></i>${esc(t('users.account.active', 'Active'))}</span>`
+    : `<span class="badge badge-danger"><i data-lucide="ban"></i>${esc(t('users.account.blocked', 'Blocked'))}</span>`;
 }
 
 function parseApplicationStatus(status) {
@@ -1354,10 +1378,10 @@ function parseApplicationStatus(status) {
 
 function applicationStatusLabel(status) {
   const parsed = parseApplicationStatus(status);
-  if (parsed === 'accepted') return 'Approved';
-  if (parsed === 'rejected') return 'Rejected';
-  if (parsed === 'withdrawn') return 'Withdrawn';
-  return 'Pending';
+  if (parsed === 'accepted') return t('users.appStatus.approved', 'Approved');
+  if (parsed === 'rejected') return t('users.appStatus.rejected', 'Rejected');
+  if (parsed === 'withdrawn') return t('users.appStatus.withdrawn', 'Withdrawn');
+  return t('users.appStatus.pending', 'Pending');
 }
 
 function applicationStatusClass(status) {
@@ -1375,9 +1399,9 @@ function opportunityStateBadge(opportunity) {
 }
 
 function opportunityStateLabel(opportunity) {
-  if (!opportunity) return 'Opportunity unavailable';
-  if (opportunity.isHidden === true) return 'Opportunity hidden';
-  if (effectiveOpportunityStatus(opportunity) === 'closed') return 'Opportunity closed';
+  if (!opportunity) return t('users.opps.unavailable', 'Opportunity unavailable');
+  if (opportunity.isHidden === true) return t('users.opps.hidden', 'Opportunity hidden');
+  if (effectiveOpportunityStatus(opportunity) === 'closed') return t('users.opps.closed', 'Opportunity closed');
   return '';
 }
 
@@ -1408,9 +1432,9 @@ function opportunityAmountLabel(opportunity) {
     return cleanText(`${opportunity.salaryMin}-${opportunity.salaryMax} ${suffix}`);
   }
   if (opportunity?.salaryMin != null) {
-    return cleanText(`From ${opportunity.salaryMin} ${suffix}`);
+    return cleanText(`${t('label.from', 'From')} ${opportunity.salaryMin} ${suffix}`);
   }
-  if (type === 'internship' && opportunity?.isPaid === false) return 'Unpaid';
+  if (type === 'internship' && opportunity?.isPaid === false) return t('label.unpaid', 'Unpaid');
   return cleanText(opportunity?.compensationText || opportunity?.compensationNote);
 }
 
@@ -1424,7 +1448,7 @@ function opportunityTypeIcon(type) {
 }
 
 function deadlineLabel(opportunity) {
-  if (!opportunity) return 'Not specified';
+  if (!opportunity) return t('users.opps.notSpecified', 'Not specified');
   const raw = opportunity.applicationDeadline || opportunity.deadline || opportunity.deadlineLabel;
   const date = dateFromValue(raw);
   if (date) {
@@ -1434,12 +1458,12 @@ function deadlineLabel(opportunity) {
       year: 'numeric',
     }).format(date);
   }
-  return cleanText(opportunity.deadlineLabel || opportunity.deadline) || 'Not specified';
+  return cleanText(opportunity.deadlineLabel || opportunity.deadline) || t('users.opps.notSpecified', 'Not specified');
 }
 
 function formatPaidLabel(value) {
-  if (value === true) return 'Paid';
-  if (value === false) return 'Unpaid';
+  if (value === true) return t('editor.option.paid', 'Paid');
+  if (value === false) return t('label.unpaid', 'Unpaid');
   return '';
 }
 
@@ -1514,7 +1538,7 @@ function roleBg(role) {
 }
 
 function displayName(user) {
-  return firstText(user?.fullName, user?.companyName, user?.email, 'Unknown');
+  return firstText(user?.fullName, user?.companyName, user?.email, t('users.unknown', 'Unknown'));
 }
 
 function uidForUser(user) {
