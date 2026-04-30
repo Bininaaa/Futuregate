@@ -60,6 +60,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   bool _isLoading = false;
   bool _isSubmitting = false;
   bool _isEditMode = false;
+  bool _requestEarlyAccess = false;
+  String _currentEarlyAccessStatus = 'none';
 
   Color get _typeColor => OpportunityType.color(_selectedType);
   bool get _usesStructuredFields =>
@@ -169,6 +171,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       _selectedEmploymentType = opp.employmentType;
       _selectedWorkMode = opp.workMode;
       _isPaid = opp.isPaid;
+      _requestEarlyAccess = opp.earlyAccessRequested;
+      _currentEarlyAccessStatus = opp.earlyAccessStatus;
       _originalLanguage = ContentLanguage.normalizeCode(
         opp.originalLanguage,
         fallback: _preferredPostingLanguage(),
@@ -315,6 +319,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                                 },
                               ),
                               const SizedBox(height: 14),
+                              _buildEarlyAccessToggle(),
+                              const SizedBox(height: 14),
                               _buildSectionLabel(_l10n.publishingStatusLabel),
                               const SizedBox(height: 10),
                               Row(
@@ -361,8 +367,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
                             ),
                             maxLines: 6,
                             minLength: 60,
-                            helperText: _l10n
-                                .publishOpportunityDescriptionHelperText,
+                            helperText:
+                                _l10n.publishOpportunityDescriptionHelperText,
                             validator: _validateDescription,
                           ),
                         ),
@@ -1004,6 +1010,11 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       'createdByRole': 'company',
       'status': _selectedStatus,
       ...structuredData,
+      // Early access request — company can only set to true; admin controls approval.
+      if (_requestEarlyAccess && _currentEarlyAccessStatus == 'none')
+        'earlyAccessRequested': true,
+      if (_requestEarlyAccess && _currentEarlyAccessStatus == 'none')
+        'earlyAccessStatus': 'pending',
     };
 
     String? error;
@@ -1181,5 +1192,116 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
               '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
         )
         .join(' ');
+  }
+
+  Widget _buildEarlyAccessToggle() {
+    final l10n = _l10n;
+    final colors = AppColors.of(context);
+
+    // If already reviewed (approved/rejected), show read-only status.
+    final isReviewed =
+        _currentEarlyAccessStatus == 'approved' ||
+        _currentEarlyAccessStatus == 'rejected';
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _requestEarlyAccess ? colors.accentSoft : colors.surfaceMuted,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: _requestEarlyAccess
+              ? colors.accent.withValues(alpha: 0.4)
+              : colors.border,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.workspace_premium_rounded,
+                size: 18,
+                color: _requestEarlyAccess ? colors.accent : colors.textMuted,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.earlyAccessLabel,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: _requestEarlyAccess
+                        ? colors.accent
+                        : colors.textPrimary,
+                  ),
+                ),
+              ),
+              if (!isReviewed)
+                Switch.adaptive(
+                  value: _requestEarlyAccess,
+                  activeThumbColor: colors.accent,
+                  onChanged: _isSubmitting
+                      ? null
+                      : (v) => setState(() => _requestEarlyAccess = v),
+                ),
+              if (isReviewed)
+                _EarlyAccessStatusChip(status: _currentEarlyAccessStatus),
+            ],
+          ),
+          if (_requestEarlyAccess && !isReviewed) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Request early access for premium students. Admin must approve before it activates.',
+              style: TextStyle(fontSize: 11, color: colors.textSecondary),
+            ),
+          ],
+          if (_currentEarlyAccessStatus == 'pending') ...[
+            const SizedBox(height: 6),
+            Text(
+              l10n.earlyAccessPendingStatus,
+              style: TextStyle(
+                fontSize: 11,
+                color: colors.warning,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _EarlyAccessStatusChip extends StatelessWidget {
+  final String status;
+  const _EarlyAccessStatusChip({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    final (label, color) = switch (status) {
+      'approved' => ('Approved', colors.success),
+      'rejected' => ('Rejected', colors.danger),
+      'pending' => ('Pending', colors.warning),
+      'expired' => ('Expired', colors.textMuted),
+      _ => ('None', colors.textMuted),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    );
   }
 }

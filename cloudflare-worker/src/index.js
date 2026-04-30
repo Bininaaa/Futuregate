@@ -4247,6 +4247,323 @@ async function handleAiMessage(request, env) {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CHARGILY PAY V2 — TEST MODE
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CHARGILY_TEST_BASE_URL = "https://pay.chargily.net/test/api/v2";
+const CHARGILY_SEMESTER_DURATION_DAYS = 180;
+
+function chargilyBaseUrl(env) {
+  // Always test mode per business rule in premium_pass_chargily_test_mode.md
+  return CHARGILY_TEST_BASE_URL;
+}
+
+async function chargilyRequest(env, method, path, body = null) {
+  const secretKey = trim(env.CHARGILY_SECRET_KEY);
+  if (!secretKey) throw new Error("CHARGILY_SECRET_KEY is not configured.");
+
+  const response = await fetch(`${chargilyBaseUrl(env)}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${secretKey}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const text = await response.text();
+  let payload = {};
+  try {
+    payload = JSON.parse(text);
+  } catch {
+    payload = { raw: text };
+  }
+
+  if (!response.ok) {
+    const msg = payload?.message || payload?.error || `Chargily error ${response.status}`;
+    throw Object.assign(new Error(msg), { status: response.status, payload });
+  }
+
+  return payload;
+}
+
+async function verifyChargilySignature(env, rawBody, signatureHeader) {
+  const secretKey = trim(env.CHARGILY_SECRET_KEY);
+  if (!secretKey) return false;
+
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secretKey),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(rawBody));
+  const hex = Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  return hex === trim(signatureHeader).toLowerCase();
+}
+
+async function handleChargilyCreateCheckout(request, env) {
+  const auth = await requireUser(request, env, { roles: ["student"] });
+  if (auth.error) return auth.error;
+
+  const { user, profile } = auth;
+
+  // Prevent duplicate active purchase
+  const existingSub = await firestoreGet(env, "subscriptions", user.uid);
+  if (existingSub) {
+    const sub = existingSub.data || {};
+    const isActive = sub.status === "active" &&
+      sub.expiresAt &&
+      new Date(sub.expiresAt._seconds * 1000) > new Date();
+    if (isActive) {
+      return err("You already have an active Premium Pass.", 409);
+    }
+  }
+
+  let body = {};
+  try {
+    body = await request.json();
+  } catch {}
+
+  const plan = trim(body.plan) || "semester";
+  const appBaseUrl = trim(env.APP_BASE_URL) || "https://futuregate.tech";
+  const successUrl = trim(env.FUTUREGATE_SUCCESS_URL) || `${appBaseUrl}/payment/success`;
+  const failureUrl = trim(env.FUTUREGATE_FAILURE_URL) || `${appBaseUrl}/payment/failed`;
+  const webhookUrl = trim(env.CHARGILY_WEBHOOK_URL);
+
+  const paymentDocRef = crypto.randomUUID();
+  const now = new Date();
+
+  // Fetch config for price (fall back to defaults if not configured)
+  let price = 1500;
+  let currency = "dzd";
+  try {
+    const configDoc = await firestoreGet(env, "appConfig", "premiumConfig");
+    if (configDoc && configDoc.data) {
+      price = Number(configDoc.data.premiumPassPrice) || price;
+      currency = (configDoc.data.premiumCurrency || currency).toLowerCase();
+    }
+  } catch {}
+
+  const checkoutPayload = {
+    amount: price,
+    currency,
+    payment_method: "edahabia",
+    success_url: successUrl,
+    failure_url: failureUrl,
+    ...(webhookUrl ? { webhook_endpoint: webhookUrl } : {}),
+    locale: "ar",
+    metadata: {
+      uid: user.uid,
+      plan,
+      paymentId: paymentDocRef,
+      mode: "test",
+    },
+  };
+
+  let checkout;
+  try {
+    checkout = await chargilyRequest(env, "POST", "/checkouts", checkoutPayload);
+  } catch (e) {
+    console.error("[chargily:createCheckout] API error:", e.message);
+    return err(`Payment provider error: ${e.message}`, 502);
+  }
+
+  const checkoutId = trim(checkout.id);
+  const checkoutUrl = trim(checkout.checkout_url);
+
+  if (!checkoutId || !checkoutUrl) {
+    return err("Payment provider returned an invalid response.", 502);
+  }
+
+  // Persist pending payment
+  const paymentData = {
+    id: paymentDocRef,
+    uid: user.uid,
+    provider: "chargily",
+    checkoutId,
+    checkoutUrl,
+    status: "pending",
+    amount: price,
+    currency: currency.toUpperCase(),
+    plan,
+    createdAt: { _type: "serverTimestamp" },
+    rawProviderStatus: "pending",
+    metadata: { uid: user.uid, plan, mode: "test" },
+    livemode: false,
+    mode: "test",
+  };
+
+  await firestoreSet(env, "payments", paymentDocRef, paymentData, true);
+
+  // Also create/update subscription as pending
+  const subData = {
+    uid: user.uid,
+    role: profile.role || "student",
+    plan,
+    status: "pending",
+    provider: "chargily",
+    amount: price,
+    currency: currency.toUpperCase(),
+    checkoutId,
+    paymentId: paymentDocRef,
+    createdAt: { _type: "serverTimestamp" },
+    updatedAt: { _type: "serverTimestamp" },
+    mode: "test",
+  };
+
+  await firestoreSet(env, "subscriptions", user.uid, subData, true);
+
+  return json({ checkoutId, checkoutUrl });
+}
+
+async function handleChargilyWebhook(request, env) {
+  const rawBody = await request.text();
+  const signatureHeader = request.headers.get("signature") || "";
+
+  const validSig = await verifyChargilySignature(env, rawBody, signatureHeader);
+  if (!validSig) {
+    console.warn("[chargily:webhook] Invalid signature rejected");
+    return err("Invalid webhook signature.", 403);
+  }
+
+  let event;
+  try {
+    event = JSON.parse(rawBody);
+  } catch {
+    return err("Malformed webhook body.", 400);
+  }
+
+  const eventType = trim(event.type);
+  if (eventType !== "checkout.paid") {
+    // Acknowledge but do nothing for non-paid events
+    return json({ received: true, eventType });
+  }
+
+  const checkout = event.data?.checkout || event.data || {};
+  const checkoutId = trim(checkout.id);
+  const checkoutStatus = trim(checkout.status);
+  const metadata = checkout.metadata || {};
+  const uid = trim(metadata.uid);
+  const plan = trim(metadata.plan) || "semester";
+  const paymentId = trim(metadata.paymentId);
+
+  if (!checkoutId || !uid) {
+    console.error("[chargily:webhook] Missing checkoutId or uid in metadata");
+    return err("Missing required metadata.", 400);
+  }
+
+  // Idempotency: check if already activated
+  const existingSub = await firestoreGet(env, "subscriptions", uid);
+  if (existingSub) {
+    const sub = existingSub.data || {};
+    if (sub.status === "active" && sub.checkoutId === checkoutId) {
+      return json({ received: true, alreadyProcessed: true });
+    }
+  }
+
+  // Activate subscription
+  const now = new Date();
+  const expiresAt = new Date(now);
+  expiresAt.setDate(expiresAt.getDate() + CHARGILY_SEMESTER_DURATION_DAYS);
+
+  const subUpdate = {
+    uid,
+    plan,
+    status: "active",
+    provider: "chargily",
+    checkoutId,
+    paymentId: paymentId || checkoutId,
+    startedAt: { _type: "serverTimestamp" },
+    expiresAt: { _seconds: Math.floor(expiresAt.getTime() / 1000), _nanoseconds: 0 },
+    lastVerifiedAt: { _type: "serverTimestamp" },
+    updatedAt: { _type: "serverTimestamp" },
+    livemode: false,
+    mode: "test",
+  };
+
+  await firestoreSet(env, "subscriptions", uid, subUpdate, true);
+
+  // Update payment record
+  if (paymentId) {
+    await firestoreUpdate(env, "payments", paymentId, {
+      status: "paid",
+      rawProviderStatus: checkoutStatus,
+      paidAt: { _type: "serverTimestamp" },
+    });
+  }
+
+  console.log(`[chargily:webhook] Premium activated for uid=${uid} checkout=${checkoutId}`);
+  return json({ received: true, activated: true });
+}
+
+async function handleSubscriptionMe(request, env) {
+  const auth = await requireUser(request, env);
+  if (auth.error) return auth.error;
+
+  const doc = await firestoreGet(env, "subscriptions", auth.user.uid);
+  if (!doc) return json({ subscription: null });
+  return json({ subscription: doc.data });
+}
+
+async function handleSubscriptionSync(request, env) {
+  const auth = await requireUser(request, env);
+  if (auth.error) return auth.error;
+
+  const doc = await firestoreGet(env, "subscriptions", auth.user.uid);
+  if (!doc) return json({ synced: true, status: null });
+
+  const sub = doc.data || {};
+  const isExpired =
+    sub.status === "active" &&
+    sub.expiresAt &&
+    new Date(sub.expiresAt._seconds * 1000) <= new Date();
+
+  if (isExpired) {
+    await firestoreUpdate(env, "subscriptions", auth.user.uid, {
+      status: "expired",
+      updatedAt: { _type: "serverTimestamp" },
+    });
+    return json({ synced: true, status: "expired" });
+  }
+
+  return json({ synced: true, status: sub.status || null });
+}
+
+async function handleSubscriptionConfig(request, env) {
+  try {
+    const doc = await firestoreGet(env, "appConfig", "premiumConfig");
+    return json(doc ? doc.data : {});
+  } catch {
+    return json({});
+  }
+}
+
+async function handleGetPayment(request, env, checkoutId) {
+  const auth = await requireUser(request, env);
+  if (auth.error) return auth.error;
+
+  if (!checkoutId) return err("checkoutId is required.", 400);
+
+  const results = await firestoreQuery(env, "payments", [
+    { field: "checkoutId", op: "EQUAL", value: checkoutId },
+    { field: "uid", op: "EQUAL", value: auth.user.uid },
+  ]);
+
+  if (!results || results.length === 0) return err("Payment not found.", 404);
+  return json(results[0].data);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function matchRoute(method, path) {
   if (method === "GET" && path === "/api/health") {
     return { handler: "health" };
@@ -4413,6 +4730,30 @@ function matchRoute(method, path) {
     };
   }
 
+  // Chargily / Premium routes
+  if (method === "POST" && path === "/api/subscriptions/chargily/create-checkout") {
+    return { handler: "chargilyCreateCheckout" };
+  }
+  if (method === "POST" && path === "/api/webhooks/chargily") {
+    return { handler: "chargilyWebhook" };
+  }
+  if (method === "GET" && path === "/api/subscriptions/me") {
+    return { handler: "subscriptionMe" };
+  }
+  if (method === "POST" && path === "/api/subscriptions/sync") {
+    return { handler: "subscriptionSync" };
+  }
+  if (method === "GET" && path === "/api/subscriptions/config") {
+    return { handler: "subscriptionConfig" };
+  }
+  const paymentRoute = path.match(/^\/api\/payments\/([^/]+)$/);
+  if (method === "GET" && paymentRoute) {
+    return {
+      handler: "getPayment",
+      id: decodeURIComponent(paymentRoute[1]),
+    };
+  }
+
   return null;
 }
 
@@ -4552,6 +4893,24 @@ export default {
             env,
             route.id,
           );
+          break;
+        case "chargilyCreateCheckout":
+          response = await handleChargilyCreateCheckout(request, env);
+          break;
+        case "chargilyWebhook":
+          response = await handleChargilyWebhook(request, env);
+          break;
+        case "subscriptionMe":
+          response = await handleSubscriptionMe(request, env);
+          break;
+        case "subscriptionSync":
+          response = await handleSubscriptionSync(request, env);
+          break;
+        case "subscriptionConfig":
+          response = await handleSubscriptionConfig(request, env);
+          break;
+        case "getPayment":
+          response = await handleGetPayment(request, env, route.id);
           break;
         default:
           response = err("Not found", 404);

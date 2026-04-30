@@ -5,6 +5,8 @@ import '../models/student_application_item_model.dart';
 import '../services/application_service.dart';
 import '../utils/application_status.dart';
 
+export '../services/application_service.dart' show EarlyAccessLockedException;
+
 class ApplicationProvider extends ChangeNotifier {
   final ApplicationService _service = ApplicationService();
 
@@ -119,6 +121,9 @@ class ApplicationProvider extends ChangeNotifier {
       _submittedApplicationsCount = _submittedApplications.length;
 
       return null;
+    } on EarlyAccessLockedException {
+      // Re-throw so the UI can catch it and show the upgrade modal.
+      rethrow;
     } on FirebaseException catch (e) {
       if (e.code == 'permission-denied') {
         return 'We could not submit your application right now. Please try again.';

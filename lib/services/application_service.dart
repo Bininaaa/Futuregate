@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/application_model.dart';
 import '../models/opportunity_model.dart';
 import '../models/student_application_item_model.dart';
+import '../models/subscription_model.dart';
 import 'notification_worker_service.dart';
 import 'cv_service.dart';
+import 'subscription_service.dart';
 import '../utils/application_status.dart';
 import 'interfaces/i_application_service.dart';
 import '../utils/crashlytics_logger.dart';
@@ -22,6 +24,7 @@ class ApplicationService implements IApplicationService {
   final NotificationWorkerService _notificationWorker =
       NotificationWorkerService();
   final CvService _cvService = CvService();
+  final SubscriptionService _subscriptionService = SubscriptionService();
 
   @override
   Future<int> getApplicationsCount(String studentId) async {
@@ -230,9 +233,28 @@ class ApplicationService implements IApplicationService {
       throw Exception('This opportunity is closed');
     }
 
+    // Early-access lock: free users cannot apply during the premium window
+    if (opportunity.isEarlyAccessActive) {
+      final sub = await _subscriptionService.getSubscription(studentId);
+      final isPremium = sub?.isActive ?? false;
+      if (!isPremium) {
+        throw EarlyAccessLockedException(
+          'This opportunity is in early access. Upgrade to Premium Pass to apply now.',
+          publicVisibleAt: opportunity.publicVisibleAt,
+        );
+      }
+    }
+
     if (resolvedCompanyId.isEmpty) {
       throw Exception('This opportunity is no longer available');
     }
+
+    // Fetch subscription for priority snapshot (best-effort, don't block apply)
+    SubscriptionModel? sub;
+    try {
+      sub = await _subscriptionService.getSubscription(studentId);
+    } catch (_) {}
+    final isPremiumAtApply = sub?.isActive ?? false;
 
     final createData = {
       'id': applicationRef.id,
@@ -243,6 +265,14 @@ class ApplicationService implements IApplicationService {
       'cvId': resolvedCvId,
       'status': ApplicationStatus.pending,
       'appliedAt': FieldValue.serverTimestamp(),
+      'isPremiumAtApply': isPremiumAtApply,
+      'priorityApplication': isPremiumAtApply,
+      if (isPremiumAtApply && sub != null)
+        'subscriptionSnapshot': {
+          'plan': sub.plan,
+          'status': sub.status,
+          'expiresAt': sub.expiresAt,
+        },
     };
 
     try {
@@ -273,6 +303,8 @@ class ApplicationService implements IApplicationService {
           studentName: studentName,
           resolvedCompanyId: resolvedCompanyId,
           resolvedCvId: resolvedCvId,
+          isPremiumAtApply: isPremiumAtApply,
+          sub: sub,
         )) {
           await _notificationWorker.notifyApplicationSubmitted(
             applicationRef.id,
@@ -294,6 +326,8 @@ class ApplicationService implements IApplicationService {
     required String studentName,
     required String resolvedCompanyId,
     required String resolvedCvId,
+    bool isPremiumAtApply = false,
+    SubscriptionModel? sub,
   }) async {
     final applicationSnapshot = await applicationRef.get();
     if (!applicationSnapshot.exists) {
@@ -320,6 +354,14 @@ class ApplicationService implements IApplicationService {
       'appliedAt': FieldValue.serverTimestamp(),
       'withdrawnAt': FieldValue.delete(),
       'hadWithdrawnBefore': true,
+      'isPremiumAtApply': isPremiumAtApply,
+      'priorityApplication': isPremiumAtApply,
+      if (isPremiumAtApply && sub != null)
+        'subscriptionSnapshot': {
+          'plan': sub.plan,
+          'status': sub.status,
+          'expiresAt': sub.expiresAt,
+        },
     };
 
     final previousWithdrawnAt = data?['withdrawnAt'];
@@ -361,4 +403,14 @@ class ApplicationService implements IApplicationService {
       'withdrawnAt': FieldValue.serverTimestamp(),
     });
   }
+}
+
+class EarlyAccessLockedException implements Exception {
+  final String message;
+  final DateTime? publicVisibleAt;
+
+  const EarlyAccessLockedException(this.message, {this.publicVisibleAt});
+
+  @override
+  String toString() => message;
 }

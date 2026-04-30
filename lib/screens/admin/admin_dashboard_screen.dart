@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
+import 'admin_early_access_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -130,6 +131,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   label: l10n.uiLibrary,
                   icon: Icons.menu_book_rounded,
                   onTap: _openLibrary,
+                ),
+                AdminActionChip(
+                  label: l10n.adminEarlyAccessTitle,
+                  icon: Icons.workspace_premium_rounded,
+                  onTap: _openEarlyAccessManagement,
                 ),
               ],
             ),
@@ -430,6 +436,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
 
     _openContent(AdminContentCenterScreen.libraryTab);
+  }
+
+  void _openEarlyAccessManagement() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AdminEarlyAccessScreen(),
+      ),
+    );
   }
 
   void _openUsers() {

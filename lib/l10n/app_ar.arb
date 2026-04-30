@@ -64,7 +64,7 @@
   "securityPrivacySubtitle": "كلمات المرور وتحديثات البريد والخصوصية والمعلومات القانونية",
   "helpCenterTitle": "مركز المساعدة",
   "helpCenterSubtitle": "استعرض الأسئلة الشائعة أو تواصل مع الدعم",
-  "aboutFutureGateTitle": "حول بوابة المستقبل",
+  "aboutFutureGateTitle": "حول FutureGate",
   "aboutFutureGateSubtitle": "معلومات عن المنصة والإصدار.",
   "appVersionTitle": "نسخة التطبيق",
   "appVersionCurrentLabel": "الحالي",
@@ -74,7 +74,7 @@
   "notificationPreferencesSubtitle": "افتح مركز الإشعارات الخاص بك",
   "accountPreferencesTitle": "تفضيلات الحساب",
   "accountPreferencesSubtitle": "حدّث تفاصيل ملفك الشخصي",
-  "appearanceThemeTitle": "المظهر / النمط",
+  "appearanceThemeTitle": "المظهر",
   "appearanceThemeSubtitle": "نظام بصري فاتح",
   "appearanceThemeSheetMessage": "يستخدم هذا الإصدار حاليًا نظامًا بصريًا فاتحًا في التطبيق. لم يتم تفعيل تبديل النمط العام بعد.",
   "languageSheetMessage": "اختر الإنجليزية أو الفرنسية أو العربية وطبّقها فورًا في التطبيق.",
@@ -140,8 +140,8 @@
   "requirementsLabel": "المتطلبات",
   "programDescriptionLabel": "وصف البرنامج",
   "roleDescriptionLabel": "وصف الدور",
-  "typeOneEligibilityHint": "اكتب شرط أهلية واحدًا ثم اضغط Enter",
-  "typeOneRequirementHint": "اكتب متطلبًا واحدًا ثم اضغط Enter",
+  "typeOneEligibilityHint": "اكتب شرط أهلية واحدًا ثم اضغط إدخال",
+  "typeOneRequirementHint": "اكتب متطلبًا واحدًا ثم اضغط إدخال",
   "addEligibilityEmptyHint": "أضف من يمكنه التقديم أو المستندات المطلوبة أو الشروط الأكاديمية.",
   "addRequirementEmptyHint": "أضف المهارات أو الخلفية أو الأدوات التي يحتاجها الطلاب.",
   "featureScholarshipTitle": "تمييز هذه المنحة",
@@ -280,7 +280,7 @@
   "uiAPublicWebsiteAndSocialChannelsAreNotLinkedInside": "لم يتم ربط موقع الويب العام والقنوات الاجتماعية داخل هذا الإصدار حتى الآن. لا يزال من الممكن إرسال طلبات الدعم مباشرة عبر البريد الإلكتروني.",
   "uiAQuickCountOfTheContentTypesHandledInsideThe": "إحصاء سريع لأنواع المحتوى داخل مساحة عمل المشرف.",
   "uiAQuickHighlightPickedFromTheScholarships": "لمحة سريعة عن منحة مختارة",
-  "uiAQuickPulseOnImportedResourcesSoAdminsCanCurate": "نظرة سريعة على الموارد المستوردة لمساعدة المشرفين على تنظيمها بسهولة.",
+  "uiAQuickPulseOnImportedResourcesSoAdminsCanCurate": "لمحة سريعة عن الموارد المستوردة ليتمكن المشرفون من انتقائها بدلًا من التخمين.",
   "uiAReadyCvMakesJobsInternshipsAndScholarshipsMuchQuicker": "السيرة الذاتية الجاهزة تجعل التقديم للوظائف والتدريبات والمنح أسرع بكثير.",
   "uiASharperCompanyStoryMakesTheProfileFeelMoreConfident": "قصة أوضح للشركة تجعل الملف أكثر ثقة ومصداقية.",
   "uiAStrongLogoOrCompanyPhotoMakesTheProfileFeel": "الشعار القوي أو صورة الشركة تجعل الملف الشخصي يبدو أكثر صقلًا ويمكن التعرف عليه.",
@@ -293,7 +293,7 @@
   "uiAcademicLevel80Cc": "المستوى الأكاديمي",
   "uiAcademicProfile": "الملف الأكاديمي",
   "uiAcceptedFormatsJpgPngOrWebpMaximumSize5Mb": "التنسيقات المقبولة: JPG، PNG، أو WebP. الحد الأقصى للحجم: 5 ميجابايت.",
-  "uiAccess": "الدخول / الوصول",
+  "uiAccess": "الوصول",
   "uiAccountAccess": "الوصول إلى الحساب",
   "uiAccountCreationUnavailable": "إنشاء الحساب غير متاح",
   "uiAccountHelp": "مساعدة الحساب",
@@ -329,7 +329,7 @@
   "uiAiIsProcessing": "الذكاء الاصطناعي يعالج الطلب...",
   "uiAiTrainer": "مدرب الذكاء الاصطناعي",
   "uiAlerts": "التنبيهات",
-  "uiAlexFromTechcorp": "أليكس من TechCorp",
+  "uiAlexFromTechcorp": "Alex from TechCorp",
   "uiAll": "الكل",
   "uiAllIdeas": "جميع الأفكار",
   "uiAllOppsValue1": "كل الفرص ({value1})",
@@ -337,9 +337,9 @@
   "uiAllSponsoredPrograms": "جميع البرامج الممولة",
   "uiAnswersGuidanceAndSupport": "الإجابات والتوجيه والدعم.",
   "uiAny": "أي",
-  "uiAppearanceTheme": "المظهر / النمط",
+  "uiAppearanceTheme": "المظهر",
   "uiApplicantcount": "{applicantCount}",
-  "uiApplicantcountApplicants": "{applicantCount} متقدم",
+  "uiApplicantcountApplicants": "{applicantCount, plural, =0{لا يوجد متقدمون} =1{متقدم واحد} =2{متقدمان} few{{applicantCount} متقدمين} many{{applicantCount} متقدمًا} other{{applicantCount} متقدم}}",
   "uiApplicants": "المتقدمون",
   "uiApplicationActivity": "نشاط التقديم",
   "uiApplicationApproved": "تمت الموافقة على الطلب",
@@ -443,7 +443,7 @@
   "uiChooseYourAccountType": "اختر نوع حسابك.",
   "uiChooseYourDomain": "اختر المجال الخاص بك",
   "uiClear": "مسح",
-  "uiClearFilters": "مسح عوامل التصفية",
+  "uiClearFilters": "مسح الفلاتر",
   "uiClearSearch": "مسح البحث",
   "uiClosingSoon": "ينتهي قريبًا",
   "uiClosingSoonC287": "ينتهي قريبًا",
@@ -489,7 +489,7 @@
   "uiCreateAccount": "إنشاء حساب",
   "uiCreateAccountEff4": "إنشاء حساب",
   "uiCreateTheFirstProjectIdeaToStartShapingTheInnovation": "أنشئ فكرة المشروع الأولى للبدء في تشكيل خلاصة الابتكار.",
-  "uiCreateYourFirstIdeaOrAdjustTheFilters": "أنشئ فكرتك الأولى أو عدّل عوامل التصفية.",
+  "uiCreateYourFirstIdeaOrAdjustTheFilters": "أنشئ فكرتك الأولى أو عدّل الفلاتر.",
   "uiCreator": "المنشئ",
   "uiCurateImportedBooksAndVideoResourcesFromOnePlace": "نظّم الكتب وموارد الفيديو المستوردة من مكان واحد.",
   "uiCurateResourceHub": "إدارة مركز الموارد",
@@ -666,7 +666,7 @@
   "uiKeepTheCompanyOutOfTheWorkspaceUntilTheProfile": "أبقِ الشركة خارج مساحة العمل إلى أن يتم تصحيح الملف.",
   "uiKeepTheExistingDataSourceButTailorWhatYouSee": "احتفظ بمصدر البيانات الحالي، وخصّص ما تراه.",
   "uiKeepTheHeadlineAndOverviewCrispSoTheIdeaReads": "اجعل العنوان والنظرة العامة واضحين حتى تظهر الفكرة بقوة في البطاقات وصفحة التفاصيل.",
-  "uiKeepThePageGroundedInTheCurrentAppBehaviorInstead": "أبقِ الصفحة مرتكزة على سلوك التطبيق الحالي بدلاً من تقديم إعدادات غير مدعومة.",
+  "uiKeepThePageGroundedInTheCurrentAppBehaviorInstead": "أبقِ الصفحة مرتكزة على سلوك التطبيق الحالي بدلاً من تقديم إعدادات غير متاحة.",
   "uiKeepTheProfileCrispTrustworthyAndReadyForStudentsTo": "حافظ على الملف الشخصي واضحًا وجديرًا بالثقة وجاهزًا لاستكشافه من قبل الطلاب.",
   "uiKeepVisibilityDecisionsInTheSameStructuredPublishingAreaUsed": "احتفظ بقرارات الرؤية في نفس منطقة النشر المنظمة المستخدمة عبر مسارات المحتوى.",
   "uiKeepYourCompanyPresenceTrustedWithAnUpToDate": "حافظ على موثوقية حضور شركتك من خلال سجل تجاري محدّث.",
@@ -683,7 +683,7 @@
   "uiLearnMoreAboutThePlatform": "تعرف على المزيد حول المنصة.",
   "uiLearners": "المتعلمون",
   "uiLegal": "المعلومات القانونية",
-  "uiLevelFilters": "عوامل تصفية المستوى",
+  "uiLevelFilters": "فلاتر المستوى",
   "uiLibrary": "مكتبة",
   "uiLibraryOverview": "نظرة عامة على المكتبة",
   "uiLink": "رابط",
@@ -827,7 +827,7 @@
   "uiPendingProjectIdeas": "أفكار المشاريع بانتظار المراجعة",
   "uiPendingReviews": "قيد المراجعة",
   "uiPendingValue1InReview": "{pending} {value1} قيد المراجعة.",
-  "uiPendingapplicationsPendingApps": "{pendingApplications} طلبات بانتظار المراجعة",
+  "uiPendingapplicationsPendingApps": "{pendingApplications, plural, =0{لا توجد طلبات بانتظار المراجعة} =1{طلب واحد بانتظار المراجعة} =2{طلبان بانتظار المراجعة} few{{pendingApplications} طلبات بانتظار المراجعة} many{{pendingApplications} طلبًا بانتظار المراجعة} other{{pendingApplications} طلب بانتظار المراجعة}}",
   "uiPendingideasPendingIdeas": "{pendingIdeas} أفكار بانتظار المراجعة",
   "uiPercent": "{percent}%",
   "uiPerformance": "أداء",
@@ -895,7 +895,7 @@
   "uiQuickAccessToRolesFundingLearningAndIdeasWorthRevisiting": "الوصول السريع إلى الأدوار والتمويل والتعلم والأفكار التي تستحق إعادة النظر فيها.",
   "uiQuickActions": "إجراءات سريعة",
   "uiQuickCuration": "فرز وتنظيم سريع",
-  "uiQuickFilters": "عوامل تصفية سريعة",
+  "uiQuickFilters": "فلاتر سريعة",
   "uiQuickSnapshot": "لقطة سريعة",
   "uiQuickSupport": "الدعم السريع",
   "uiRating": "التقييم",
@@ -1012,7 +1012,7 @@
   "uiSearchUnavailable": "البحث غير متاح",
   "uiSearchUniversityOrCountry": "ابحث عن الجامعة أو البلد...",
   "uiSearchUsersReviewProfilesAndManageAccountStatus": "البحث عن المستخدمين، ومراجعة الملفات الشخصية، وإدارة حالة الحساب.",
-  "uiSearchVideosForExampleAlgorithms": "البحث في مقاطع الفيديو، على سبيل المثال: الخوارزميات",
+  "uiSearchVideosForExampleAlgorithms": "ابحث في مقاطع الفيديو عن الخوارزميات",
   "uiSearch": "بحث",
   "uiSector": "قطاع",
   "uiSecureYourAccount": "تأمين حسابك",
@@ -1024,7 +1024,7 @@
   "uiSendAgain": "أرسل مرة أخرى",
   "uiSendLink": "إرسال الرابط",
   "uiSendYourFirstMessageToStartTheConversation": "أرسل رسالتك الأولى لبدء المحادثة.",
-  "uiSeniorProductDesigner": "كبير مصممي المنتجات",
+  "uiSeniorProductDesigner": "Senior Product Designer",
   "uiSentTo": "أرسلت إلى",
   "uiSessionsDevices": "الجلسات والأجهزة",
   "uiSetTheCoreHeadlineCategoryAndStageSoTheIdea": "حدّد العنوان الرئيسي والفئة والمرحلة حتى تظهر الفكرة بوضوح من البداية.",
@@ -1034,7 +1034,7 @@
   "uiShareOpportunity": "مشاركة الفرصة",
   "uiSharePdf": "مشاركة PDF",
   "uiShareScreenshotsStepsOrAccountIssues": "مشاركة لقطات الشاشة أو الخطوات أو مشكلات الحساب",
-  "uiShieldOpsSecurity": "شيلد أوبس - الأمن",
+  "uiShieldOpsSecurity": "ShieldOps Security",
   "uiShortDescription": "وصف قصير",
   "uiShortIntro": "مقدمة قصيرة",
   "uiShortTagline": "شعار قصير",
@@ -1043,7 +1043,7 @@
   "uiShowInbox": "إظهار البريد الوارد",
   "uiShowTheRolesSkillsAndResourcesThatWillHelpThis": "أظهر الأدوار والمهارات والموارد التي ستساعد هذه الفكرة على المضي قدمًا.",
   "uiShowThisIdeaToUsers": "اعرض هذه الفكرة للمستخدمين",
-  "uiShowingResultscountOfTotalapplicationsApplications": "عرض {resultsCount} من أصل {totalApplications} طلب",
+  "uiShowingResultscountOfTotalapplicationsApplications": "عرض {resultsCount} من أصل {totalApplications, plural, =0{لا طلبات} =1{طلب واحد} =2{طلبان} few{{totalApplications} طلبات} many{{totalApplications} طلبًا} other{{totalApplications} طلب}}",
   "uiShownOfTotal": "{shown} من {total}",
   "uiSignIn": "تسجيل الدخول",
   "uiSignInToSeeYourMessages": "سجّل الدخول لرؤية رسائلك",
@@ -1057,7 +1057,7 @@
   "uiSignalGrowthMarketing": "Signal Growth - التسويق",
   "uiSketchroomIllustration": "Sketchroom - الرسم التوضيحي",
   "uiSkills": "مهارات",
-  "uiSkillsNeeded": "المهارات اللازمة",
+  "uiSkillsNeeded": "المهارات المطلوبة",
   "uiSkillsNeeded7988": "المهارات المطلوبة",
   "uiSkip": "تخطي",
   "uiSnapshot": "لقطة",
@@ -1106,7 +1106,7 @@
   "uiTeamRolesNeeded": "أدوار الفريق المطلوبة",
   "uiTeamSkillSignals": "إشارات الفريق والمهارة",
   "uiTech": "التكنولوجيا",
-  "uiTechnovaGlobalInc": "شركة تكنوفا العالمية",
+  "uiTechnovaGlobalInc": "Technova Global Inc.",
   "uiTemplate": "قالب",
   "uiTerms": "شروط",
   "uiTermsOfUse": "شروط الاستخدام",
@@ -1115,7 +1115,7 @@
   "uiTheEssentialsRecruitersAndProgramsOftenScanFirst": "الأساسيات التي يراجعها مسؤولو التوظيف والبرامج عادةً أولًا.",
   "uiTheEssentialsStudentsAndApplicantsUsuallyLookForFirst": "عادةً ما يبحث الطلاب والمتقدمون عن الأساسيات أولاً.",
   "uiTheHighLevelUserAndAccountPictureAdminsUsuallyNeed": "الصورة العامة للمستخدم والحساب التي يحتاجها المشرفون عادةً أولًا.",
-  "uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks": "أحدث {latestItemsLimit} وظائف وتدريبات ومسارات ممولة",
+  "uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks": "{latestItemsLimit, plural, =0{أحدث الوظائف والتدريبات والمسارات الممولة} =1{أحدث فرصة بين الوظائف والتدريبات والمسارات الممولة} =2{أحدث فرصتين بين الوظائف والتدريبات والمسارات الممولة} few{أحدث {latestItemsLimit} فرص بين الوظائف والتدريبات والمسارات الممولة} many{أحدث {latestItemsLimit} فرصة بين الوظائف والتدريبات والمسارات الممولة} other{أحدث {latestItemsLimit} فرصة بين الوظائف والتدريبات والمسارات الممولة}}",
   "uiTheProfileAlreadyLooksPolishedAQuickRefreshFromTime": "يبدو الملف الشخصي احترافيًا بالفعل. التحديث السريع من وقت لآخر يكفي.",
   "uiTheResetLinkIsOnItsWay": "رابط إعادة التعيين في طريقه.",
   "uiTheRoleThisCandidateAppliedFor": "الدور الذي تقدم له هذا المرشح.",
@@ -1125,7 +1125,7 @@
   "uiTheseDetailsHelpYouEvaluateHowTheOpportunityIsPositioned": "تساعدك هذه التفاصيل على تقييم طريقة عرض الفرصة للمتقدمين.",
   "uiTheseDetailsHelpYouReviewWhereTheScholarshipFitsAnd": "تساعدك هذه التفاصيل في مراجعة المكان المناسب للمنحة وكيف سيصل إليها الطلاب.",
   "uiTheseFieldsHelpYouJudgeWhereTheIdeaFitsAnd": "تساعدك هذه الحقول في تحديد المكان المناسب للفكرة ومدى جاهزيتها للمراجعة.",
-  "uiTheseFieldsShapeTheFiltersBadgesAndCollaborationFramingUsed": "تشكل هذه الحقول عوامل التصفية والشارات وإطارات التعاون المستخدمة في جميع أنحاء التطبيق.",
+  "uiTheseFieldsShapeTheFiltersBadgesAndCollaborationFramingUsed": "تشكل هذه الحقول الفلاتر والشارات وإطارات التعاون المستخدمة في جميع أنحاء التطبيق.",
   "uiTheseRatiosHelpAdminsSeeWhetherUsersAreEngagingDeeply": "تساعد هذه النسب المشرفين على معرفة ما إذا كان المستخدمون يتفاعلون بعمق أم يتصفحون فقط.",
   "uiThisGivesTheAdminViewOfWhatMakesTheRole": "يمنح هذا القسم المسؤولين لمحة عمّا يجعل الدور جذابًا.",
   "uiThisIdeaIsNoLongerAvailable": "هذه الفكرة لم تعد متوفرة.",
@@ -1155,21 +1155,21 @@
   "uiTranslate": "ترجمة",
   "uiTranslateTo": "ترجمة إلى",
   "uiTrendingOpportunities": "الفرص الرائجة",
-  "uiTryABroaderQueryOrChangeTheLanguageAndDomain": "جرّب بحثًا أوسع أو غيّر عوامل تصفية اللغة والمجال قبل البحث مرة أخرى.",
+  "uiTryABroaderQueryOrChangeTheLanguageAndDomain": "جرّب بحثًا أوسع أو غيّر فلاتر اللغة والمجال قبل البحث مرة أخرى.",
   "uiTryABroaderQueryOrRefreshToLoadTheLatest": "جرّب بحثًا أوسع أو حدّث لتحميل أحدث الأحداث.",
   "uiTryABroaderQueryOrSwitchTheDomainAndLevel": "جرّب بحثًا أوسع أو غيّر المجال والمستوى قبل البحث مرة أخرى.",
   "uiTryABroaderSearchTermOrContactSupportIfYou": "جرّب مصطلح بحث أوسع، أو اتصل بالدعم إذا كنت بحاجة إلى مساعدة عملية.",
   "uiTryADifferentFilterOrStartANewIdea": "جرب مرشحًا مختلفًا أو ابدأ فكرة جديدة.",
-  "uiTryAdjustingYourSearchOrFiltersToExploreMoreScholarships": "حاول تعديل بحثك أو عوامل التصفية\nلاستكشاف المزيد من المنح الدراسية.",
-  "uiTryAdjustingYourSearchOrFiltersToUncoverMoreMatches": "حاول تعديل بحثك أو عوامل التصفية للكشف عن المزيد من التطابقات.",
-  "uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevel": "جرّب بحثًا آخر أو وسّع عوامل تصفية الدور والمستوى الحالية.",
+  "uiTryAdjustingYourSearchOrFiltersToExploreMoreScholarships": "حاول تعديل بحثك أو الفلاتر لاستكشاف المزيد من المنح الدراسية.",
+  "uiTryAdjustingYourSearchOrFiltersToUncoverMoreMatches": "حاول تعديل بحثك أو الفلاتر للكشف عن المزيد من التطابقات.",
+  "uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevel": "جرّب بحثًا آخر أو وسّع فلاتر الدور والمستوى الحالية.",
   "uiTwoStepVerification": "التحقق بخطوتين",
   "uiType": "النوع",
-  "uiUiDesignIntern": "متدرب تصميم واجهة المستخدم",
+  "uiUiDesignIntern": "UI Design Intern",
   "uiUnavailable": "غير متاح",
   "uiUnderstandWhatInformationIsStoredAndHowItIsUsed": "افهم المعلومات المخزنة وكيفية استخدامها داخل المنصة.",
   "uiUniversity": "جامعة",
-  "uiUnlockTheCompanyWorkspaceAndMoveItIntoTheApproved": "افتح مساحة عمل الشركة وانقلها إلى الحالة المعتمدة.",
+  "uiUnlockTheCompanyWorkspaceAndMoveItIntoTheApproved": "فعّل مساحة عمل الشركة واجعل حالتها معتمدة.",
   "uiUpcomingDeadlinesAreHighlightedHereAsNewOpportunitiesGoLive": "يتم تسليط الضوء هنا على المواعيد النهائية القادمة مع ظهور الفرص الجديدة.",
   "uiUpdateCredentialsReviewPrivacyTouchpointsAndKeepAccessToYour": "حدّث بيانات الاعتماد، وراجع نقاط الخصوصية، وحافظ على أمان الوصول إلى ملفك الشخصي في FutureGate.",
   "uiUpdateProfile": "تحديث الملف الشخصي",
@@ -1182,7 +1182,7 @@
   "uiUploadDocument": "رفع المستند",
   "uiUploadPhoto": "رفع الصورة",
   "uiUploadedCv": "السيرة الذاتية المرفوعة",
-  "uiUploadedUploadedatlabel": "تم الرفع: {uploadedAtLabel}",
+  "uiUploadedUploadedatlabel": "رُفع في: {uploadedAtLabel}",
   "uiUrgentApplicationsThatNeedAttentionBeforeTheyExpire": "طلبات عاجلة تحتاج إلى انتباه قبل انتهاء صلاحيتها",
   "uiUseAStrongPasswordWithAMixOfLettersNumbers": "استخدم كلمة مرور قوية مكونة من مزيج من الأحرف والأرقام والرموز للحفاظ على حسابك محميًا.",
   "uiUseATopicDomainOrLanguageFilterToBringIn": "استخدم مرشح الموضوع أو المجال أو اللغة لإحضار الكتب المنسقة للمراجعة.",
@@ -1202,14 +1202,14 @@
   "uiUsersCouldNotBeLoaded": "لا يمكن تحميل المستخدمين",
   "uiUsersDistribution": "توزيع المستخدمين",
   "uiUsingGoogleSignIn": "هل تستخدم تسجيل الدخول إلى Google؟",
-  "uiUxDesignAtTech": "تصميم تجربة المستخدم في Tech",
+  "uiUxDesignAtTech": "UX Design at Tech",
   "uiUxResearchInternship": "التدريب على أبحاث تجربة المستخدم",
   "uiValue1": "{value1}%",
   "uiValue1Active": "{value1} نشطة",
   "uiValue1Admins": "{value1} مشرف",
-  "uiValue1Apps": "{value1} طلبات",
-  "uiValue1Blocked": "تم حظر {value1}",
-  "uiValue1CompanyReviews": "تقييمات شركة {value1}",
+  "uiValue1Apps": "{value1, plural, =0{لا توجد طلبات} =1{طلب واحد} =2{طلبان} few{{value1} طلبات} many{{value1} طلبًا} other{{value1} طلب}}",
+  "uiValue1Blocked": "{value1, plural, =0{لا يوجد محظورون} =1{محظور واحد} =2{محظوران} few{{value1} محظورين} many{{value1} محظورًا} other{{value1} محظور}}",
+  "uiValue1CompanyReviews": "{value1, plural, =0{لا توجد مراجعات شركات} =1{مراجعة شركة واحدة} =2{مراجعتان لشركتين} few{{value1} مراجعات شركات} many{{value1} مراجعة شركة} other{{value1} مراجعة شركة}}",
   "uiValue1CompanyWorkspace": "مساحة عمل الشركة {value1}",
   "uiValue1De35": "{value1}",
   "uiValue1Featured": "{value1} مميزة",
@@ -1251,7 +1251,7 @@
   "uiWeDLoveToChatAbout": "\"يسعدنا التحدث عن...\"",
   "uiWebsite": "موقع إلكتروني",
   "uiWebsiteSocial": "الموقع الإلكتروني ووسائل التواصل",
-  "uiWelcomeBack": "مرحبًا بك في FutureGate",
+  "uiWelcomeBack": "مرحبًا بعودتك إلى FutureGate",
   "uiWhenEnabledTheIdeaReadsLikeAPublicCommunityOpportunity": "عند تمكينها، تبدو الفكرة وكأنها فرصة مجتمعية عامة بدلاً من ملاحظة داخلية مخفية.",
   "uiWhoCanApply": "من يمكنه التقديم",
   "uiWorkSetup": "إعداد العمل",
@@ -1293,7 +1293,7 @@
   "uiValue": "{value1}%",
   "uiValueValue": "{value1} ({value2})",
   "uiByValue": "بواسطة {value1}",
-  "uiValueApps": "{value1} طلب",
+  "uiValueApps": "{value1, plural, =0{لا توجد طلبات} =1{طلب واحد} =2{طلبان} few{{value1} طلبات} many{{value1} طلبًا} other{{value1} طلب}}",
   "uiViewApplicationsValue": "عرض الطلبات ({value1})",
   "uiOpenActivityf327dd": "فتح النشاط",
   "uiDeleteValueFromFirestoreThisActionCannotBeUndone": "هل تريد حذف \"{value1}\" من Firestore؟ لا يمكن التراجع عن هذا الإجراء.",
@@ -1333,7 +1333,7 @@
   "uiVersionValue": "الإصدار {value1}",
   "uiIdeaTitlead8343": "عنوان الفكرة",
   "uiTargetAudience5cc631": "الجمهور المستهدف",
-  "uiSkillsNeeded7988fd": "المهارات اللازمة",
+  "uiSkillsNeeded7988fd": "المهارات المطلوبة",
   "uiValuea6a59e": "{value1}%",
   "uiEditProfilecd280a": "تعديل الملف الشخصي",
   "uiFullDescriptionb43e9e": "الوصف الكامل",
@@ -1372,7 +1372,7 @@
   "uiWeCouldnTOpenThisAttachment": "لم نتمكن من فتح هذا المرفق",
   "uiValueInterested27bcc0": "{value1} مهتم",
   "uiValuePendingIdeas": "{value1} أفكار بانتظار المراجعة",
-  "uiValuePendingApps": "{value1} طلبات بانتظار المراجعة",
+  "uiValuePendingApps": "{value1, plural, =0{لا توجد طلبات بانتظار المراجعة} =1{طلب واحد بانتظار المراجعة} =2{طلبان بانتظار المراجعة} few{{value1} طلبات بانتظار المراجعة} many{{value1} طلبًا بانتظار المراجعة} other{{value1} طلب بانتظار المراجعة}}",
   "uiScholarships": "المنح الدراسية",
   "uiSearchValue": "بحث {value1}",
   "uiPendingIdeasStillWaiting": "الأفكار بانتظار المراجعة لا تزال تنتظر {value1}",
@@ -1399,15 +1399,15 @@
   "uiDeleteThisMessageForEveryone": "احذف هذه الرسالة للجميع",
   "uiTheConversationHasBeenDeleted": "تم حذف المحادثة",
   "uiSayHelloToValue": "قل مرحباً لـ {value1}",
-  "uiFilters": "عوامل التصفية",
-  "uiShowingValueOfValueApplications": "عرض {value1} من أصل {value2} طلبًا",
+  "uiFilters": "الفلاتر",
+  "uiShowingValueOfValueApplications": "عرض {value1} من أصل {value2, plural, =0{لا طلبات} =1{طلب واحد} =2{طلبان} few{{value2} طلبات} many{{value2} طلبًا} other{{value2} طلب}}",
   "uiAppliedValue": "تم التقديم {value1}",
   "uiTheLinkedOpportunityIsNoLongerAvailable": "الفرصة المرتبطة لم تعد متاحة",
   "uiTheRequestedFileIsNotAValidPdf": "الملف المطلوب ليس ملف PDF صالحًا",
   "uiOpenCandidateProfileForValue": "فتح ملف المرشح {value1}",
   "uiMoveTheDeadlineIntoTheFutureBeforeReopeningThisOpportunity": "انقل الموعد النهائي إلى المستقبل قبل إعادة فتح هذه الفرصة",
   "uiValueOfValue": "{value1} من {value2}",
-  "uiValueApplicants": "{value1} متقدم",
+  "uiValueApplicants": "{value1, plural, =0{لا يوجد متقدمون} =1{متقدم واحد} =2{متقدمان} few{{value1} متقدمين} many{{value1} متقدمًا} other{{value1} متقدم}}",
   "uiText85": "نص",
   "uiNoEmailAppIsAvailableRightNow": "لا يوجد تطبيق بريد إلكتروني متاح الآن",
   "uiPasswordAddedSuccessfullyYouCanNowSignInWithGoogle": "تمت إضافة كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول بالبريد الإلكتروني وكلمة المرور أيضًا.",
@@ -1778,7 +1778,7 @@
   "uiConversationBackInInbox": "عادت هذه المحادثة إلى صندوق الوارد.",
   "uiWriteMessageBeforeAiTools": "اكتب رسالة قبل استخدام أدوات الذكاء الاصطناعي.",
   "uiWriteMessageBeforeTranslation": "اكتب رسالة قبل اختيار الترجمة.",
-  "uiUnreadAlertsCount": "{count} تنبيهات غير مقروءة",
+  "uiUnreadAlertsCount": "{count, plural, =0{لا توجد تنبيهات غير مقروءة} =1{تنبيه واحد غير مقروء} =2{تنبيهان غير مقروءين} few{{count} تنبيهات غير مقروءة} many{{count} تنبيهًا غير مقروء} other{{count} تنبيه غير مقروء}}",
   "uiOpenAlertCenter": "فتح مركز التنبيهات",
   "uiManageLearningResources": "إدارة موارد التعلّم",
   "uiManageApplication": "إدارة الطلب",
@@ -1829,7 +1829,7 @@
   "uiApplicationHistoryIsUnavailableRightNow": "سجل الطلبات غير متاح حاليًا.",
   "uiNoVisibleApplicationsAvailableForThisStudent": "لا توجد طلبات ظاهرة لهذا الطالب.",
   "uiOneVisibleApplication": "طلب ظاهر واحد",
-  "uiVisibleApplicationsCount": "{count} طلبات ظاهرة",
+  "uiVisibleApplicationsCount": "{count, plural, =0{لا توجد طلبات ظاهرة} =1{طلب ظاهر واحد} =2{طلبان ظاهران} few{{count} طلبات ظاهرة} many{{count} طلبًا ظاهرًا} other{{count} طلب ظاهر}}",
   "uiStudentApplications": "طلبات الطالب",
   "uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp": "افتح سجل طلبات الطالب باستخدام قاعدة الفرص الظاهرة نفسها المعروضة في التطبيق.",
   "uiVisibleSubmissions": "الطلبات الظاهرة",
@@ -1838,7 +1838,7 @@
   "uiApplicationHistoryUnavailable": "سجل الطلبات غير متاح",
   "uiNoVisibleApplications": "لا توجد طلبات ظاهرة",
   "uiLoadingVisibleOpportunityApplications": "جارٍ تحميل طلبات الفرص الظاهرة.",
-  "uiVisibleApplicationsAvailableForReviewCount": "{count} طلبات ظاهرة متاحة للمراجعة.",
+  "uiVisibleApplicationsAvailableForReviewCount": "{count, plural, =0{لا توجد طلبات ظاهرة متاحة للمراجعة.} =1{طلب ظاهر واحد متاح للمراجعة.} =2{طلبان ظاهران متاحان للمراجعة.} few{{count} طلبات ظاهرة متاحة للمراجعة.} many{{count} طلبًا ظاهرًا متاحًا للمراجعة.} other{{count} طلب ظاهر متاح للمراجعة.}}",
   "uiCouldNotLoadThisStudentsVisibleApplicationsRightNow": "تعذّر تحميل الطلبات الظاهرة لهذا الطالب حاليًا.",
   "uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow": "ليس لدى هذا الطالب طلبات مرتبطة بفرص مفتوحة وظاهرة حاليًا.",
   "uiAppliedDateUnavailable": "تاريخ التقديم غير متاح",
@@ -1848,7 +1848,7 @@
   "uiStudent": "طالب",
   "uiBlocked": "محظور",
   "uiUseATopicDomainOrLanguageFilterToBringInCuratedBooksForReview": "استخدم عامل تصفية حسب الموضوع أو المجال أو اللغة لجلب كتب منسقة للمراجعة.",
-  "uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain": "جرّب بحثًا أوسع أو غيّر عوامل تصفية اللغة والمجال قبل البحث مرة أخرى.",
+  "uiTryABroaderQueryOrChangeTheLanguageAndDomainFiltersBeforeSearchingAgain": "جرّب بحثًا أوسع أو غيّر فلاتر اللغة والمجال قبل البحث مرة أخرى.",
   "uiThisWorkspaceIsDedicatedToGoogleBooksImportsSoBookCurationStaysFocused": "مساحة العمل هذه مخصصة لاستيراد Google Books حتى يبقى تنظيم الكتب مركّزًا.",
   "uiUseATopicSearchToBringBackImportReadyVideosForReview": "استخدم بحثًا حسب الموضوع لجلب مقاطع فيديو جاهزة للاستيراد والمراجعة.",
   "uiTryABroaderQueryOrSwitchTheDomainAndLevelContextBeforeSearchingAgain": "جرّب بحثًا أوسع أو غيّر المجال والمستوى قبل البحث مرة أخرى.",
@@ -1856,7 +1856,7 @@
   "uiVideoLibrary": "مكتبة الفيديو",
   "uiLearningResources": "موارد التعلم",
   "uiPrimaryCv": "السيرة الذاتية الرئيسية",
-  "uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters": "جرّب بحثًا آخر أو وسّع عوامل تصفية الدور والمستوى الحالية.",
+  "uiTryAnotherSearchOrRelaxTheCurrentRoleAndLevelFilters": "جرّب بحثًا آخر أو وسّع فلاتر الدور والمستوى الحالية.",
   "uiReviewContactInfoAccountStatusAndRoleSpecificDetailsInOneCleanProfileView": "راجع معلومات التواصل وحالة الحساب والتفاصيل المرتبطة بالدور في عرض ملف واحد واضح.",
   "uiUpdateTheCompanyApprovalStateFromHereWithoutLeavingTheProfile": "حدّث حالة موافقة الشركة من هنا دون مغادرة الملف.",
   "languageDeviceDefault": "افتراضي الجهاز",
@@ -1927,7 +1927,7 @@
   "uiInternshipsSubtitle": "تدريبات عملية للطلاب",
   "uiSponsoredSubtitle": "برامج ممولة وشراكات داعمة",
   "uiTryDifferentFilter": "جرب فلتراً مختلفاً أو ابدأ فكرة جديدة.",
-  "uiCreateFirstIdea": "أنشئ فكرتك الأولى أو اضبط عوامل التصفية.",
+  "uiCreateFirstIdea": "أنشئ فكرتك الأولى أو اضبط الفلاتر.",
   "uiCvStudioSubtitle": "أنشئ سيرتك الذاتية وحمّلها وصدّرها.",
   "notifAdminTitle": "إشعارات المشرف",
   "notifCompanyTitle": "إشعارات الشركة",
@@ -2057,7 +2057,7 @@
   "scholarshipOverviewSubtitle": "نظرة عامة مركزة تجعل الفرصة سهلة التصفح.",
   "uiGoodMorning": "صباح الخير",
   "uiGoodAfternoon": "مساء الخير",
-  "uiGoodEvening": "مساء النور",
+  "uiGoodEvening": "مساء الخير",
   "uiInbox": "البريد الوارد",
   "uiUnread": "غير مقروء",
   "uiProjects": "المشاريع",
@@ -2110,10 +2110,12 @@
   "uiSavedTypeBadge": "{type} محفوظ",
   "uiGrowthNew": "جديد",
   "uiNoApplicationsWereSubmittedInTheLast7Days": "لم يتم تقديم أي طلبات خلال آخر 7 أيام.",
-  "uiPeakActivityReachedCountInASingleDay": "بلغت ذروة النشاط {count} طلبات في يوم واحد.",
+  "uiPeakActivityReachedCountInASingleDay": "بلغت ذروة النشاط {count, plural, =0{لا طلبات} =1{طلبًا واحدًا} =2{طلبين} few{{count} طلبات} many{{count} طلبًا} other{{count} طلب}} في يوم واحد.",
   "@uiPeakActivityReachedCountInASingleDay": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "uiNoReviewedApplicationsYet": "لا توجد طلبات تمت مراجعتها بعد.",
@@ -2125,10 +2127,12 @@
     }
   },
   "uiNoApplicationsAreWaitingForReviewRightNow": "لا توجد طلبات بانتظار المراجعة الآن.",
-  "uiPendingApplicationsNeedReview": "هناك {count} طلبات بانتظار المراجعة.",
+  "uiPendingApplicationsNeedReview": "{count, plural, =0{لا توجد طلبات بانتظار المراجعة.} =1{هناك طلب واحد بانتظار المراجعة.} =2{هناك طلبان بانتظار المراجعة.} few{هناك {count} طلبات بانتظار المراجعة.} many{هناك {count} طلبًا بانتظار المراجعة.} other{هناك {count} طلب بانتظار المراجعة.}}",
   "@uiPendingApplicationsNeedReview": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "uiNoOpenPostsExpireWithinTwoDays": "لا توجد فرص مفتوحة تنتهي خلال يومين.",
@@ -2156,11 +2160,15 @@
   },
   "uiFocusedReviewMode": "وضع المراجعة المركّز",
   "uiReviewAndRespondToCandidates": "راجع المرشحين ورد عليهم",
-  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "هناك {count} طلبات بانتظار المراجعة عبر {opportunities} فرص.",
+  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "هناك {count, plural, =1{طلب واحد} =2{طلبان} few{{count} طلبات} many{{count} طلبًا} other{{count} طلب}} بانتظار المراجعة عبر {opportunities, plural, =1{فرصة واحدة} =2{فرصتين} few{{opportunities} فرص} many{{opportunities} فرصة} other{{opportunities} فرصة}}.",
   "@uiPendingApplicationsAcrossOpportunitiesNeedReview": {
     "placeholders": {
-      "count": {},
-      "opportunities": {}
+      "count": {
+        "type": "num"
+      },
+      "opportunities": {
+        "type": "num"
+      }
     }
   },
   "uiShowPending": "عرض الطلبات بانتظار المراجعة",
@@ -2179,7 +2187,7 @@
   "uiThisApplicationIsNoLongerAvailable": "هذا الطلب لم يعد متاحًا.",
   "uiNoApplicationsMatchThisView": "لا توجد طلبات تطابق هذا العرض.",
   "uiTheApplicationYouOpenedIsNoLongerAvailableItMayHaveBeenRemovedOrMayNoLongerBelongToThisCompany": "الطلب الذي فتحته لم يعد متاحًا. ربما تمت إزالته أو لم يعد تابعًا لهذه الشركة.",
-  "uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates": "جرّب مسح عوامل التصفية أو توسيع البحث لرؤية المزيد من المرشحين.",
+  "uiTryClearingTheFiltersOrBroadeningTheSearchToSeeMoreCandidates": "جرّب مسح الفلاتر أو توسيع البحث لرؤية المزيد من المرشحين.",
   "uiCandidateApplicationsAreListedHereWithQuickReviewActionsAndCvAccess": "تظهر هنا طلبات المرشحين مع إجراءات مراجعة سريعة وإمكانية الوصول إلى السيرة الذاتية.",
   "uiReviewTheCandidateBeforeMakingADecision": "راجع المرشح قبل اتخاذ القرار.",
   "uiKeepTheCandidateContextCloseAtHand": "اجعل سياق المرشح في متناولك.",
@@ -2188,7 +2196,7 @@
   "uiCandidateRejected": "تم رفض المرشح",
   "uiApplicationWithdrawn": "تم سحب الطلب",
   "uiReadyForDecision": "جاهز لاتخاذ القرار",
-  "uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps": "تمت الموافقة على هذا الطلب. استخدم الرسائل أو مراجعة السيرة الذاتية للخطوات التالية.",
+  "uiThisApplicationIsApprovedUseMessageOrCvReviewForNextSteps": "تمت الموافقة على هذا الطلب. تابع الخطوات التالية عبر الرسائل أو عبر مراجعة السيرة الذاتية.",
   "uiThisApplicationIsRejectedTheProfileAndCvRemainAvailableForReference": "تم رفض هذا الطلب. يظل الملف الشخصي والسيرة الذاتية متاحين للرجوع إليهما.",
   "uiThisApplicationHasBeenWithdrawnByTheCandidate": "قام المرشح بسحب هذا الطلب.",
   "uiApproveTheCandidateToMoveThemForwardOrRejectIfTheFitIsNotRight": "وافق على المرشح لنقله إلى المرحلة التالية، أو ارفضه إذا لم يكن مناسبًا.",
@@ -2340,7 +2348,7 @@
   "uiDaysAgoShort": "قبل {count} ي",
   "uiAppsPerOpportunity": "{rate} طلب لكل فرصة",
   "uiCvCompletionRateValue": "{percent}% ({totalCvs} من {students} طالب)",
-  "uiPendingApprovedIdeasValue": "{pending} بانتظار المراجعة و{approved} مقبولة",
+  "uiPendingApprovedIdeasValue": "{pending, plural, =0{لا شيء بانتظار المراجعة} =1{فكرة واحدة بانتظار المراجعة} =2{فكرتان بانتظار المراجعة} few{{pending} أفكار بانتظار المراجعة} many{{pending} فكرة بانتظار المراجعة} other{{pending} فكرة بانتظار المراجعة}} و{approved, plural, =0{لا شيء مقبول} =1{فكرة واحدة مقبولة} =2{فكرتان مقبولتان} few{{approved} أفكار مقبولة} many{{approved} فكرة مقبولة} other{{approved} فكرة مقبولة}}",
   "dashSectionRecommendedSubtitle": "مختارة بناءً على ملفك الشخصي وتوقيتك وزخمك.",
   "dashSectionQuickAccessSubtitle": "أسرع طريق للعودة إلى الوظائف والتمويل والأدوات والمحفوظات.",
   "dashSectionLatestActivitySubtitle": "طلباتك الأخيرة والمحفوظات وتحديثات السيرة الذاتية.",
@@ -2368,7 +2376,7 @@
   "discoverNoResultsHint": "حاول تعديل بحثك أو الفلاتر لاكتشاف مزيد من النتائج.",
   "discoverTrendingSubtitle": "اختيارات حديثة ومميزة وعالية الجودة من البيانات المباشرة",
   "discoverTrendingEmptyHint": "تُبرز التوصيات الجديدة كلما أُضيفت قوائم حديثة.",
-  "discoverLatestSubtitle": "{count, plural, zero{أحدث الوظائف والتدريبات والمسارات المدعومة} one{أحدث فرصة واحدة من الوظائف والتدريبات والمسارات المدعومة} two{أحدث فرصتين من الوظائف والتدريبات والمسارات المدعومة} few{أحدث {count} فرص من الوظائف والتدريبات والمسارات المدعومة} many{أحدث {count} فرصة من الوظائف والتدريبات والمسارات المدعومة} other{أحدث {count} فرصة من الوظائف والتدريبات والمسارات المدعومة}}",
+  "discoverLatestSubtitle": "{count, plural, zero{أحدث الوظائف والتدريبات والمسارات الممولة} one{أحدث فرصة واحدة من الوظائف والتدريبات والمسارات الممولة} two{أحدث فرصتين من الوظائف والتدريبات والمسارات الممولة} few{أحدث {count} فرص من الوظائف والتدريبات والمسارات الممولة} many{أحدث {count} فرصة من الوظائف والتدريبات والمسارات الممولة} other{أحدث {count} فرصة من الوظائف والتدريبات والمسارات الممولة}}",
   "@dashDaysLeft": {
     "placeholders": {
       "count": {
@@ -3164,7 +3172,7 @@
   "studentNewBadge": "جديد",
   "studentUrgentBadge": "عاجل",
   "studentStudentPlacement": "فرصة تدريبية للطلاب",
-  "studentPartnerBackedProgram": "برنامج مدعوم من شريك",
+  "studentPartnerBackedProgram": "برنامج ممول من شريك",
   "studentCareerOpportunity": "فرصة مهنية",
   "studentStrongOpportunitySubtitle": "فرصة قوية تستحق الاطلاع عليها عن قرب.",
   "studentSaveFailed": "تعذّر الحفظ",
@@ -3174,7 +3182,7 @@
   "studentEditExperience": "تعديل الخبرة",
   "studentAddExperienceTitle": "إضافة خبرة",
   "studentDateRangeHint": "مثال: يناير 2023 - حتى الآن",
-  "studentTypeAndPressEnter": "اكتب ثم اضغط Enter",
+  "studentTypeAndPressEnter": "اكتب ثم اضغط إدخال",
   "studentSavingChanges": "جارٍ حفظ التغييرات...",
   "studentChangesSaveAutomatically": "يتم حفظ التغييرات تلقائيًا",
   "studentDownloadCvPdf": "تنزيل CV بصيغة PDF",
@@ -3224,13 +3232,13 @@
   "studentBioProfileHint": "نبذة قصيرة تجعل الملف أكثر شخصية ووضوحًا وموثوقية.",
   "studentFieldOfStudyProfileHint": "يساعد مجال دراستك على جعل الفرص أكثر صلة بك.",
   "studentAcademicLevelProfileHint": "يساعد مستواك الأكاديمي جهات التوظيف والبرامج على فهم مرحلتك الحالية.",
-  "studentFullNameProfileHint": "يجعل اسمك الملف مكتملًا وسهل التعرّف عليه.",
+  "studentFullNameProfileHint": "يساعد اسمك في جعل الملف مكتملًا وسهل التعرّف عليه.",
   "studentPhoneProfileHint": "يضيف رقم الهاتف قناة تواصل موثوقة أخرى.",
   "studentProfileKeepRefining": "واصل تحسين العناصر الأساسية ليبدو الملف واضحًا من النظرة الأولى.",
   "studentEverythingImportantFilled": "تم إدخال كل العناصر المهمة",
   "studentInProgress": "قيد الإنجاز",
   "studentStrongPlace": "أنت في وضع قوي",
-  "studentBestNextUpdate": "أفضل تحديث تالٍ: {label}",
+  "studentBestNextUpdate": "التحديث الأنسب الآن: {label}",
   "@studentBestNextUpdate": {
     "placeholders": {
       "label": {}
@@ -3317,8 +3325,8 @@
   "studentWaitCoverUpload": "يرجى انتظار انتهاء رفع صورة الغلاف.",
   "studentFileUnavailable": "الملف غير متاح.",
   "companyReviewNeedsAttentionTitle": "مراجعة الشركة بحاجة إلى انتباهك",
-  "companyReviewInProgressTitle": "مراجعة الشركة قيد التنفيذ",
-  "companyReviewRejectedSubtitle": "لم تتم الموافقة على حساب شركتك بعد. راجع ملف الشركة والسجل التجاري وحدّث ما يستوجب تصحيحه قبل إعادة المحاولة.",
+  "companyReviewInProgressTitle": "نراجع حساب شركتك الآن",
+  "companyReviewRejectedSubtitle": "لم تتم الموافقة على حساب شركتك بعد. راجع ملف الشركة والسجل التجاري، ثم حدّث المعلومات التي تحتاج إلى تصحيح قبل المحاولة مجددًا.",
   "companyReviewPendingSubtitle": "تم إنشاء حساب شركتك بنجاح. لا يزال يتعين على المسؤول مراجعة سجلك التجاري قبل تفعيل مساحة العمل الخاصة بك.",
   "companyReviewRejectedHelperTitle": "ما الذي ينبغي تصحيحه قبل المراجعة التالية",
   "companyReviewPendingHelperTitle": "ما الذي سيحدث لاحقًا",
@@ -3333,16 +3341,20 @@
   "companyReviewStatRegisterMissing": "مفقود",
   "companyReviewUpdateProfileButton": "تحديث ملف الشركة",
   "companyReviewOpenProfileButton": "فتح ملف الشركة",
-  "opportunityCountdownHoursLeft": "تبقّت {hours} س",
+  "opportunityCountdownHoursLeft": "{hours, plural, =1{ساعة متبقية} =2{ساعتان} few{{hours} ساعات} many{{hours} ساعة} other{{hours} ساعة}}",
   "@opportunityCountdownHoursLeft": {
     "placeholders": {
-      "hours": {}
+      "hours": {
+        "type": "num"
+      }
     }
   },
-  "opportunityCountdownDaysLeft": "تبقّت {days} ي",
+  "opportunityCountdownDaysLeft": "{days, plural, =1{يوم متبقي} =2{يومان} few{{days} أيام} many{{days} يومًا} other{{days} يوم}}",
   "@opportunityCountdownDaysLeft": {
     "placeholders": {
-      "days": {}
+      "days": {
+        "type": "num"
+      }
     }
   },
   "opportunityFreshnessRecent": "حديث",
@@ -3360,7 +3372,7 @@
   "opportunityNoStudentsYetTitle": "لا يوجد طلاب بعد",
   "opportunityNoStudentsYetSubtitle": "سيظهر هنا الطلاب الذين يتقدّمون لهذه الفرصة.",
   "opportunityNoMatchesFoundTitle": "لا توجد نتائج مطابقة",
-  "opportunityNoMatchesFoundSubtitle": "حاول إزالة عوامل التصفية أو تعديل عبارات البحث.",
+  "opportunityNoMatchesFoundSubtitle": "حاول إزالة الفلاتر أو تعديل عبارات البحث.",
   "opportunityPublishFirstRolePrompt": "انشر أول وظيفة لديك لتبدأ عملية التوظيف.",
   "opportunityActionReopen": "إعادة فتح",
   "companyProfileBrandStoryFallback": "اصنع انطباعًا أوليًا قويًا من خلال قصة موجزة عن الشركة، وتفاصيل تواصل واضحة، وهوية بصرية متقنة.",
@@ -3689,11 +3701,11 @@
   "@adminOpportunityDescriptionHelper": {
     "description": "adminOpportunityDescriptionHelper"
   },
-  "adminOpportunityRequirementHintRule": "اكتب شرط أهلية واحدًا ثم اضغط Enter",
+  "adminOpportunityRequirementHintRule": "اكتب شرط أهلية واحدًا ثم اضغط إدخال",
   "@adminOpportunityRequirementHintRule": {
     "description": "adminOpportunityRequirementHintRule"
   },
-  "adminOpportunityRequirementHintItem": "اكتب متطلبًا واحدًا ثم اضغط Enter",
+  "adminOpportunityRequirementHintItem": "اكتب متطلبًا واحدًا ثم اضغط إدخال",
   "@adminOpportunityRequirementHintItem": {
     "description": "adminOpportunityRequirementHintItem"
   },
@@ -3961,7 +3973,7 @@
   "@adminScholarshipEligibilityTitle": {
     "description": "adminScholarshipEligibilityTitle"
   },
-  "adminScholarshipEligibilityHint": "اكتب متطلبًا واحدًا ثم اضغط Enter",
+  "adminScholarshipEligibilityHint": "اكتب متطلبًا واحدًا ثم اضغط إدخال",
   "@adminScholarshipEligibilityHint": {
     "description": "adminScholarshipEligibilityHint"
   },
@@ -5022,7 +5034,7 @@
       }
     }
   },
-  "libraryPillVideosCount": "{count, plural, =0{لا توجد مقاطع فيديو} =1{مقطع فيديو واحد} =2{مقطعا فيديو} few{{count} مقاطع فيديو} many{{count} مقطع فيديو} other{{count} مقطع فيديو}}",
+  "libraryPillVideosCount": "{count, plural, =0{لا توجد مقاطع فيديو} =1{مقطع فيديو واحد} =2{مقطعَا فيديو} few{{count} مقاطع فيديو} many{{count} مقطع فيديو} other{{count} مقطع فيديو}}",
   "@libraryPillVideosCount": {
     "description": "libraryPillVideosCount",
     "placeholders": {
@@ -5469,8 +5481,8 @@
   "adminChartLegendStudents": "الطلاب",
   "adminChartLegendCompanies": "الشركات",
   "adminChartLegendAdmins": "المشرفون",
-  "adminChartMonthlyRegistrations": "التسجيلات الشهرية" ,
-  "uiNextLabel" : "التالي" ,
+  "adminChartMonthlyRegistrations": "التسجيلات الشهرية",
+  "uiNextLabel": "التالي",
   "@uiNextLabel": {
     "description": "uiNextLabel"
   },
@@ -5502,7 +5514,7 @@
   "@uiJumpStraightIntoTheQueueThatNeedsReview": {
     "description": "uiJumpStraightIntoTheQueueThatNeedsReview"
   },
-  "uiThisApplicationIsReadOnlyForYourAdminAccount": "هذا الطلب للقراءة فقط بالنسبة لحسابك كمسؤول.",
+  "uiThisApplicationIsReadOnlyForYourAdminAccount": "يمكنك عرض هذا الطلب فقط من حسابك كمسؤول.",
   "@uiThisApplicationIsReadOnlyForYourAdminAccount": {
     "description": "uiThisApplicationIsReadOnlyForYourAdminAccount"
   },
@@ -5541,5 +5553,153 @@
   "uiOnboardingFutureDescription": "أنشئ مساحتك على FutureGate للتقديم بشكل أسرع، وتتبع الردود، وتنظيم التدريبات والوظائف والمنح الدراسية.",
   "@uiOnboardingFutureDescription": {
     "description": "uiOnboardingFutureDescription"
-  }
+  },
+  "usersPillUsersCount": "{count, plural, =0{لا يوجد مستخدمون} =1{مستخدم واحد} =2{مستخدمان} few{{count} مستخدمين} many{{count} مستخدمًا} other{{count} مستخدم}}",
+  "@usersPillUsersCount": {
+    "description": "usersPillUsersCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillActiveCount": "{count, plural, =0{لا يوجد نشطون} =1{نشط واحد} =2{نشطان} few{{count} نشطين} many{{count} نشطًا} other{{count} نشط}}",
+  "@usersPillActiveCount": {
+    "description": "usersPillActiveCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillBlockedCount": "{count, plural, =0{لا يوجد محظورون} =1{محظور واحد} =2{محظوران} few{{count} محظورين} many{{count} محظورًا} other{{count} محظور}}",
+  "@usersPillBlockedCount": {
+    "description": "usersPillBlockedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillAdminsCount": "{count, plural, =0{لا يوجد مسؤولون} =1{مسؤول واحد} =2{مسؤولان} few{{count} مسؤولين} many{{count} مسؤولًا} other{{count} مسؤول}}",
+  "@usersPillAdminsCount": {
+    "description": "usersPillAdminsCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillCompanyReviewCount": "{count, plural, =0{لا توجد شركات بانتظار المراجعة} =1{شركة واحدة بانتظار المراجعة} =2{شركتان بانتظار المراجعة} few{{count} شركات بانتظار المراجعة} many{{count} شركة بانتظار المراجعة} other{{count} شركة بانتظار المراجعة}}",
+  "@usersPillCompanyReviewCount": {
+    "description": "usersPillCompanyReviewCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillApplicationsCount": "{count, plural, =0{لا توجد طلبات} =1{طلب واحد} =2{طلبان} few{{count} طلبات} many{{count} طلبًا} other{{count} طلب}}",
+  "@contentPillApplicationsCount": {
+    "description": "contentPillApplicationsCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusPendingCount": "{count, plural, =0{لا شيء بانتظار المراجعة} =1{طلب واحد بانتظار المراجعة} =2{طلبان بانتظار المراجعة} few{{count} بانتظار المراجعة} many{{count} بانتظار المراجعة} other{{count} بانتظار المراجعة}}",
+  "@contentPillStatusPendingCount": {
+    "description": "contentPillStatusPendingCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusApprovedCount": "{count, plural, =0{لا شيء مقبول} =1{طلب واحد مقبول} =2{طلبان مقبولان} few{{count} مقبولة} many{{count} مقبولًا} other{{count} مقبول}}",
+  "@contentPillStatusApprovedCount": {
+    "description": "contentPillStatusApprovedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusRejectedCount": "{count, plural, =0{لا شيء مرفوض} =1{طلب واحد مرفوض} =2{طلبان مرفوضان} few{{count} مرفوضة} many{{count} مرفوضًا} other{{count} مرفوض}}",
+  "@contentPillStatusRejectedCount": {
+    "description": "contentPillStatusRejectedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "dashboardOpportunitiesCount": "{count, plural, =0{لا توجد فرص} =1{فرصة واحدة} =2{فرصتان} few{{count} فرص} many{{count} فرصة} other{{count} فرصة}}",
+  "@dashboardOpportunitiesCount": {
+    "description": "dashboardOpportunitiesCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "premiumBadgeLabel": "بريميوم",
+  "premiumPassTitle": "بطاقة الطالب المميز",
+  "premiumPassSubtitle": "وصول مبكر · أولوية التقديم · حفظ غير محدود",
+  "premiumPassDescription": "استمتع بميزات متميزة لفصل دراسي كامل وكن في المقدمة دائمًا.",
+  "premiumPassPriceLabel": "بطاقة فصلية",
+  "premiumPassUpgradeButton": "الترقية إلى بريميوم",
+  "premiumPassActiveTitle": "الاشتراك المميز فعّال",
+  "premiumPassExpiresLabel": "فعّال حتى",
+  "premiumPassExpiredTitle": "انتهى الاشتراك المميز",
+  "premiumPassRenewButton": "تجديد البطاقة",
+  "premiumPassPendingTitle": "الدفع قيد المعالجة",
+  "premiumPassPendingMessage": "جارٍ التحقق من دفعتك. تحقق مجددًا بعد لحظات.",
+  "premiumFeatureEarlyAccess": "وصول مبكر للفرص الجديدة",
+  "premiumFeaturePriority": "أولوية الظهور في قوائم المتقدمين",
+  "premiumFeatureSaved": "حفظ فرص غير محدود",
+  "premiumFeatureBadge": "شارة مميزة على ملفك الشخصي",
+  "premiumAlreadyActiveMessage": "لديك بالفعل اشتراك مميز فعّال.",
+  "premiumStatusSection": "حالة الاشتراك",
+  "earlyAccessLabel": "وصول مبكر",
+  "earlyAccessPendingStatus": "قيد المراجعة",
+  "earlyAccessApprovedStatus": "الوصول المبكر فعّال",
+  "earlyAccessRejectedStatus": "تم رفض الطلب",
+  "earlyAccessExpiredStatus": "انتهى الوصول المبكر",
+  "earlyAccessNoneStatus": "منشور عادي",
+  "earlyAccessRequestButton": "طلب وصول مبكر",
+  "earlyAccessApproveButton": "موافقة",
+  "earlyAccessRejectButton": "رفض",
+  "earlyAccessRemainingLabel": "يُفتح للجميع خلال",
+  "earlyAccessLockedMessage": "الطلاب المميزون يمكنهم التقديم الآن. يُفتح للجميع قريبًا.",
+  "earlyAccessLockedModalTitle": "فرصة بوصول مبكر",
+  "earlyAccessLockedModalBody": "حاملو بطاقة بريميوم يمكنهم التقديم الآن. سيُفتح التقديم للجميع بعد انتهاء فترة الوصول المبكر.",
+  "earlyAccessRejectReasonHint": "سبب الرفض (اختياري)",
+  "earlyAccessDelayLabel": "مدة التأخير قبل النشر العام (بالساعات)",
+  "earlyAccessOpensSoonLabel": "يُفتح قريبًا",
+  "paymentPendingTitle": "جارٍ معالجة الدفع",
+  "paymentPendingMessage": "نتحقق من دفعتك، هذا لن يستغرق سوى لحظات.",
+  "paymentSuccessTitle": "تم تفعيل بريميوم!",
+  "paymentSuccessMessage": "بطاقتك المميزة فعّالة الآن. استمتع بالوصول المبكر والأولوية.",
+  "paymentFailedTitle": "فشل الدفع",
+  "paymentFailedMessage": "تعذّر إتمام الدفع. يرجى المحاولة مجددًا.",
+  "paymentCancelledMessage": "تم إلغاء الدفع. يمكنك المحاولة مجددًا في أي وقت.",
+  "paymentCheckStatusButton": "التحقق من الحالة",
+  "paymentRetryButton": "حاول مجددًا",
+  "paymentOpeningCheckoutMessage": "جارٍ فتح صفحة الدفع الآمنة…",
+  "paymentTestModeNotice": "وضع الاختبار — لن يتم خصم أي مبلغ حقيقي.",
+  "savedLimitReachedTitle": "وصلت إلى حد الحفظ",
+  "savedLimitReachedMessage": "الحسابات المجانية محدودة بعدد الفرص المحفوظة.",
+  "savedLimitUpgradeMessage": "قم بالترقية إلى بريميوم لحفظ فرص غير محدودة.",
+  "adminEarlyAccessTitle": "إدارة الوصول المبكر",
+  "adminEarlyAccessPendingTab": "قيد الانتظار",
+  "adminEarlyAccessAllTab": "الكل",
+  "adminEarlyAccessApprovedTab": "معتمدة",
+  "adminEarlyAccessStatsTitle": "إحصائيات الوصول المبكر",
+  "adminEarlyAccessCompanyLabel": "الشركة",
+  "adminEarlyAccessPostLabel": "المنشور",
+  "adminEarlyAccessMakeNormalButton": "إزالة الوصول المبكر",
+  "priorityApplicationLabel": "أولوية",
+  "priorityApplicationTooltip": "هذا المتقدم كان لديه اشتراك مميز فعّال عند تقديم طلبه."
 }

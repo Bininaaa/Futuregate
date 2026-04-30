@@ -25,6 +25,7 @@ import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
 import '../../widgets/shared/reviewer_cv_widgets.dart';
+import '../../widgets/priority_application_badge.dart';
 import '../chat/user_profile_preview_screen.dart';
 import '../notifications_screen.dart';
 import 'chat_screen.dart';
@@ -1126,6 +1127,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             )
             .toList()
           ..sort((first, second) {
+            // Priority applications first, then by most recent.
+            final firstPriority = first.application.priorityApplication ? 0 : 1;
+            final secondPriority = second.application.priorityApplication ? 0 : 1;
+            if (firstPriority != secondPriority) {
+              return firstPriority.compareTo(secondPriority);
+            }
             final firstTime =
                 first.application.appliedAt?.millisecondsSinceEpoch ?? 0;
             final secondTime =
@@ -1959,6 +1966,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final relativeAppliedLabel = _relativeDateLabel(application.appliedAt);
     final isFresh = _isFreshApplication(application.appliedAt);
     final titleLabel = _opportunityTitleLabel(opportunity);
+    final isPriority = application.priorityApplication;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -1969,9 +1977,15 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           onTap: () => _showApplicationDetailsSheet(item, provider),
           child: Container(
             decoration: BoxDecoration(
-              color: _ApplicationsPalette.surface,
+              color: isPriority
+                  ? AppColors.current.accentSoft
+                  : _ApplicationsPalette.surface,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: _ApplicationsPalette.border),
+              border: Border.all(
+                color: isPriority
+                    ? AppColors.current.accent.withValues(alpha: 0.4)
+                    : _ApplicationsPalette.border,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.03),
@@ -2027,6 +2041,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                         ),
                                       ),
                                     ),
+                                    if (application.priorityApplication) ...[
+                                      const SizedBox(width: 6),
+                                      const PriorityApplicationBadge(compact: true),
+                                    ],
                                     if (isFresh) ...[
                                       const SizedBox(width: 6),
                                       Container(

@@ -2138,8 +2138,8 @@ abstract class AppLocalizations {
   /// No description provided for @uiApplicantcountApplicants.
   ///
   /// In en, this message translates to:
-  /// **'{applicantCount} applicants'**
-  String uiApplicantcountApplicants(Object applicantCount);
+  /// **'{applicantCount, plural, =0{No applicants} =1{1 applicant} other{{applicantCount} applicants}}'**
+  String uiApplicantcountApplicants(num applicantCount);
 
   /// No description provided for @uiApplicants.
   ///
@@ -5071,8 +5071,8 @@ abstract class AppLocalizations {
   /// No description provided for @uiPendingapplicationsPendingApps.
   ///
   /// In en, this message translates to:
-  /// **'{pendingApplications} pending apps'**
-  String uiPendingapplicationsPendingApps(Object pendingApplications);
+  /// **'{pendingApplications, plural, =0{No pending apps} =1{1 pending app} other{{pendingApplications} pending apps}}'**
+  String uiPendingapplicationsPendingApps(num pendingApplications);
 
   /// No description provided for @uiPendingideasPendingIdeas.
   ///
@@ -6370,10 +6370,10 @@ abstract class AppLocalizations {
   /// No description provided for @uiShowingResultscountOfTotalapplicationsApplications.
   ///
   /// In en, this message translates to:
-  /// **'Showing {resultsCount} of {totalApplications} applications'**
+  /// **'Showing {resultsCount} of {totalApplications, plural, =0{0 applications} =1{1 application} other{{totalApplications} applications}}'**
   String uiShowingResultscountOfTotalapplicationsApplications(
-    Object resultsCount,
-    Object totalApplications,
+    num resultsCount,
+    num totalApplications,
   );
 
   /// No description provided for @uiShownOfTotal.
@@ -6808,7 +6808,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The {latestItemsLimit} newest roles, internships, and sponsored tracks'**
   String uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks(
-    Object latestItemsLimit,
+    num latestItemsLimit,
   );
 
   /// No description provided for @uiTheProfileAlreadyLooksPolishedAQuickRefreshFromTime.
@@ -7362,19 +7362,19 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{value1} Apps'**
-  String uiValue1Apps(Object value1);
+  String uiValue1Apps(num value1);
 
   /// No description provided for @uiValue1Blocked.
   ///
   /// In en, this message translates to:
   /// **'{value1} blocked'**
-  String uiValue1Blocked(Object value1);
+  String uiValue1Blocked(num value1);
 
   /// No description provided for @uiValue1CompanyReviews.
   ///
   /// In en, this message translates to:
   /// **'{value1} company reviews'**
-  String uiValue1CompanyReviews(Object value1);
+  String uiValue1CompanyReviews(num value1);
 
   /// No description provided for @uiValue1CompanyWorkspace.
   ///
@@ -7937,8 +7937,8 @@ abstract class AppLocalizations {
   /// No description provided for @uiValuePendingApps.
   ///
   /// In en, this message translates to:
-  /// **'{value1} Pending Apps'**
-  String uiValuePendingApps(Object value1);
+  /// **'{value1, plural, =0{No pending apps} =1{1 pending app} other{{value1} pending apps}}'**
+  String uiValuePendingApps(num value1);
 
   /// No description provided for @uiValueOpportunities.
   ///
@@ -8009,8 +8009,8 @@ abstract class AppLocalizations {
   /// No description provided for @uiValueApps.
   ///
   /// In en, this message translates to:
-  /// **'{value1} Apps'**
-  String uiValueApps(Object value1);
+  /// **'{value1, plural, =0{0 apps} =1{1 app} other{{value1} apps}}'**
+  String uiValueApps(num value1);
 
   /// No description provided for @uiUntitledScholarship.
   ///
@@ -8285,8 +8285,8 @@ abstract class AppLocalizations {
   /// No description provided for @uiShowingValueOfValueApplications.
   ///
   /// In en, this message translates to:
-  /// **'Showing {value1} Of {value2} Applications'**
-  String uiShowingValueOfValueApplications(Object value1, Object value2);
+  /// **'Showing {value1} of {value2, plural, =0{0 applications} =1{1 application} other{{value2} applications}}'**
+  String uiShowingValueOfValueApplications(num value1, num value2);
 
   /// No description provided for @uiNew66aabd.
   ///
@@ -8387,8 +8387,8 @@ abstract class AppLocalizations {
   /// No description provided for @uiValueApplicants.
   ///
   /// In en, this message translates to:
-  /// **'{value1} Applicants'**
-  String uiValueApplicants(Object value1);
+  /// **'{value1, plural, =0{0 applicants} =1{1 applicant} other{{value1} applicants}}'**
+  String uiValueApplicants(num value1);
 
   /// No description provided for @uiDownloada479c9.
   ///
@@ -10790,8 +10790,8 @@ abstract class AppLocalizations {
   /// Subtitle showing the number of unread alerts
   ///
   /// In en, this message translates to:
-  /// **'{count} unread alerts'**
-  String uiUnreadAlertsCount(Object count);
+  /// **'{count, plural, =0{0 unread alerts} =1{1 unread alert} other{{count} unread alerts}}'**
+  String uiUnreadAlertsCount(num count);
 
   /// Subtitle for the notifications quick access tile
   ///
@@ -11100,8 +11100,8 @@ abstract class AppLocalizations {
   /// Count of visible applications for a student.
   ///
   /// In en, this message translates to:
-  /// **'{count} visible applications'**
-  String uiVisibleApplicationsCount(Object count);
+  /// **'{count, plural, =0{No visible applications} =1{1 visible application} other{{count} visible applications}}'**
+  String uiVisibleApplicationsCount(num count);
 
   /// Admin localization label.
   ///
@@ -11156,8 +11156,8 @@ abstract class AppLocalizations {
   /// Count of visible applications available for review.
   ///
   /// In en, this message translates to:
-  /// **'{count} visible applications available for review.'**
-  String uiVisibleApplicationsAvailableForReviewCount(Object count);
+  /// **'{count, plural, =0{No visible applications available for review.} =1{1 visible application available for review.} other{{count} visible applications available for review.}}'**
+  String uiVisibleApplicationsAvailableForReviewCount(num count);
 
   /// Admin localization label.
   ///
@@ -12798,8 +12798,8 @@ abstract class AppLocalizations {
   /// No description provided for @uiPeakActivityReachedCountInASingleDay.
   ///
   /// In en, this message translates to:
-  /// **'Peak activity reached {count} applications in a single day.'**
-  String uiPeakActivityReachedCountInASingleDay(Object count);
+  /// **'Peak activity reached {count, plural, =0{0 applications} =1{1 application} other{{count} applications}} in a single day.'**
+  String uiPeakActivityReachedCountInASingleDay(num count);
 
   /// No description provided for @uiNoReviewedApplicationsYet.
   ///
@@ -12822,8 +12822,8 @@ abstract class AppLocalizations {
   /// No description provided for @uiPendingApplicationsNeedReview.
   ///
   /// In en, this message translates to:
-  /// **'{count} pending applications need review.'**
-  String uiPendingApplicationsNeedReview(Object count);
+  /// **'{count, plural, =0{No pending applications need review.} =1{1 pending application needs review.} other{{count} pending applications need review.}}'**
+  String uiPendingApplicationsNeedReview(num count);
 
   /// No description provided for @uiNoOpenPostsExpireWithinTwoDays.
   ///
@@ -12888,10 +12888,10 @@ abstract class AppLocalizations {
   /// No description provided for @uiPendingApplicationsAcrossOpportunitiesNeedReview.
   ///
   /// In en, this message translates to:
-  /// **'{count} pending applications across {opportunities} opportunities need review.'**
+  /// **'{count, plural, =1{1 pending application} other{{count} pending applications}} across {opportunities, plural, =1{1 opportunity} other{{opportunities} opportunities}} need review.'**
   String uiPendingApplicationsAcrossOpportunitiesNeedReview(
-    Object count,
-    Object opportunities,
+    num count,
+    num opportunities,
   );
 
   /// No description provided for @uiShowPending.
@@ -13966,8 +13966,8 @@ abstract class AppLocalizations {
   /// Dashboard pending and approved idea counts.
   ///
   /// In en, this message translates to:
-  /// **'{pending} pending and {approved} approved'**
-  String uiPendingApprovedIdeasValue(Object pending, Object approved);
+  /// **'{pending, plural, =1{1 pending} other{{pending} pending}} and {approved, plural, =1{1 approved} other{{approved} approved}}'**
+  String uiPendingApprovedIdeasValue(num pending, num approved);
 
   /// No description provided for @dashSectionRecommendedSubtitle.
   ///
@@ -16924,14 +16924,14 @@ abstract class AppLocalizations {
   /// No description provided for @opportunityCountdownHoursLeft.
   ///
   /// In en, this message translates to:
-  /// **'{hours}h left'**
-  String opportunityCountdownHoursLeft(Object hours);
+  /// **'{hours, plural, =1{1h left} other{{hours}h left}}'**
+  String opportunityCountdownHoursLeft(num hours);
 
   /// No description provided for @opportunityCountdownDaysLeft.
   ///
   /// In en, this message translates to:
-  /// **'{days}d left'**
-  String opportunityCountdownDaysLeft(Object days);
+  /// **'{days, plural, =1{1d left} other{{days}d left}}'**
+  String opportunityCountdownDaysLeft(num days);
 
   /// No description provided for @opportunityFreshnessRecent.
   ///
@@ -20094,6 +20094,414 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Build your FutureGate space to apply faster, track replies, and keep internships, jobs, and scholarships organized.'**
   String get uiOnboardingFutureDescription;
+
+  /// usersPillUsersCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 users} =1{1 user} other{{count} users}}'**
+  String usersPillUsersCount(num count);
+
+  /// usersPillActiveCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 active} =1{1 active} other{{count} active}}'**
+  String usersPillActiveCount(num count);
+
+  /// usersPillBlockedCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 blocked} =1{1 blocked} other{{count} blocked}}'**
+  String usersPillBlockedCount(num count);
+
+  /// usersPillAdminsCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 admins} =1{1 admin} other{{count} admins}}'**
+  String usersPillAdminsCount(num count);
+
+  /// usersPillCompanyReviewCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 company review} =1{1 company review} other{{count} company review}}'**
+  String usersPillCompanyReviewCount(num count);
+
+  /// contentPillApplicationsCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 applications} =1{1 application} other{{count} applications}}'**
+  String contentPillApplicationsCount(num count);
+
+  /// contentPillStatusPendingCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 pending} =1{1 pending} other{{count} pending}}'**
+  String contentPillStatusPendingCount(num count);
+
+  /// contentPillStatusApprovedCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 approved} =1{1 approved} other{{count} approved}}'**
+  String contentPillStatusApprovedCount(num count);
+
+  /// contentPillStatusRejectedCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 rejected} =1{1 rejected} other{{count} rejected}}'**
+  String contentPillStatusRejectedCount(num count);
+
+  /// dashboardOpportunitiesCount
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 opportunities} =1{1 opportunity} other{{count} opportunities}}'**
+  String dashboardOpportunitiesCount(num count);
+
+  /// No description provided for @premiumBadgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get premiumBadgeLabel;
+
+  /// No description provided for @premiumPassTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Pass'**
+  String get premiumPassTitle;
+
+  /// No description provided for @premiumPassSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early access · Priority · Unlimited saves'**
+  String get premiumPassSubtitle;
+
+  /// No description provided for @premiumPassDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock one full semester of premium features and get ahead of every opportunity.'**
+  String get premiumPassDescription;
+
+  /// No description provided for @premiumPassPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Semester Pass'**
+  String get premiumPassPriceLabel;
+
+  /// No description provided for @premiumPassUpgradeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Premium'**
+  String get premiumPassUpgradeButton;
+
+  /// No description provided for @premiumPassActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Active'**
+  String get premiumPassActiveTitle;
+
+  /// No description provided for @premiumPassExpiresLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until'**
+  String get premiumPassExpiresLabel;
+
+  /// No description provided for @premiumPassExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Expired'**
+  String get premiumPassExpiredTitle;
+
+  /// No description provided for @premiumPassRenewButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew Pass'**
+  String get premiumPassRenewButton;
+
+  /// No description provided for @premiumPassPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Pending'**
+  String get premiumPassPendingTitle;
+
+  /// No description provided for @premiumPassPendingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment is being processed. Check back shortly.'**
+  String get premiumPassPendingMessage;
+
+  /// No description provided for @premiumFeatureEarlyAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Early access to new opportunities'**
+  String get premiumFeatureEarlyAccess;
+
+  /// No description provided for @premiumFeaturePriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority placement in applicant lists'**
+  String get premiumFeaturePriority;
+
+  /// No description provided for @premiumFeatureSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited saved opportunities'**
+  String get premiumFeatureSaved;
+
+  /// No description provided for @premiumFeatureBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium badge on your profile'**
+  String get premiumFeatureBadge;
+
+  /// No description provided for @premiumAlreadyActiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an active Premium Pass.'**
+  String get premiumAlreadyActiveMessage;
+
+  /// No description provided for @premiumStatusSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Status'**
+  String get premiumStatusSection;
+
+  /// No description provided for @earlyAccessLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Access'**
+  String get earlyAccessLabel;
+
+  /// No description provided for @earlyAccessPendingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get earlyAccessPendingStatus;
+
+  /// No description provided for @earlyAccessApprovedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Access Active'**
+  String get earlyAccessApprovedStatus;
+
+  /// No description provided for @earlyAccessRejectedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Rejected'**
+  String get earlyAccessRejectedStatus;
+
+  /// No description provided for @earlyAccessExpiredStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Access Ended'**
+  String get earlyAccessExpiredStatus;
+
+  /// No description provided for @earlyAccessNoneStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get earlyAccessNoneStatus;
+
+  /// No description provided for @earlyAccessRequestButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Early Access'**
+  String get earlyAccessRequestButton;
+
+  /// No description provided for @earlyAccessApproveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get earlyAccessApproveButton;
+
+  /// No description provided for @earlyAccessRejectButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get earlyAccessRejectButton;
+
+  /// No description provided for @earlyAccessRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens to all in'**
+  String get earlyAccessRemainingLabel;
+
+  /// No description provided for @earlyAccessLockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium students can apply now. Opens to everyone soon.'**
+  String get earlyAccessLockedMessage;
+
+  /// No description provided for @earlyAccessLockedModalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Access Opportunity'**
+  String get earlyAccessLockedModalTitle;
+
+  /// No description provided for @earlyAccessLockedModalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Pass holders can apply right now. Free students can apply once the early access period ends.'**
+  String get earlyAccessLockedModalBody;
+
+  /// No description provided for @earlyAccessRejectReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for rejection (optional)'**
+  String get earlyAccessRejectReasonHint;
+
+  /// No description provided for @earlyAccessDelayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay before public (hours)'**
+  String get earlyAccessDelayLabel;
+
+  /// No description provided for @earlyAccessOpensSoonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens soon'**
+  String get earlyAccessOpensSoonLabel;
+
+  /// No description provided for @paymentPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Processing'**
+  String get paymentPendingTitle;
+
+  /// No description provided for @paymentPendingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re confirming your payment. This usually takes just a moment.'**
+  String get paymentPendingMessage;
+
+  /// No description provided for @paymentSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Activated!'**
+  String get paymentSuccessTitle;
+
+  /// No description provided for @paymentSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Premium Pass is now active. Enjoy early access and priority placement.'**
+  String get paymentSuccessMessage;
+
+  /// No description provided for @paymentFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Failed'**
+  String get paymentFailedTitle;
+
+  /// No description provided for @paymentFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment could not be completed. Please try again.'**
+  String get paymentFailedMessage;
+
+  /// No description provided for @paymentCancelledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment was cancelled. You can try again whenever you\'re ready.'**
+  String get paymentCancelledMessage;
+
+  /// No description provided for @paymentCheckStatusButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Status'**
+  String get paymentCheckStatusButton;
+
+  /// No description provided for @paymentRetryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get paymentRetryButton;
+
+  /// No description provided for @paymentOpeningCheckoutMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening secure payment…'**
+  String get paymentOpeningCheckoutMessage;
+
+  /// No description provided for @paymentTestModeNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Test mode — no real payment will be charged.'**
+  String get paymentTestModeNotice;
+
+  /// No description provided for @savedLimitReachedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Limit Reached'**
+  String get savedLimitReachedTitle;
+
+  /// No description provided for @savedLimitReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Free accounts can save a limited number of opportunities.'**
+  String get savedLimitReachedMessage;
+
+  /// No description provided for @savedLimitUpgradeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Premium Pass to save unlimited opportunities.'**
+  String get savedLimitUpgradeMessage;
+
+  /// No description provided for @adminEarlyAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Access Management'**
+  String get adminEarlyAccessTitle;
+
+  /// No description provided for @adminEarlyAccessPendingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get adminEarlyAccessPendingTab;
+
+  /// No description provided for @adminEarlyAccessAllTab.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get adminEarlyAccessAllTab;
+
+  /// No description provided for @adminEarlyAccessApprovedTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get adminEarlyAccessApprovedTab;
+
+  /// No description provided for @adminEarlyAccessStatsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Access Statistics'**
+  String get adminEarlyAccessStatsTitle;
+
+  /// No description provided for @adminEarlyAccessCompanyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get adminEarlyAccessCompanyLabel;
+
+  /// No description provided for @adminEarlyAccessPostLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get adminEarlyAccessPostLabel;
+
+  /// No description provided for @adminEarlyAccessMakeNormalButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Early Access'**
+  String get adminEarlyAccessMakeNormalButton;
+
+  /// No description provided for @priorityApplicationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get priorityApplicationLabel;
+
+  /// No description provided for @priorityApplicationTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'This applicant had an active Premium Pass when they applied.'**
+  String get priorityApplicationTooltip;
 }
 
 class _AppLocalizationsDelegate

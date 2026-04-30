@@ -1143,8 +1143,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String uiApplicantcountApplicants(Object applicantCount) {
-    return '$applicantCount candidats';
+  String uiApplicantcountApplicants(num applicantCount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      applicantCount,
+      locale: localeName,
+      other: '$applicantCount candidats',
+      one: '1 candidat',
+      zero: 'Aucun candidat',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2762,8 +2769,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String uiPendingapplicationsPendingApps(Object pendingApplications) {
-    return '$pendingApplications candidatures en attente';
+  String uiPendingapplicationsPendingApps(num pendingApplications) {
+    String _temp0 = intl.Intl.pluralLogic(
+      pendingApplications,
+      locale: localeName,
+      other: '$pendingApplications candidatures en attente',
+      one: '1 candidature en attente',
+      zero: 'aucune candidature en attente',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -3493,10 +3507,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiShowingResultscountOfTotalapplicationsApplications(
-    Object resultsCount,
-    Object totalApplications,
+    num resultsCount,
+    num totalApplications,
   ) {
-    return 'Affichage de $resultsCount sur $totalApplications candidatures';
+    String _temp0 = intl.Intl.pluralLogic(
+      totalApplications,
+      locale: localeName,
+      other: '$totalApplications candidatures',
+      one: '1 candidature',
+      zero: '0 candidature',
+    );
+    return 'Affichage de $resultsCount sur $_temp0';
   }
 
   @override
@@ -3732,7 +3753,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiTheLatestitemslimitNewestRolesInternshipsAndSponsoredTracks(
-    Object latestItemsLimit,
+    num latestItemsLimit,
   ) {
     return 'Les $latestItemsLimit nouveaux rôles, stages et pistes sponsorisées';
   }
@@ -4071,17 +4092,17 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String uiValue1Apps(Object value1) {
+  String uiValue1Apps(num value1) {
     return '$value1 candidatures';
   }
 
   @override
-  String uiValue1Blocked(Object value1) {
+  String uiValue1Blocked(num value1) {
     return '$value1 bloqué';
   }
 
   @override
-  String uiValue1CompanyReviews(Object value1) {
+  String uiValue1CompanyReviews(num value1) {
     return 'Avis sur la société $value1';
   }
 
@@ -4436,8 +4457,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String uiValuePendingApps(Object value1) {
-    return '$value1 candidatures en attente';
+  String uiValuePendingApps(num value1) {
+    String _temp0 = intl.Intl.pluralLogic(
+      value1,
+      locale: localeName,
+      other: '$value1 candidatures en attente',
+      one: '1 candidature en attente',
+      zero: 'aucune candidature en attente',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -4494,8 +4522,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String uiValueApps(Object value1) {
-    return '$value1 candidatures';
+  String uiValueApps(num value1) {
+    String _temp0 = intl.Intl.pluralLogic(
+      value1,
+      locale: localeName,
+      other: '$value1 candidatures',
+      one: '1 candidature',
+      zero: '0 candidature',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -4682,8 +4717,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiRolesdd8b65 => 'Rôles';
 
   @override
-  String uiShowingValueOfValueApplications(Object value1, Object value2) {
-    return 'Affichage de $value1 sur $value2 candidatures';
+  String uiShowingValueOfValueApplications(num value1, num value2) {
+    String _temp0 = intl.Intl.pluralLogic(
+      value2,
+      locale: localeName,
+      other: '$value2 candidatures',
+      one: '1 candidature',
+      zero: '0 candidature',
+    );
+    return 'Affichage de $value1 sur $_temp0';
   }
 
   @override
@@ -4760,8 +4802,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String uiValueApplicants(Object value1) {
-    return '$value1 candidats';
+  String uiValueApplicants(num value1) {
+    String _temp0 = intl.Intl.pluralLogic(
+      value1,
+      locale: localeName,
+      other: '$value1 candidats',
+      one: '1 candidat',
+      zero: '0 candidat',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -6212,8 +6261,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Rédigez un message avant de choisir une traduction.';
 
   @override
-  String uiUnreadAlertsCount(Object count) {
-    return '$count alertes non lues';
+  String uiUnreadAlertsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count alertes non lues',
+      one: '1 alerte non lue',
+      zero: '0 alerte non lue',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -6398,8 +6454,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiOneVisibleApplication => '1 candidature visible';
 
   @override
-  String uiVisibleApplicationsCount(Object count) {
-    return '$count candidatures visibles';
+  String uiVisibleApplicationsCount(num count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString candidatures visibles',
+      one: '1 candidature visible',
+      zero: 'Aucune candidature visible',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -6434,8 +6501,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Chargement des candidatures liées aux offres visibles.';
 
   @override
-  String uiVisibleApplicationsAvailableForReviewCount(Object count) {
-    return '$count candidature(s) visible(s) disponible(s) pour revue.';
+  String uiVisibleApplicationsAvailableForReviewCount(num count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString candidatures visibles disponibles pour revue.',
+      one: '1 candidature visible disponible pour revue.',
+      zero: 'Aucune candidature visible disponible pour revue.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7326,8 +7404,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune candidature n\'a été soumise au cours des 7 derniers jours.';
 
   @override
-  String uiPeakActivityReachedCountInASingleDay(Object count) {
-    return 'Le pic d\'activité a atteint $count candidatures en une seule journée.';
+  String uiPeakActivityReachedCountInASingleDay(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count candidatures',
+      one: '1 candidature',
+      zero: '0 candidature',
+    );
+    return 'Le pic d\'activité a atteint $_temp0 en une seule journée.';
   }
 
   @override
@@ -7344,8 +7429,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune candidature n\'est en attente de révision pour le moment.';
 
   @override
-  String uiPendingApplicationsNeedReview(Object count) {
-    return '$count candidatures en attente doivent être examinées.';
+  String uiPendingApplicationsNeedReview(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count candidatures en attente doivent être examinées.',
+      one: '1 candidature en attente doit être examinée.',
+      zero: 'Aucune candidature en attente à examiner.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -7390,10 +7482,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String uiPendingApplicationsAcrossOpportunitiesNeedReview(
-    Object count,
-    Object opportunities,
+    num count,
+    num opportunities,
   ) {
-    return '$count candidatures en attente sur $opportunities offres doivent être examinées.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count candidatures en attente',
+      one: '1 candidature en attente',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      opportunities,
+      locale: localeName,
+      other: '$opportunities offres',
+      one: '1 offre',
+    );
+    return '$_temp0 sur $_temp1 à examiner.';
   }
 
   @override
@@ -8046,8 +8150,20 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String uiPendingApprovedIdeasValue(Object pending, Object approved) {
-    return '$pending en attente et $approved approuvées';
+  String uiPendingApprovedIdeasValue(num pending, num approved) {
+    String _temp0 = intl.Intl.pluralLogic(
+      pending,
+      locale: localeName,
+      other: '$pending en attente',
+      one: '1 en attente',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      approved,
+      locale: localeName,
+      other: '$approved approuvées',
+      one: '1 approuvée',
+    );
+    return '$_temp0 et $_temp1';
   }
 
   @override
@@ -10181,13 +10297,25 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ouvrir le profil de l’entreprise';
 
   @override
-  String opportunityCountdownHoursLeft(Object hours) {
-    return '$hours h restantes';
+  String opportunityCountdownHoursLeft(num hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours h restantes',
+      one: '1 h restante',
+    );
+    return '$_temp0';
   }
 
   @override
-  String opportunityCountdownDaysLeft(Object days) {
-    return '$days j restants';
+  String opportunityCountdownDaysLeft(num days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days j restants',
+      one: '1 j restant',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -12265,4 +12393,313 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get uiOnboardingFutureDescription =>
       'Créez votre espace FutureGate pour postuler plus vite, suivre les réponses et organiser stages, emplois et bourses.';
+
+  @override
+  String usersPillUsersCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count utilisateurs',
+      one: '1 utilisateur',
+      zero: '0 utilisateur',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usersPillActiveCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count actifs',
+      one: '1 actif',
+      zero: '0 actif',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usersPillBlockedCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bloqués',
+      one: '1 bloqué',
+      zero: '0 bloqué',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usersPillAdminsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count administrateurs',
+      one: '1 administrateur',
+      zero: '0 administrateur',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String usersPillCompanyReviewCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entreprises à examiner',
+      one: '1 entreprise à examiner',
+      zero: '0 entreprise à examiner',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillApplicationsCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count candidatures',
+      one: '1 candidature',
+      zero: '0 candidature',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillStatusPendingCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count en attente',
+      one: '1 en attente',
+      zero: '0 en attente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillStatusApprovedCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count approuvées',
+      one: '1 approuvée',
+      zero: '0 approuvée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentPillStatusRejectedCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rejetées',
+      one: '1 rejetée',
+      zero: '0 rejetée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dashboardOpportunitiesCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count offres',
+      one: '1 offre',
+      zero: '0 offre',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get premiumBadgeLabel => 'Premium';
+
+  @override
+  String get premiumPassTitle => 'Pass Premium Étudiant';
+
+  @override
+  String get premiumPassSubtitle =>
+      'Accès anticipé · Priorité · Sauvegardes illimitées';
+
+  @override
+  String get premiumPassDescription =>
+      'Profitez d\'un semestre complet de fonctionnalités premium et prenez de l\'avance.';
+
+  @override
+  String get premiumPassPriceLabel => 'Pass Semestriel';
+
+  @override
+  String get premiumPassUpgradeButton => 'Passer au Premium';
+
+  @override
+  String get premiumPassActiveTitle => 'Premium Actif';
+
+  @override
+  String get premiumPassExpiresLabel => 'Actif jusqu\'au';
+
+  @override
+  String get premiumPassExpiredTitle => 'Premium Expiré';
+
+  @override
+  String get premiumPassRenewButton => 'Renouveler le Pass';
+
+  @override
+  String get premiumPassPendingTitle => 'Paiement en cours';
+
+  @override
+  String get premiumPassPendingMessage =>
+      'Votre paiement est en cours de traitement. Vérifiez dans quelques instants.';
+
+  @override
+  String get premiumFeatureEarlyAccess => 'Accès anticipé aux nouvelles offres';
+
+  @override
+  String get premiumFeaturePriority => 'Priorité dans les listes de candidats';
+
+  @override
+  String get premiumFeatureSaved => 'Offres sauvegardées illimitées';
+
+  @override
+  String get premiumFeatureBadge => 'Badge premium sur votre profil';
+
+  @override
+  String get premiumAlreadyActiveMessage =>
+      'Vous avez déjà un Pass Premium actif.';
+
+  @override
+  String get premiumStatusSection => 'Statut de l\'abonnement';
+
+  @override
+  String get earlyAccessLabel => 'Accès anticipé';
+
+  @override
+  String get earlyAccessPendingStatus => 'En attente de validation';
+
+  @override
+  String get earlyAccessApprovedStatus => 'Accès anticipé actif';
+
+  @override
+  String get earlyAccessRejectedStatus => 'Demande rejetée';
+
+  @override
+  String get earlyAccessExpiredStatus => 'Accès anticipé terminé';
+
+  @override
+  String get earlyAccessNoneStatus => 'Publication standard';
+
+  @override
+  String get earlyAccessRequestButton => 'Demander un accès anticipé';
+
+  @override
+  String get earlyAccessApproveButton => 'Approuver';
+
+  @override
+  String get earlyAccessRejectButton => 'Rejeter';
+
+  @override
+  String get earlyAccessRemainingLabel => 'Ouverture à tous dans';
+
+  @override
+  String get earlyAccessLockedMessage =>
+      'Les étudiants Premium peuvent postuler maintenant. Bientôt ouvert à tous.';
+
+  @override
+  String get earlyAccessLockedModalTitle => 'Offre en accès anticipé';
+
+  @override
+  String get earlyAccessLockedModalBody =>
+      'Les détenteurs du Pass Premium peuvent postuler maintenant. Les autres pourront postuler à la fin de la période d\'accès anticipé.';
+
+  @override
+  String get earlyAccessRejectReasonHint => 'Motif du rejet (facultatif)';
+
+  @override
+  String get earlyAccessDelayLabel =>
+      'Délai avant publication publique (heures)';
+
+  @override
+  String get earlyAccessOpensSoonLabel => 'Bientôt disponible';
+
+  @override
+  String get paymentPendingTitle => 'Paiement en cours';
+
+  @override
+  String get paymentPendingMessage =>
+      'Nous confirmons votre paiement. Cela ne prendra qu\'un instant.';
+
+  @override
+  String get paymentSuccessTitle => 'Premium Activé !';
+
+  @override
+  String get paymentSuccessMessage =>
+      'Votre Pass Premium est maintenant actif. Profitez de l\'accès anticipé et de la priorité.';
+
+  @override
+  String get paymentFailedTitle => 'Échec du paiement';
+
+  @override
+  String get paymentFailedMessage =>
+      'Votre paiement n\'a pas pu être finalisé. Veuillez réessayer.';
+
+  @override
+  String get paymentCancelledMessage =>
+      'Le paiement a été annulé. Vous pouvez réessayer quand vous le souhaitez.';
+
+  @override
+  String get paymentCheckStatusButton => 'Vérifier le statut';
+
+  @override
+  String get paymentRetryButton => 'Réessayer';
+
+  @override
+  String get paymentOpeningCheckoutMessage => 'Ouverture du paiement sécurisé…';
+
+  @override
+  String get paymentTestModeNotice =>
+      'Mode test — aucun paiement réel ne sera débité.';
+
+  @override
+  String get savedLimitReachedTitle => 'Limite de sauvegardes atteinte';
+
+  @override
+  String get savedLimitReachedMessage =>
+      'Les comptes gratuits ont un nombre limité d\'offres sauvegardées.';
+
+  @override
+  String get savedLimitUpgradeMessage =>
+      'Passez au Pass Premium pour sauvegarder des offres en illimité.';
+
+  @override
+  String get adminEarlyAccessTitle => 'Gestion de l\'accès anticipé';
+
+  @override
+  String get adminEarlyAccessPendingTab => 'En attente';
+
+  @override
+  String get adminEarlyAccessAllTab => 'Toutes';
+
+  @override
+  String get adminEarlyAccessApprovedTab => 'Approuvées';
+
+  @override
+  String get adminEarlyAccessStatsTitle => 'Statistiques d\'accès anticipé';
+
+  @override
+  String get adminEarlyAccessCompanyLabel => 'Entreprise';
+
+  @override
+  String get adminEarlyAccessPostLabel => 'Publication';
+
+  @override
+  String get adminEarlyAccessMakeNormalButton => 'Retirer l\'accès anticipé';
+
+  @override
+  String get priorityApplicationLabel => 'Prioritaire';
+
+  @override
+  String get priorityApplicationTooltip =>
+      'Ce candidat avait un Pass Premium actif au moment de sa candidature.';
 }

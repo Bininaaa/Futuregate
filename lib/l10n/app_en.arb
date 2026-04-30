@@ -375,10 +375,12 @@
       "applicantCount": {}
     }
   },
-  "uiApplicantcountApplicants": "{applicantCount} applicants",
+  "uiApplicantcountApplicants": "{applicantCount, plural, =0{No applicants} =1{1 applicant} other{{applicantCount} applicants}}",
   "@uiApplicantcountApplicants": {
     "placeholders": {
-      "applicantCount": {}
+      "applicantCount": {
+        "type": "num"
+      }
     }
   },
   "uiApplicants": "Applicants",
@@ -978,10 +980,12 @@
       "pending": {}
     }
   },
-  "uiPendingapplicationsPendingApps": "{pendingApplications} pending apps",
+  "uiPendingapplicationsPendingApps": "{pendingApplications, plural, =0{No pending apps} =1{1 pending app} other{{pendingApplications} pending apps}}",
   "@uiPendingapplicationsPendingApps": {
     "placeholders": {
-      "pendingApplications": {}
+      "pendingApplications": {
+        "type": "num"
+      }
     }
   },
   "uiPendingideasPendingIdeas": "{pendingIdeas} pending ideas",
@@ -1219,11 +1223,15 @@
   "uiShowInbox": "Show Inbox",
   "uiShowTheRolesSkillsAndResourcesThatWillHelpThis": "Show the roles, skills, and resources that will help this idea move forward.",
   "uiShowThisIdeaToUsers": "Show this idea to users",
-  "uiShowingResultscountOfTotalapplicationsApplications": "Showing {resultsCount} of {totalApplications} applications",
+  "uiShowingResultscountOfTotalapplicationsApplications": "Showing {resultsCount} of {totalApplications, plural, =0{0 applications} =1{1 application} other{{totalApplications} applications}}",
   "@uiShowingResultscountOfTotalapplicationsApplications": {
     "placeholders": {
-      "resultsCount": {},
-      "totalApplications": {}
+      "resultsCount": {
+        "type": "num"
+      },
+      "totalApplications": {
+        "type": "num"
+      }
     }
   },
   "uiShownOfTotal": "{shown} of {total}",
@@ -1669,10 +1677,12 @@
       "value1": {}
     }
   },
-  "uiValuePendingApps": "{value1} Pending Apps",
+  "uiValuePendingApps": "{value1, plural, =0{No pending apps} =1{1 pending app} other{{value1} pending apps}}",
   "@uiValuePendingApps": {
     "placeholders": {
-      "value1": {}
+      "value1": {
+        "type": "num"
+      }
     }
   },
   "uiValueOpportunities": "{value1} opportunities",
@@ -1737,10 +1747,12 @@
       "value1": {}
     }
   },
-  "uiValueApps": "{value1} Apps",
+  "uiValueApps": "{value1, plural, =0{0 apps} =1{1 app} other{{value1} apps}}",
   "@uiValueApps": {
     "placeholders": {
-      "value1": {}
+      "value1": {
+        "type": "num"
+      }
     }
   },
   "uiUntitledScholarship": "Untitled Scholarship",
@@ -1883,11 +1895,15 @@
   "uiStatus716883": "Status",
   "uiType6e9816": "Type",
   "uiRolesdd8b65": "Roles",
-  "uiShowingValueOfValueApplications": "Showing {value1} Of {value2} Applications",
+  "uiShowingValueOfValueApplications": "Showing {value1} of {value2, plural, =0{0 applications} =1{1 application} other{{value2} applications}}",
   "@uiShowingValueOfValueApplications": {
     "placeholders": {
-      "value1": {},
-      "value2": {}
+      "value1": {
+        "type": "num"
+      },
+      "value2": {
+        "type": "num"
+      }
     }
   },
   "uiNew66aabd": "New",
@@ -1963,10 +1979,12 @@
       "value1": {}
     }
   },
-  "uiValueApplicants": "{value1} Applicants",
+  "uiValueApplicants": "{value1, plural, =0{0 applicants} =1{1 applicant} other{{value1} applicants}}",
   "@uiValueApplicants": {
     "placeholders": {
-      "value1": {}
+      "value1": {
+        "type": "num"
+      }
     }
   },
   "uiDownloada479c9": "Download",
@@ -2606,11 +2624,13 @@
   "@uiWriteMessageBeforeTranslation": {
     "description": "Warning shown when the user opens translation choices without a message"
   },
-  "uiUnreadAlertsCount": "{count} unread alerts",
+  "uiUnreadAlertsCount": "{count, plural, =0{0 unread alerts} =1{1 unread alert} other{{count} unread alerts}}",
   "@uiUnreadAlertsCount": {
     "description": "Subtitle showing the number of unread alerts",
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "uiOpenAlertCenter": "Open alert center",
@@ -2825,12 +2845,13 @@
   "@uiOneVisibleApplication": {
     "description": "Admin localization label."
   },
-  "uiVisibleApplicationsCount": "{count} visible applications",
+  "uiVisibleApplicationsCount": "{count, plural, =0{No visible applications} =1{1 visible application} other{{count} visible applications}}",
   "@uiVisibleApplicationsCount": {
     "description": "Count of visible applications for a student.",
     "placeholders": {
       "count": {
-        "format": "decimalPattern"
+        "format": "decimalPattern",
+        "type": "num"
       }
     }
   },
@@ -2866,12 +2887,13 @@
   "@uiLoadingVisibleOpportunityApplications": {
     "description": "Admin localization label."
   },
-  "uiVisibleApplicationsAvailableForReviewCount": "{count} visible applications available for review.",
+  "uiVisibleApplicationsAvailableForReviewCount": "{count, plural, =0{No visible applications available for review.} =1{1 visible application available for review.} other{{count} visible applications available for review.}}",
   "@uiVisibleApplicationsAvailableForReviewCount": {
     "description": "Count of visible applications available for review.",
     "placeholders": {
       "count": {
-        "format": "decimalPattern"
+        "format": "decimalPattern",
+        "type": "num"
       }
     }
   },
@@ -3796,10 +3818,12 @@
   "uiSavedTypeBadge": "Saved {type}",
   "uiGrowthNew": "New",
   "uiNoApplicationsWereSubmittedInTheLast7Days": "No applications were submitted in the last 7 days.",
-  "uiPeakActivityReachedCountInASingleDay": "Peak activity reached {count} applications in a single day.",
+  "uiPeakActivityReachedCountInASingleDay": "Peak activity reached {count, plural, =0{0 applications} =1{1 application} other{{count} applications}} in a single day.",
   "@uiPeakActivityReachedCountInASingleDay": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "uiNoReviewedApplicationsYet": "No reviewed applications yet.",
@@ -3811,10 +3835,12 @@
     }
   },
   "uiNoApplicationsAreWaitingForReviewRightNow": "No applications are waiting for review right now.",
-  "uiPendingApplicationsNeedReview": "{count} pending applications need review.",
+  "uiPendingApplicationsNeedReview": "{count, plural, =0{No pending applications need review.} =1{1 pending application needs review.} other{{count} pending applications need review.}}",
   "@uiPendingApplicationsNeedReview": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "uiNoOpenPostsExpireWithinTwoDays": "No open posts expire within two days.",
@@ -3842,11 +3868,15 @@
   },
   "uiFocusedReviewMode": "Focused review mode",
   "uiReviewAndRespondToCandidates": "Review and respond to candidates",
-  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "{count} pending applications across {opportunities} opportunities need review.",
+  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "{count, plural, =1{1 pending application} other{{count} pending applications}} across {opportunities, plural, =1{1 opportunity} other{{opportunities} opportunities}} need review.",
   "@uiPendingApplicationsAcrossOpportunitiesNeedReview": {
     "placeholders": {
-      "count": {},
-      "opportunities": {}
+      "count": {
+        "type": "num"
+      },
+      "opportunities": {
+        "type": "num"
+      }
     }
   },
   "uiShowPending": "Show pending",
@@ -4151,12 +4181,16 @@
       "students": {}
     }
   },
-  "uiPendingApprovedIdeasValue": "{pending} pending and {approved} approved",
+  "uiPendingApprovedIdeasValue": "{pending, plural, =1{1 pending} other{{pending} pending}} and {approved, plural, =1{1 approved} other{{approved} approved}}",
   "@uiPendingApprovedIdeasValue": {
     "description": "Dashboard pending and approved idea counts.",
     "placeholders": {
-      "pending": {},
-      "approved": {}
+      "pending": {
+        "type": "num"
+      },
+      "approved": {
+        "type": "num"
+      }
     }
   },
   "dashSectionRecommendedSubtitle": "Chosen around your profile, timing, and momentum.",
@@ -5151,16 +5185,20 @@
   "companyReviewStatRegisterMissing": "Missing",
   "companyReviewUpdateProfileButton": "Update Company Profile",
   "companyReviewOpenProfileButton": "Open Company Profile",
-  "opportunityCountdownHoursLeft": "{hours}h left",
+  "opportunityCountdownHoursLeft": "{hours, plural, =1{1h left} other{{hours}h left}}",
   "@opportunityCountdownHoursLeft": {
     "placeholders": {
-      "hours": {}
+      "hours": {
+        "type": "num"
+      }
     }
   },
-  "opportunityCountdownDaysLeft": "{days}d left",
+  "opportunityCountdownDaysLeft": "{days, plural, =1{1d left} other{{days}d left}}",
   "@opportunityCountdownDaysLeft": {
     "placeholders": {
-      "days": {}
+      "days": {
+        "type": "num"
+      }
     }
   },
   "opportunityFreshnessRecent": "Recent",
@@ -7520,5 +7558,153 @@
   "uiOnboardingFutureDescription": "Build your FutureGate space to apply faster, track replies, and keep internships, jobs, and scholarships organized.",
   "@uiOnboardingFutureDescription": {
     "description": "uiOnboardingFutureDescription"
-  }
+  },
+  "usersPillUsersCount": "{count, plural, =0{0 users} =1{1 user} other{{count} users}}",
+  "@usersPillUsersCount": {
+    "description": "usersPillUsersCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillActiveCount": "{count, plural, =0{0 active} =1{1 active} other{{count} active}}",
+  "@usersPillActiveCount": {
+    "description": "usersPillActiveCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillBlockedCount": "{count, plural, =0{0 blocked} =1{1 blocked} other{{count} blocked}}",
+  "@usersPillBlockedCount": {
+    "description": "usersPillBlockedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillAdminsCount": "{count, plural, =0{0 admins} =1{1 admin} other{{count} admins}}",
+  "@usersPillAdminsCount": {
+    "description": "usersPillAdminsCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillCompanyReviewCount": "{count, plural, =0{0 company review} =1{1 company review} other{{count} company review}}",
+  "@usersPillCompanyReviewCount": {
+    "description": "usersPillCompanyReviewCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillApplicationsCount": "{count, plural, =0{0 applications} =1{1 application} other{{count} applications}}",
+  "@contentPillApplicationsCount": {
+    "description": "contentPillApplicationsCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusPendingCount": "{count, plural, =0{0 pending} =1{1 pending} other{{count} pending}}",
+  "@contentPillStatusPendingCount": {
+    "description": "contentPillStatusPendingCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusApprovedCount": "{count, plural, =0{0 approved} =1{1 approved} other{{count} approved}}",
+  "@contentPillStatusApprovedCount": {
+    "description": "contentPillStatusApprovedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusRejectedCount": "{count, plural, =0{0 rejected} =1{1 rejected} other{{count} rejected}}",
+  "@contentPillStatusRejectedCount": {
+    "description": "contentPillStatusRejectedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "dashboardOpportunitiesCount": "{count, plural, =0{0 opportunities} =1{1 opportunity} other{{count} opportunities}}",
+  "@dashboardOpportunitiesCount": {
+    "description": "dashboardOpportunitiesCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "premiumBadgeLabel": "Premium",
+  "premiumPassTitle": "Premium Pass",
+  "premiumPassSubtitle": "Early access · Priority · Unlimited saves",
+  "premiumPassDescription": "Unlock one full semester of premium features and get ahead of every opportunity.",
+  "premiumPassPriceLabel": "Semester Pass",
+  "premiumPassUpgradeButton": "Upgrade to Premium",
+  "premiumPassActiveTitle": "Premium Active",
+  "premiumPassExpiresLabel": "Active until",
+  "premiumPassExpiredTitle": "Premium Expired",
+  "premiumPassRenewButton": "Renew Pass",
+  "premiumPassPendingTitle": "Payment Pending",
+  "premiumPassPendingMessage": "Your payment is being processed. Check back shortly.",
+  "premiumFeatureEarlyAccess": "Early access to new opportunities",
+  "premiumFeaturePriority": "Priority placement in applicant lists",
+  "premiumFeatureSaved": "Unlimited saved opportunities",
+  "premiumFeatureBadge": "Premium badge on your profile",
+  "premiumAlreadyActiveMessage": "You already have an active Premium Pass.",
+  "premiumStatusSection": "Subscription Status",
+  "earlyAccessLabel": "Early Access",
+  "earlyAccessPendingStatus": "Pending Review",
+  "earlyAccessApprovedStatus": "Early Access Active",
+  "earlyAccessRejectedStatus": "Request Rejected",
+  "earlyAccessExpiredStatus": "Early Access Ended",
+  "earlyAccessNoneStatus": "Standard",
+  "earlyAccessRequestButton": "Request Early Access",
+  "earlyAccessApproveButton": "Approve",
+  "earlyAccessRejectButton": "Reject",
+  "earlyAccessRemainingLabel": "Opens to all in",
+  "earlyAccessLockedMessage": "Premium students can apply now. Opens to everyone soon.",
+  "earlyAccessLockedModalTitle": "Early Access Opportunity",
+  "earlyAccessLockedModalBody": "Premium Pass holders can apply right now. Free students can apply once the early access period ends.",
+  "earlyAccessRejectReasonHint": "Reason for rejection (optional)",
+  "earlyAccessDelayLabel": "Delay before public (hours)",
+  "earlyAccessOpensSoonLabel": "Opens soon",
+  "paymentPendingTitle": "Payment Processing",
+  "paymentPendingMessage": "We're confirming your payment. This usually takes just a moment.",
+  "paymentSuccessTitle": "Premium Activated!",
+  "paymentSuccessMessage": "Your Premium Pass is now active. Enjoy early access and priority placement.",
+  "paymentFailedTitle": "Payment Failed",
+  "paymentFailedMessage": "Your payment could not be completed. Please try again.",
+  "paymentCancelledMessage": "Payment was cancelled. You can try again whenever you're ready.",
+  "paymentCheckStatusButton": "Check Status",
+  "paymentRetryButton": "Try Again",
+  "paymentOpeningCheckoutMessage": "Opening secure payment…",
+  "paymentTestModeNotice": "Test mode — no real payment will be charged.",
+  "savedLimitReachedTitle": "Save Limit Reached",
+  "savedLimitReachedMessage": "Free accounts can save a limited number of opportunities.",
+  "savedLimitUpgradeMessage": "Upgrade to Premium Pass to save unlimited opportunities.",
+  "adminEarlyAccessTitle": "Early Access Management",
+  "adminEarlyAccessPendingTab": "Pending",
+  "adminEarlyAccessAllTab": "All",
+  "adminEarlyAccessApprovedTab": "Approved",
+  "adminEarlyAccessStatsTitle": "Early Access Statistics",
+  "adminEarlyAccessCompanyLabel": "Company",
+  "adminEarlyAccessPostLabel": "Post",
+  "adminEarlyAccessMakeNormalButton": "Remove Early Access",
+  "priorityApplicationLabel": "Priority",
+  "priorityApplicationTooltip": "This applicant had an active Premium Pass when they applied."
 }

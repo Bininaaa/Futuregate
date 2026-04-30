@@ -28,6 +28,8 @@ import 'providers/chat_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/connectivity_provider.dart';
 import 'providers/opportunity_translation_provider.dart';
+import 'providers/premium_provider.dart';
+import 'providers/subscription_provider.dart';
 import 'screens/launch_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'theme/app_colors.dart';
@@ -121,6 +123,8 @@ class FutureGateApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => OpportunityTranslationProvider()),
+        ChangeNotifierProvider(create: (_) => PremiumProvider()..startConfigStream()),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
       ],
       child: const _PresenceAwareApp(),
     );
@@ -156,6 +160,10 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
     _lastLifecycleState = state;
     if (state == AppLifecycleState.resumed) {
       context.read<AuthProvider>().loadCurrentUser();
+      final uid = context.read<AuthProvider>().userModel?.uid ?? '';
+      if (uid.isNotEmpty) {
+        context.read<SubscriptionProvider>().refresh(uid);
+      }
     }
     _syncPresence();
   }
@@ -184,10 +192,14 @@ class _PresenceAwareAppState extends State<_PresenceAwareApp>
 
     final languageCode = localeController.locale?.languageCode;
 
-    context.select<AuthProvider, String?>(
+    final uid = context.select<AuthProvider, String?>(
       (provider) => provider.userModel?.uid,
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) => _syncPresence());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncPresence();
+      final subProvider = context.read<SubscriptionProvider>();
+      subProvider.listenToSubscription(uid ?? '');
+    });
 
     return MaterialApp(
       navigatorKey: appNavigatorKey,

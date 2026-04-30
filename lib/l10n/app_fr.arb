@@ -339,7 +339,7 @@
   "uiAny": "N'importe lequel",
   "uiAppearanceTheme": "Apparence / Thème",
   "uiApplicantcount": "{applicantCount}",
-  "uiApplicantcountApplicants": "{applicantCount} candidats",
+  "uiApplicantcountApplicants": "{applicantCount, plural, =0{Aucun candidat} =1{1 candidat} other{{applicantCount} candidats}}",
   "uiApplicants": "Candidats",
   "uiApplicationActivity": "Activité des candidatures",
   "uiApplicationApproved": "Candidature\napprouvée",
@@ -827,7 +827,7 @@
   "uiPendingProjectIdeas": "Idées de projets en attente",
   "uiPendingReviews": "Examens en attente",
   "uiPendingValue1InReview": "{pending} {value1} en revue.",
-  "uiPendingapplicationsPendingApps": "{pendingApplications} candidatures en attente",
+  "uiPendingapplicationsPendingApps": "{pendingApplications, plural, =0{aucune candidature en attente} =1{1 candidature en attente} other{{pendingApplications} candidatures en attente}}",
   "uiPendingideasPendingIdeas": "{pendingIdeas} idées en attente",
   "uiPercent": "{percent}%",
   "uiPerformance": "Performance",
@@ -1043,7 +1043,7 @@
   "uiShowInbox": "Afficher la boîte de réception",
   "uiShowTheRolesSkillsAndResourcesThatWillHelpThis": "Montrez les rôles, les compétences et les ressources qui aideront cette idée à avancer.",
   "uiShowThisIdeaToUsers": "Montrer cette idée aux utilisateurs",
-  "uiShowingResultscountOfTotalapplicationsApplications": "Affichage de {resultsCount} sur {totalApplications} candidatures",
+  "uiShowingResultscountOfTotalapplicationsApplications": "Affichage de {resultsCount} sur {totalApplications, plural, =0{0 candidature} =1{1 candidature} other{{totalApplications} candidatures}}",
   "uiShownOfTotal": "{shown} de {total}",
   "uiSignIn": "Se connecter",
   "uiSignInToSeeYourMessages": "Connectez-vous pour voir vos messages",
@@ -1293,7 +1293,7 @@
   "uiValue": "{value1}%",
   "uiValueValue": "{value1} ({value2})",
   "uiByValue": "Par {value1}",
-  "uiValueApps": "{value1} candidatures",
+  "uiValueApps": "{value1, plural, =0{0 candidature} =1{1 candidature} other{{value1} candidatures}}",
   "uiViewApplicationsValue": "Afficher les candidatures ({value1})",
   "uiOpenActivityf327dd": "Activité ouverte",
   "uiDeleteValueFromFirestoreThisActionCannotBeUndone": "Supprimer « {value1} » de Firestore ? Cette action ne peut pas être annulée.",
@@ -1372,7 +1372,7 @@
   "uiWeCouldnTOpenThisAttachment": "Nous n'avons pas pu ouvrir cette pièce jointe",
   "uiValueInterested27bcc0": "{value1} Intéressé",
   "uiValuePendingIdeas": "{value1} Idées en attente",
-  "uiValuePendingApps": "{value1} candidatures en attente",
+  "uiValuePendingApps": "{value1, plural, =0{aucune candidature en attente} =1{1 candidature en attente} other{{value1} candidatures en attente}}",
   "uiScholarships": "Bourses",
   "uiSearchValue": "Rechercher {value1}",
   "uiPendingIdeasStillWaiting": "Les idées en attente attendent toujours {value1}",
@@ -1400,14 +1400,14 @@
   "uiTheConversationHasBeenDeleted": "La conversation a été supprimée",
   "uiSayHelloToValue": "Dites bonjour à {value1}",
   "uiFilters": "Filtres",
-  "uiShowingValueOfValueApplications": "Affichage de {value1} sur {value2} candidatures",
+  "uiShowingValueOfValueApplications": "Affichage de {value1} sur {value2, plural, =0{0 candidature} =1{1 candidature} other{{value2} candidatures}}",
   "uiAppliedValue": "Candidature envoyée {value1}",
   "uiTheLinkedOpportunityIsNoLongerAvailable": "L'opportunité liée n'est plus disponible",
   "uiTheRequestedFileIsNotAValidPdf": "Le fichier demandé n'est pas un PDF valide",
   "uiOpenCandidateProfileForValue": "Ouvrir le profil du candidat {value1}",
   "uiMoveTheDeadlineIntoTheFutureBeforeReopeningThisOpportunity": "Repoussez la date limite dans le futur avant de rouvrir cette opportunité",
   "uiValueOfValue": "{value1} de {value2}",
-  "uiValueApplicants": "{value1} candidats",
+  "uiValueApplicants": "{value1, plural, =0{0 candidat} =1{1 candidat} other{{value1} candidats}}",
   "uiText85": "Texte 85",
   "uiNoEmailAppIsAvailableRightNow": "Aucune application de messagerie n'est disponible pour le moment",
   "uiPasswordAddedSuccessfullyYouCanNowSignInWithGoogle": "Mot de passe ajouté avec succès. Vous pouvez maintenant vous connecter aussi avec e-mail et mot de passe.",
@@ -1778,7 +1778,7 @@
   "uiConversationBackInInbox": "Cette conversation est de retour dans votre boîte de réception.",
   "uiWriteMessageBeforeAiTools": "Rédigez un message avant d'utiliser les outils IA.",
   "uiWriteMessageBeforeTranslation": "Rédigez un message avant de choisir une traduction.",
-  "uiUnreadAlertsCount": "{count} alertes non lues",
+  "uiUnreadAlertsCount": "{count, plural, =0{0 alerte non lue} =1{1 alerte non lue} other{{count} alertes non lues}}",
   "uiOpenAlertCenter": "Ouvrir le centre d'alertes",
   "uiManageLearningResources": "Gérer les ressources d'apprentissage",
   "uiManageApplication": "Gérer la candidature",
@@ -1829,7 +1829,7 @@
   "uiApplicationHistoryIsUnavailableRightNow": "L'historique des candidatures est indisponible pour le moment.",
   "uiNoVisibleApplicationsAvailableForThisStudent": "Aucune candidature visible n'est disponible pour cet étudiant.",
   "uiOneVisibleApplication": "1 candidature visible",
-  "uiVisibleApplicationsCount": "{count} candidatures visibles",
+  "uiVisibleApplicationsCount": "{count, plural, =0{Aucune candidature visible} =1{1 candidature visible} other{{count} candidatures visibles}}",
   "uiStudentApplications": "Candidatures de l'étudiant",
   "uiReviewTheStudentApplicationHistoryUsingTheSameVisibleOpportunityRuleShownInTheApp": "Ouvrez l'historique des candidatures étudiantes avec la même règle de visibilité des offres que dans l'application.",
   "uiVisibleSubmissions": "Soumissions visibles",
@@ -1838,7 +1838,7 @@
   "uiApplicationHistoryUnavailable": "Historique des candidatures indisponible",
   "uiNoVisibleApplications": "Aucune candidature visible",
   "uiLoadingVisibleOpportunityApplications": "Chargement des candidatures liées aux offres visibles.",
-  "uiVisibleApplicationsAvailableForReviewCount": "{count} candidature(s) visible(s) disponible(s) pour revue.",
+  "uiVisibleApplicationsAvailableForReviewCount": "{count, plural, =0{Aucune candidature visible disponible pour revue.} =1{1 candidature visible disponible pour revue.} other{{count} candidatures visibles disponibles pour revue.}}",
   "uiCouldNotLoadThisStudentsVisibleApplicationsRightNow": "Impossible de charger les candidatures visibles de cet étudiant pour le moment.",
   "uiThisStudentHasNoApplicationsLinkedToOpenAndVisibleOpportunitiesRightNow": "Cet étudiant n'a aucune candidature liée à des offres ouvertes et visibles pour le moment.",
   "uiAppliedDateUnavailable": "Date de candidature indisponible",
@@ -2110,10 +2110,12 @@
   "uiSavedTypeBadge": "{type} enregistré",
   "uiGrowthNew": "Nouveau",
   "uiNoApplicationsWereSubmittedInTheLast7Days": "Aucune candidature n'a été soumise au cours des 7 derniers jours.",
-  "uiPeakActivityReachedCountInASingleDay": "Le pic d'activité a atteint {count} candidatures en une seule journée.",
+  "uiPeakActivityReachedCountInASingleDay": "Le pic d'activité a atteint {count, plural, =0{0 candidature} =1{1 candidature} other{{count} candidatures}} en une seule journée.",
   "@uiPeakActivityReachedCountInASingleDay": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "uiNoReviewedApplicationsYet": "Aucune candidature examinée pour le moment.",
@@ -2125,10 +2127,12 @@
     }
   },
   "uiNoApplicationsAreWaitingForReviewRightNow": "Aucune candidature n'est en attente de révision pour le moment.",
-  "uiPendingApplicationsNeedReview": "{count} candidatures en attente doivent être examinées.",
+  "uiPendingApplicationsNeedReview": "{count, plural, =0{Aucune candidature en attente à examiner.} =1{1 candidature en attente doit être examinée.} other{{count} candidatures en attente doivent être examinées.}}",
   "@uiPendingApplicationsNeedReview": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "num"
+      }
     }
   },
   "uiNoOpenPostsExpireWithinTwoDays": "Aucune offre ouverte n'expire dans les deux jours.",
@@ -2156,11 +2160,15 @@
   },
   "uiFocusedReviewMode": "Mode de révision ciblé",
   "uiReviewAndRespondToCandidates": "Examiner et répondre aux candidats",
-  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "{count} candidatures en attente sur {opportunities} offres doivent être examinées.",
+  "uiPendingApplicationsAcrossOpportunitiesNeedReview": "{count, plural, =1{1 candidature en attente} other{{count} candidatures en attente}} sur {opportunities, plural, =1{1 offre} other{{opportunities} offres}} à examiner.",
   "@uiPendingApplicationsAcrossOpportunitiesNeedReview": {
     "placeholders": {
-      "count": {},
-      "opportunities": {}
+      "count": {
+        "type": "num"
+      },
+      "opportunities": {
+        "type": "num"
+      }
     }
   },
   "uiShowPending": "Afficher les en attente",
@@ -2340,7 +2348,7 @@
   "uiDaysAgoShort": "il y a {count} j",
   "uiAppsPerOpportunity": "{rate} candidatures par offre",
   "uiCvCompletionRateValue": "{percent} % ({totalCvs} sur {students} étudiants)",
-  "uiPendingApprovedIdeasValue": "{pending} en attente et {approved} approuvées",
+  "uiPendingApprovedIdeasValue": "{pending, plural, =1{1 en attente} other{{pending} en attente}} et {approved, plural, =1{1 approuvée} other{{approved} approuvées}}",
   "dashDayLeft": "1 jour restant",
   "dashDaysLeft": "{count, plural, =0{Dernier jour} =1{1 jour restant} other{{count} jours restants}}",
   "@dashDaysLeft": {
@@ -3333,16 +3341,20 @@
   "companyReviewStatRegisterMissing": "Manquant",
   "companyReviewUpdateProfileButton": "Mettre à jour le profil de l’entreprise",
   "companyReviewOpenProfileButton": "Ouvrir le profil de l’entreprise",
-  "opportunityCountdownHoursLeft": "{hours} h restantes",
+  "opportunityCountdownHoursLeft": "{hours, plural, =1{1 h restante} other{{hours} h restantes}}",
   "@opportunityCountdownHoursLeft": {
     "placeholders": {
-      "hours": {}
+      "hours": {
+        "type": "num"
+      }
     }
   },
-  "opportunityCountdownDaysLeft": "{days} j restants",
+  "opportunityCountdownDaysLeft": "{days, plural, =1{1 j restant} other{{days} j restants}}",
   "@opportunityCountdownDaysLeft": {
     "placeholders": {
-      "days": {}
+      "days": {
+        "type": "num"
+      }
     }
   },
   "opportunityFreshnessRecent": "Récent",
@@ -5541,5 +5553,153 @@
   "uiOnboardingFutureDescription": "Créez votre espace FutureGate pour postuler plus vite, suivre les réponses et organiser stages, emplois et bourses.",
   "@uiOnboardingFutureDescription": {
     "description": "uiOnboardingFutureDescription"
-  }
+  },
+  "usersPillUsersCount": "{count, plural, =0{0 utilisateur} =1{1 utilisateur} other{{count} utilisateurs}}",
+  "@usersPillUsersCount": {
+    "description": "usersPillUsersCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillActiveCount": "{count, plural, =0{0 actif} =1{1 actif} other{{count} actifs}}",
+  "@usersPillActiveCount": {
+    "description": "usersPillActiveCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillBlockedCount": "{count, plural, =0{0 bloqué} =1{1 bloqué} other{{count} bloqués}}",
+  "@usersPillBlockedCount": {
+    "description": "usersPillBlockedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillAdminsCount": "{count, plural, =0{0 administrateur} =1{1 administrateur} other{{count} administrateurs}}",
+  "@usersPillAdminsCount": {
+    "description": "usersPillAdminsCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "usersPillCompanyReviewCount": "{count, plural, =0{0 entreprise à examiner} =1{1 entreprise à examiner} other{{count} entreprises à examiner}}",
+  "@usersPillCompanyReviewCount": {
+    "description": "usersPillCompanyReviewCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillApplicationsCount": "{count, plural, =0{0 candidature} =1{1 candidature} other{{count} candidatures}}",
+  "@contentPillApplicationsCount": {
+    "description": "contentPillApplicationsCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusPendingCount": "{count, plural, =0{0 en attente} =1{1 en attente} other{{count} en attente}}",
+  "@contentPillStatusPendingCount": {
+    "description": "contentPillStatusPendingCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusApprovedCount": "{count, plural, =0{0 approuvée} =1{1 approuvée} other{{count} approuvées}}",
+  "@contentPillStatusApprovedCount": {
+    "description": "contentPillStatusApprovedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "contentPillStatusRejectedCount": "{count, plural, =0{0 rejetée} =1{1 rejetée} other{{count} rejetées}}",
+  "@contentPillStatusRejectedCount": {
+    "description": "contentPillStatusRejectedCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "dashboardOpportunitiesCount": "{count, plural, =0{0 offre} =1{1 offre} other{{count} offres}}",
+  "@dashboardOpportunitiesCount": {
+    "description": "dashboardOpportunitiesCount",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "premiumBadgeLabel": "Premium",
+  "premiumPassTitle": "Pass Premium Étudiant",
+  "premiumPassSubtitle": "Accès anticipé · Priorité · Sauvegardes illimitées",
+  "premiumPassDescription": "Profitez d'un semestre complet de fonctionnalités premium et prenez de l'avance.",
+  "premiumPassPriceLabel": "Pass Semestriel",
+  "premiumPassUpgradeButton": "Passer au Premium",
+  "premiumPassActiveTitle": "Premium Actif",
+  "premiumPassExpiresLabel": "Actif jusqu'au",
+  "premiumPassExpiredTitle": "Premium Expiré",
+  "premiumPassRenewButton": "Renouveler le Pass",
+  "premiumPassPendingTitle": "Paiement en cours",
+  "premiumPassPendingMessage": "Votre paiement est en cours de traitement. Vérifiez dans quelques instants.",
+  "premiumFeatureEarlyAccess": "Accès anticipé aux nouvelles offres",
+  "premiumFeaturePriority": "Priorité dans les listes de candidats",
+  "premiumFeatureSaved": "Offres sauvegardées illimitées",
+  "premiumFeatureBadge": "Badge premium sur votre profil",
+  "premiumAlreadyActiveMessage": "Vous avez déjà un Pass Premium actif.",
+  "premiumStatusSection": "Statut de l'abonnement",
+  "earlyAccessLabel": "Accès anticipé",
+  "earlyAccessPendingStatus": "En attente de validation",
+  "earlyAccessApprovedStatus": "Accès anticipé actif",
+  "earlyAccessRejectedStatus": "Demande rejetée",
+  "earlyAccessExpiredStatus": "Accès anticipé terminé",
+  "earlyAccessNoneStatus": "Publication standard",
+  "earlyAccessRequestButton": "Demander un accès anticipé",
+  "earlyAccessApproveButton": "Approuver",
+  "earlyAccessRejectButton": "Rejeter",
+  "earlyAccessRemainingLabel": "Ouverture à tous dans",
+  "earlyAccessLockedMessage": "Les étudiants Premium peuvent postuler maintenant. Bientôt ouvert à tous.",
+  "earlyAccessLockedModalTitle": "Offre en accès anticipé",
+  "earlyAccessLockedModalBody": "Les détenteurs du Pass Premium peuvent postuler maintenant. Les autres pourront postuler à la fin de la période d'accès anticipé.",
+  "earlyAccessRejectReasonHint": "Motif du rejet (facultatif)",
+  "earlyAccessDelayLabel": "Délai avant publication publique (heures)",
+  "earlyAccessOpensSoonLabel": "Bientôt disponible",
+  "paymentPendingTitle": "Paiement en cours",
+  "paymentPendingMessage": "Nous confirmons votre paiement. Cela ne prendra qu'un instant.",
+  "paymentSuccessTitle": "Premium Activé !",
+  "paymentSuccessMessage": "Votre Pass Premium est maintenant actif. Profitez de l'accès anticipé et de la priorité.",
+  "paymentFailedTitle": "Échec du paiement",
+  "paymentFailedMessage": "Votre paiement n'a pas pu être finalisé. Veuillez réessayer.",
+  "paymentCancelledMessage": "Le paiement a été annulé. Vous pouvez réessayer quand vous le souhaitez.",
+  "paymentCheckStatusButton": "Vérifier le statut",
+  "paymentRetryButton": "Réessayer",
+  "paymentOpeningCheckoutMessage": "Ouverture du paiement sécurisé…",
+  "paymentTestModeNotice": "Mode test — aucun paiement réel ne sera débité.",
+  "savedLimitReachedTitle": "Limite de sauvegardes atteinte",
+  "savedLimitReachedMessage": "Les comptes gratuits ont un nombre limité d'offres sauvegardées.",
+  "savedLimitUpgradeMessage": "Passez au Pass Premium pour sauvegarder des offres en illimité.",
+  "adminEarlyAccessTitle": "Gestion de l'accès anticipé",
+  "adminEarlyAccessPendingTab": "En attente",
+  "adminEarlyAccessAllTab": "Toutes",
+  "adminEarlyAccessApprovedTab": "Approuvées",
+  "adminEarlyAccessStatsTitle": "Statistiques d'accès anticipé",
+  "adminEarlyAccessCompanyLabel": "Entreprise",
+  "adminEarlyAccessPostLabel": "Publication",
+  "adminEarlyAccessMakeNormalButton": "Retirer l'accès anticipé",
+  "priorityApplicationLabel": "Prioritaire",
+  "priorityApplicationTooltip": "Ce candidat avait un Pass Premium actif au moment de sa candidature."
 }

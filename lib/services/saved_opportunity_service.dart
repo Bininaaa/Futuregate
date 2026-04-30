@@ -1,9 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/opportunity_model.dart';
 import '../models/saved_opportunity_model.dart';
+import '../models/premium_config_model.dart';
+import 'subscription_service.dart';
+import 'premium_service.dart';
+
+class SavedLimitReachedException implements Exception {
+  final String message;
+  final int limit;
+  const SavedLimitReachedException(this.message, {required this.limit});
+  @override
+  String toString() => message;
+}
 
 class SavedOpportunityService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final SubscriptionService _subscriptionService = SubscriptionService();
+  final PremiumService _premiumService = PremiumService();
 
   Future<List<SavedOpportunityModel>> getSavedOpportunities(
     String studentId,
@@ -72,6 +85,10 @@ class SavedOpportunityService {
     if (existing.docs.isNotEmpty) {
       throw Exception('Opportunity already saved');
     }
+
+    // Enforce save limit for free users
+    await _enforceSaveLimit(studentId);
+
 
     final opportunityDoc = await _firestore
         .collection('opportunities')
@@ -173,6 +190,42 @@ class SavedOpportunityService {
         return null;
       }
       rethrow;
+    }
+  }
+
+  Future<void> _enforceSaveLimit(String studentId) async {
+    PremiumConfigModel config;
+    try {
+      config = await _premiumService.getConfig();
+    } catch (_) {
+      config = PremiumConfigModel.defaults;
+    }
+
+    final sub = await _subscriptionService.getSubscription(studentId);
+    final isPremium = sub?.isActive ?? false;
+
+    if (isPremium && config.hasUnlimitedSaved) return;
+
+    final countSnap = await _firestore
+        .collection('savedOpportunities')
+        .where('studentId', isEqualTo: studentId)
+        .count()
+        .get();
+    final currentCount = countSnap.count ?? 0;
+
+    final limit = isPremium ? config.premiumSavedLimit : config.freeSavedLimit;
+
+    if (!_premiumService.canSaveMoreItems(
+      sub: sub,
+      currentCount: currentCount,
+      config: config,
+    )) {
+      throw SavedLimitReachedException(
+        isPremium
+            ? 'You have reached your saved items limit ($limit).'
+            : 'Free accounts can save up to $limit opportunities. Upgrade to Premium Pass for more.',
+        limit: limit,
+      );
     }
   }
 }

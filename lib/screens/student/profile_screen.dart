@@ -15,6 +15,8 @@ import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
 import '../../providers/student_provider.dart';
 import '../../providers/training_provider.dart';
+import '../../providers/subscription_provider.dart';
+import 'premium_pass_screen.dart';
 import '../../screens/notifications_screen.dart';
 import '../../screens/settings/about_futuregate_screen.dart';
 import '../../screens/settings/help_center_screen.dart';
@@ -209,6 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onHelp: () => _push(const HelpCenterScreen()),
                     onAbout: () => _push(const AboutFutureGateScreen()),
                     onLogout: () => showLogoutConfirmationSheet(context),
+                    onPremium: () => _push(const PremiumPassScreen()),
                   );
 
                   if (wide) {
@@ -367,7 +370,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   List<_HeroBadgeData> _buildHeroBadges(UserModel? user) {
-    return const <_HeroBadgeData>[];
+    final badges = <_HeroBadgeData>[];
+    final isPremium =
+        context.read<SubscriptionProvider>().hasActivePremium;
+    if (isPremium) {
+      badges.add(
+        _HeroBadgeData(
+          label: AppLocalizations.of(context)!.premiumBadgeLabel,
+          icon: Icons.workspace_premium_rounded,
+          color: AppColors.of(context).accent,
+        ),
+      );
+    }
+    return badges;
   }
 
   List<_FactData> _buildFacts(UserModel? user) {
@@ -1826,6 +1841,7 @@ class _LinksCard extends StatelessWidget {
   final VoidCallback onHelp;
   final VoidCallback onAbout;
   final VoidCallback onLogout;
+  final VoidCallback? onPremium;
 
   const _LinksCard({
     required this.appliedCount,
@@ -1840,6 +1856,7 @@ class _LinksCard extends StatelessWidget {
     required this.onHelp,
     required this.onAbout,
     required this.onLogout,
+    this.onPremium,
   });
 
   @override
@@ -1918,6 +1935,18 @@ class _LinksCard extends StatelessWidget {
             )!.studentProfileUnreadNotificationsCount(unreadNotifications),
             onTap: onNotifications,
             badge: unreadNotifications > 0 ? '$unreadNotifications' : null,
+          ),
+          _linkDivider(),
+          Consumer<SubscriptionProvider>(
+            builder: (context, subProvider, _) => _LinkRow(
+              icon: Icons.workspace_premium_rounded,
+              color: AppColors.of(context).accent,
+              title: AppLocalizations.of(context)!.premiumPassTitle,
+              subtitle: subProvider.hasActivePremium
+                  ? AppLocalizations.of(context)!.premiumPassActiveTitle
+                  : AppLocalizations.of(context)!.premiumPassSubtitle,
+              onTap: onPremium ?? () {},
+            ),
           ),
           _linkDivider(),
           _LinkRow(

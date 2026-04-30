@@ -13,6 +13,9 @@ class ApplicationModel {
   final Timestamp? appliedAt;
   final Timestamp? withdrawnAt;
   final bool hadWithdrawnBefore;
+  final bool isPremiumAtApply;
+  final bool priorityApplication;
+  final Map<String, dynamic> subscriptionSnapshot;
 
   ApplicationModel({
     required this.id,
@@ -25,6 +28,9 @@ class ApplicationModel {
     this.appliedAt,
     this.withdrawnAt,
     this.hadWithdrawnBefore = false,
+    this.isPremiumAtApply = false,
+    this.priorityApplication = false,
+    this.subscriptionSnapshot = const {},
   });
 
   factory ApplicationModel.fromMap(Map<String, dynamic> map) {
@@ -39,6 +45,13 @@ class ApplicationModel {
       appliedAt: map['appliedAt'],
       withdrawnAt: map['withdrawnAt'],
       hadWithdrawnBefore: map['hadWithdrawnBefore'] == true,
+      isPremiumAtApply: map['isPremiumAtApply'] == true,
+      priorityApplication: map['priorityApplication'] == true,
+      subscriptionSnapshot: map['subscriptionSnapshot'] is Map
+          ? Map<String, dynamic>.from(
+              map['subscriptionSnapshot'] as Map,
+            )
+          : const {},
     );
   }
 
@@ -54,6 +67,9 @@ class ApplicationModel {
       'appliedAt': appliedAt,
       'withdrawnAt': withdrawnAt,
       'hadWithdrawnBefore': hadWithdrawnBefore,
+      'isPremiumAtApply': isPremiumAtApply,
+      'priorityApplication': priorityApplication,
+      'subscriptionSnapshot': subscriptionSnapshot,
     };
   }
 
@@ -68,6 +84,9 @@ class ApplicationModel {
     Timestamp? appliedAt,
     Timestamp? withdrawnAt,
     bool? hadWithdrawnBefore,
+    bool? isPremiumAtApply,
+    bool? priorityApplication,
+    Map<String, dynamic>? subscriptionSnapshot,
   }) {
     return ApplicationModel(
       id: id ?? this.id,
@@ -80,6 +99,9 @@ class ApplicationModel {
       appliedAt: appliedAt ?? this.appliedAt,
       withdrawnAt: withdrawnAt ?? this.withdrawnAt,
       hadWithdrawnBefore: hadWithdrawnBefore ?? this.hadWithdrawnBefore,
+      isPremiumAtApply: isPremiumAtApply ?? this.isPremiumAtApply,
+      priorityApplication: priorityApplication ?? this.priorityApplication,
+      subscriptionSnapshot: subscriptionSnapshot ?? this.subscriptionSnapshot,
     );
   }
 }

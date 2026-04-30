@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/saved_opportunity_model.dart';
 import '../services/saved_opportunity_service.dart';
 
+export '../services/saved_opportunity_service.dart'
+    show SavedLimitReachedException;
+
 class SavedOpportunityProvider extends ChangeNotifier {
   final SavedOpportunityService _service = SavedOpportunityService();
 
@@ -35,23 +38,20 @@ class SavedOpportunityProvider extends ChangeNotifier {
     required String deadline,
     String fundingLabel = '',
   }) async {
-    try {
-      await _service.saveOpportunity(
-        studentId: studentId,
-        opportunityId: opportunityId,
-        title: title,
-        companyName: companyName,
-        type: type,
-        location: location,
-        deadline: deadline,
-        fundingLabel: fundingLabel,
-      );
+    // Re-throw SavedLimitReachedException so callers can show upgrade modal.
+    await _service.saveOpportunity(
+      studentId: studentId,
+      opportunityId: opportunityId,
+      title: title,
+      companyName: companyName,
+      type: type,
+      location: location,
+      deadline: deadline,
+      fundingLabel: fundingLabel,
+    );
 
-      await fetchSavedOpportunities(studentId);
-      return null;
-    } catch (e) {
-      return e.toString();
-    }
+    await fetchSavedOpportunities(studentId);
+    return null;
   }
 
   Future<String?> unsaveOpportunity(String id, String studentId) async {

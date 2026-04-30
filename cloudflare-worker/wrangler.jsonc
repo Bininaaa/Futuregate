@@ -17,6 +17,13 @@
   //   STORAGE_API_BASE_URL          (e.g. "https://avenirdz-storage-api.example.workers.dev")
   //   FILE_ACCESS_SECRET            (shared HMAC secret with the storage worker for secure document links)
   //   GROQ_API_KEY                  (API key from console.groq.com for AI message processing)
+  //
+  // ── Chargily Pay v2 (TEST MODE ONLY) ────────────────────────────────────
+  //   CHARGILY_SECRET_KEY           (test secret key from Chargily dashboard → Developers → API keys)
+  //   CHARGILY_WEBHOOK_URL          (your Worker URL + /api/webhooks/chargily, registered in Chargily dashboard)
+  //   APP_BASE_URL                  (e.g. "https://futuregate.tech" — used for fallback success/failure URLs)
+  //   FUTUREGATE_SUCCESS_URL        (deep-link or web URL shown after successful Chargily test payment)
+  //   FUTUREGATE_FAILURE_URL        (deep-link or web URL shown after failed/cancelled Chargily test payment)
 
   // Production environment override (optional)
   "env": {

@@ -1916,5 +1916,46 @@ service cloud.firestore {
         allow delete: if isAdmin();
       }
     }
+
+    // ── subscriptions ─────────────────────────────────────────────────────
+    // Only the Cloudflare Worker (Firebase Admin SDK) may write subscriptions.
+    // Students can read their own document; admins can read all.
+    match /subscriptions/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow write: if false; // Worker writes via Admin SDK, bypassing rules
+    }
+
+    // ── payments ──────────────────────────────────────────────────────────
+    // Only Worker (Admin SDK) writes. Students read their own; admins read all.
+    match /payments/{paymentId} {
+      allow read: if isAdmin() ||
+        (isStudent() && resource.data.uid == request.auth.uid);
+      allow write: if false;
+    }
+
+    // ── appConfig ─────────────────────────────────────────────────────────
+    // Public read for premium config; only admin may write.
+    match /appConfig/{docId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── opportunities (early access extension) ────────────────────────────
+    // Company may request early access on its own posts only.
+    // Company must not set earlyAccessStatus, premiumEarlyAccess, or publicVisibleAt.
+    // Admin controls approval fields.
+    // Students cannot write early access fields.
+    match /opportunities/{opportunityId} {
+      // Existing broad rules stay. These additive checks prevent abuse:
+      allow update: if isCompany() &&
+        resource.data.companyId == request.auth.uid &&
+        // Allow requesting early access (pending only)
+        (
+          !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['earlyAccessStatus', 'premiumEarlyAccess',
+                     'publicVisibleAt', 'earlyAccessReviewedBy',
+                     'earlyAccessReviewedAt', 'earlyAccessRejectedReason'])
+        );
+    }
   }
 }

@@ -26,6 +26,11 @@ import '../../widgets/shared/app_feedback.dart';
 import '../chat/user_profile_preview_screen.dart';
 import 'chat_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../providers/subscription_provider.dart';
+import '../../widgets/early_access_label.dart';
+import '../../widgets/premium_upgrade_modal.dart';
+import '../../widgets/saved_limit_upgrade_modal.dart';
+import 'premium_pass_screen.dart';
 
 class OpportunityDetailScreen extends StatelessWidget {
   final OpportunityModel opportunity;
@@ -200,6 +205,29 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       return;
     }
 
+    // Check early access lock before doing anything expensive.
+    if (widget.opportunity.isEarlyAccessActive) {
+      final sub = context.read<SubscriptionProvider>().subscription;
+      final isPremium = sub?.isActive ?? false;
+      if (!isPremium) {
+        final l10n = AppLocalizations.of(context)!;
+        final goUpgrade = await showPremiumUpgradeModal(
+          context,
+          title: l10n.earlyAccessLockedModalTitle,
+          body: l10n.earlyAccessLockedModalBody,
+          highlightText: l10n.earlyAccessLockedMessage,
+          onUpgrade: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const PremiumPassScreen())),
+        );
+        if (!goUpgrade) return;
+        // Re-check after return from premium screen.
+        if (!mounted) return;
+        final subNow = context.read<SubscriptionProvider>().subscription;
+        if (!(subNow?.isActive ?? false)) return;
+      }
+    }
+
     setState(() => _isApplying = true);
 
     try {
@@ -237,12 +265,27 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         return;
       }
 
-      final error = await applicationProvider.applyToOpportunity(
-        studentId: currentUser.uid,
-        studentName: currentUser.fullName,
-        opportunityId: widget.opportunity.id,
-        cvId: cv.id,
-      );
+      String? error;
+      try {
+        error = await applicationProvider.applyToOpportunity(
+          studentId: currentUser.uid,
+          studentName: currentUser.fullName,
+          opportunityId: widget.opportunity.id,
+          cvId: cv.id,
+        );
+      } on EarlyAccessLockedException {
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
+        await showPremiumUpgradeModal(
+          context,
+          title: l10n.earlyAccessLockedModalTitle,
+          body: l10n.earlyAccessLockedModalBody,
+          onUpgrade: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const PremiumPassScreen())),
+        );
+        return;
+      }
 
       if (!mounted) {
         return;
@@ -360,18 +403,32 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           widget.opportunity.title,
           fallback: l10n.uiOpportunity,
         );
-        error = await savedProvider.saveOpportunity(
-          studentId: currentUser.uid,
-          opportunityId: widget.opportunity.id,
-          title: savedTitle,
-          companyName: _companyName,
-          type: _effectiveType,
-          location: _locationValue,
-          deadline: _deadlineLabel ?? '',
-          fundingLabel: _effectiveType == OpportunityType.sponsoring
-              ? widget.opportunity.fundingLabel() ?? ''
-              : '',
-        );
+        try {
+          error = await savedProvider.saveOpportunity(
+            studentId: currentUser.uid,
+            opportunityId: widget.opportunity.id,
+            title: savedTitle,
+            companyName: _companyName,
+            type: _effectiveType,
+            location: _locationValue,
+            deadline: _deadlineLabel ?? '',
+            fundingLabel: _effectiveType == OpportunityType.sponsoring
+                ? widget.opportunity.fundingLabel() ?? ''
+                : '',
+          );
+        } on SavedLimitReachedException catch (e) {
+          if (!mounted) return;
+          await showSavedLimitUpgradeModal(
+            context,
+            limit: e.limit,
+            onUpgrade: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+            ),
+          );
+          return;
+        } catch (e) {
+          error = e.toString();
+        }
       }
 
       if (!mounted) {
@@ -1096,6 +1153,29 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           canOpenCompanyChat ? 178 : 132,
         ),
         children: <Widget>[
+          // Early access chip shown above the hero card (when applicable)
+          if (widget.opportunity.isEarlyAccessActive) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: Row(
+                children: [
+                  EarlyAccessLabel(status: 'approved'),
+                  const SizedBox(width: 8),
+                  if (widget.opportunity.publicVisibleAt != null)
+                    EarlyAccessCountdownChip(
+                      publicVisibleAt: widget.opportunity.publicVisibleAt!,
+                    ),
+                ],
+              ),
+            ),
+          ] else if (widget.opportunity.earlyAccessStatus != 'none') ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: EarlyAccessLabel(
+                status: widget.opportunity.earlyAccessStatus,
+              ),
+            ),
+          ],
           AppDetailHeroCard(
             theme: _theme,
             icon: OpportunityType.icon(_effectiveType),

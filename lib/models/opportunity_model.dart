@@ -39,6 +39,23 @@ class OpportunityModel {
   final Map<String, dynamic> rawData;
   final String? originalLanguage;
 
+  // Early access fields
+  final bool earlyAccessRequested;
+  final String earlyAccessStatus; // none, pending, approved, rejected, expired
+  final bool premiumEarlyAccess;
+  final DateTime? publicVisibleAt;
+  final int? earlyAccessDurationHours;
+  final String? earlyAccessRejectedReason;
+
+  // Stats fields
+  final int viewsCount;
+  final int applicationsCount;
+  final int premiumApplicationsCount;
+  final int freeApplicationsCount;
+  final int lockedApplyClicks;
+  final int upgradeModalViews;
+  final int upgradeClicks;
+
   OpportunityModel({
     required this.id,
     required this.companyId,
@@ -73,6 +90,21 @@ class OpportunityModel {
     this.benefits = const [],
     this.rawData = const {},
     this.originalLanguage,
+    // Early access
+    this.earlyAccessRequested = false,
+    this.earlyAccessStatus = 'none',
+    this.premiumEarlyAccess = false,
+    this.publicVisibleAt,
+    this.earlyAccessDurationHours,
+    this.earlyAccessRejectedReason,
+    // Stats
+    this.viewsCount = 0,
+    this.applicationsCount = 0,
+    this.premiumApplicationsCount = 0,
+    this.freeApplicationsCount = 0,
+    this.lockedApplyClicks = 0,
+    this.upgradeModalViews = 0,
+    this.upgradeClicks = 0,
   });
 
   factory OpportunityModel.fromMap(Map<String, dynamic> map) {
@@ -136,7 +168,38 @@ class OpportunityModel {
       ),
       rawData: data,
       originalLanguage: data['originalLanguage']?.toString(),
+      // Early access
+      earlyAccessRequested: data['earlyAccessRequested'] == true,
+      earlyAccessStatus: _normalizeEarlyAccessStatus(data['earlyAccessStatus']),
+      premiumEarlyAccess: data['premiumEarlyAccess'] == true,
+      publicVisibleAt: OpportunityMetadata.parseDateTimeLike(
+        data['publicVisibleAt'],
+      ),
+      earlyAccessDurationHours: data['earlyAccessDurationHours'] is num
+          ? (data['earlyAccessDurationHours'] as num).toInt()
+          : null,
+      earlyAccessRejectedReason: data['earlyAccessRejectedReason']?.toString(),
+      // Stats
+      viewsCount: _parseInt(data['viewsCount']),
+      applicationsCount: _parseInt(data['applicationsCount']),
+      premiumApplicationsCount: _parseInt(data['premiumApplicationsCount']),
+      freeApplicationsCount: _parseInt(data['freeApplicationsCount']),
+      lockedApplyClicks: _parseInt(data['lockedApplyClicks']),
+      upgradeModalViews: _parseInt(data['upgradeModalViews']),
+      upgradeClicks: _parseInt(data['upgradeClicks']),
     );
+  }
+
+  static String _normalizeEarlyAccessStatus(dynamic value) {
+    const valid = {'none', 'pending', 'approved', 'rejected', 'expired'};
+    final s = (value ?? 'none').toString().trim().toLowerCase();
+    return valid.contains(s) ? s : 'none';
+  }
+
+  static int _parseInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return 0;
   }
 
   Map<String, dynamic> toMap() {
@@ -180,7 +243,31 @@ class OpportunityModel {
       'requirementItems': requirementItems,
       'benefits': benefits,
       if (originalLanguage != null) 'originalLanguage': originalLanguage,
+      'earlyAccessRequested': earlyAccessRequested,
+      'earlyAccessStatus': earlyAccessStatus,
+      'premiumEarlyAccess': premiumEarlyAccess,
+      'publicVisibleAt': publicVisibleAt != null
+          ? OpportunityMetadata.toTimestampOrNull(publicVisibleAt)
+          : null,
+      if (earlyAccessDurationHours != null)
+        'earlyAccessDurationHours': earlyAccessDurationHours,
+      if (earlyAccessRejectedReason != null)
+        'earlyAccessRejectedReason': earlyAccessRejectedReason,
+      'viewsCount': viewsCount,
+      'applicationsCount': applicationsCount,
+      'premiumApplicationsCount': premiumApplicationsCount,
+      'freeApplicationsCount': freeApplicationsCount,
+      'lockedApplyClicks': lockedApplyClicks,
+      'upgradeModalViews': upgradeModalViews,
+      'upgradeClicks': upgradeClicks,
     };
+  }
+
+  bool get isEarlyAccessActive {
+    if (!premiumEarlyAccess) return false;
+    if (earlyAccessStatus != 'approved') return false;
+    if (publicVisibleAt == null) return false;
+    return DateTime.now().isBefore(publicVisibleAt!);
   }
 
   bool get usesStructuredMetadata =>

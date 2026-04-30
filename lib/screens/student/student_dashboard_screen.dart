@@ -45,6 +45,9 @@ import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../notifications_screen.dart';
 import '../settings/settings_screen.dart';
+import 'premium_pass_screen.dart';
+import '../../providers/subscription_provider.dart';
+import '../../widgets/subscription_status_card.dart';
 import 'applied_opportunities_screen.dart';
 import 'cv_screen.dart';
 import 'saved_screen.dart';
@@ -245,6 +248,27 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   ),
                 ),
               ),
+            // ── Premium discovery banner (only for free students) ──────
+            Consumer<SubscriptionProvider>(
+              builder: (context, subProvider, _) {
+                if (subProvider.hasActivePremium) return const SliverToBoxAdapter(child: SizedBox.shrink());
+                return SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: SubscriptionStatusCard(
+                      subscription: subProvider.subscription,
+                      isLoading: subProvider.isLoading,
+                      onUpgrade: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PremiumPassScreen(),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
               sliver: SliverToBoxAdapter(

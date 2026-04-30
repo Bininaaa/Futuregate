@@ -246,13 +246,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }
     if (remaining.inHours < 24) {
       final hours = remaining.inHours == 0 ? 1 : remaining.inHours;
-      return _l10n.opportunityCountdownHoursLeft(hours.toString());
+      return _l10n.opportunityCountdownHoursLeft(hours);
     }
 
     final days = remaining.inHours % 24 == 0
         ? remaining.inDays
         : remaining.inDays + 1;
-    return _l10n.opportunityCountdownDaysLeft(days.toString());
+    return _l10n.opportunityCountdownDaysLeft(days);
   }
 
   String _postedLabel(OpportunityModel opportunity) {
@@ -3271,7 +3271,10 @@ class _PrimaryActionButton extends StatelessWidget {
         icon: Icon(icon, size: 16),
         label: Text(
           label,
-          style: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w700),
+          style: AppTypography.product(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: _OpportunityPalette.primary,
@@ -3308,7 +3311,10 @@ class _GhostActionButton extends StatelessWidget {
         icon: Icon(icon, size: 16),
         label: Text(
           label,
-          style: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w700),
+          style: AppTypography.product(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         style: OutlinedButton.styleFrom(
           foregroundColor: foreground,
@@ -3874,7 +3880,10 @@ class _AppDecisionButton extends StatelessWidget {
         label: Text(
           label,
           overflow: TextOverflow.ellipsis,
-          style: AppTypography.product(fontSize: 12, fontWeight: FontWeight.w800),
+          style: AppTypography.product(
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: background,
