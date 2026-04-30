@@ -184,7 +184,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text('Emoji', style: ChatThemeStyles.cardTitle()),
+                Text(AppLocalizations.of(context)!.uiEmoji, style: ChatThemeStyles.cardTitle()),
                 const SizedBox(height: 14),
                 Wrap(
                   spacing: 10,
@@ -1178,7 +1178,7 @@ class _EmptyConversationState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Say hello to $otherName',
+              AppLocalizations.of(context)!.uiSayHelloToOthername(otherName),
               textAlign: TextAlign.center,
               style: ChatThemeStyles.cardTitle().copyWith(
                 fontSize: 16,
@@ -1187,7 +1187,7 @@ class _EmptyConversationState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Send your first message to start the conversation.',
+              AppLocalizations.of(context)!.uiSendYourFirstMessageToStartTheConversation,
               textAlign: TextAlign.center,
               style: ChatThemeStyles.body(
                 ChatThemePalette.textSecondary,

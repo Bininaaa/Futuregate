@@ -19986,6 +19986,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Monthly Registrations'**
   String get adminChartMonthlyRegistrations;
+
+  /// uiNextLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get uiNextLabel;
+
+  /// uiEmoji
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get uiEmoji;
+
+  /// uiConnectionPaused
+  ///
+  /// In en, this message translates to:
+  /// **'Connection paused'**
+  String get uiConnectionPaused;
+
+  /// uiConnectionPausedDescription
+  ///
+  /// In en, this message translates to:
+  /// **'FutureGate needs a network connection to refresh your workspace. Check Wi-Fi or mobile data, then try again.'**
+  String get uiConnectionPausedDescription;
+
+  /// uiRetryConnection
+  ///
+  /// In en, this message translates to:
+  /// **'Retry connection'**
+  String get uiRetryConnection;
+
+  /// uiUntitledOffer
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled offer'**
+  String get uiUntitledOffer;
+
+  /// uiInternshipUppercase
+  ///
+  /// In en, this message translates to:
+  /// **'INTERNSHIP'**
+  String get uiInternshipUppercase;
+
+  /// uiJumpStraightIntoTheQueueThatNeedsReview
+  ///
+  /// In en, this message translates to:
+  /// **'Jump straight into the queue that needs review.'**
+  String get uiJumpStraightIntoTheQueueThatNeedsReview;
+
+  /// uiThisApplicationIsReadOnlyForYourAdminAccount
+  ///
+  /// In en, this message translates to:
+  /// **'This application is read-only for your admin account.'**
+  String get uiThisApplicationIsReadOnlyForYourAdminAccount;
+
+  /// uiGetStarted
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get uiGetStarted;
+
+  /// uiReturningToFutureGate
+  ///
+  /// In en, this message translates to:
+  /// **'Returning to FutureGate?'**
+  String get uiReturningToFutureGate;
+
+  /// uiOnboardingConnectTitlePart1
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with the '**
+  String get uiOnboardingConnectTitlePart1;
+
+  /// uiOnboardingConnectTitlePart2
+  ///
+  /// In en, this message translates to:
+  /// **'Right\nOpportunities.'**
+  String get uiOnboardingConnectTitlePart2;
+
+  /// uiOnboardingConnectDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Reach companies, explore real career paths, and take the next step toward your future.'**
+  String get uiOnboardingConnectDescription;
+
+  /// uiOnboardingProfileTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Build a Strong Student\nProfile.'**
+  String get uiOnboardingProfileTitle;
+
+  /// uiOnboardingProfileDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Create your profile, showcase your skills, and prepare for the opportunities that match your goals.'**
+  String get uiOnboardingProfileDescription;
+
+  /// uiOnboardingFutureTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Door to Your\nFuture.'**
+  String get uiOnboardingFutureTitle;
+
+  /// uiOnboardingFutureDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Build your FutureGate space to apply faster, track replies, and keep internships, jobs, and scholarships organized.'**
+  String get uiOnboardingFutureDescription;
 }
 
 class _AppLocalizationsDelegate

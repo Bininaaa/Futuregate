@@ -12151,4 +12151,64 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminChartMonthlyRegistrations => 'التسجيلات الشهرية';
+
+  @override
+  String get uiNextLabel => 'التالي';
+
+  @override
+  String get uiEmoji => 'رمز تعبيري';
+
+  @override
+  String get uiConnectionPaused => 'تم إيقاف الاتصال مؤقتًا';
+
+  @override
+  String get uiConnectionPausedDescription =>
+      'يحتاج FutureGate إلى اتصال بالشبكة لتحديث مساحة عملك. تحقق من Wi-Fi أو بيانات الجوال ثم حاول مرة أخرى.';
+
+  @override
+  String get uiRetryConnection => 'إعادة محاولة الاتصال';
+
+  @override
+  String get uiUntitledOffer => 'عرض بدون عنوان';
+
+  @override
+  String get uiInternshipUppercase => 'تدريب';
+
+  @override
+  String get uiJumpStraightIntoTheQueueThatNeedsReview =>
+      'انتقل مباشرة إلى قائمة الانتظار التي تحتاج إلى مراجعة.';
+
+  @override
+  String get uiThisApplicationIsReadOnlyForYourAdminAccount =>
+      'هذا الطلب للقراءة فقط بالنسبة لحسابك كمسؤول.';
+
+  @override
+  String get uiGetStarted => 'ابدأ الآن';
+
+  @override
+  String get uiReturningToFutureGate => 'هل تعود إلى FutureGate؟';
+
+  @override
+  String get uiOnboardingConnectTitlePart1 => 'تواصل مع ';
+
+  @override
+  String get uiOnboardingConnectTitlePart2 => 'الفرص\nالمناسبة.';
+
+  @override
+  String get uiOnboardingConnectDescription =>
+      'تواصل مع الشركات، واستكشف مسارات مهنية حقيقية، واتخذ الخطوة التالية نحو مستقبلك.';
+
+  @override
+  String get uiOnboardingProfileTitle => 'ابنِ ملفًا طلابيًا\nقويًا.';
+
+  @override
+  String get uiOnboardingProfileDescription =>
+      'أنشئ ملفك الشخصي، واعرض مهاراتك، وكن مستعدًا للفرص التي تناسب أهدافك.';
+
+  @override
+  String get uiOnboardingFutureTitle => 'افتح الباب إلى\nمستقبلك.';
+
+  @override
+  String get uiOnboardingFutureDescription =>
+      'أنشئ مساحتك على FutureGate للتقديم بشكل أسرع، وتتبع الردود، وتنظيم التدريبات والوظائف والمنح الدراسية.';
 }

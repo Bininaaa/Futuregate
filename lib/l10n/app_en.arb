@@ -7448,5 +7448,77 @@
   "adminChartMonthlyRegistrations": "Monthly Registrations",
   "@adminChartMonthlyRegistrations": {
     "description": "adminChartMonthlyRegistrations"
+  },
+  "uiNextLabel": "Next",
+  "@uiNextLabel": {
+    "description": "uiNextLabel"
+  },
+  "uiEmoji": "Emoji",
+  "@uiEmoji": {
+    "description": "uiEmoji"
+  },
+  "uiConnectionPaused": "Connection paused",
+  "@uiConnectionPaused": {
+    "description": "uiConnectionPaused"
+  },
+  "uiConnectionPausedDescription": "FutureGate needs a network connection to refresh your workspace. Check Wi-Fi or mobile data, then try again.",
+  "@uiConnectionPausedDescription": {
+    "description": "uiConnectionPausedDescription"
+  },
+  "uiRetryConnection": "Retry connection",
+  "@uiRetryConnection": {
+    "description": "uiRetryConnection"
+  },
+  "uiUntitledOffer": "Untitled offer",
+  "@uiUntitledOffer": {
+    "description": "uiUntitledOffer"
+  },
+  "uiInternshipUppercase": "INTERNSHIP",
+  "@uiInternshipUppercase": {
+    "description": "uiInternshipUppercase"
+  },
+  "uiJumpStraightIntoTheQueueThatNeedsReview": "Jump straight into the queue that needs review.",
+  "@uiJumpStraightIntoTheQueueThatNeedsReview": {
+    "description": "uiJumpStraightIntoTheQueueThatNeedsReview"
+  },
+  "uiThisApplicationIsReadOnlyForYourAdminAccount": "This application is read-only for your admin account.",
+  "@uiThisApplicationIsReadOnlyForYourAdminAccount": {
+    "description": "uiThisApplicationIsReadOnlyForYourAdminAccount"
+  },
+  "uiGetStarted": "Get Started",
+  "@uiGetStarted": {
+    "description": "uiGetStarted"
+  },
+  "uiReturningToFutureGate": "Returning to FutureGate?",
+  "@uiReturningToFutureGate": {
+    "description": "uiReturningToFutureGate"
+  },
+  "uiOnboardingConnectTitlePart1": "Connect with the ",
+  "@uiOnboardingConnectTitlePart1": {
+    "description": "uiOnboardingConnectTitlePart1"
+  },
+  "uiOnboardingConnectTitlePart2": "Right\nOpportunities.",
+  "@uiOnboardingConnectTitlePart2": {
+    "description": "uiOnboardingConnectTitlePart2"
+  },
+  "uiOnboardingConnectDescription": "Reach companies, explore real career paths, and take the next step toward your future.",
+  "@uiOnboardingConnectDescription": {
+    "description": "uiOnboardingConnectDescription"
+  },
+  "uiOnboardingProfileTitle": "Build a Strong Student\nProfile.",
+  "@uiOnboardingProfileTitle": {
+    "description": "uiOnboardingProfileTitle"
+  },
+  "uiOnboardingProfileDescription": "Create your profile, showcase your skills, and prepare for the opportunities that match your goals.",
+  "@uiOnboardingProfileDescription": {
+    "description": "uiOnboardingProfileDescription"
+  },
+  "uiOnboardingFutureTitle": "Open the Door to Your\nFuture.",
+  "@uiOnboardingFutureTitle": {
+    "description": "uiOnboardingFutureTitle"
+  },
+  "uiOnboardingFutureDescription": "Build your FutureGate space to apply faster, track replies, and keep internships, jobs, and scholarships organized.",
+  "@uiOnboardingFutureDescription": {
+    "description": "uiOnboardingFutureDescription"
   }
 }

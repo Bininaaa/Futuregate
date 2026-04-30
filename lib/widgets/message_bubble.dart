@@ -54,7 +54,7 @@ class MessageBubble extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'This message was deleted',
+                AppLocalizations.of(context)!.uiThisMessageWasDeleted,
                 style: AppTypography.product(
                   fontSize: 13,
                   color: isMe ? Colors.white70 : Colors.grey,
@@ -110,7 +110,7 @@ class MessageBubble extends StatelessWidget {
                 children: [
                   if (message.isEdited) ...[
                     Text(
-                      'edited',
+                      AppLocalizations.of(context)!.uiEdited.toLowerCase(),
                       style: AppTypography.product(
                         fontSize: 10,
                         color: isMe
@@ -169,7 +169,7 @@ class MessageBubble extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.red),
               title: Text(
-                'Delete for everyone',
+                AppLocalizations.of(context)!.uiDeleteForEveryone,
                 style: AppTypography.product(color: Colors.red),
               ),
               onTap: () {

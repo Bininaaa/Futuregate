@@ -5469,5 +5469,77 @@
   "adminChartLegendStudents": "الطلاب",
   "adminChartLegendCompanies": "الشركات",
   "adminChartLegendAdmins": "المشرفون",
-  "adminChartMonthlyRegistrations": "التسجيلات الشهرية"
+  "adminChartMonthlyRegistrations": "التسجيلات الشهرية" ,
+  "uiNextLabel" : "التالي" ,
+  "@uiNextLabel": {
+    "description": "uiNextLabel"
+  },
+  "uiEmoji": "رمز تعبيري",
+  "@uiEmoji": {
+    "description": "uiEmoji"
+  },
+  "uiConnectionPaused": "تم إيقاف الاتصال مؤقتًا",
+  "@uiConnectionPaused": {
+    "description": "uiConnectionPaused"
+  },
+  "uiConnectionPausedDescription": "يحتاج FutureGate إلى اتصال بالشبكة لتحديث مساحة عملك. تحقق من Wi-Fi أو بيانات الجوال ثم حاول مرة أخرى.",
+  "@uiConnectionPausedDescription": {
+    "description": "uiConnectionPausedDescription"
+  },
+  "uiRetryConnection": "إعادة محاولة الاتصال",
+  "@uiRetryConnection": {
+    "description": "uiRetryConnection"
+  },
+  "uiUntitledOffer": "عرض بدون عنوان",
+  "@uiUntitledOffer": {
+    "description": "uiUntitledOffer"
+  },
+  "uiInternshipUppercase": "تدريب",
+  "@uiInternshipUppercase": {
+    "description": "uiInternshipUppercase"
+  },
+  "uiJumpStraightIntoTheQueueThatNeedsReview": "انتقل مباشرة إلى قائمة الانتظار التي تحتاج إلى مراجعة.",
+  "@uiJumpStraightIntoTheQueueThatNeedsReview": {
+    "description": "uiJumpStraightIntoTheQueueThatNeedsReview"
+  },
+  "uiThisApplicationIsReadOnlyForYourAdminAccount": "هذا الطلب للقراءة فقط بالنسبة لحسابك كمسؤول.",
+  "@uiThisApplicationIsReadOnlyForYourAdminAccount": {
+    "description": "uiThisApplicationIsReadOnlyForYourAdminAccount"
+  },
+  "uiGetStarted": "ابدأ الآن",
+  "@uiGetStarted": {
+    "description": "uiGetStarted"
+  },
+  "uiReturningToFutureGate": "هل تعود إلى FutureGate؟",
+  "@uiReturningToFutureGate": {
+    "description": "uiReturningToFutureGate"
+  },
+  "uiOnboardingConnectTitlePart1": "تواصل مع ",
+  "@uiOnboardingConnectTitlePart1": {
+    "description": "uiOnboardingConnectTitlePart1"
+  },
+  "uiOnboardingConnectTitlePart2": "الفرص\nالمناسبة.",
+  "@uiOnboardingConnectTitlePart2": {
+    "description": "uiOnboardingConnectTitlePart2"
+  },
+  "uiOnboardingConnectDescription": "تواصل مع الشركات، واستكشف مسارات مهنية حقيقية، واتخذ الخطوة التالية نحو مستقبلك.",
+  "@uiOnboardingConnectDescription": {
+    "description": "uiOnboardingConnectDescription"
+  },
+  "uiOnboardingProfileTitle": "ابنِ ملفًا طلابيًا\nقويًا.",
+  "@uiOnboardingProfileTitle": {
+    "description": "uiOnboardingProfileTitle"
+  },
+  "uiOnboardingProfileDescription": "أنشئ ملفك الشخصي، واعرض مهاراتك، وكن مستعدًا للفرص التي تناسب أهدافك.",
+  "@uiOnboardingProfileDescription": {
+    "description": "uiOnboardingProfileDescription"
+  },
+  "uiOnboardingFutureTitle": "افتح الباب إلى\nمستقبلك.",
+  "@uiOnboardingFutureTitle": {
+    "description": "uiOnboardingFutureTitle"
+  },
+  "uiOnboardingFutureDescription": "أنشئ مساحتك على FutureGate للتقديم بشكل أسرع، وتتبع الردود، وتنظيم التدريبات والوظائف والمنح الدراسية.",
+  "@uiOnboardingFutureDescription": {
+    "description": "uiOnboardingFutureDescription"
+  }
 }

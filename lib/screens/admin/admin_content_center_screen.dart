@@ -22,7 +22,6 @@ import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
 import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
-import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_ui.dart';
@@ -846,7 +845,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  AppLocalizations.of(context)!.adminContentIdeasPending(pendingCount),
+                  '$pendingCount idea${pendingCount == 1 ? '' : 's'} still waiting for approval or rejection.',
                   style: AppTypography.product(
                     fontSize: 12,
                     height: 1.45,
@@ -923,7 +922,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   Widget _buildPendingApplicationsWarning(int count) {
     final l10n = AppLocalizations.of(context)!;
     return _buildInlinePendingWarning(
-      l10n.adminContentApplicationsPending(count),
+      '$count pending application${count == 1 ? '' : 's'} need your review.',
       trailingLabel: l10n.uiPending,
     );
   }
@@ -1129,8 +1128,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                                 const SizedBox(height: 5),
                                 Text(
                                   canManageApplications
-                                      ? AppLocalizations.of(context)!.adminContentTabReviewApplicantsDescription
-                                      : AppLocalizations.of(context)!.adminContentTabApplicationsViewOnlyDescription,
+                                      ? 'Review applicants, CVs, and pending decisions in one place.'
+                                      : 'Applications are visible here. Only the posting admin can approve or reject them.',
                                   style: AppTypography.product(
                                     fontSize: 12.5,
                                     color: Colors.white70,
@@ -3144,7 +3143,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return '';
     }
 
-    return LocalizedDisplay.shortDate(context, dateTime, includeYear: true);
+    return DateFormat('MMM d, yyyy').format(dateTime);
   }
 
   String? _formatDateBadgeLabel(
@@ -3173,7 +3172,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       final label = OpportunityMetadata.isDeadlineExpired(dateTime)
           ? l10n.uiExpired
           : resolvedPrefix;
-      return '$label ${LocalizedDisplay.shortDate(context, dateTime)}';
+      return '$label ${DateFormat('MMM d').format(dateTime)}';
     }
 
     if (fallback.isEmpty) {
@@ -4345,7 +4344,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
               ),
               child: Text(
-                AppLocalizations.of(context)!.adminContentApplicationReadOnlyForYou,
+                AppLocalizations.of(context)!.uiThisApplicationIsReadOnlyForYourAdminAccount,
                 style: AppTypography.product(
                   fontSize: 11.6,
                   height: 1.35,
@@ -4630,11 +4629,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return l10n.uiNotProvided;
     }
 
-    return LocalizedDisplay.shortDate(
-      context,
-      value.toDate(),
-      includeYear: true,
-    );
+    return DateFormat('MMM d, yyyy').format(value.toDate());
   }
 
   String _documentErrorMessage(Object error, AppLocalizations l10n) {
@@ -5748,7 +5743,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       return l10n.uiUnknownTime;
     }
 
-    return LocalizedDisplay.shortDateTime(context, dateTime);
+    return DateFormat('MMM d, yyyy - HH:mm').format(dateTime);
   }
 
   Color _statusColor(String status) {

@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/app_intro_preferences_service.dart';
 import '../../theme/app_colors.dart';
@@ -23,54 +24,59 @@ class GetStartedScreen extends StatefulWidget {
 }
 
 class _GetStartedScreenState extends State<GetStartedScreen> {
-  static const List<_SlideSpec> _slides = <_SlideSpec>[
-    _SlideSpec(
-      layout: _HeroLayout.connect,
-      assetPath: 'assets/pictures/get_started1.png',
-      heroHeight: 500,
-      sheetHeight: 312,
-      sheetOffset: 58,
-      indicatorAlignment: MainAxisAlignment.start,
-      titleParts: <_TitlePart>[
-        _TitlePart(text: 'Connect with the '),
-        _TitlePart(text: 'Right\nOpportunities.', highlight: true),
-      ],
-      description:
-          'Reach companies, explore real career paths, and take the next step toward your future.',
-      titleAlign: TextAlign.left,
-      bodyAlign: CrossAxisAlignment.start,
-    ),
-    _SlideSpec(
-      layout: _HeroLayout.profile,
-      assetPath: AppBrandAssets.getStartedProfile,
-      heroHeight: 478,
-      sheetHeight: 312,
-      sheetOffset: 46,
-      indicatorAlignment: MainAxisAlignment.center,
-      titleParts: <_TitlePart>[
-        _TitlePart(text: 'Build a Strong Student\nProfile.'),
-      ],
-      description:
-          'Create your profile, showcase your skills, and prepare for the opportunities that match your goals.',
-      titleAlign: TextAlign.left,
-      bodyAlign: CrossAxisAlignment.start,
-    ),
-    _SlideSpec(
-      layout: _HeroLayout.future,
-      assetPath: 'assets/pictures/get_started2.png',
-      heroHeight: 492,
-      sheetHeight: 312,
-      sheetOffset: 52,
-      indicatorAlignment: MainAxisAlignment.center,
-      titleParts: <_TitlePart>[
-        _TitlePart(text: 'Open the Door to Your\nFuture.'),
-      ],
-      description:
-          'Build your FutureGate space to apply faster, track replies, and keep internships, jobs, and scholarships organized.',
-      titleAlign: TextAlign.center,
-      bodyAlign: CrossAxisAlignment.center,
-    ),
-  ];
+  static const int _slidesCount = 3;
+
+  List<_SlideSpec> _buildSlides(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return <_SlideSpec>[
+      _SlideSpec(
+        layout: _HeroLayout.connect,
+        assetPath: 'assets/pictures/get_started1.png',
+        heroHeight: 500,
+        sheetHeight: 312,
+        sheetOffset: 58,
+        indicatorAlignment: MainAxisAlignment.start,
+        titleParts: <_TitlePart>[
+          _TitlePart(text: l10n.uiOnboardingConnectTitlePart1),
+          _TitlePart(
+            text: l10n.uiOnboardingConnectTitlePart2,
+            highlight: true,
+          ),
+        ],
+        description: l10n.uiOnboardingConnectDescription,
+        titleAlign: TextAlign.left,
+        bodyAlign: CrossAxisAlignment.start,
+      ),
+      _SlideSpec(
+        layout: _HeroLayout.profile,
+        assetPath: AppBrandAssets.getStartedProfile,
+        heroHeight: 478,
+        sheetHeight: 312,
+        sheetOffset: 46,
+        indicatorAlignment: MainAxisAlignment.center,
+        titleParts: <_TitlePart>[
+          _TitlePart(text: l10n.uiOnboardingProfileTitle),
+        ],
+        description: l10n.uiOnboardingProfileDescription,
+        titleAlign: TextAlign.left,
+        bodyAlign: CrossAxisAlignment.start,
+      ),
+      _SlideSpec(
+        layout: _HeroLayout.future,
+        assetPath: 'assets/pictures/get_started2.png',
+        heroHeight: 492,
+        sheetHeight: 312,
+        sheetOffset: 52,
+        indicatorAlignment: MainAxisAlignment.center,
+        titleParts: <_TitlePart>[
+          _TitlePart(text: l10n.uiOnboardingFutureTitle),
+        ],
+        description: l10n.uiOnboardingFutureDescription,
+        titleAlign: TextAlign.center,
+        bodyAlign: CrossAxisAlignment.center,
+      ),
+    ];
+  }
 
   late final AppIntroPreferencesService _introPreferencesService;
   late final PageController _pageController;
@@ -113,7 +119,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
     }
 
     setState(() => _currentIndex = index);
-    if (index == _slides.length - 1) {
+    if (index == _slidesCount - 1) {
       unawaited(_markSeen());
     }
   }
@@ -140,7 +146,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
   }
 
   Future<void> _goNext() async {
-    if (_currentIndex >= _slides.length - 1) {
+    if (_currentIndex >= _slidesCount - 1) {
       return;
     }
     await _goToPage(_currentIndex + 1);
@@ -200,6 +206,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
   Widget build(BuildContext context) {
     final isSignedIn = context.watch<AuthProvider>().userModel != null;
     final colors = AppColors.of(context);
+    final slides = _buildSlides(context);
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -216,19 +223,19 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                     Positioned.fill(
                       child: PageView.builder(
                         controller: _pageController,
-                        itemCount: _slides.length,
+                        itemCount: slides.length,
                         onPageChanged: (index) => _handlePageChanged(index),
                         itemBuilder: (context, index) {
-                          final slide = _slides[index];
+                          final slide = slides[index];
                           return _SlideView(
                             spec: slide,
                             index: index,
-                            totalSlides: _slides.length,
-                            isLastSlide: index == _slides.length - 1,
+                            totalSlides: slides.length,
+                            isLastSlide: index == slides.length - 1,
                             isSignedIn: isSignedIn,
                             pageController: _pageController,
                             onPrimaryAction: _goNext,
-                            onForward: index == _slides.length - 1
+                            onForward: index == slides.length - 1
                                 ? (isSignedIn
                                       ? _continueToApp
                                       : _openCreateAccount)
@@ -253,7 +260,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                           ),
                         ),
                         child: Text(
-                          'Skip',
+                          AppLocalizations.of(context)!.uiSkip,
                           style: AppTypography.product(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -424,15 +431,16 @@ class _HeroStage extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (spec.layout) {
       case _HeroLayout.connect:
-        return _buildConnectHero();
+        return _buildConnectHero(context);
       case _HeroLayout.profile:
-        return _buildProfileHero();
+        return _buildProfileHero(context);
       case _HeroLayout.future:
-        return _buildFutureHero();
+        return _buildFutureHero(context);
     }
   }
 
-  Widget _buildConnectHero() {
+  Widget _buildConnectHero(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: spec.heroHeight,
       child: Stack(
@@ -495,7 +503,7 @@ class _HeroStage extends StatelessWidget {
                           const SizedBox(width: 9),
                           Expanded(
                             child: Text(
-                              'Application\nApproved',
+                              l10n.uiApplicationApproved,
                               style: AppTypography.product(
                                 fontSize: 14.4,
                                 fontWeight: FontWeight.w800,
@@ -549,7 +557,7 @@ class _HeroStage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Alex from TechCorp',
+                              l10n.uiAlexFromTechcorp,
                               style: AppTypography.product(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w800,
@@ -558,7 +566,7 @@ class _HeroStage extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '"We\'d love to chat about..."',
+                              l10n.uiWeDLoveToChatAbout,
                               style: AppTypography.product(
                                 fontSize: 10.8,
                                 fontWeight: FontWeight.w600,
@@ -589,7 +597,7 @@ class _HeroStage extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        'Reply Now',
+                        l10n.uiReplyNow,
                         style: AppTypography.product(
                           fontSize: 13.2,
                           fontWeight: FontWeight.w800,
@@ -607,7 +615,8 @@ class _HeroStage extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHero() {
+  Widget _buildProfileHero(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: spec.heroHeight,
       child: Stack(
@@ -690,7 +699,7 @@ class _HeroStage extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          'Profile Strength',
+                          l10n.uiProfileStrength,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.product(
@@ -751,7 +760,7 @@ class _HeroStage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Resume.pdf',
+                      l10n.uiResumePdf,
                       textAlign: TextAlign.center,
                       style: AppTypography.product(
                         fontSize: 11.6,
@@ -771,10 +780,10 @@ class _HeroStage extends StatelessWidget {
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: const <Widget>[
-                _SkillChip(label: 'Product Design', primary: true),
-                _SkillChip(label: 'Strategic Thinking', filled: true),
-                _SkillChip(label: 'Public Speaking'),
+              children: <Widget>[
+                _SkillChip(label: l10n.uiProductDesign, primary: true),
+                _SkillChip(label: l10n.uiStrategicThinking, filled: true),
+                _SkillChip(label: l10n.uiPublicSpeaking),
               ],
             ),
           ),
@@ -808,7 +817,7 @@ class _HeroStage extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Saved',
+                            l10n.uiSaved,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppTypography.product(
@@ -831,7 +840,7 @@ class _HeroStage extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Ready to apply',
+                      l10n.uiReadyToApply,
                       style: AppTypography.product(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -886,7 +895,7 @@ class _HeroStage extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Text(
-                          'UX Research Internship',
+                          l10n.uiUxResearchInternship,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.product(
@@ -898,7 +907,7 @@ class _HeroStage extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'TechNova Global Inc.',
+                          l10n.uiTechnovaGlobalInc,
                           style: AppTypography.product(
                             fontSize: 11.8,
                             fontWeight: FontWeight.w600,
@@ -917,7 +926,8 @@ class _HeroStage extends StatelessWidget {
     );
   }
 
-  Widget _buildFutureHero() {
+  Widget _buildFutureHero(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: spec.heroHeight,
       child: Stack(
@@ -983,7 +993,7 @@ class _HeroStage extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Text(
-                              'INTERNSHIP',
+                              l10n.uiInternshipUppercase,
                               style: AppTypography.product(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
@@ -993,7 +1003,7 @@ class _HeroStage extends StatelessWidget {
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              'UX Design at Tech',
+                              l10n.uiUxDesignAtTech,
                               style: AppTypography.product(
                                 fontSize: 14.5,
                                 fontWeight: FontWeight.w800,
@@ -1036,7 +1046,7 @@ class _HeroStage extends StatelessWidget {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Global Scholarship',
+                              l10n.uiGlobalScholarship,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: AppTypography.product(
@@ -1050,7 +1060,7 @@ class _HeroStage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Full Tuition Coverage',
+                        l10n.uiFullTuitionCoverage,
                         style: AppTypography.product(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
@@ -1105,7 +1115,7 @@ class _HeroStage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            'Data Science Pro',
+                            l10n.uiDataSciencePro,
                             style: AppTypography.product(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
@@ -1161,6 +1171,7 @@ class _BottomSheetStage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1178,17 +1189,17 @@ class _BottomSheetStage extends StatelessWidget {
         }
 
         final primaryLabel = index == 0
-            ? 'Get Started'
+            ? l10n.uiGetStarted
             : isLastSlide
-            ? (isSignedIn ? 'Continue' : 'Create account')
-            : 'Next';
+            ? (isSignedIn ? l10n.continueLabel : l10n.uiCreateAccount)
+            : l10n.uiNextLabel;
         final primaryKey = index == 0
             ? const ValueKey<String>('onboarding_primary_button')
             : isLastSlide
             ? const ValueKey<String>('onboarding_final_primary_button')
             : null;
         final helperTitle = isLastSlide && !isSignedIn
-            ? 'Returning to FutureGate?'
+            ? l10n.uiReturningToFutureGate
             : null;
         final helperSpacing = isLastSlide
             ? scaled(10, min: 6)
@@ -1326,7 +1337,7 @@ class _BottomSheetStage extends StatelessWidget {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Text(
-                            'Sign in',
+                            l10n.uiSignIn,
                             style: AppTypography.product(
                               fontSize: scaled(12.8, min: 10.6),
                               fontWeight: FontWeight.w800,

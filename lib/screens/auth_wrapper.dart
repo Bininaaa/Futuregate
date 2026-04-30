@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../providers/admin_provider.dart';
 import '../providers/application_provider.dart';
 import '../providers/auth_provider.dart';
@@ -208,7 +209,7 @@ class _BlockedScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                'Account Blocked',
+                AppLocalizations.of(context)!.accountBlockedTitle,
                 style: AppTypography.product(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -218,9 +219,7 @@ class _BlockedScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Your account has been blocked by an administrator. '
-                'You can no longer access the platform. '
-                'If you believe this is a mistake, please contact support.',
+                AppLocalizations.of(context)!.accountBlockedMessage,
                 style: AppTypography.product(
                   fontSize: 14,
                   color: colors.textSecondary,
@@ -235,7 +234,7 @@ class _BlockedScreen extends StatelessWidget {
                   onPressed: onLogout,
                   icon: const Icon(Icons.logout, size: 20),
                   label: Text(
-                    'Back to sign in',
+                    AppLocalizations.of(context)!.backToSignInLabel,
                     style: AppTypography.product(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

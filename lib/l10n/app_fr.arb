@@ -5469,5 +5469,77 @@
   "adminChartLegendStudents": "Étudiants",
   "adminChartLegendCompanies": "Entreprises",
   "adminChartLegendAdmins": "Admins",
-  "adminChartMonthlyRegistrations": "Inscriptions mensuelles"
+  "adminChartMonthlyRegistrations": "Inscriptions mensuelles",
+  "uiNextLabel": "Suivant",
+  "@uiNextLabel": {
+    "description": "uiNextLabel"
+  },
+  "uiEmoji": "Émoji",
+  "@uiEmoji": {
+    "description": "uiEmoji"
+  },
+  "uiConnectionPaused": "Connexion suspendue",
+  "@uiConnectionPaused": {
+    "description": "uiConnectionPaused"
+  },
+  "uiConnectionPausedDescription": "FutureGate a besoin d’une connexion réseau pour actualiser votre espace de travail. Vérifiez le Wi-Fi ou les données mobiles, puis réessayez.",
+  "@uiConnectionPausedDescription": {
+    "description": "uiConnectionPausedDescription"
+  },
+  "uiRetryConnection": "Réessayer la connexion",
+  "@uiRetryConnection": {
+    "description": "uiRetryConnection"
+  },
+  "uiUntitledOffer": "Offre sans titre",
+  "@uiUntitledOffer": {
+    "description": "uiUntitledOffer"
+  },
+  "uiInternshipUppercase": "STAGE",
+  "@uiInternshipUppercase": {
+    "description": "uiInternshipUppercase"
+  },
+  "uiJumpStraightIntoTheQueueThatNeedsReview": "Accédez directement à la file d’attente à examiner.",
+  "@uiJumpStraightIntoTheQueueThatNeedsReview": {
+    "description": "uiJumpStraightIntoTheQueueThatNeedsReview"
+  },
+  "uiThisApplicationIsReadOnlyForYourAdminAccount": "Cette candidature est en lecture seule pour votre compte administrateur.",
+  "@uiThisApplicationIsReadOnlyForYourAdminAccount": {
+    "description": "uiThisApplicationIsReadOnlyForYourAdminAccount"
+  },
+  "uiGetStarted": "Commencer",
+  "@uiGetStarted": {
+    "description": "uiGetStarted"
+  },
+  "uiReturningToFutureGate": "De retour sur FutureGate ?",
+  "@uiReturningToFutureGate": {
+    "description": "uiReturningToFutureGate"
+  },
+  "uiOnboardingConnectTitlePart1": "Connectez-vous aux ",
+  "@uiOnboardingConnectTitlePart1": {
+    "description": "uiOnboardingConnectTitlePart1"
+  },
+  "uiOnboardingConnectTitlePart2": "bonnes\nopportunités.",
+  "@uiOnboardingConnectTitlePart2": {
+    "description": "uiOnboardingConnectTitlePart2"
+  },
+  "uiOnboardingConnectDescription": "Atteignez des entreprises, explorez de vraies trajectoires de carrière et faites le prochain pas vers votre avenir.",
+  "@uiOnboardingConnectDescription": {
+    "description": "uiOnboardingConnectDescription"
+  },
+  "uiOnboardingProfileTitle": "Créez un profil\nétudiant solide.",
+  "@uiOnboardingProfileTitle": {
+    "description": "uiOnboardingProfileTitle"
+  },
+  "uiOnboardingProfileDescription": "Créez votre profil, mettez en avant vos compétences et préparez-vous aux opportunités correspondant à vos objectifs.",
+  "@uiOnboardingProfileDescription": {
+    "description": "uiOnboardingProfileDescription"
+  },
+  "uiOnboardingFutureTitle": "Ouvrez la porte de\nvotre avenir.",
+  "@uiOnboardingFutureTitle": {
+    "description": "uiOnboardingFutureTitle"
+  },
+  "uiOnboardingFutureDescription": "Créez votre espace FutureGate pour postuler plus vite, suivre les réponses et organiser stages, emplois et bourses.",
+  "@uiOnboardingFutureDescription": {
+    "description": "uiOnboardingFutureDescription"
+  }
 }

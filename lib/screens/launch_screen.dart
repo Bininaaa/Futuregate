@@ -207,9 +207,9 @@ class _LaunchScreenState extends State<LaunchScreen>
                   color: Colors.white.withValues(alpha: 0.22),
                 ),
               ),
-              child: const Text(
-                'Skip',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.uiSkip,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

@@ -249,7 +249,7 @@ class _DeletedMessageRow extends StatelessWidget {
         const SizedBox(width: 5),
         Flexible(
           child: Text(
-            'This message was deleted',
+            AppLocalizations.of(context)!.uiThisMessageWasDeleted,
             style: ChatThemeStyles.body(
               color,
             ).copyWith(fontStyle: FontStyle.italic, fontSize: 12.5),

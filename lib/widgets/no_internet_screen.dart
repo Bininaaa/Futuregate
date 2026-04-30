@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import 'app_shell_background.dart';
@@ -12,6 +13,7 @@ class NoInternetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return AppShellBackground(
       child: Scaffold(
@@ -58,7 +60,7 @@ class NoInternetScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 22),
                       Text(
-                        'Connection paused',
+                        l10n.uiConnectionPaused,
                         style: AppTypography.product(
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
@@ -69,7 +71,7 @@ class NoInternetScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'FutureGate needs a network connection to refresh your workspace. Check Wi-Fi or mobile data, then try again.',
+                        l10n.uiConnectionPausedDescription,
                         style: AppTypography.product(
                           fontSize: 13.2,
                           height: 1.55,
@@ -86,7 +88,7 @@ class NoInternetScreen extends StatelessWidget {
                           onPressed: onRetry,
                           icon: const Icon(Icons.refresh_rounded, size: 20),
                           label: Text(
-                            'Retry connection',
+                            l10n.uiRetryConnection,
                             style: AppTypography.product(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,

@@ -12008,4 +12008,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminChartMonthlyRegistrations => 'Monthly Registrations';
+
+  @override
+  String get uiNextLabel => 'Next';
+
+  @override
+  String get uiEmoji => 'Emoji';
+
+  @override
+  String get uiConnectionPaused => 'Connection paused';
+
+  @override
+  String get uiConnectionPausedDescription =>
+      'FutureGate needs a network connection to refresh your workspace. Check Wi-Fi or mobile data, then try again.';
+
+  @override
+  String get uiRetryConnection => 'Retry connection';
+
+  @override
+  String get uiUntitledOffer => 'Untitled offer';
+
+  @override
+  String get uiInternshipUppercase => 'INTERNSHIP';
+
+  @override
+  String get uiJumpStraightIntoTheQueueThatNeedsReview =>
+      'Jump straight into the queue that needs review.';
+
+  @override
+  String get uiThisApplicationIsReadOnlyForYourAdminAccount =>
+      'This application is read-only for your admin account.';
+
+  @override
+  String get uiGetStarted => 'Get Started';
+
+  @override
+  String get uiReturningToFutureGate => 'Returning to FutureGate?';
+
+  @override
+  String get uiOnboardingConnectTitlePart1 => 'Connect with the ';
+
+  @override
+  String get uiOnboardingConnectTitlePart2 => 'Right\nOpportunities.';
+
+  @override
+  String get uiOnboardingConnectDescription =>
+      'Reach companies, explore real career paths, and take the next step toward your future.';
+
+  @override
+  String get uiOnboardingProfileTitle => 'Build a Strong Student\nProfile.';
+
+  @override
+  String get uiOnboardingProfileDescription =>
+      'Create your profile, showcase your skills, and prepare for the opportunities that match your goals.';
+
+  @override
+  String get uiOnboardingFutureTitle => 'Open the Door to Your\nFuture.';
+
+  @override
+  String get uiOnboardingFutureDescription =>
+      'Build your FutureGate space to apply faster, track replies, and keep internships, jobs, and scholarships organized.';
 }

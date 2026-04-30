@@ -12205,4 +12205,64 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adminChartMonthlyRegistrations => 'Inscriptions mensuelles';
+
+  @override
+  String get uiNextLabel => 'Suivant';
+
+  @override
+  String get uiEmoji => 'Émoji';
+
+  @override
+  String get uiConnectionPaused => 'Connexion suspendue';
+
+  @override
+  String get uiConnectionPausedDescription =>
+      'FutureGate a besoin d’une connexion réseau pour actualiser votre espace de travail. Vérifiez le Wi-Fi ou les données mobiles, puis réessayez.';
+
+  @override
+  String get uiRetryConnection => 'Réessayer la connexion';
+
+  @override
+  String get uiUntitledOffer => 'Offre sans titre';
+
+  @override
+  String get uiInternshipUppercase => 'STAGE';
+
+  @override
+  String get uiJumpStraightIntoTheQueueThatNeedsReview =>
+      'Accédez directement à la file d’attente à examiner.';
+
+  @override
+  String get uiThisApplicationIsReadOnlyForYourAdminAccount =>
+      'Cette candidature est en lecture seule pour votre compte administrateur.';
+
+  @override
+  String get uiGetStarted => 'Commencer';
+
+  @override
+  String get uiReturningToFutureGate => 'De retour sur FutureGate ?';
+
+  @override
+  String get uiOnboardingConnectTitlePart1 => 'Connectez-vous aux ';
+
+  @override
+  String get uiOnboardingConnectTitlePart2 => 'bonnes\nopportunités.';
+
+  @override
+  String get uiOnboardingConnectDescription =>
+      'Atteignez des entreprises, explorez de vraies trajectoires de carrière et faites le prochain pas vers votre avenir.';
+
+  @override
+  String get uiOnboardingProfileTitle => 'Créez un profil\nétudiant solide.';
+
+  @override
+  String get uiOnboardingProfileDescription =>
+      'Créez votre profil, mettez en avant vos compétences et préparez-vous aux opportunités correspondant à vos objectifs.';
+
+  @override
+  String get uiOnboardingFutureTitle => 'Ouvrez la porte de\nvotre avenir.';
+
+  @override
+  String get uiOnboardingFutureDescription =>
+      'Créez votre espace FutureGate pour postuler plus vite, suivre les réponses et organiser stages, emplois et bourses.';
 }
