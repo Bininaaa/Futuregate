@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
@@ -10,6 +9,7 @@ import '../../services/document_access_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -606,7 +606,7 @@ class _UsersScreenState extends State<UsersScreen> {
   ) async {
     final key = _companyApprovalActionKey(user.uid, nextStatus);
     if (_busyUserActionKeys.contains(key)) {
-      return 'This company update is already in progress';
+      return _l10n.adminUsersCompanyUpdateInProgress;
     }
 
     setState(() => _busyUserActionKeys.add(key));
@@ -1189,9 +1189,9 @@ class _UsersScreenState extends State<UsersScreen> {
       _ => _l10n.uiMarkPendingCompanyMessage,
     };
     final feedbackMessage = switch (nextStatus) {
-      'approved' => '$companyLabel approved.',
-      'rejected' => '$companyLabel rejected.',
-      _ => '$companyLabel moved back to pending review.',
+      'approved' => _l10n.adminUsersCompanyApprovedFeedback(companyLabel),
+      'rejected' => _l10n.adminUsersCompanyRejectedFeedback(companyLabel),
+      _ => _l10n.adminUsersCompanyMovedPendingFeedback(companyLabel),
     };
 
     _showConfirmationDialog(
@@ -1503,8 +1503,8 @@ class _UsersScreenState extends State<UsersScreen> {
       confirmLabel: user.isActive ? _l10n.uiBlockUser : _l10n.uiUnblockUser,
       successTitle: user.isActive ? _l10n.uiBlockUser : _l10n.uiUnblockUser,
       successMessage: user.isActive
-          ? '${user.fullName} blocked.'
-          : '${user.fullName} unblocked.',
+          ? _l10n.adminUsersUserBlockedFeedback(user.fullName)
+          : _l10n.adminUsersUserUnblockedFeedback(user.fullName),
       successType: nextActive
           ? AppFeedbackType.success
           : AppFeedbackType.removed,
@@ -1946,7 +1946,11 @@ class _UsersScreenState extends State<UsersScreen> {
     final uploadedAt = user.commercialRegisterUploadedAt;
     final uploadedAtLabel = uploadedAt == null
         ? _l10n.uiNotProvided
-        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+        : LocalizedDisplay.shortDate(
+            context,
+            uploadedAt.toDate(),
+            includeYear: true,
+          );
 
     final typeLabel = user.commercialRegisterIsPdf
         ? 'PDF'
@@ -2637,7 +2641,7 @@ class _AdminCompanyOpportunitiesSheetState
     final createdAt = opportunity.createdAt?.toDate();
     final postedLabel = createdAt == null
         ? ''
-        : DateFormat('MMM d, yyyy').format(createdAt);
+        : LocalizedDisplay.shortDate(context, createdAt, includeYear: true);
 
     showModalBottomSheet<void>(
       context: context,

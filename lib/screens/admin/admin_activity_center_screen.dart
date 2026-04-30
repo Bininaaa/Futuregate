@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/admin_activity_model.dart';
 import '../../providers/admin_provider.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../widgets/admin/admin_activity_preview_sheet.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/shared/app_loading.dart';
@@ -597,7 +597,7 @@ class _ActivityTile extends StatelessWidget {
                             ),
                           _ActivityInlineInfo(
                             icon: Icons.schedule_rounded,
-                            label: _formatTimestamp(activity.createdAt, l10n),
+                            label: _formatTimestamp(context, activity.createdAt, l10n),
                           ),
                         ],
                       ),
@@ -620,7 +620,11 @@ class _ActivityTile extends StatelessWidget {
     );
   }
 
-  static String _formatTimestamp(Timestamp? createdAt, AppLocalizations l10n) {
+  static String _formatTimestamp(
+    BuildContext context,
+    Timestamp? createdAt,
+    AppLocalizations l10n,
+  ) {
     if (createdAt == null) {
       return l10n.uiUnknownTime;
     }
@@ -642,7 +646,7 @@ class _ActivityTile extends StatelessWidget {
       return l10n.uiDaysAgoShort(difference.inDays);
     }
 
-    return DateFormat.yMMMd(l10n.localeName).format(date);
+    return LocalizedDisplay.shortDate(context, date, includeYear: true);
   }
 
   static IconData _iconForType(String type) {

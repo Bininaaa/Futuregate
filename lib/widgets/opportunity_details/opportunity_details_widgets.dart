@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
+import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 
 class OpportunityVisualTheme {
@@ -211,7 +213,15 @@ class OpportunityHeader extends StatelessWidget {
                     spacing: 8,
                     runSpacing: 6,
                     children: tags
-                        .map((tag) => OpportunityTag(theme: theme, label: tag))
+                        .map(
+                          (tag) => OpportunityTag(
+                            theme: theme,
+                            label: OpportunityMetadata.localizeTag(
+                              tag,
+                              AppLocalizations.of(context)!,
+                            ),
+                          ),
+                        )
                         .toList(),
                   ),
                 ),

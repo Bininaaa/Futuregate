@@ -181,8 +181,7 @@ class _AdminGoogleBooksImportScreenState
         return;
       }
 
-      final message =
-          'Something went wrong while searching books. Please try again.';
+      final message = _l10n.uiSearchBooksFailedMessage;
       setState(() {
         _results = [];
         _searchError = message;

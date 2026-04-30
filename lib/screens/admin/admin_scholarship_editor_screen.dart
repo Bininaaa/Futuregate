@@ -166,8 +166,7 @@ class _AdminScholarshipEditorScreenState
                     controller: _titleController,
                     label: l10n.adminScholarshipTitleLabel,
                     hint: l10n.adminScholarshipTitleHint,
-                    validator: adminRequiredMin(
-                      l10n.adminScholarshipTitleValidatorLabel,
+                    validator: adminRequiredMin(l10n,  l10n.adminScholarshipTitleValidatorLabel,
                       min: 4,
                     ),
                   ),
@@ -176,8 +175,7 @@ class _AdminScholarshipEditorScreenState
                     controller: _providerController,
                     label: l10n.uiProvider,
                     hint: l10n.adminScholarshipProviderHint,
-                    validator: adminRequiredMin(
-                      l10n.adminScholarshipProviderValidatorLabel,
+                    validator: adminRequiredMin(l10n,  l10n.adminScholarshipProviderValidatorLabel,
                       min: 2,
                     ),
                   ),
@@ -228,8 +226,7 @@ class _AdminScholarshipEditorScreenState
                     maxLines: 5,
                     minLength: 60,
                     helperText: l10n.adminScholarshipDescriptionHelper,
-                    validator: adminRequiredMin(
-                      l10n.adminScholarshipDescriptionValidatorLabel,
+                    validator: adminRequiredMin(l10n,  l10n.adminScholarshipDescriptionValidatorLabel,
                       min: 60,
                     ),
                   ),

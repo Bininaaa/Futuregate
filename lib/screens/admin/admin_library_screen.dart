@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -10,6 +9,7 @@ import '../../providers/training_provider.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
@@ -195,7 +195,7 @@ class _AdminLibraryScreenState extends State<AdminLibraryScreen>
     if (value == null) {
       return '';
     }
-    return '$prefix ${DateFormat('MMM d').format(value.toLocal())}';
+    return '$prefix ${LocalizedDisplay.shortDate(context, value)}';
   }
 
   Color _resourceAccentColor(String type) {

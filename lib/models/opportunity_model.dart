@@ -187,7 +187,6 @@ class OpportunityModel {
       OpportunityMetadata.usesStructuredFields(type);
 
   String? fundingLabel({
-    bool includePrefix = false,
     bool preferFundingNote = false,
   }) {
     return OpportunityMetadata.buildFundingLabel(
@@ -198,7 +197,6 @@ class OpportunityModel {
       legacySalaryMax: salaryMax,
       legacySalaryCurrency: salaryCurrency,
       legacyCompensationText: compensationText,
-      includePrefix: includePrefix,
       preferFundingNote: preferFundingNote,
     );
   }

@@ -11853,4 +11853,159 @@ class AppLocalizationsEn extends AppLocalizations {
   String activityPreviewDetailsUnavailableMessage(String recordType) {
     return 'We couldn’t load the linked $recordType record right now.';
   }
+
+  @override
+  String get tagFullyFunded => 'Fully funded';
+
+  @override
+  String get tagStipend => 'Stipend';
+
+  @override
+  String get tagInternship => 'Internship';
+
+  @override
+  String get tagLearning => 'Learning';
+
+  @override
+  String get tagFeatured => 'Featured';
+
+  @override
+  String get tagSponsored => 'Sponsored';
+
+  @override
+  String adminContentIdeasPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending ideas need review.',
+      one: '1 pending idea needs review.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminContentApplicationsPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending applications need review.',
+      one: '1 pending application needs review.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminContentTabReviewApplicantsDescription =>
+      'Review applicants, open profiles, and keep decisions moving.';
+
+  @override
+  String get adminContentTabApplicationsViewOnlyDescription =>
+      'View applications and applicant details without changing decisions.';
+
+  @override
+  String get adminContentApplicationReadOnlyForYou =>
+      'This application is read-only for your admin role.';
+
+  @override
+  String adminDashboardPendingItemsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending items',
+      one: '1 pending item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminDashboardPendingQueueDescription =>
+      'Companies, ideas, and applications waiting for an admin decision.';
+
+  @override
+  String get adminEditorListEmptyHint => 'Add items to show them here.';
+
+  @override
+  String adminEditorRequiredFieldHint(String label) {
+    return '$label is required';
+  }
+
+  @override
+  String adminEditorMoreDetailNeededHint(String label) {
+    return '$label needs a bit more detail';
+  }
+
+  @override
+  String get validationDeadlineCannotBePast => 'Deadline cannot be in the past';
+
+  @override
+  String get validationEnterValidAmount => 'Enter a valid amount';
+
+  @override
+  String get adminStudentProfileOpportunityUnavailableMessage =>
+      'This opportunity is no longer available for this application.';
+
+  @override
+  String get adminUsersCompanyUpdateInProgress =>
+      'A company status update is already in progress.';
+
+  @override
+  String adminUsersCompanyApprovedFeedback(String company) {
+    return '$company approved.';
+  }
+
+  @override
+  String adminUsersCompanyRejectedFeedback(String company) {
+    return '$company rejected.';
+  }
+
+  @override
+  String adminUsersCompanyMovedPendingFeedback(String company) {
+    return '$company moved back to pending review.';
+  }
+
+  @override
+  String adminUsersUserBlockedFeedback(String user) {
+    return '$user blocked.';
+  }
+
+  @override
+  String adminUsersUserUnblockedFeedback(String user) {
+    return '$user unblocked.';
+  }
+
+  @override
+  String get adminChartStudentsByLevel => 'Students by Level';
+
+  @override
+  String get adminChartLevelBac => 'Bac';
+
+  @override
+  String get adminChartLevelLicenceShort => 'Lic.';
+
+  @override
+  String get adminChartLevelLicence => 'Licence';
+
+  @override
+  String get adminChartLevelMaster => 'Master';
+
+  @override
+  String get adminChartLevelDoctoratShort => 'Doc.';
+
+  @override
+  String get adminChartLevelDoctorat => 'Doctorat';
+
+  @override
+  String get adminChartUsersDistribution => 'Users Distribution';
+
+  @override
+  String get adminChartLegendStudents => 'Students';
+
+  @override
+  String get adminChartLegendCompanies => 'Companies';
+
+  @override
+  String get adminChartLegendAdmins => 'Admins';
+
+  @override
+  String get adminChartMonthlyRegistrations => 'Monthly Registrations';
 }

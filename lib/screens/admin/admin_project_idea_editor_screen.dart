@@ -181,8 +181,7 @@ class _AdminProjectIdeaEditorScreenState
                     controller: _titleController,
                     label: l10n.uiIdeaTitle,
                     hint: l10n.adminIdeaTitleHint,
-                    validator: adminRequiredMin(
-                      l10n.adminIdeaTitleValidatorLabel,
+                    validator: adminRequiredMin(l10n,  l10n.adminIdeaTitleValidatorLabel,
                       min: 4,
                     ),
                   ),
@@ -207,8 +206,7 @@ class _AdminProjectIdeaEditorScreenState
                     maxLines: 6,
                     minLength: 60,
                     helperText: l10n.adminIdeaFullDescriptionHelper,
-                    validator: adminRequiredMin(
-                      l10n.adminIdeaDescriptionValidatorLabel,
+                    validator: adminRequiredMin(l10n,  l10n.adminIdeaDescriptionValidatorLabel,
                       min: 60,
                     ),
                   ),
@@ -226,8 +224,7 @@ class _AdminProjectIdeaEditorScreenState
                     controller: _domainController,
                     label: l10n.uiDomain,
                     hint: l10n.adminIdeaDomainHint,
-                    validator: adminRequiredMin(
-                      l10n.adminIdeaDomainValidatorLabel,
+                    validator: adminRequiredMin(l10n,  l10n.adminIdeaDomainValidatorLabel,
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -294,8 +291,7 @@ class _AdminProjectIdeaEditorScreenState
                     controller: _toolsController,
                     label: l10n.uiToolsOrStack,
                     hint: l10n.adminIdeaToolsHint,
-                    validator: adminRequiredMin(
-                      l10n.adminIdeaToolsValidatorLabel,
+                    validator: adminRequiredMin(l10n,  l10n.adminIdeaToolsValidatorLabel,
                     ),
                   ),
                   const SizedBox(height: 14),

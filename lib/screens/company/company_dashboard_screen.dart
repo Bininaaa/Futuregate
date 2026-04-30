@@ -15,6 +15,7 @@ import '../../providers/notification_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
@@ -206,7 +207,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     if (appliedAt == null) {
       return _l10n.uiAppliedDateUnavailable;
     }
-    return DateFormat.yMMMd(_localeName).format(appliedAt);
+    return LocalizedDisplay.shortDate(context, appliedAt, includeYear: true);
   }
 
   String _cleanError(String message) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
@@ -14,6 +13,7 @@ import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
 import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_ui.dart';
@@ -452,7 +452,11 @@ class _AdminStudentApplicationsSheetState
     final statusColor = _statusColor(item.status);
     final appliedLabel = item.appliedAt == null
         ? l10n.uiAppliedDateUnavailable
-        : DateFormat('MMM d, yyyy').format(item.appliedAt!);
+        : LocalizedDisplay.shortDate(
+            context,
+            item.appliedAt!,
+            includeYear: true,
+          );
     final opportunityStateLabel = _opportunityStateLabel(item, l10n);
     final opportunityStateColor = _opportunityStateColor(item);
     final description = (opportunity?.description.trim() ?? '').isEmpty
@@ -521,8 +525,7 @@ class _AdminStudentApplicationsSheetState
                     AdminEmptyState(
                       icon: Icons.work_off_outlined,
                       title: l10n.uiOpportunityUnavailable,
-                      message:
-                          'The original opportunity record is no longer available, but the submitted application is still visible.',
+                      message: l10n.adminStudentProfileOpportunityUnavailableMessage,
                     )
                   else ...[
                     _DetailRow(
@@ -753,7 +756,11 @@ class _AdminStudentApplicationsSheetState
     final appliedLabel = item.appliedAt == null
         ? l10n.uiAppliedDateUnavailable
         : l10n.uiAppliedValue(
-            DateFormat('MMM d, yyyy').format(item.appliedAt!),
+            LocalizedDisplay.shortDate(
+              context,
+              item.appliedAt!,
+              includeYear: true,
+            ),
           );
 
     return Semantics(

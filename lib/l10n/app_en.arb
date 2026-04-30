@@ -7250,5 +7250,203 @@
         "type": "String"
       }
     }
+  },
+  "tagFullyFunded": "Fully funded",
+  "@tagFullyFunded": {
+    "description": "Opportunity tagFullyFunded chip"
+  },
+  "tagStipend": "Stipend",
+  "@tagStipend": {
+    "description": "Opportunity tagStipend chip"
+  },
+  "tagInternship": "Internship",
+  "@tagInternship": {
+    "description": "Opportunity tagInternship chip"
+  },
+  "tagLearning": "Learning",
+  "@tagLearning": {
+    "description": "Opportunity tagLearning chip"
+  },
+  "tagFeatured": "Featured",
+  "@tagFeatured": {
+    "description": "Opportunity tagFeatured chip"
+  },
+  "tagSponsored": "Sponsored",
+  "@tagSponsored": {
+    "description": "Opportunity tagSponsored chip"
+  },
+  "adminContentIdeasPending": "{count, plural, =1{1 pending idea needs review.} other{{count} pending ideas need review.}}",
+  "@adminContentIdeasPending": {
+    "description": "adminContentIdeasPending",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminContentApplicationsPending": "{count, plural, =1{1 pending application needs review.} other{{count} pending applications need review.}}",
+  "@adminContentApplicationsPending": {
+    "description": "adminContentApplicationsPending",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminContentTabReviewApplicantsDescription": "Review applicants, open profiles, and keep decisions moving.",
+  "@adminContentTabReviewApplicantsDescription": {
+    "description": "adminContentTabReviewApplicantsDescription"
+  },
+  "adminContentTabApplicationsViewOnlyDescription": "View applications and applicant details without changing decisions.",
+  "@adminContentTabApplicationsViewOnlyDescription": {
+    "description": "adminContentTabApplicationsViewOnlyDescription"
+  },
+  "adminContentApplicationReadOnlyForYou": "This application is read-only for your admin role.",
+  "@adminContentApplicationReadOnlyForYou": {
+    "description": "adminContentApplicationReadOnlyForYou"
+  },
+  "adminDashboardPendingItemsTitle": "{count, plural, =1{1 pending item} other{{count} pending items}}",
+  "@adminDashboardPendingItemsTitle": {
+    "description": "adminDashboardPendingItemsTitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminDashboardPendingQueueDescription": "Companies, ideas, and applications waiting for an admin decision.",
+  "@adminDashboardPendingQueueDescription": {
+    "description": "adminDashboardPendingQueueDescription"
+  },
+  "adminEditorListEmptyHint": "Add items to show them here.",
+  "@adminEditorListEmptyHint": {
+    "description": "adminEditorListEmptyHint"
+  },
+  "adminEditorRequiredFieldHint": "{label} is required",
+  "@adminEditorRequiredFieldHint": {
+    "description": "adminEditorRequiredFieldHint",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "adminEditorMoreDetailNeededHint": "{label} needs a bit more detail",
+  "@adminEditorMoreDetailNeededHint": {
+    "description": "adminEditorMoreDetailNeededHint",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "validationDeadlineCannotBePast": "Deadline cannot be in the past",
+  "@validationDeadlineCannotBePast": {
+    "description": "validationDeadlineCannotBePast"
+  },
+  "validationEnterValidAmount": "Enter a valid amount",
+  "@validationEnterValidAmount": {
+    "description": "validationEnterValidAmount"
+  },
+  "adminStudentProfileOpportunityUnavailableMessage": "This opportunity is no longer available for this application.",
+  "@adminStudentProfileOpportunityUnavailableMessage": {
+    "description": "adminStudentProfileOpportunityUnavailableMessage"
+  },
+  "adminUsersCompanyUpdateInProgress": "A company status update is already in progress.",
+  "@adminUsersCompanyUpdateInProgress": {
+    "description": "adminUsersCompanyUpdateInProgress"
+  },
+  "adminUsersCompanyApprovedFeedback": "{company} approved.",
+  "@adminUsersCompanyApprovedFeedback": {
+    "description": "adminUsersCompanyApprovedFeedback",
+    "placeholders": {
+      "company": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUsersCompanyRejectedFeedback": "{company} rejected.",
+  "@adminUsersCompanyRejectedFeedback": {
+    "description": "adminUsersCompanyRejectedFeedback",
+    "placeholders": {
+      "company": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUsersCompanyMovedPendingFeedback": "{company} moved back to pending review.",
+  "@adminUsersCompanyMovedPendingFeedback": {
+    "description": "adminUsersCompanyMovedPendingFeedback",
+    "placeholders": {
+      "company": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUsersUserBlockedFeedback": "{user} blocked.",
+  "@adminUsersUserBlockedFeedback": {
+    "description": "adminUsersUserBlockedFeedback",
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUsersUserUnblockedFeedback": "{user} unblocked.",
+  "@adminUsersUserUnblockedFeedback": {
+    "description": "adminUsersUserUnblockedFeedback",
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "adminChartStudentsByLevel": "Students by Level",
+  "@adminChartStudentsByLevel": {
+    "description": "adminChartStudentsByLevel"
+  },
+  "adminChartLevelBac": "Bac",
+  "@adminChartLevelBac": {
+    "description": "adminChartLevelBac"
+  },
+  "adminChartLevelLicenceShort": "Lic.",
+  "@adminChartLevelLicenceShort": {
+    "description": "adminChartLevelLicenceShort"
+  },
+  "adminChartLevelLicence": "Licence",
+  "@adminChartLevelLicence": {
+    "description": "adminChartLevelLicence"
+  },
+  "adminChartLevelMaster": "Master",
+  "@adminChartLevelMaster": {
+    "description": "adminChartLevelMaster"
+  },
+  "adminChartLevelDoctoratShort": "Doc.",
+  "@adminChartLevelDoctoratShort": {
+    "description": "adminChartLevelDoctoratShort"
+  },
+  "adminChartLevelDoctorat": "Doctorat",
+  "@adminChartLevelDoctorat": {
+    "description": "adminChartLevelDoctorat"
+  },
+  "adminChartUsersDistribution": "Users Distribution",
+  "@adminChartUsersDistribution": {
+    "description": "adminChartUsersDistribution"
+  },
+  "adminChartLegendStudents": "Students",
+  "@adminChartLegendStudents": {
+    "description": "adminChartLegendStudents"
+  },
+  "adminChartLegendCompanies": "Companies",
+  "@adminChartLegendCompanies": {
+    "description": "adminChartLegendCompanies"
+  },
+  "adminChartLegendAdmins": "Admins",
+  "@adminChartLegendAdmins": {
+    "description": "adminChartLegendAdmins"
+  },
+  "adminChartMonthlyRegistrations": "Monthly Registrations",
+  "@adminChartMonthlyRegistrations": {
+    "description": "adminChartMonthlyRegistrations"
   }
 }

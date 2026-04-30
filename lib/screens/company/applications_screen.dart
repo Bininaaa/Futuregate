@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../theme/app_typography.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/generated/app_localizations.dart';
@@ -17,6 +16,7 @@ import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_launch_helper.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -94,8 +94,6 @@ class _StandaloneApplicationDetailsSheetState
 
   AppLocalizations get _l10n => AppLocalizations.of(context)!;
 
-  String get _localeName => Localizations.localeOf(context).toLanguageTag();
-
   _OpportunityTypeTone _toneForOpportunity(OpportunityModel? opportunity) {
     if (opportunity == null) {
       return _OpportunityTypeTone(
@@ -124,7 +122,7 @@ class _StandaloneApplicationDetailsSheetState
     if (value == null) {
       return null;
     }
-    return DateFormat.yMMMd(_localeName).format(value.toDate());
+    return LocalizedDisplay.shortDate(context, value.toDate(), includeYear: true);
   }
 
   String? _relativeDateLabel(Timestamp? value) {
@@ -151,7 +149,7 @@ class _StandaloneApplicationDetailsSheetState
       return _l10n.uiWeeksAgo((difference / 7).ceil());
     }
 
-    return DateFormat('MMM d', _localeName).format(appliedAt);
+    return LocalizedDisplay.shortDate(context, appliedAt);
   }
 
   String _typeLabel(String? rawType) {
@@ -680,15 +678,11 @@ class _StandaloneCvSheet extends StatelessWidget {
     required this.documentAccessService,
   });
 
-  String _localeName(BuildContext context) {
-    return Localizations.localeOf(context).toLanguageTag();
-  }
-
   String _formatDate(BuildContext context, Timestamp? value) {
     if (value == null) {
       return AppLocalizations.of(context)!.uiNotSpecified;
     }
-    return DateFormat.yMMMd(_localeName(context)).format(value.toDate());
+    return LocalizedDisplay.shortDate(context, value.toDate(), includeYear: true);
   }
 
   String _documentErrorMessage(BuildContext context, Object error) {
@@ -1026,8 +1020,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   bool _openedFocusedDetails = false;
 
   AppLocalizations get _l10n => AppLocalizations.of(context)!;
-
-  String get _localeName => Localizations.localeOf(context).toLanguageTag();
 
   @override
   void initState() {
@@ -1532,7 +1524,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       return _l10n.uiWeeksAgo(weeks);
     }
 
-    return DateFormat('MMM d', _localeName).format(appliedAt);
+    return LocalizedDisplay.shortDate(context, appliedAt);
   }
 
   Widget _buildTopBar({
@@ -1950,7 +1942,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     if (value == null) {
       return null;
     }
-    return DateFormat.yMMMd(_localeName).format(value.toDate());
+    return LocalizedDisplay.shortDate(context, value.toDate(), includeYear: true);
   }
 
   String? _opportunityTitleLabel(OpportunityModel? opportunity) {
@@ -2958,7 +2950,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     if (value == null) {
       return _l10n.uiNotSpecified;
     }
-    return DateFormat.yMMMd(_localeName).format(value.toDate());
+    return LocalizedDisplay.shortDate(context, value.toDate(), includeYear: true);
   }
 
   String _documentErrorMessage(Object error) {

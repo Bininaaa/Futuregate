@@ -12048,4 +12048,161 @@ class AppLocalizationsFr extends AppLocalizations {
   String activityPreviewDetailsUnavailableMessage(String recordType) {
     return 'Nous n’avons pas pu charger l’enregistrement $recordType associé pour le moment.';
   }
+
+  @override
+  String get tagFullyFunded => 'Entièrement financé';
+
+  @override
+  String get tagStipend => 'Indemnité';
+
+  @override
+  String get tagInternship => 'Stage';
+
+  @override
+  String get tagLearning => 'Apprentissage';
+
+  @override
+  String get tagFeatured => 'En vedette';
+
+  @override
+  String get tagSponsored => 'Sponsorisé';
+
+  @override
+  String adminContentIdeasPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count idées en attente doivent être revues.',
+      one: '1 idée en attente doit être revue.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminContentApplicationsPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count candidatures en attente doivent être revues.',
+      one: '1 candidature en attente doit être revue.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminContentTabReviewApplicantsDescription =>
+      'Examinez les candidatures, ouvrez les profils et faites avancer les décisions.';
+
+  @override
+  String get adminContentTabApplicationsViewOnlyDescription =>
+      'Consultez les candidatures et les profils sans modifier les décisions.';
+
+  @override
+  String get adminContentApplicationReadOnlyForYou =>
+      'Cette candidature est en lecture seule pour votre rôle admin.';
+
+  @override
+  String adminDashboardPendingItemsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count éléments en attente',
+      one: '1 élément en attente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminDashboardPendingQueueDescription =>
+      'Entreprises, idées et candidatures en attente d\'une décision admin.';
+
+  @override
+  String get adminEditorListEmptyHint =>
+      'Ajoutez des éléments pour les afficher ici.';
+
+  @override
+  String adminEditorRequiredFieldHint(String label) {
+    return '$label est obligatoire';
+  }
+
+  @override
+  String adminEditorMoreDetailNeededHint(String label) {
+    return '$label doit contenir un peu plus de détails';
+  }
+
+  @override
+  String get validationDeadlineCannotBePast =>
+      'La date limite ne peut pas être passée';
+
+  @override
+  String get validationEnterValidAmount => 'Entrez un montant valide';
+
+  @override
+  String get adminStudentProfileOpportunityUnavailableMessage =>
+      'Cette opportunité n\'est plus disponible pour cette candidature.';
+
+  @override
+  String get adminUsersCompanyUpdateInProgress =>
+      'Une mise à jour du statut de l\'entreprise est déjà en cours.';
+
+  @override
+  String adminUsersCompanyApprovedFeedback(String company) {
+    return '$company a été approuvée.';
+  }
+
+  @override
+  String adminUsersCompanyRejectedFeedback(String company) {
+    return '$company a été refusée.';
+  }
+
+  @override
+  String adminUsersCompanyMovedPendingFeedback(String company) {
+    return '$company a été remise en attente de revue.';
+  }
+
+  @override
+  String adminUsersUserBlockedFeedback(String user) {
+    return '$user a été bloqué.';
+  }
+
+  @override
+  String adminUsersUserUnblockedFeedback(String user) {
+    return '$user a été débloqué.';
+  }
+
+  @override
+  String get adminChartStudentsByLevel => 'Étudiants par niveau';
+
+  @override
+  String get adminChartLevelBac => 'Bac';
+
+  @override
+  String get adminChartLevelLicenceShort => 'Lic.';
+
+  @override
+  String get adminChartLevelLicence => 'Licence';
+
+  @override
+  String get adminChartLevelMaster => 'Master';
+
+  @override
+  String get adminChartLevelDoctoratShort => 'Doc.';
+
+  @override
+  String get adminChartLevelDoctorat => 'Doctorat';
+
+  @override
+  String get adminChartUsersDistribution => 'Répartition des utilisateurs';
+
+  @override
+  String get adminChartLegendStudents => 'Étudiants';
+
+  @override
+  String get adminChartLegendCompanies => 'Entreprises';
+
+  @override
+  String get adminChartLegendAdmins => 'Admins';
+
+  @override
+  String get adminChartMonthlyRegistrations => 'Inscriptions mensuelles';
 }

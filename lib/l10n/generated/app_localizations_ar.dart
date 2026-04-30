@@ -11983,4 +11983,172 @@ class AppLocalizationsAr extends AppLocalizations {
   String activityPreviewDetailsUnavailableMessage(String recordType) {
     return 'تعذّر علينا تحميل سجل $recordType المرتبط في الوقت الحالي.';
   }
+
+  @override
+  String get tagFullyFunded => 'ممول بالكامل';
+
+  @override
+  String get tagStipend => 'بدل مالي';
+
+  @override
+  String get tagInternship => 'تدريب';
+
+  @override
+  String get tagLearning => 'تعلم';
+
+  @override
+  String get tagFeatured => 'مميز';
+
+  @override
+  String get tagSponsored => 'مموّل';
+
+  @override
+  String adminContentIdeasPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count فكرة بانتظار المراجعة.',
+      many: '$count فكرة بانتظار المراجعة.',
+      few: '$count أفكار بانتظار المراجعة.',
+      two: 'فكرتان بانتظار المراجعة.',
+      one: 'فكرة واحدة بانتظار المراجعة.',
+      zero: 'لا توجد أفكار بانتظار المراجعة.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminContentApplicationsPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count طلب بانتظار المراجعة.',
+      many: '$count طلبا بانتظار المراجعة.',
+      few: '$count طلبات بانتظار المراجعة.',
+      two: 'طلبان بانتظار المراجعة.',
+      one: 'طلب واحد بانتظار المراجعة.',
+      zero: 'لا توجد طلبات بانتظار المراجعة.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminContentTabReviewApplicantsDescription =>
+      'راجع الطلبات وافتح الملفات وحافظ على تقدم القرارات.';
+
+  @override
+  String get adminContentTabApplicationsViewOnlyDescription =>
+      'اعرض الطلبات وتفاصيل المتقدمين دون تغيير القرارات.';
+
+  @override
+  String get adminContentApplicationReadOnlyForYou =>
+      'هذا الطلب للقراءة فقط حسب دورك كمشرف.';
+
+  @override
+  String adminDashboardPendingItemsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصر بانتظار المراجعة',
+      many: '$count عنصرا بانتظار المراجعة',
+      few: '$count عناصر بانتظار المراجعة',
+      two: 'عنصران بانتظار المراجعة',
+      one: 'عنصر واحد بانتظار المراجعة',
+      zero: 'لا توجد عناصر بانتظار المراجعة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminDashboardPendingQueueDescription =>
+      'شركات وأفكار وطلبات تنتظر قرار المشرف.';
+
+  @override
+  String get adminEditorListEmptyHint => 'أضف عناصر لتظهر هنا.';
+
+  @override
+  String adminEditorRequiredFieldHint(String label) {
+    return '$label مطلوب';
+  }
+
+  @override
+  String adminEditorMoreDetailNeededHint(String label) {
+    return '$label يحتاج إلى مزيد من التفاصيل';
+  }
+
+  @override
+  String get validationDeadlineCannotBePast =>
+      'لا يمكن أن يكون الموعد النهائي في الماضي';
+
+  @override
+  String get validationEnterValidAmount => 'أدخل مبلغا صالحا';
+
+  @override
+  String get adminStudentProfileOpportunityUnavailableMessage =>
+      'لم تعد هذه الفرصة متاحة لهذا الطلب.';
+
+  @override
+  String get adminUsersCompanyUpdateInProgress =>
+      'تحديث حالة الشركة قيد التنفيذ بالفعل.';
+
+  @override
+  String adminUsersCompanyApprovedFeedback(String company) {
+    return 'تمت الموافقة على $company.';
+  }
+
+  @override
+  String adminUsersCompanyRejectedFeedback(String company) {
+    return 'تم رفض $company.';
+  }
+
+  @override
+  String adminUsersCompanyMovedPendingFeedback(String company) {
+    return 'تمت إعادة $company إلى انتظار المراجعة.';
+  }
+
+  @override
+  String adminUsersUserBlockedFeedback(String user) {
+    return 'تم حظر $user.';
+  }
+
+  @override
+  String adminUsersUserUnblockedFeedback(String user) {
+    return 'تم إلغاء حظر $user.';
+  }
+
+  @override
+  String get adminChartStudentsByLevel => 'الطلاب حسب المستوى';
+
+  @override
+  String get adminChartLevelBac => 'بكالوريا';
+
+  @override
+  String get adminChartLevelLicenceShort => 'ليسانس';
+
+  @override
+  String get adminChartLevelLicence => 'ليسانس';
+
+  @override
+  String get adminChartLevelMaster => 'ماستر';
+
+  @override
+  String get adminChartLevelDoctoratShort => 'دكتوراه';
+
+  @override
+  String get adminChartLevelDoctorat => 'دكتوراه';
+
+  @override
+  String get adminChartUsersDistribution => 'توزيع المستخدمين';
+
+  @override
+  String get adminChartLegendStudents => 'الطلاب';
+
+  @override
+  String get adminChartLegendCompanies => 'الشركات';
+
+  @override
+  String get adminChartLegendAdmins => 'المشرفون';
+
+  @override
+  String get adminChartMonthlyRegistrations => 'التسجيلات الشهرية';
 }

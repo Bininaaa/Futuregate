@@ -124,10 +124,6 @@ void main() {
     expect(opportunity.fundingCurrency, 'DZD');
     expect(opportunity.fundingNote, 'Covers prototype costs and mentoring');
     expect(opportunity.fundingLabel(), '250k DZD');
-    expect(
-      opportunity.fundingLabel(includePrefix: true),
-      'Company funding: 250k DZD',
-    );
     expect(opportunity.requirementItems, <String>[
       'Working prototype',
       'Clear project budget',

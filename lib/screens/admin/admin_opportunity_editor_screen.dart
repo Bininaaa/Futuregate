@@ -192,7 +192,7 @@ class _AdminOpportunityEditorScreenState
                     controller: _publisherController,
                     label: l10n.uiPublisherName,
                     hint: l10n.adminOpportunityPublisherHint,
-                    validator: adminRequiredMin(l10n.uiPublisherName, min: 3),
+                    validator: adminRequiredMin(l10n, l10n.uiPublisherName, min: 3),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -225,8 +225,7 @@ class _AdminOpportunityEditorScreenState
                     controller: _titleController,
                     label: l10n.opportunityTitleLabel,
                     hint: _titleHintForType(l10n),
-                    validator: adminRequiredMin(
-                      l10n.opportunityTitleLabel,
+                    validator: adminRequiredMin(l10n,  l10n.opportunityTitleLabel,
                       min: 4,
                     ),
                   ),
@@ -269,7 +268,7 @@ class _AdminOpportunityEditorScreenState
                     controller: _locationController,
                     label: l10n.locationLabel,
                     hint: _locationHintForType(l10n),
-                    validator: adminRequiredMin(l10n.locationLabel),
+                    validator: adminRequiredMin(l10n, l10n.locationLabel),
                   ),
                 ],
               ),
@@ -284,7 +283,7 @@ class _AdminOpportunityEditorScreenState
                 maxLines: 6,
                 minLength: 60,
                 helperText: l10n.adminOpportunityDescriptionHelper,
-                validator: adminRequiredMin(l10n.uiDescription, min: 60),
+                validator: adminRequiredMin(l10n, l10n.uiDescription, min: 60),
               ),
             ),
             const SizedBox(height: 12),
@@ -731,31 +730,36 @@ class _AdminOpportunityEditorScreenState
     };
   }
 
+  AppLocalizations get _validatorL10n => AppLocalizations.of(context)!;
+
   String? _validateRequirementItems(List<String> items) {
     if (items.where((item) => item.trim().isNotEmpty).isEmpty) {
+      final l10n = _validatorL10n;
       return _isSponsoring
-          ? 'Add at least one eligibility item'
-          : 'Add at least one requirement';
+          ? l10n.validationEligibilityItemRequired
+          : l10n.validationRequirementItemRequired;
     }
     return null;
   }
 
   String? _validateDeadline(String? value) {
+    final l10n = _validatorL10n;
     final text = value?.trim() ?? '';
-    if (text.isEmpty) return 'Deadline is required';
+    if (text.isEmpty) return l10n.adminScholarshipDeadlineRequired;
 
     final parsed =
         _applicationDeadline ?? OpportunityMetadata.parseDateTimeLike(text);
-    if (parsed == null) return 'Use a valid date';
+    if (parsed == null) return l10n.validationValidDate;
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final normalized = DateTime(parsed.year, parsed.month, parsed.day);
-    if (normalized.isBefore(today)) return 'Deadline cannot be in the past';
+    if (normalized.isBefore(today)) return l10n.validationDeadlineCannotBePast;
     return null;
   }
 
   String? _validateSalaryMin(String? value) {
+    final l10n = _validatorL10n;
     final minValue = OpportunityMetadata.parseNullableNum(
       _salaryMinController.text,
     );
@@ -763,15 +767,16 @@ class _AdminOpportunityEditorScreenState
       _salaryMaxController.text,
     );
     if ((value ?? '').trim().isNotEmpty && minValue == null) {
-      return 'Enter a valid number';
+      return l10n.validationEnterValidNumber;
     }
     if (minValue != null && maxValue != null && maxValue < minValue) {
-      return 'Min cannot exceed max';
+      return l10n.validationMinCannotExceedMax;
     }
     return null;
   }
 
   String? _validateSalaryMax(String? value) {
+    final l10n = _validatorL10n;
     final minValue = OpportunityMetadata.parseNullableNum(
       _salaryMinController.text,
     );
@@ -779,10 +784,10 @@ class _AdminOpportunityEditorScreenState
       _salaryMaxController.text,
     );
     if ((value ?? '').trim().isNotEmpty && maxValue == null) {
-      return 'Enter a valid number';
+      return l10n.validationEnterValidNumber;
     }
     if (minValue != null && maxValue != null && maxValue < minValue) {
-      return 'Max must be at least min';
+      return l10n.validationMaxAtLeastMin;
     }
     return null;
   }
@@ -792,17 +797,18 @@ class _AdminOpportunityEditorScreenState
       return null;
     }
 
+    final l10n = _validatorL10n;
     final text = value?.trim() ?? '';
     final note = _fundingNoteController.text.trim();
     final parsed = OpportunityMetadata.parseNullableNum(text);
     if (text.isEmpty && note.isEmpty) {
-      return 'Add a funding amount or note';
+      return l10n.validationFundingAmountOrNote;
     }
     if (text.isNotEmpty && parsed == null) {
-      return 'Enter a valid amount';
+      return l10n.validationEnterValidAmount;
     }
     if (parsed != null && parsed < 0) {
-      return 'Amount cannot be negative';
+      return l10n.validationAmountNonNegative;
     }
     return null;
   }
@@ -815,7 +821,7 @@ class _AdminOpportunityEditorScreenState
     final amount = _fundingAmountController.text.trim();
     final note = value?.trim() ?? '';
     if (amount.isEmpty && note.isEmpty) {
-      return 'Add a funding note or amount';
+      return _validatorL10n.validationFundingNoteOrAmount;
     }
     return null;
   }

@@ -183,7 +183,7 @@ class _AdminYoutubeImportScreenState extends State<AdminYoutubeImportScreen> {
       final raw = e.toString().replaceFirst('Exception: ', '');
       final message = raw.contains('Could not complete')
           ? raw
-          : 'Something went wrong. Please check your connection and try again.';
+          : _l10n.adminYoutubeGenericError;
       setState(() {
         _results = [];
         _searchError = message;

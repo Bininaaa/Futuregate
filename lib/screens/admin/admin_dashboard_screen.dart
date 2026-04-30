@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/admin_activity_model.dart';
@@ -17,6 +16,7 @@ import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
 import '../../utils/document_launch_helper.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_activity_preview_sheet.dart';
@@ -890,7 +890,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final uploadedAt = user.commercialRegisterUploadedAt;
     final uploadedAtLabel = uploadedAt == null
         ? l10n.uiNotProvided
-        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+        : LocalizedDisplay.shortDate(
+            context,
+            uploadedAt.toDate(),
+            includeYear: true,
+          );
     final typeLabel = user.commercialRegisterIsPdf
         ? 'PDF'
         : user.commercialRegisterIsImage
@@ -2197,9 +2201,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               final statusColor = ApplicationStatus.color(status);
               final appliedAt = application.appliedAt == null
                   ? l10n.uiUnknownTime
-                  : DateFormat.yMMMd(
-                      l10n.localeName,
-                    ).format(application.appliedAt!.toDate());
+                  : LocalizedDisplay.shortDate(
+                      context,
+                      application.appliedAt!.toDate(),
+                      includeYear: true,
+                    );
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(11),
@@ -2725,7 +2731,7 @@ class _PendingAdminAlert extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$total pending item${total == 1 ? '' : 's'} need attention',
+                      AppLocalizations.of(context)!.adminDashboardPendingItemsTitle(total),
                       style: AppTypography.product(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w800,
@@ -2734,7 +2740,7 @@ class _PendingAdminAlert extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      'Jump straight into the queue that needs review.',
+                      AppLocalizations.of(context)!.adminDashboardPendingQueueDescription,
                       style: AppTypography.product(
                         fontSize: 12,
                         color: AdminPalette.textSecondary,
@@ -3093,7 +3099,11 @@ class _RecentActivityCard extends StatelessWidget {
                 final status = DisplayText.capitalizeLeadingLabel(
                   activity.status,
                 );
-                final dateLabel = _formatActivityDate(activity.createdAt, l10n);
+                final dateLabel = _formatActivityDate(
+                  context,
+                  activity.createdAt,
+                  l10n,
+                );
 
                 return Column(
                   children: [
@@ -3203,12 +3213,20 @@ class _RecentActivityCard extends StatelessWidget {
     );
   }
 
-  String _formatActivityDate(Timestamp? timestamp, AppLocalizations l10n) {
+  String _formatActivityDate(
+    BuildContext context,
+    Timestamp? timestamp,
+    AppLocalizations l10n,
+  ) {
     if (timestamp == null) {
       return l10n.uiUnknownTime;
     }
 
-    return DateFormat.yMMMd(l10n.localeName).format(timestamp.toDate());
+    return LocalizedDisplay.shortDate(
+      context,
+      timestamp.toDate(),
+      includeYear: true,
+    );
   }
 }
 

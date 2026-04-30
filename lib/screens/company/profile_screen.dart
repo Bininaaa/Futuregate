@@ -1,10 +1,10 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/localized_display.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
@@ -666,7 +666,11 @@ class CompanyProfileScreen extends StatelessWidget {
     final uploadedAt = user.commercialRegisterUploadedAt;
     final uploadedAtLabel = uploadedAt == null
         ? l10n.uiNotAvailable
-        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+        : LocalizedDisplay.shortDate(
+            context,
+            uploadedAt.toDate(),
+            includeYear: true,
+          );
     final registerSummary = switch (user.normalizedApprovalStatus) {
       'pending' => l10n.uiVerificationDocumentAttachedPending,
       'rejected' => l10n.uiVerificationDocumentAttachedNeedsAttention,
@@ -1416,7 +1420,11 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     final uploadedAt = user.commercialRegisterUploadedAt;
     final uploadedAtLabel = uploadedAt == null
         ? l10n.uiNotAvailable
-        : DateFormat('MMM d, yyyy').format(uploadedAt.toDate());
+        : LocalizedDisplay.shortDate(
+            context,
+            uploadedAt.toDate(),
+            includeYear: true,
+          );
 
     return _panel(
       title: l10n.uiCommercialRegister,
@@ -1647,6 +1655,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   }
 
   Future<void> _pickCommercialRegister() async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg'],
@@ -1660,6 +1669,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
     final validationError = DocumentUploadValidator.validateCommercialRegister(
       fileName: file.name,
       sizeInBytes: file.size,
+      l10n: l10n,
     );
     setState(() {
       _commercialRegisterFile = file;
@@ -1687,6 +1697,7 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
         ? DocumentUploadValidator.validateCommercialRegister(
             fileName: selectedFile.name,
             sizeInBytes: selectedFile.size,
+            l10n: l10n,
           )
         : (!user.hasCommercialRegister
               ? l10n.uiCommercialRegisterIsRequired

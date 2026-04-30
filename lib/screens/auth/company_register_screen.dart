@@ -68,6 +68,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
         : DocumentUploadValidator.validateCommercialRegister(
             fileName: selectedFile.name,
             sizeInBytes: selectedFile.size,
+            l10n: l10n,
           );
 
     if (commercialRegisterError != null) {
@@ -105,6 +106,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   }
 
   Future<void> _pickCommercialRegister() async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg'],
@@ -119,6 +121,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     final validationError = DocumentUploadValidator.validateCommercialRegister(
       fileName: file.name,
       sizeInBytes: file.size,
+      l10n: l10n,
     );
 
     setState(() {

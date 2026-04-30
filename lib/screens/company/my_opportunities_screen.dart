@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/generated/app_localizations.dart';
@@ -17,6 +16,7 @@ import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_launch_helper.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -151,7 +151,9 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         opportunity.requirements,
         opportunity.companyName,
         OpportunityType.label(opportunity.type, _l10n),
-        ...opportunity.tags,
+        ...opportunity.tags.map(
+          (tag) => OpportunityMetadata.localizeTag(tag, _l10n),
+        ),
       ].join(' ').toLowerCase();
 
       return haystack.contains(normalizedQuery);
@@ -259,7 +261,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       return _l10n.opportunityFreshnessRecent;
     }
 
-    return DateFormat('MMM d').format(createdAt);
+    return LocalizedDisplay.shortDate(context, createdAt);
   }
 
   void _clearFilters() {
@@ -424,10 +426,10 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   String _applicationDateLabel(ApplicationModel application) {
     final appliedAt = application.appliedAt?.toDate();
     if (appliedAt == null) {
-      return 'Date unavailable';
+      return _l10n.uiAppliedDateUnavailable;
     }
 
-    return DateFormat('MMM d, yyyy').format(appliedAt);
+    return LocalizedDisplay.shortDate(context, appliedAt, includeYear: true);
   }
 
   String? _relativeAppliedLabel(Timestamp? value) {
@@ -454,7 +456,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       return _l10n.uiWeeksAgo((difference / 7).ceil());
     }
 
-    return DateFormat('MMM d').format(appliedAt);
+    return LocalizedDisplay.shortDate(context, appliedAt);
   }
 
   void _openStudentProfile(ApplicationModel application) {
@@ -1092,7 +1094,10 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                               label: _l10n.uiDeadline,
                               value: deadline == null
                                   ? '—'
-                                  : DateFormat('MMM d').format(deadline),
+                                  : LocalizedDisplay.shortDate(
+                                      context,
+                                      deadline,
+                                    ),
                               icon: Icons.schedule_rounded,
                             ),
                           ),
@@ -1194,7 +1199,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                           ? (opportunity.deadline.trim().isEmpty
                                 ? _l10n.uiNotSpecified
                                 : opportunity.deadline.trim())
-                          : DateFormat('MMM d, yyyy').format(deadline),
+                          : LocalizedDisplay.shortDate(
+                              context,
+                              deadline,
+                              includeYear: true,
+                            ),
                       isLast: true,
                     ),
                     const SizedBox(height: 18),
@@ -2957,7 +2966,7 @@ class _OpportunityListRow extends StatelessWidget {
                         ),
                         const SizedBox(width: 3),
                         Text(
-                          '$applicantCount applicants',
+                          l10n.uiApplicantcountApplicants(applicantCount),
                           style: AppTypography.product(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w600,

@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../theme/app_typography.dart';
 import '../utils/admin_palette.dart';
 
@@ -20,6 +21,7 @@ class UsersByLevelBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final values = [
       bacCount.toDouble(),
       licenceCount.toDouble(),
@@ -49,7 +51,7 @@ class UsersByLevelBarChart extends StatelessWidget {
                   Icon(Icons.bar_chart, color: AdminPalette.accent, size: 20),
                   SizedBox(width: 8),
                   Text(
-                    'Students by Level',
+                    l10n.adminChartStudentsByLevel,
                     style: AppTypography.product(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -86,7 +88,11 @@ class UsersByLevelBarChart extends StatelessWidget {
                           getTitlesWidget: (value, meta) => Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(
-                              _barLabel(value.toInt(), isCompact: isCompact),
+                              _barLabel(
+                                value.toInt(),
+                                isCompact: isCompact,
+                                l10n: l10n,
+                              ),
                               style: AppTypography.product(
                                 fontSize: isCompact ? 10 : 11,
                               ),
@@ -156,16 +162,24 @@ class UsersByLevelBarChart extends StatelessWidget {
     return max < 5 ? 5 : max + 2;
   }
 
-  String _barLabel(int index, {required bool isCompact}) {
+  String _barLabel(
+    int index, {
+    required bool isCompact,
+    required AppLocalizations l10n,
+  }) {
     switch (index) {
       case 0:
-        return 'Bac';
+        return l10n.adminChartLevelBac;
       case 1:
-        return isCompact ? 'Lic.' : 'Licence';
+        return isCompact
+            ? l10n.adminChartLevelLicenceShort
+            : l10n.adminChartLevelLicence;
       case 2:
-        return 'Master';
+        return l10n.adminChartLevelMaster;
       case 3:
-        return isCompact ? 'PhD' : 'Doctorat';
+        return isCompact
+            ? l10n.adminChartLevelDoctoratShort
+            : l10n.adminChartLevelDoctorat;
       default:
         return '';
     }
@@ -186,6 +200,7 @@ class UsersRolePieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final total = students + companies + admins;
 
     return LayoutBuilder(
@@ -210,7 +225,7 @@ class UsersRolePieChart extends StatelessWidget {
                   Icon(Icons.pie_chart, color: AdminPalette.activity, size: 20),
                   SizedBox(width: 8),
                   Text(
-                    'Users Distribution',
+                    l10n.adminChartUsersDistribution,
                     style: AppTypography.product(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -275,9 +290,9 @@ class UsersRolePieChart extends StatelessWidget {
                 spacing: 16,
                 runSpacing: 8,
                 children: [
-                  _legendItem(Colors.blue, 'Students', students),
-                  _legendItem(Colors.teal, 'Companies', companies),
-                  _legendItem(AdminPalette.accent, 'Admins', admins),
+                  _legendItem(Colors.blue, l10n.adminChartLegendStudents, students),
+                  _legendItem(Colors.teal, l10n.adminChartLegendCompanies, companies),
+                  _legendItem(AdminPalette.accent, l10n.adminChartLegendAdmins, admins),
                 ],
               ),
             ],
@@ -313,6 +328,7 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 420;
@@ -337,7 +353,7 @@ class MonthlyRegistrationsLineChart extends StatelessWidget {
                   Icon(Icons.show_chart, color: AdminPalette.success, size: 20),
                   SizedBox(width: 8),
                   Text(
-                    'Monthly Registrations',
+                    l10n.adminChartMonthlyRegistrations,
                     style: AppTypography.product(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

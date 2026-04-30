@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import 'opportunity_type.dart';
 
 class OpportunityMetadata {
@@ -917,6 +918,32 @@ class OpportunityMetadata {
     return buffer.toString().trim();
   }
 
+  static const Map<String, String Function(AppLocalizations)> _tagLocalizers = {
+    'FULLY FUNDED': _localizeTagFullyFunded,
+    'STIPEND': _localizeTagStipend,
+    'INTERNSHIP': _localizeTagInternship,
+    'LEARNING': _localizeTagLearning,
+    'FEATURED': _localizeTagFeatured,
+    'SPONSORED': _localizeTagSponsored,
+  };
+
+  static String _localizeTagFullyFunded(AppLocalizations l10n) =>
+      l10n.tagFullyFunded;
+  static String _localizeTagStipend(AppLocalizations l10n) => l10n.tagStipend;
+  static String _localizeTagInternship(AppLocalizations l10n) =>
+      l10n.tagInternship;
+  static String _localizeTagLearning(AppLocalizations l10n) => l10n.tagLearning;
+  static String _localizeTagFeatured(AppLocalizations l10n) => l10n.tagFeatured;
+  static String _localizeTagSponsored(AppLocalizations l10n) =>
+      l10n.tagSponsored;
+
+  /// Translates a known opportunity tag code (e.g. `FULLY FUNDED`) into the
+  /// active locale. Unknown codes are returned unchanged.
+  static String localizeTag(String tag, AppLocalizations l10n) {
+    final localizer = _tagLocalizers[tag.trim().toUpperCase()];
+    return localizer?.call(l10n) ?? tag;
+  }
+
   static String? buildFundingLabel({
     num? fundingAmount,
     String? fundingCurrency,
@@ -926,7 +953,6 @@ class OpportunityMetadata {
     String? legacySalaryCurrency,
     String? legacyCompensationText,
     bool preferFundingNote = false,
-    bool includePrefix = false,
   }) {
     final customText = sanitizeText(fundingNote);
     final structured = formatFundingAmount(
@@ -953,7 +979,7 @@ class OpportunityMetadata {
       return null;
     }
 
-    return includePrefix ? 'Company funding: $label' : label;
+    return label;
   }
 
   static String? buildCompensationLabel({

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/admin_palette.dart';
 import '../../widgets/admin/admin_ui.dart';
@@ -259,7 +260,7 @@ class AdminEditorListField extends StatelessWidget {
   final AppEditableListController? listController;
   final String? Function(List<String>)? validator;
   final List<String> examples;
-  final String emptyText;
+  final String? emptyText;
   final bool splitOnCommas;
 
   const AdminEditorListField({
@@ -271,12 +272,14 @@ class AdminEditorListField extends StatelessWidget {
     this.listController,
     this.validator,
     this.examples = const <String>[],
-    this.emptyText = 'Add each item one by one.',
+    this.emptyText,
     this.splitOnCommas = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedEmptyText =
+        emptyText ?? AppLocalizations.of(context)!.adminEditorListEmptyHint;
     return AppEditableListField(
       theme: _adminFormTheme,
       label: label,
@@ -286,7 +289,7 @@ class AdminEditorListField extends StatelessWidget {
       listController: listController,
       validator: validator,
       examples: examples,
-      emptyText: emptyText,
+      emptyText: resolvedEmptyText,
       splitOnCommas: splitOnCommas,
     );
   }
@@ -350,14 +353,18 @@ class AdminEditorToggleCard extends StatelessWidget {
   }
 }
 
-String? Function(String?) adminRequiredMin(String label, {int min = 1}) {
+String? Function(String?) adminRequiredMin(
+  AppLocalizations l10n,
+  String label, {
+  int min = 1,
+}) {
   return (value) {
     final text = value?.trim() ?? '';
     if (text.isEmpty) {
-      return '$label is required';
+      return l10n.adminEditorRequiredFieldHint(label);
     }
     if (text.length < min) {
-      return '$label needs a bit more detail';
+      return l10n.adminEditorMoreDetailNeededHint(label);
     }
     return null;
   };

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
@@ -15,6 +14,7 @@ import '../../services/admin_service.dart';
 import '../../utils/admin_palette.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
+import '../../utils/localized_display.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import 'admin_ui.dart';
@@ -214,7 +214,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         _PreviewHighlightItem(
           icon: Icons.schedule_rounded,
           label: l10n.activityPreviewActivityLabel,
-          value: _formatShortDate(widget.activity.createdAt, l10n),
+          value: _formatShortDate(context, widget.activity.createdAt, l10n),
           color: AdminPalette.primary,
         ),
       ]),
@@ -310,7 +310,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
           _buildHeroChip(statusLabel, statusIcon),
           if (application.appliedAt != null)
             _buildHeroChip(
-              _formatShortDate(application.appliedAt, l10n),
+              _formatShortDate(context, application.appliedAt, l10n),
               Icons.event_outlined,
             ),
         ],
@@ -355,7 +355,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         _PreviewDetailLine(l10n.uiStatus, statusLabel),
         _PreviewDetailLine(
           l10n.uiApplied,
-          _formatTimestamp(application.appliedAt, l10n),
+          _formatTimestamp(context, application.appliedAt, l10n),
         ),
       ]),
     ];
@@ -1132,13 +1132,13 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
         ),
         _PreviewDetailItem(
           l10n.uiSubmitted,
-          _formatTimestamp(idea.createdAt, l10n),
+          _formatTimestamp(context, idea.createdAt, l10n),
           icon: Icons.event_outlined,
           color: AdminPalette.textMuted,
         ),
         _PreviewDetailItem(
           l10n.uiLastUpdated,
-          _buildIdeaUpdatedLabel(idea, l10n),
+          _buildIdeaUpdatedLabel(context, idea, l10n),
           icon: Icons.update_rounded,
           color: AdminPalette.warning,
         ),
@@ -1682,6 +1682,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
   }
 
   static String _buildIdeaUpdatedLabel(
+    BuildContext context,
     ProjectIdeaModel idea,
     AppLocalizations l10n,
   ) {
@@ -1706,7 +1707,7 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     }
 
     return l10n.activityPreviewUpdatedDate(
-      DateFormat('MMM d, yyyy').format(date),
+      LocalizedDisplay.shortDate(context, date, includeYear: true),
     );
   }
 
@@ -1810,18 +1811,30 @@ class _AdminActivityPreviewSheetState extends State<AdminActivityPreviewSheet> {
     }
   }
 
-  static String _formatShortDate(Timestamp? timestamp, AppLocalizations l10n) {
+  static String _formatShortDate(
+    BuildContext context,
+    Timestamp? timestamp,
+    AppLocalizations l10n,
+  ) {
     if (timestamp == null) {
       return l10n.activityPreviewDateUnknown;
     }
-    return DateFormat('MMM d, yyyy').format(timestamp.toDate());
+    return LocalizedDisplay.shortDate(
+      context,
+      timestamp.toDate(),
+      includeYear: true,
+    );
   }
 
-  static String _formatTimestamp(Timestamp? timestamp, AppLocalizations l10n) {
+  static String _formatTimestamp(
+    BuildContext context,
+    Timestamp? timestamp,
+    AppLocalizations l10n,
+  ) {
     if (timestamp == null) {
       return l10n.activityPreviewUnknownTime;
     }
-    return DateFormat('MMM d, yyyy - HH:mm').format(timestamp.toDate());
+    return LocalizedDisplay.shortDateTime(context, timestamp.toDate());
   }
 }
 

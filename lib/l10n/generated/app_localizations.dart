@@ -19764,6 +19764,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn’t load the linked {recordType} record right now.'**
   String activityPreviewDetailsUnavailableMessage(String recordType);
+
+  /// Opportunity tagFullyFunded chip
+  ///
+  /// In en, this message translates to:
+  /// **'Fully funded'**
+  String get tagFullyFunded;
+
+  /// Opportunity tagStipend chip
+  ///
+  /// In en, this message translates to:
+  /// **'Stipend'**
+  String get tagStipend;
+
+  /// Opportunity tagInternship chip
+  ///
+  /// In en, this message translates to:
+  /// **'Internship'**
+  String get tagInternship;
+
+  /// Opportunity tagLearning chip
+  ///
+  /// In en, this message translates to:
+  /// **'Learning'**
+  String get tagLearning;
+
+  /// Opportunity tagFeatured chip
+  ///
+  /// In en, this message translates to:
+  /// **'Featured'**
+  String get tagFeatured;
+
+  /// Opportunity tagSponsored chip
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get tagSponsored;
+
+  /// adminContentIdeasPending
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending idea needs review.} other{{count} pending ideas need review.}}'**
+  String adminContentIdeasPending(int count);
+
+  /// adminContentApplicationsPending
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending application needs review.} other{{count} pending applications need review.}}'**
+  String adminContentApplicationsPending(int count);
+
+  /// adminContentTabReviewApplicantsDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Review applicants, open profiles, and keep decisions moving.'**
+  String get adminContentTabReviewApplicantsDescription;
+
+  /// adminContentTabApplicationsViewOnlyDescription
+  ///
+  /// In en, this message translates to:
+  /// **'View applications and applicant details without changing decisions.'**
+  String get adminContentTabApplicationsViewOnlyDescription;
+
+  /// adminContentApplicationReadOnlyForYou
+  ///
+  /// In en, this message translates to:
+  /// **'This application is read-only for your admin role.'**
+  String get adminContentApplicationReadOnlyForYou;
+
+  /// adminDashboardPendingItemsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending item} other{{count} pending items}}'**
+  String adminDashboardPendingItemsTitle(int count);
+
+  /// adminDashboardPendingQueueDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Companies, ideas, and applications waiting for an admin decision.'**
+  String get adminDashboardPendingQueueDescription;
+
+  /// adminEditorListEmptyHint
+  ///
+  /// In en, this message translates to:
+  /// **'Add items to show them here.'**
+  String get adminEditorListEmptyHint;
+
+  /// adminEditorRequiredFieldHint
+  ///
+  /// In en, this message translates to:
+  /// **'{label} is required'**
+  String adminEditorRequiredFieldHint(String label);
+
+  /// adminEditorMoreDetailNeededHint
+  ///
+  /// In en, this message translates to:
+  /// **'{label} needs a bit more detail'**
+  String adminEditorMoreDetailNeededHint(String label);
+
+  /// validationDeadlineCannotBePast
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline cannot be in the past'**
+  String get validationDeadlineCannotBePast;
+
+  /// validationEnterValidAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid amount'**
+  String get validationEnterValidAmount;
+
+  /// adminStudentProfileOpportunityUnavailableMessage
+  ///
+  /// In en, this message translates to:
+  /// **'This opportunity is no longer available for this application.'**
+  String get adminStudentProfileOpportunityUnavailableMessage;
+
+  /// adminUsersCompanyUpdateInProgress
+  ///
+  /// In en, this message translates to:
+  /// **'A company status update is already in progress.'**
+  String get adminUsersCompanyUpdateInProgress;
+
+  /// adminUsersCompanyApprovedFeedback
+  ///
+  /// In en, this message translates to:
+  /// **'{company} approved.'**
+  String adminUsersCompanyApprovedFeedback(String company);
+
+  /// adminUsersCompanyRejectedFeedback
+  ///
+  /// In en, this message translates to:
+  /// **'{company} rejected.'**
+  String adminUsersCompanyRejectedFeedback(String company);
+
+  /// adminUsersCompanyMovedPendingFeedback
+  ///
+  /// In en, this message translates to:
+  /// **'{company} moved back to pending review.'**
+  String adminUsersCompanyMovedPendingFeedback(String company);
+
+  /// adminUsersUserBlockedFeedback
+  ///
+  /// In en, this message translates to:
+  /// **'{user} blocked.'**
+  String adminUsersUserBlockedFeedback(String user);
+
+  /// adminUsersUserUnblockedFeedback
+  ///
+  /// In en, this message translates to:
+  /// **'{user} unblocked.'**
+  String adminUsersUserUnblockedFeedback(String user);
+
+  /// adminChartStudentsByLevel
+  ///
+  /// In en, this message translates to:
+  /// **'Students by Level'**
+  String get adminChartStudentsByLevel;
+
+  /// adminChartLevelBac
+  ///
+  /// In en, this message translates to:
+  /// **'Bac'**
+  String get adminChartLevelBac;
+
+  /// adminChartLevelLicenceShort
+  ///
+  /// In en, this message translates to:
+  /// **'Lic.'**
+  String get adminChartLevelLicenceShort;
+
+  /// adminChartLevelLicence
+  ///
+  /// In en, this message translates to:
+  /// **'Licence'**
+  String get adminChartLevelLicence;
+
+  /// adminChartLevelMaster
+  ///
+  /// In en, this message translates to:
+  /// **'Master'**
+  String get adminChartLevelMaster;
+
+  /// adminChartLevelDoctoratShort
+  ///
+  /// In en, this message translates to:
+  /// **'Doc.'**
+  String get adminChartLevelDoctoratShort;
+
+  /// adminChartLevelDoctorat
+  ///
+  /// In en, this message translates to:
+  /// **'Doctorat'**
+  String get adminChartLevelDoctorat;
+
+  /// adminChartUsersDistribution
+  ///
+  /// In en, this message translates to:
+  /// **'Users Distribution'**
+  String get adminChartUsersDistribution;
+
+  /// adminChartLegendStudents
+  ///
+  /// In en, this message translates to:
+  /// **'Students'**
+  String get adminChartLegendStudents;
+
+  /// adminChartLegendCompanies
+  ///
+  /// In en, this message translates to:
+  /// **'Companies'**
+  String get adminChartLegendCompanies;
+
+  /// adminChartLegendAdmins
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get adminChartLegendAdmins;
+
+  /// adminChartMonthlyRegistrations
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Registrations'**
+  String get adminChartMonthlyRegistrations;
 }
 
 class _AppLocalizationsDelegate

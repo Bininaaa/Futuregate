@@ -1,3 +1,5 @@
+import '../l10n/generated/app_localizations.dart';
+
 class DocumentUploadValidator {
   static const int primaryCvMaxBytes = 10 * 1024 * 1024;
   static const int commercialRegisterMaxBytes = 10 * 1024 * 1024;
@@ -29,22 +31,23 @@ class DocumentUploadValidator {
   static String? validateCommercialRegister({
     required String fileName,
     required int sizeInBytes,
+    required AppLocalizations l10n,
     String? mimeType,
   }) {
     if (fileName.trim().isEmpty) {
-      return 'سجل تجاري is required.';
+      return l10n.documentCommercialRegisterRequired;
     }
 
     if (sizeInBytes <= 0) {
-      return 'The selected سجل تجاري file is empty.';
+      return l10n.documentCommercialRegisterEmpty;
     }
 
     if (sizeInBytes > commercialRegisterMaxBytes) {
-      return 'سجل تجاري must be smaller than 10 MB.';
+      return l10n.documentCommercialRegisterTooLarge;
     }
 
     if (!isAllowedCommercialRegister(fileName: fileName, mimeType: mimeType)) {
-      return 'سجل تجاري must be a PDF, JPG, or PNG file.';
+      return l10n.documentCommercialRegisterInvalidType;
     }
 
     return null;

@@ -59,6 +59,18 @@ abstract final class LocalizedDisplay {
     return DateFormat.MMMMd(localeName).format(date);
   }
 
+  static String shortDateTime(
+    BuildContext context,
+    DateTime value, {
+    bool includeYear = true,
+  }) {
+    final date = value.toLocal();
+    final localeName = _localeName(context);
+    final time = DateFormat.Hm(localeName).format(date);
+    final dateLabel = shortDate(context, value, includeYear: includeYear);
+    return '$dateLabel - $time';
+  }
+
   static String dateText(
     BuildContext context,
     String raw, {
