@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../config/app_metadata.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/subscription_provider.dart';
 import '../../services/app_intro_preferences_service.dart';
 import '../../theme/locale_controller.dart';
 import '../../theme/theme_controller.dart';
@@ -13,6 +14,7 @@ import '../../widgets/shared/app_loading.dart';
 import '../company/profile_screen.dart';
 import '../launch_screen.dart';
 import '../notifications_screen.dart';
+import '../student/premium_pass_screen.dart';
 import '../student/edit_profile_screen.dart';
 import 'about_futuregate_screen.dart';
 import 'help_center_screen.dart';
@@ -458,15 +460,46 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           SettingsPanel(
-            child: SettingsListRow(
-              icon: Icons.notifications_active_outlined,
-              iconColor: SettingsFlowPalette.accent,
-              title: l10n.notificationPreferencesTitle,
-              subtitle: l10n.notificationPreferencesSubtitle,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-              ),
+            child: Column(
+              children: [
+                Consumer<SubscriptionProvider>(
+                  builder: (context, subProvider, _) {
+                    return SettingsListRow(
+                      icon: Icons.workspace_premium_rounded,
+                      iconColor: SettingsFlowPalette.accent,
+                      title: l10n.premiumPassTitle,
+                      subtitle: subProvider.hasActivePremium
+                          ? l10n.premiumPassActiveTitle
+                          : l10n.premiumPassSubtitle,
+                      trailing: subProvider.hasActivePremium
+                          ? SettingsStatusPill(
+                              label: l10n.premiumBadgeLabel,
+                              color: SettingsFlowPalette.accent,
+                            )
+                          : null,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PremiumPassScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                SettingsListRow(
+                  icon: Icons.notifications_active_outlined,
+                  iconColor: SettingsFlowPalette.accent,
+                  title: l10n.notificationPreferencesTitle,
+                  subtitle: l10n.notificationPreferencesSubtitle,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsScreen(),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 18),

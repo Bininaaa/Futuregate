@@ -16,12 +16,14 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/saved_limit_upgrade_modal.dart';
 import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'premium_pass_screen.dart';
 import 'profile_screen.dart';
 import 'saved_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -260,18 +262,33 @@ class _JobsScreenState extends State<JobsScreen> {
       error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
       message = l10n.studentRemovedFromSavedOpportunities;
     } else {
-      error = await savedProvider.saveOpportunity(
-        studentId: userId,
-        opportunityId: opportunity.id,
-        title: DisplayText.opportunityTitle(
-          opportunity.title,
-          fallback: l10n.studentOpenRole,
-        ),
-        companyName: opportunity.companyName,
-        type: opportunity.type,
-        location: opportunity.location,
-        deadline: opportunity.deadlineLabel,
-      );
+      try {
+        error = await savedProvider.saveOpportunity(
+          studentId: userId,
+          opportunityId: opportunity.id,
+          title: DisplayText.opportunityTitle(
+            opportunity.title,
+            fallback: l10n.studentOpenRole,
+          ),
+          companyName: opportunity.companyName,
+          type: opportunity.type,
+          location: opportunity.location,
+          deadline: opportunity.deadlineLabel,
+        );
+      } on SavedLimitReachedException catch (e) {
+        if (!mounted) return;
+        await showSavedLimitUpgradeModal(
+          context,
+          limit: e.limit,
+          onUpgrade: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+          ),
+        );
+        return;
+      } catch (e) {
+        error = e.toString();
+      }
     }
 
     if (!mounted) {
@@ -672,7 +689,8 @@ class _JobsScreenState extends State<JobsScreen> {
       key = 'entry';
     } else if (normalized.contains('junior')) {
       key = 'junior';
-    } else if (normalized.contains('student') || normalized.contains('intern')) {
+    } else if (normalized.contains('student') ||
+        normalized.contains('intern')) {
       key = 'student';
     } else if (normalized.contains('graduate')) {
       key = 'grad';

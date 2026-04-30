@@ -8,6 +8,7 @@ import '../utils/application_status.dart';
 import '../utils/display_text.dart';
 import '../utils/opportunity_dashboard_palette.dart';
 import '../utils/opportunity_type.dart';
+import 'early_access_label.dart';
 import 'shared/app_directional.dart';
 import 'shared/app_feedback.dart';
 import 'shared/app_loading.dart';
@@ -38,6 +39,27 @@ String _opportunityBaseTitle(
     _ => l10n.opportunityOpenFallback,
   };
   return DisplayText.opportunityTitle(opportunity.title, fallback: fallback);
+}
+
+List<Widget> _earlyAccessChips(
+  OpportunityModel opportunity, {
+  bool compact = true,
+}) {
+  if (opportunity.isEarlyAccessActive) {
+    return [
+      EarlyAccessLabel(status: opportunity.earlyAccessStatus, compact: compact),
+      if (opportunity.publicVisibleAt != null)
+        EarlyAccessCountdownChip(publicVisibleAt: opportunity.publicVisibleAt!),
+    ];
+  }
+
+  if (opportunity.earlyAccessStatus != 'none') {
+    return [
+      EarlyAccessLabel(status: opportunity.earlyAccessStatus, compact: compact),
+    ];
+  }
+
+  return const <Widget>[];
 }
 
 class OpportunitySectionHeader extends StatelessWidget {
@@ -804,6 +826,7 @@ class TrendingOpportunityCard extends StatelessWidget {
     final locationLabel = locationText?.trim();
     final metaItems = _metaItems();
     final cardWidth = isCompactLayout ? 206.0 : 220.0;
+    final earlyAccessChips = _earlyAccessChips(opportunity);
 
     return Material(
       color: Colors.transparent,
@@ -971,6 +994,10 @@ class TrendingOpportunityCard extends StatelessWidget {
                   ],
                 ),
               ],
+              if (earlyAccessChips.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Wrap(spacing: 6, runSpacing: 6, children: earlyAccessChips),
+              ],
               if (applicationStatus != null) ...[
                 const SizedBox(height: 8),
                 _OpportunityAccentChip(
@@ -1029,6 +1056,7 @@ class OpportunityListTile extends StatelessWidget {
     final tone = _toneForOpportunityType(opportunity.type);
     final effectiveBadgeColor =
         badgeColor ?? OpportunityDashboardPalette.primary;
+    final earlyAccessChips = _earlyAccessChips(opportunity);
 
     return Material(
       color: Colors.transparent,
@@ -1143,6 +1171,14 @@ class OpportunityListTile extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          if (earlyAccessChips.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: earlyAccessChips,
+                            ),
+                          ],
                           const SizedBox(height: 4),
                           Row(
                             children: [

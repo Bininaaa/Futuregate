@@ -8,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
+import '../../providers/subscription_provider.dart';
 import '../../services/application_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
@@ -18,12 +19,15 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/premium_upgrade_modal.dart';
+import '../../widgets/saved_limit_upgrade_modal.dart';
 import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import 'applied_opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'premium_pass_screen.dart';
 import 'profile_screen.dart';
 import 'saved_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -220,19 +224,34 @@ class _SponsoredOpportunitiesScreenState
         error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
         message = l10n.studentRemovedFromSavedOpportunities;
       } else {
-        error = await savedProvider.saveOpportunity(
-          studentId: userId,
-          opportunityId: opportunity.id,
-          title: DisplayText.opportunityTitle(
-            opportunity.title,
-            fallback: l10n.opportunitySponsoredFallback,
-          ),
-          companyName: opportunity.companyName.trim(),
-          type: opportunity.type,
-          location: opportunity.location,
-          deadline: opportunity.deadlineLabel,
-          fundingLabel: opportunity.fundingLabel() ?? '',
-        );
+        try {
+          error = await savedProvider.saveOpportunity(
+            studentId: userId,
+            opportunityId: opportunity.id,
+            title: DisplayText.opportunityTitle(
+              opportunity.title,
+              fallback: l10n.opportunitySponsoredFallback,
+            ),
+            companyName: opportunity.companyName.trim(),
+            type: opportunity.type,
+            location: opportunity.location,
+            deadline: opportunity.deadlineLabel,
+            fundingLabel: opportunity.fundingLabel() ?? '',
+          );
+        } on SavedLimitReachedException catch (e) {
+          if (!mounted) return;
+          await showSavedLimitUpgradeModal(
+            context,
+            limit: e.limit,
+            onUpgrade: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+            ),
+          );
+          return;
+        } catch (e) {
+          error = e.toString();
+        }
       }
 
       if (!mounted) {
@@ -283,6 +302,24 @@ class _SponsoredOpportunitiesScreenState
       return;
     }
 
+    if (opportunity.isEarlyAccessActive) {
+      final sub = context.read<SubscriptionProvider>().subscription;
+      if (!(sub?.isActive ?? false)) {
+        final l10n = AppLocalizations.of(context)!;
+        await showPremiumUpgradeModal(
+          context,
+          title: l10n.earlyAccessLockedModalTitle,
+          body: l10n.earlyAccessLockedModalBody,
+          highlightText: l10n.earlyAccessLockedMessage,
+          onUpgrade: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+          ),
+        );
+        return;
+      }
+    }
+
     setState(() {
       _busyApplyIds.add(opportunity.id);
     });
@@ -322,12 +359,28 @@ class _SponsoredOpportunitiesScreenState
         return;
       }
 
-      final error = await applicationProvider.applyToOpportunity(
-        studentId: currentUser.uid,
-        studentName: currentUser.fullName,
-        opportunityId: opportunity.id,
-        cvId: cv.id,
-      );
+      String? error;
+      try {
+        error = await applicationProvider.applyToOpportunity(
+          studentId: currentUser.uid,
+          studentName: currentUser.fullName,
+          opportunityId: opportunity.id,
+          cvId: cv.id,
+        );
+      } on EarlyAccessLockedException {
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
+        await showPremiumUpgradeModal(
+          context,
+          title: l10n.earlyAccessLockedModalTitle,
+          body: l10n.earlyAccessLockedModalBody,
+          onUpgrade: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+          ),
+        );
+        return;
+      }
 
       if (!mounted) {
         return;

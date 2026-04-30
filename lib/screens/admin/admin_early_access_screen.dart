@@ -14,8 +14,7 @@ class AdminEarlyAccessScreen extends StatefulWidget {
   const AdminEarlyAccessScreen({super.key});
 
   @override
-  State<AdminEarlyAccessScreen> createState() =>
-      _AdminEarlyAccessScreenState();
+  State<AdminEarlyAccessScreen> createState() => _AdminEarlyAccessScreenState();
 }
 
 class _AdminEarlyAccessScreenState extends State<AdminEarlyAccessScreen>
@@ -94,9 +93,17 @@ class _EarlyAccessList extends StatelessWidget {
       query = query.where('earlyAccessStatus', isEqualTo: filterStatus);
     }
 
-    return query
-        .orderBy('requestedEarlyAccessAt', descending: true)
-        .snapshots();
+    return query.snapshots();
+  }
+
+  int _requestedEarlyAccessMillis(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final value = doc.data()['requestedEarlyAccessAt'];
+    if (value is Timestamp) return value.millisecondsSinceEpoch;
+    if (value is DateTime) return value.millisecondsSinceEpoch;
+    if (value is num) return value.toInt();
+    return 0;
   }
 
   @override
@@ -110,7 +117,14 @@ class _EarlyAccessList extends StatelessWidget {
         if (snap.hasError) {
           return Center(child: Text('Error: ${snap.error}'));
         }
-        final docs = snap.data?.docs ?? [];
+        final docs =
+            List<QueryDocumentSnapshot<Map<String, dynamic>>>.of(
+              snap.data?.docs ?? const [],
+            )..sort(
+              (a, b) => _requestedEarlyAccessMillis(
+                b,
+              ).compareTo(_requestedEarlyAccessMillis(a)),
+            );
         if (docs.isEmpty) {
           return _EmptyState(filterStatus: filterStatus);
         }
@@ -178,8 +192,11 @@ class _EarlyAccessCard extends StatelessWidget {
                 style: TextStyle(fontSize: 12, color: colors.textMuted),
               ),
               const SizedBox(width: 12),
-              Icon(Icons.work_outline_rounded,
-                  size: 12, color: colors.textMuted),
+              Icon(
+                Icons.work_outline_rounded,
+                size: 12,
+                color: colors.textMuted,
+              ),
               const SizedBox(width: 4),
               Text(
                 opportunity.type,
@@ -193,8 +210,7 @@ class _EarlyAccessCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () =>
-                        _showRejectDialog(context, opportunity),
+                    onPressed: () => _showRejectDialog(context, opportunity),
                     icon: Icon(
                       Icons.close_rounded,
                       size: 14,
@@ -209,7 +225,9 @@ class _EarlyAccessCard extends StatelessWidget {
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: colors.danger.withValues(alpha: 0.4)),
+                      side: BorderSide(
+                        color: colors.danger.withValues(alpha: 0.4),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
                   ),
@@ -217,8 +235,7 @@ class _EarlyAccessCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: () =>
-                        _showApproveDialog(context, opportunity),
+                    onPressed: () => _showApproveDialog(context, opportunity),
                     icon: const Icon(Icons.check_rounded, size: 14),
                     label: Text(
                       l10n.earlyAccessApproveButton,
@@ -367,8 +384,7 @@ class _EarlyAccessCard extends StatelessWidget {
   }
 
   void _approve(BuildContext context, String opportunityId, int delayHours) {
-    final adminUid =
-        context.read<AuthProvider>().userModel?.uid ?? '';
+    final adminUid = context.read<AuthProvider>().userModel?.uid ?? '';
     context
         .read<PremiumProvider>()
         .approveEarlyAccess(
@@ -377,17 +393,16 @@ class _EarlyAccessCard extends StatelessWidget {
           delayHours: delayHours,
         )
         .then((_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Early access approved.')),
-        );
-      }
-    });
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Early access approved.')),
+            );
+          }
+        });
   }
 
   void _reject(BuildContext context, String opportunityId, String reason) {
-    final adminUid =
-        context.read<AuthProvider>().userModel?.uid ?? '';
+    final adminUid = context.read<AuthProvider>().userModel?.uid ?? '';
     context
         .read<PremiumProvider>()
         .rejectEarlyAccess(
@@ -396,20 +411,20 @@ class _EarlyAccessCard extends StatelessWidget {
           reason: reason,
         )
         .then((_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Early access rejected.')),
-        );
-      }
-    });
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Early access rejected.')),
+            );
+          }
+        });
   }
 
   void _makeNormal(BuildContext context, String opportunityId) {
     context.read<PremiumProvider>().makePostNormal(opportunityId).then((_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Post set to normal.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Post set to normal.')));
       }
     });
   }

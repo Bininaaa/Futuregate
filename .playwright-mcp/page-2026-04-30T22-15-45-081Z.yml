@@ -1,0 +1,31 @@
+- generic [ref=e2]:
+  - banner "FutureGate payment return header" [ref=e3]:
+    - link "FutureGate home" [ref=e4] [cursor=pointer]:
+      - /url: https://futuregate.tech
+      - img [ref=e6]
+      - generic [ref=e9]:
+        - strong [ref=e10]: FutureGate
+        - generic [ref=e11]: عودة الدفع
+    - generic "Page controls" [ref=e12]:
+      - group "Language" [ref=e13]:
+        - button "EN" [ref=e14] [cursor=pointer]
+        - button "FR" [ref=e15] [cursor=pointer]
+        - button "AR" [active] [ref=e16] [cursor=pointer]
+      - button "Toggle light and dark mode" [ref=e17] [cursor=pointer]:
+        - img [ref=e45]
+  - main [ref=e20]:
+    - img [ref=e23]
+    - region "تم استلام الدفع" [ref=e48]:
+      - paragraph [ref=e31]: دفع Chargily Pay
+      - heading "تم استلام الدفع" [level=1] [ref=e49]
+      - paragraph [ref=e33]: نحن نؤكد Premium Pass الخاص بك. يرجى العودة إلى تطبيق FutureGate.
+      - generic [ref=e34]:
+        - img [ref=e36]
+        - paragraph [ref=e39]: هذه الصفحة لا تفعّل Premium. التطبيق يؤكد اشتراكك من الخادم بعد وصول إشعار الويب الآمن.
+      - generic "Payment return actions" [ref=e40]:
+        - link "العودة إلى FutureGate" [ref=e50] [cursor=pointer]:
+          - /url: https://futuregate.tech
+        - link "تحميل APK" [ref=e51] [cursor=pointer]:
+          - /url: https://futuregate.tech/futuregate.apk
+      - paragraph [ref=e43]: إذا لم يظهر Premium فورًا، حدّث حالة الاشتراك داخل التطبيق.
+  - contentinfo [ref=e44]: صفحات عودة FutureGate لعمليات الدفع التجريبية عبر Chargily Pay.

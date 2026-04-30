@@ -11,6 +11,9 @@
         ],
         "admin": [
           "avenirdz-7305d-admin"
+        ],
+        "payment": [
+          "avenirdz-payment"
         ]
       }
     }

@@ -62,6 +62,10 @@ service cloud.firestore {
       return /databases/$(database)/documents/applications/$(applicationId);
     }
 
+    function subscriptionPath(uid) {
+      return /databases/$(database)/documents/subscriptions/$(uid);
+    }
+
     function cvPath(cvId) {
       return /databases/$(database)/documents/cvs/$(cvId);
     }
@@ -86,6 +90,14 @@ service cloud.firestore {
 
     function isOpportunityStatus(value) {
       return value == 'open' || value == 'closed';
+    }
+
+    function isEarlyAccessStatus(value) {
+      return value == 'none' ||
+          value == 'pending' ||
+          value == 'approved' ||
+          value == 'rejected' ||
+          value == 'expired';
     }
 
     function isNullableString(value) {
@@ -210,10 +222,151 @@ service cloud.firestore {
         );
     }
 
+    function hasValidOpportunityEarlyAccessCreate(data) {
+      return (
+          !data.keys().hasAny([
+            'earlyAccessRequested',
+            'earlyAccessStatus',
+            'requestedEarlyAccessAt'
+          ])
+        ) ||
+        (
+          data.keys().hasAll([
+            'earlyAccessRequested',
+            'earlyAccessStatus',
+            'requestedEarlyAccessAt'
+          ]) &&
+          data.earlyAccessRequested == true &&
+          isEarlyAccessStatus(data.earlyAccessStatus) &&
+          data.earlyAccessStatus == 'pending' &&
+          data.requestedEarlyAccessAt == request.time
+        );
+    }
+
+    function canCompanyRequestEarlyAccess() {
+      return isCompany() &&
+          resource.data.companyId == request.auth.uid &&
+          resource.data.get('earlyAccessRequested', false) != true &&
+          resource.data.get('earlyAccessStatus', 'none') == 'none' &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'earlyAccessRequested',
+            'earlyAccessStatus',
+            'requestedEarlyAccessAt',
+            'updatedAt'
+          ]) &&
+          request.resource.data.earlyAccessRequested == true &&
+          request.resource.data.earlyAccessStatus == 'pending' &&
+          request.resource.data.requestedEarlyAccessAt == request.time &&
+          request.resource.data.updatedAt == request.time;
+    }
+
+    function hasValidCompanyOpportunityEarlyAccessUpdate() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            'earlyAccessRequested',
+            'earlyAccessStatus',
+            'requestedEarlyAccessAt'
+          ]) ||
+          (
+            resource.data.get('earlyAccessRequested', false) != true &&
+            resource.data.get('earlyAccessStatus', 'none') == 'none' &&
+            request.resource.data.earlyAccessRequested == true &&
+            request.resource.data.earlyAccessStatus == 'pending' &&
+            request.resource.data.requestedEarlyAccessAt == request.time
+          );
+    }
+
+    function canApproveEarlyAccess() {
+      return resource.data.get('earlyAccessRequested', false) == true &&
+          resource.data.get('earlyAccessStatus', 'none') == 'pending' &&
+          request.resource.data.earlyAccessStatus == 'approved' &&
+          request.resource.data.premiumEarlyAccess == true &&
+          request.resource.data.earlyAccessReviewedBy == request.auth.uid &&
+          request.resource.data.earlyAccessReviewedAt == request.time &&
+          request.resource.data.earlyAccessDurationHours is int &&
+          request.resource.data.earlyAccessDurationHours > 0 &&
+          request.resource.data.publicVisibleAt is timestamp &&
+          request.resource.data.publicVisibleAt > request.time;
+    }
+
+    function canRejectEarlyAccess() {
+      return resource.data.get('earlyAccessRequested', false) == true &&
+          resource.data.get('earlyAccessStatus', 'none') == 'pending' &&
+          request.resource.data.earlyAccessStatus == 'rejected' &&
+          request.resource.data.premiumEarlyAccess == false &&
+          request.resource.data.earlyAccessReviewedBy == request.auth.uid &&
+          request.resource.data.earlyAccessReviewedAt == request.time &&
+          request.resource.data.earlyAccessRejectedReason is string;
+    }
+
+    function canRemoveEarlyAccess() {
+      return request.resource.data.earlyAccessRequested == false &&
+          request.resource.data.earlyAccessStatus == 'none' &&
+          request.resource.data.premiumEarlyAccess == false &&
+          (
+            !request.resource.data.keys().hasAny(['publicVisibleAt']) ||
+            request.resource.data.publicVisibleAt == null
+          );
+    }
+
+    function canAdminManageEarlyAccess() {
+      return isAdmin() &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'earlyAccessRequested',
+            'earlyAccessStatus',
+            'premiumEarlyAccess',
+            'publicVisibleAt',
+            'earlyAccessReviewedBy',
+            'earlyAccessReviewedAt',
+            'earlyAccessDurationHours',
+            'earlyAccessRejectedReason',
+            'updatedAt'
+          ]) &&
+          request.resource.data.updatedAt == request.time &&
+          (
+            canApproveEarlyAccess() ||
+            canRejectEarlyAccess() ||
+            canRemoveEarlyAccess()
+          );
+    }
+
     function isApplicationStatus(value) {
       return value == 'pending' ||
           value == 'accepted' ||
           value == 'rejected';
+    }
+
+    function hasActivePremium(uid) {
+      return exists(subscriptionPath(uid)) &&
+          get(subscriptionPath(uid)).data.status == 'active' &&
+          get(subscriptionPath(uid)).data.expiresAt is timestamp &&
+          get(subscriptionPath(uid)).data.expiresAt > request.time;
+    }
+
+    function hasValidApplicationPrioritySnapshot(data, uid) {
+      return data.get('isPremiumAtApply', false) ==
+          data.get('priorityApplication', false) &&
+          (
+            data.get('priorityApplication', false) == false ||
+            hasActivePremium(uid)
+          ) &&
+          (
+            !data.keys().hasAny(['subscriptionSnapshot']) ||
+            (
+              data.get('priorityApplication', false) == true &&
+              data.subscriptionSnapshot is map &&
+              data.subscriptionSnapshot.keys().hasOnly([
+                'plan',
+                'status',
+                'expiresAt'
+              ]) &&
+              data.subscriptionSnapshot.plan ==
+                  get(subscriptionPath(uid)).data.plan &&
+              data.subscriptionSnapshot.status ==
+                  get(subscriptionPath(uid)).data.status &&
+              data.subscriptionSnapshot.expiresAt ==
+                  get(subscriptionPath(uid)).data.expiresAt
+            )
+          );
     }
 
     function isProjectIdeaStatus(value) {
@@ -944,7 +1097,10 @@ service cloud.firestore {
             'fundingAmount',
             'fundingCurrency',
             'fundingNote',
-            'applicationDeadline'
+            'applicationDeadline',
+            'earlyAccessRequested',
+            'earlyAccessStatus',
+            'requestedEarlyAccessAt'
           ]) &&
           request.resource.data.id == opportunityId &&
           request.resource.data.companyId == request.auth.uid &&
@@ -955,12 +1111,13 @@ service cloud.firestore {
           ) &&
           isOpportunityType(request.resource.data.type) &&
           isOpportunityStatus(request.resource.data.status) &&
-          hasValidOpportunityMetadata(request.resource.data);
+          hasValidOpportunityMetadata(request.resource.data) &&
+          hasValidOpportunityEarlyAccessCreate(request.resource.data);
 
       allow update: if (
           (
             isAdmin() &&
-            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
               'isHidden',
               'updatedAt'
             ]) &&
@@ -971,7 +1128,7 @@ service cloud.firestore {
           (
             isAdmin() &&
             resource.data.companyId == request.auth.uid &&
-            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
               'companyName',
               'companyLogo',
               'title',
@@ -1012,7 +1169,7 @@ service cloud.firestore {
           (
             isCompany() &&
             resource.data.companyId == request.auth.uid &&
-            request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
               'companyName',
               'companyLogo',
               'title',
@@ -1039,7 +1196,10 @@ service cloud.firestore {
               'fundingAmount',
               'fundingCurrency',
               'fundingNote',
-              'applicationDeadline'
+              'applicationDeadline',
+              'earlyAccessRequested',
+              'earlyAccessStatus',
+              'requestedEarlyAccessAt'
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.companyId == resource.data.companyId &&
@@ -1048,7 +1208,8 @@ service cloud.firestore {
             request.resource.data.createdAt == resource.data.createdAt &&
             isOpportunityType(request.resource.data.type) &&
             isOpportunityStatus(request.resource.data.status) &&
-            hasValidOpportunityMetadata(request.resource.data)
+            hasValidOpportunityMetadata(request.resource.data) &&
+            hasValidCompanyOpportunityEarlyAccessUpdate()
           )
         );
 
@@ -1072,7 +1233,10 @@ service cloud.firestore {
             'cvId',
             'status',
             'appliedAt',
-            'activityAt'
+            'activityAt',
+            'isPremiumAtApply',
+            'priorityApplication',
+            'subscriptionSnapshot'
           ]) &&
           request.resource.data.id == applicationId &&
           request.resource.data.studentId == request.auth.uid &&
@@ -1081,6 +1245,10 @@ service cloud.firestore {
           (
             !request.resource.data.keys().hasAny(['activityAt']) ||
             request.resource.data.activityAt == request.time
+          ) &&
+          hasValidApplicationPrioritySnapshot(
+            request.resource.data,
+            request.auth.uid
           ) &&
           canStudentUseOpportunity(request.resource.data.opportunityId) &&
           get(opportunityPath(request.resource.data.opportunityId)).data.companyId ==
@@ -1172,7 +1340,10 @@ service cloud.firestore {
               'withdrawnAt',
               'activityAt',
               'hadWithdrawnBefore',
-              'lastWithdrawnAt'
+              'lastWithdrawnAt',
+              'isPremiumAtApply',
+              'priorityApplication',
+              'subscriptionSnapshot'
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.studentId == resource.data.studentId &&
@@ -1181,6 +1352,10 @@ service cloud.firestore {
             canStudentUseOpportunity(resource.data.opportunityId) &&
             get(opportunityPath(resource.data.opportunityId)).data.companyId ==
                 request.resource.data.companyId &&
+            hasValidApplicationPrioritySnapshot(
+              request.resource.data,
+              request.auth.uid
+            ) &&
             (
               request.resource.data.cvId == '' ||
               (
@@ -1941,21 +2116,9 @@ service cloud.firestore {
     }
 
     // ── opportunities (early access extension) ────────────────────────────
-    // Company may request early access on its own posts only.
-    // Company must not set earlyAccessStatus, premiumEarlyAccess, or publicVisibleAt.
-    // Admin controls approval fields.
-    // Students cannot write early access fields.
     match /opportunities/{opportunityId} {
-      // Existing broad rules stay. These additive checks prevent abuse:
-      allow update: if isCompany() &&
-        resource.data.companyId == request.auth.uid &&
-        // Allow requesting early access (pending only)
-        (
-          !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['earlyAccessStatus', 'premiumEarlyAccess',
-                     'publicVisibleAt', 'earlyAccessReviewedBy',
-                     'earlyAccessReviewedAt', 'earlyAccessRejectedReason'])
-        );
+      allow update: if canCompanyRequestEarlyAccess() ||
+          canAdminManageEarlyAccess();
     }
   }
 }

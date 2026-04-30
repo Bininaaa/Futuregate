@@ -57,6 +57,38 @@
       ]
     },
     {
+      "collectionGroup": "opportunities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "earlyAccessRequested",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "earlyAccessStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "requestedEarlyAccessAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "opportunities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "earlyAccessRequested",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "requestedEarlyAccessAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "messages",
       "queryScope": "COLLECTION",
       "fields": [

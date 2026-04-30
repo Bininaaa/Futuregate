@@ -403,8 +403,8 @@ Chargily requirements:
 - Create checkout server-side
 - Use DZD currency
 - Use supported payment methods from Chargily Pay v2
-- Provide success_url
-- Provide failure_url
+- Provide success_url as an http/https web URL
+- Provide failure_url as an http/https web URL
 - Provide webhook_endpoint
 - Include metadata with uid, plan, and internal payment id
 - Verify webhook signature on backend
@@ -447,6 +447,7 @@ Worker must:
 - Prevent duplicate active purchases when user already has active premium
 - Create payment document as pending
 - Create Chargily checkout using secret key
+- Send only http/https web return URLs to Chargily; app deep links are invalid for success_url/failure_url
 - Store checkoutId and checkoutUrl
 - Return checkoutUrl to Flutter
 - Verify Chargily webhook signature

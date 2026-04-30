@@ -29,6 +29,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
   "https://avenirdz-7305d-admin.web.app",
   "https://avenirdz-7305d-admin.firebaseapp.com",
 ];
+const DEFAULT_PAYMENT_RETURN_BASE_URL = "https://payment.futuregate.tech";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -43,6 +44,50 @@ function err(message, status = 400) {
 
 function trim(value, fallback = "") {
   return typeof value === "string" ? value.trim() : fallback;
+}
+
+function parseHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.toString()
+      : "";
+  } catch {
+    return "";
+  }
+}
+
+function normalizeHttpUrl(value, fallback) {
+  const fallbackUrl = parseHttpUrl(fallback);
+  const raw = trim(value);
+  if (!raw) return fallbackUrl;
+
+  const absoluteUrl = parseHttpUrl(raw);
+  if (absoluteUrl) return absoluteUrl;
+
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) {
+    return fallbackUrl;
+  }
+
+  const fallbackBase = new URL(fallbackUrl || DEFAULT_PAYMENT_RETURN_BASE_URL);
+
+  if (raw.startsWith("/")) {
+    return parseHttpUrl(new URL(raw, fallbackBase.origin).toString()) || fallbackUrl;
+  }
+
+  if (raw.includes(".") || raw.includes(":") || raw.toLowerCase().startsWith("localhost")) {
+    return parseHttpUrl(`https://${raw}`) || fallbackUrl;
+  }
+
+  return parseHttpUrl(new URL(raw, `${fallbackBase.origin}/`).toString()) || fallbackUrl;
+}
+
+function paymentReturnUrl(env, explicitValue, path) {
+  const defaultBaseUrl =
+    normalizeHttpUrl(env.APP_BASE_URL, DEFAULT_PAYMENT_RETURN_BASE_URL) ||
+    DEFAULT_PAYMENT_RETURN_BASE_URL;
+  const fallbackUrl = `${defaultBaseUrl.replace(/\/+$/, "")}${path}`;
+  return normalizeHttpUrl(explicitValue, fallbackUrl);
 }
 
 function clamp(value, min, max, fallback) {
@@ -4334,9 +4379,8 @@ async function handleChargilyCreateCheckout(request, env) {
   } catch {}
 
   const plan = trim(body.plan) || "semester";
-  const appBaseUrl = trim(env.APP_BASE_URL) || "https://futuregate.tech";
-  const successUrl = trim(env.FUTUREGATE_SUCCESS_URL) || `${appBaseUrl}/payment/success`;
-  const failureUrl = trim(env.FUTUREGATE_FAILURE_URL) || `${appBaseUrl}/payment/failed`;
+  const successUrl = paymentReturnUrl(env, env.FUTUREGATE_SUCCESS_URL, "/success");
+  const failureUrl = paymentReturnUrl(env, env.FUTUREGATE_FAILURE_URL, "/failed");
   const webhookUrl = trim(env.CHARGILY_WEBHOOK_URL);
 
   const paymentDocRef = crypto.randomUUID();

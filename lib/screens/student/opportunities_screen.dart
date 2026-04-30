@@ -17,12 +17,14 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
+import '../../widgets/saved_limit_upgrade_modal.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_search_field.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import 'internships_screen.dart';
 import 'jobs_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'premium_pass_screen.dart';
 import 'sponsored_opportunities_screen.dart';
 import 'student_home_navigation.dart';
 import 'trainings_screen.dart';
@@ -351,21 +353,36 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
       error = await savedProvider.unsaveOpportunity(existingSaved.id, userId);
       message = l10n.studentRemovedFromSavedOpportunities;
     } else {
-      error = await savedProvider.saveOpportunity(
-        studentId: userId,
-        opportunityId: opportunity.id,
-        title: DisplayText.opportunityTitle(
-          opportunity.title,
-          fallback: l10n.opportunityOpenFallback,
-        ),
-        companyName: opportunity.companyName,
-        type: opportunity.type,
-        location: opportunity.location,
-        deadline: opportunity.deadlineLabel,
-        fundingLabel: OpportunityType.isSponsoring(opportunity.type)
-            ? opportunity.fundingLabel() ?? ''
-            : '',
-      );
+      try {
+        error = await savedProvider.saveOpportunity(
+          studentId: userId,
+          opportunityId: opportunity.id,
+          title: DisplayText.opportunityTitle(
+            opportunity.title,
+            fallback: l10n.opportunityOpenFallback,
+          ),
+          companyName: opportunity.companyName,
+          type: opportunity.type,
+          location: opportunity.location,
+          deadline: opportunity.deadlineLabel,
+          fundingLabel: OpportunityType.isSponsoring(opportunity.type)
+              ? opportunity.fundingLabel() ?? ''
+              : '',
+        );
+      } on SavedLimitReachedException catch (e) {
+        if (!mounted) return;
+        await showSavedLimitUpgradeModal(
+          context,
+          limit: e.limit,
+          onUpgrade: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+          ),
+        );
+        return;
+      } catch (e) {
+        error = e.toString();
+      }
     }
 
     if (!mounted) {
@@ -1933,7 +1950,9 @@ class _OpportunitiesScreenState extends State<OpportunitiesScreen> {
                               compensationText: _compensationText(opportunity),
                               detailChips: _latestStatusItems(opportunity),
                               badgeText: _isNewOpportunity(opportunity)
-                                  ? AppLocalizations.of(context)!.studentNewBadge
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.studentNewBadge
                                   : null,
                               badgeColor: OpportunityDashboardPalette.success,
                               applicationStatus:

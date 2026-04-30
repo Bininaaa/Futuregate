@@ -1,0 +1,31 @@
+- generic [ref=e2]:
+  - banner "FutureGate payment return header" [ref=e3]:
+    - link "FutureGate home" [ref=e4] [cursor=pointer]:
+      - /url: https://futuregate.tech
+      - img [ref=e6]
+      - generic [ref=e9]:
+        - strong [ref=e10]: FutureGate
+        - generic [ref=e11]: Retour paiement
+    - generic "Page controls" [ref=e12]:
+      - group "Language" [ref=e13]:
+        - button "EN" [ref=e14] [cursor=pointer]
+        - button "FR" [ref=e15] [cursor=pointer]
+        - button "AR" [ref=e16] [cursor=pointer]
+      - button "Toggle light and dark mode" [ref=e17] [cursor=pointer]:
+        - img [ref=e18]
+  - main [ref=e20]:
+    - img [ref=e23]
+    - region "Paiement reçu" [ref=e30]:
+      - paragraph [ref=e31]: Paiement Chargily Pay
+      - heading "Paiement reçu" [level=1] [ref=e32]
+      - paragraph [ref=e33]: Nous confirmons votre Premium Pass. Veuillez retourner dans l'application FutureGate.
+      - generic [ref=e34]:
+        - img [ref=e36]
+        - paragraph [ref=e39]: Cette page n'active pas Premium. L'application confirme votre abonnement depuis le backend après réception du webhook sécurisé.
+      - generic "Payment return actions" [ref=e40]:
+        - link "Retourner à FutureGate" [ref=e41] [cursor=pointer]:
+          - /url: https://futuregate.tech
+        - link "Télécharger l'APK" [ref=e42] [cursor=pointer]:
+          - /url: https://futuregate.tech/futuregate.apk
+      - paragraph [ref=e43]: Si Premium n'apparaît pas immédiatement, actualisez le statut de votre abonnement dans l'application.
+  - contentinfo [ref=e44]: Pages de retour FutureGate pour les paiements de test Chargily Pay.

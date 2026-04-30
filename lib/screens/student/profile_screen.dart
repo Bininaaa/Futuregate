@@ -29,6 +29,7 @@ import '../../theme/app_typography.dart';
 import '../../utils/display_text.dart';
 import '../../utils/student_profile_completion.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/premium_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_directional.dart';
 import 'applied_opportunities_screen.dart';
@@ -371,14 +372,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   List<_HeroBadgeData> _buildHeroBadges(UserModel? user) {
     final badges = <_HeroBadgeData>[];
-    final isPremium =
-        context.read<SubscriptionProvider>().hasActivePremium;
+    final isPremium = context.watch<SubscriptionProvider>().hasActivePremium;
     if (isPremium) {
       badges.add(
         _HeroBadgeData(
           label: AppLocalizations.of(context)!.premiumBadgeLabel,
           icon: Icons.workspace_premium_rounded,
           color: AppColors.of(context).accent,
+          premium: true,
         ),
       );
     }
@@ -568,11 +569,15 @@ class _ProfileHeader extends StatelessWidget {
                           runSpacing: 8,
                           children: badges
                               .map(
-                                (badge) => _HeroBadge(
-                                  label: badge.label,
-                                  icon: badge.icon,
-                                  color: badge.color,
-                                ),
+                                (badge) => badge.premium
+                                    ? const PremiumBadge(
+                                        size: PremiumBadgeSize.medium,
+                                      )
+                                    : _HeroBadge(
+                                        label: badge.label,
+                                        icon: badge.icon,
+                                        color: badge.color,
+                                      ),
                               )
                               .toList(growable: false),
                         ),
@@ -2489,11 +2494,13 @@ class _HeroBadgeData {
   final String label;
   final IconData icon;
   final Color color;
+  final bool premium;
 
   const _HeroBadgeData({
     required this.label,
     required this.icon,
     required this.color,
+    this.premium = false,
   });
 }
 

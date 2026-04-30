@@ -575,6 +575,16 @@ class CompanyService {
           : OpportunityMetadata.formatDateForStorage(parsedDeadline);
     }
 
+    if (nextData['earlyAccessRequested'] == true &&
+        (nextData['earlyAccessStatus'] ?? '')
+                .toString()
+                .trim()
+                .toLowerCase() ==
+            'pending' &&
+        !nextData.containsKey('requestedEarlyAccessAt')) {
+      nextData['requestedEarlyAccessAt'] = FieldValue.serverTimestamp();
+    }
+
     return nextData;
   }
 }
