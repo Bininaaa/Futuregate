@@ -123,7 +123,11 @@ class _StandaloneApplicationDetailsSheetState
     if (value == null) {
       return null;
     }
-    return LocalizedDisplay.shortDate(context, value.toDate(), includeYear: true);
+    return LocalizedDisplay.shortDate(
+      context,
+      value.toDate(),
+      includeYear: true,
+    );
   }
 
   String? _relativeDateLabel(Timestamp? value) {
@@ -587,6 +591,7 @@ class _StandaloneApplicationDetailsSheetState
                 typeTone: tone,
                 status: application.status,
                 studentId: application.studentId,
+                isPriority: application.shouldPrioritizeApplication,
                 onTapProfile: () {
                   _openStudentProfile(application);
                 },
@@ -683,7 +688,11 @@ class _StandaloneCvSheet extends StatelessWidget {
     if (value == null) {
       return AppLocalizations.of(context)!.uiNotSpecified;
     }
-    return LocalizedDisplay.shortDate(context, value.toDate(), includeYear: true);
+    return LocalizedDisplay.shortDate(
+      context,
+      value.toDate(),
+      includeYear: true,
+    );
   }
 
   String _documentErrorMessage(BuildContext context, Object error) {
@@ -1126,19 +1135,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               ),
             )
             .toList()
-          ..sort((first, second) {
-            // Priority applications first, then by most recent.
-            final firstPriority = first.application.priorityApplication ? 0 : 1;
-            final secondPriority = second.application.priorityApplication ? 0 : 1;
-            if (firstPriority != secondPriority) {
-              return firstPriority.compareTo(secondPriority);
-            }
-            final firstTime =
-                first.application.appliedAt?.millisecondsSinceEpoch ?? 0;
-            final secondTime =
-                second.application.appliedAt?.millisecondsSinceEpoch ?? 0;
-            return secondTime.compareTo(firstTime);
-          });
+          ..sort(
+            (first, second) => ApplicationModel.comparePriorityThenRecent(
+              first.application,
+              second.application,
+            ),
+          );
 
     final focusedId = (widget.initialApplicationId ?? '').trim();
     if (focusedId.isNotEmpty) {
@@ -1949,7 +1951,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     if (value == null) {
       return null;
     }
-    return LocalizedDisplay.shortDate(context, value.toDate(), includeYear: true);
+    return LocalizedDisplay.shortDate(
+      context,
+      value.toDate(),
+      includeYear: true,
+    );
   }
 
   String? _opportunityTitleLabel(OpportunityModel? opportunity) {
@@ -1966,7 +1972,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final relativeAppliedLabel = _relativeDateLabel(application.appliedAt);
     final isFresh = _isFreshApplication(application.appliedAt);
     final titleLabel = _opportunityTitleLabel(opportunity);
-    final isPriority = application.priorityApplication;
+    final isPriority = application.shouldPrioritizeApplication;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -2041,9 +2047,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                         ),
                                       ),
                                     ),
-                                    if (application.priorityApplication) ...[
+                                    if (application
+                                        .shouldPrioritizeApplication) ...[
                                       const SizedBox(width: 6),
-                                      const PriorityApplicationBadge(compact: true),
+                                      const PriorityApplicationBadge(
+                                        compact: true,
+                                      ),
                                     ],
                                     if (isFresh) ...[
                                       const SizedBox(width: 6),
@@ -2193,6 +2202,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                     typeTone: tone,
                     status: application.status,
                     studentId: application.studentId,
+                    isPriority: application.shouldPrioritizeApplication,
                     onTapProfile: () {
                       _openStudentProfile(application);
                     },
@@ -2968,7 +2978,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     if (value == null) {
       return _l10n.uiNotSpecified;
     }
-    return LocalizedDisplay.shortDate(context, value.toDate(), includeYear: true);
+    return LocalizedDisplay.shortDate(
+      context,
+      value.toDate(),
+      includeYear: true,
+    );
   }
 
   String _documentErrorMessage(Object error) {
@@ -4480,6 +4494,7 @@ class _DetailHeroCard extends StatelessWidget {
   final _OpportunityTypeTone typeTone;
   final String status;
   final String studentId;
+  final bool isPriority;
   final VoidCallback? onTapProfile;
 
   const _DetailHeroCard({
@@ -4491,6 +4506,7 @@ class _DetailHeroCard extends StatelessWidget {
     required this.typeTone,
     required this.status,
     required this.studentId,
+    required this.isPriority,
     this.onTapProfile,
   });
 
@@ -4511,9 +4527,15 @@ class _DetailHeroCard extends StatelessWidget {
           child: Ink(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _ApplicationsPalette.surface,
+              color: isPriority
+                  ? AppColors.current.accentSoft
+                  : _ApplicationsPalette.surface,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: _ApplicationsPalette.border),
+              border: Border.all(
+                color: isPriority
+                    ? AppColors.current.accent.withValues(alpha: 0.4)
+                    : _ApplicationsPalette.border,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -4582,7 +4604,7 @@ class _DetailHeroCard extends StatelessWidget {
                     ApplicationStatusBadge(status: status, fontSize: 10.5),
                   ],
                 ),
-                if (typeLabel != null || appliedText != null) ...[
+                if (typeLabel != null || appliedText != null || isPriority) ...[
                   const SizedBox(height: 14),
                   Wrap(
                     spacing: 8,
@@ -4597,6 +4619,7 @@ class _DetailHeroCard extends StatelessWidget {
                             context,
                           )!.uiAppliedAppliedtext(appliedText),
                         ),
+                      if (isPriority) const PriorityApplicationBadge(),
                     ],
                   ),
                 ],

@@ -36,7 +36,7 @@ class ApplicationModel {
   factory ApplicationModel.fromMap(Map<String, dynamic> map) {
     return ApplicationModel(
       id: map['id'] ?? '',
-      studentId: map['studentId'] ?? '',
+      studentId: (map['studentId'] ?? map['applicantUid'] ?? '').toString(),
       studentName: map['studentName'] ?? '',
       opportunityId: map['opportunityId'] ?? '',
       companyId: map['companyId'] ?? '',
@@ -48,15 +48,13 @@ class ApplicationModel {
       isPremiumAtApply: map['isPremiumAtApply'] == true,
       priorityApplication: map['priorityApplication'] == true,
       subscriptionSnapshot: map['subscriptionSnapshot'] is Map
-          ? Map<String, dynamic>.from(
-              map['subscriptionSnapshot'] as Map,
-            )
+          ? Map<String, dynamic>.from(map['subscriptionSnapshot'] as Map)
           : const {},
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    final data = <String, dynamic>{
       'id': id,
       'studentId': studentId,
       'studentName': studentName,
@@ -69,8 +67,31 @@ class ApplicationModel {
       'hadWithdrawnBefore': hadWithdrawnBefore,
       'isPremiumAtApply': isPremiumAtApply,
       'priorityApplication': priorityApplication,
-      'subscriptionSnapshot': subscriptionSnapshot,
     };
+
+    if (subscriptionSnapshot.isNotEmpty) {
+      data['subscriptionSnapshot'] = subscriptionSnapshot;
+    }
+
+    return data;
+  }
+
+  bool get shouldPrioritizeApplication =>
+      priorityApplication || isPremiumAtApply;
+
+  static int comparePriorityThenRecent(
+    ApplicationModel first,
+    ApplicationModel second,
+  ) {
+    final firstPriority = first.shouldPrioritizeApplication ? 0 : 1;
+    final secondPriority = second.shouldPrioritizeApplication ? 0 : 1;
+    if (firstPriority != secondPriority) {
+      return firstPriority.compareTo(secondPriority);
+    }
+
+    final firstTime = first.appliedAt?.millisecondsSinceEpoch ?? 0;
+    final secondTime = second.appliedAt?.millisecondsSinceEpoch ?? 0;
+    return secondTime.compareTo(firstTime);
   }
 
   ApplicationModel copyWith({

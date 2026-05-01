@@ -1230,6 +1230,7 @@ service cloud.firestore {
       allow create: if isStudent() &&
           request.resource.data.keys().hasOnly([
             'id',
+            'applicantUid',
             'studentId',
             'studentName',
             'opportunityId',
@@ -1244,6 +1245,10 @@ service cloud.firestore {
           ]) &&
           request.resource.data.id == applicationId &&
           request.resource.data.studentId == request.auth.uid &&
+          (
+            !request.resource.data.keys().hasAny(['applicantUid']) ||
+            request.resource.data.applicantUid == request.auth.uid
+          ) &&
           applicationId == request.auth.uid + '_' + request.resource.data.opportunityId &&
           request.resource.data.status == 'pending' &&
           (
@@ -1337,6 +1342,7 @@ service cloud.firestore {
             resource.data.status == 'withdrawn' &&
             request.resource.data.diff(resource.data).affectedKeys().hasOnly([
               'studentName',
+              'applicantUid',
               'companyId',
               'cvId',
               'status',
@@ -1351,6 +1357,10 @@ service cloud.firestore {
             ]) &&
             request.resource.data.id == resource.data.id &&
             request.resource.data.studentId == resource.data.studentId &&
+            (
+              !request.resource.data.keys().hasAny(['applicantUid']) ||
+              request.resource.data.applicantUid == request.auth.uid
+            ) &&
             request.resource.data.opportunityId == resource.data.opportunityId &&
             request.resource.data.status == 'pending' &&
             canStudentUseOpportunity(resource.data.opportunityId) &&

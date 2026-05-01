@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/application_model.dart';
 import '../models/opportunity_model.dart';
 import '../models/student_application_item_model.dart';
+import '../models/subscription_model.dart';
 import 'notification_worker_service.dart';
 import 'cv_service.dart';
 import 'subscription_service.dart';
@@ -232,11 +233,15 @@ class ApplicationService implements IApplicationService {
       throw Exception('This opportunity is closed');
     }
 
+    final subscription = await _subscriptionService.getSubscription(studentId);
+    final isPremiumAtApply = subscription?.isActive ?? false;
+    final subscriptionSnapshot = _buildPrioritySubscriptionSnapshot(
+      subscription,
+    );
+
     // Early-access lock: free users cannot apply during the premium window
     if (opportunity.isEarlyAccessActive) {
-      final sub = await _subscriptionService.getSubscription(studentId);
-      final isPremium = sub?.isActive ?? false;
-      if (!isPremium) {
+      if (!isPremiumAtApply) {
         throw EarlyAccessLockedException(
           'This opportunity is in early access. Upgrade to Premium Pass to apply now.',
           publicVisibleAt: opportunity.publicVisibleAt,
@@ -254,6 +259,8 @@ class ApplicationService implements IApplicationService {
       studentName: studentName,
       resolvedCompanyId: resolvedCompanyId,
       resolvedCvId: resolvedCvId,
+      isPremiumAtApply: isPremiumAtApply,
+      subscriptionSnapshot: subscriptionSnapshot,
     )) {
       await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
       return;
@@ -266,7 +273,8 @@ class ApplicationService implements IApplicationService {
       opportunityId: opportunityId,
       companyId: resolvedCompanyId,
       cvId: resolvedCvId,
-      isPremiumAtApply: false,
+      isPremiumAtApply: isPremiumAtApply,
+      subscriptionSnapshot: subscriptionSnapshot,
     );
 
     try {
@@ -307,8 +315,9 @@ class ApplicationService implements IApplicationService {
     required String companyId,
     required String cvId,
     required bool isPremiumAtApply,
+    required Map<String, dynamic> subscriptionSnapshot,
   }) {
-    return {
+    final data = <String, dynamic>{
       'id': applicationId,
       'studentId': studentId,
       'studentName': studentName.trim(),
@@ -320,6 +329,31 @@ class ApplicationService implements IApplicationService {
       'isPremiumAtApply': isPremiumAtApply,
       'priorityApplication': isPremiumAtApply,
     };
+
+    if (isPremiumAtApply && subscriptionSnapshot.isNotEmpty) {
+      data['subscriptionSnapshot'] = subscriptionSnapshot;
+    }
+
+    return data;
+  }
+
+  Map<String, dynamic> _buildPrioritySubscriptionSnapshot(
+    SubscriptionModel? subscription,
+  ) {
+    if (subscription == null || !subscription.isActive) {
+      return const {};
+    }
+
+    final expiresAt = subscription.expiresAt;
+    if (expiresAt == null) {
+      return const {};
+    }
+
+    return {
+      'plan': subscription.plan,
+      'status': subscription.status,
+      'expiresAt': expiresAt,
+    };
   }
 
   Future<bool> _tryRestoreWithdrawnApplication({
@@ -329,6 +363,7 @@ class ApplicationService implements IApplicationService {
     required String resolvedCompanyId,
     required String resolvedCvId,
     bool isPremiumAtApply = false,
+    Map<String, dynamic> subscriptionSnapshot = const {},
   }) async {
     DocumentSnapshot<Map<String, dynamic>> applicationSnapshot;
     try {
@@ -368,6 +403,12 @@ class ApplicationService implements IApplicationService {
       'priorityApplication': isPremiumAtApply,
     };
 
+    if (isPremiumAtApply && subscriptionSnapshot.isNotEmpty) {
+      updateData['subscriptionSnapshot'] = subscriptionSnapshot;
+    } else {
+      updateData['subscriptionSnapshot'] = FieldValue.delete();
+    }
+
     final previousWithdrawnAt = data?['withdrawnAt'];
     if (previousWithdrawnAt is Timestamp) {
       updateData['lastWithdrawnAt'] = previousWithdrawnAt;
@@ -378,6 +419,9 @@ class ApplicationService implements IApplicationService {
       return true;
     } on FirebaseException catch (e) {
       if (e.code != 'permission-denied') {
+        rethrow;
+      }
+      if (isPremiumAtApply) {
         rethrow;
       }
     }
