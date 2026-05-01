@@ -53,12 +53,6 @@ List<Widget> _earlyAccessChips(
     ];
   }
 
-  if (opportunity.earlyAccessStatus != 'none') {
-    return [
-      EarlyAccessLabel(status: opportunity.earlyAccessStatus, compact: compact),
-    ];
-  }
-
   return const <Widget>[];
 }
 

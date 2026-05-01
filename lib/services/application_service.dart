@@ -132,7 +132,7 @@ class ApplicationService implements IApplicationService {
       'id': opportunitySnapshot.id,
     });
 
-    if (opportunity.isHidden) {
+    if (opportunity.isHidden || opportunity.isPendingEarlyAccessReview) {
       return ApplicationEligibilityStatus.unavailable;
     }
 
@@ -225,7 +225,7 @@ class ApplicationService implements IApplicationService {
       'id': opportunitySnapshot.id,
     });
 
-    if (opportunity.isHidden) {
+    if (opportunity.isHidden || opportunity.isPendingEarlyAccessReview) {
       throw Exception('This opportunity is no longer available');
     }
 

@@ -310,6 +310,55 @@ void main() {
     expect(manuallyClosedOpportunity.effectiveStatus(now: now), 'closed');
   });
 
+  test(
+    'Pending early access waits for admin approval before student release',
+    () {
+      final now = DateTime(2026, 4, 13, 12);
+      final baseOpportunity = <String, dynamic>{
+        'id': 'opp_early_access',
+        'companyId': 'company_1',
+        'companyName': 'TechDZ',
+        'companyLogo': '',
+        'title': 'Student Launch Sponsoring',
+        'description': 'Support student launch teams.',
+        'type': 'sponsoring',
+        'location': 'Algiers',
+        'requirements': 'Clear budget',
+        'status': 'open',
+        'deadline': '2026-04-30',
+        'earlyAccessRequested': true,
+      };
+      final pendingOpportunity = OpportunityModel.fromMap({
+        ...baseOpportunity,
+        'earlyAccessStatus': 'pending',
+      });
+      final approvedOpportunity = OpportunityModel.fromMap({
+        ...baseOpportunity,
+        'earlyAccessStatus': 'approved',
+        'premiumEarlyAccess': true,
+        'publicVisibleAt': Timestamp.fromDate(DateTime(2026, 4, 15)),
+      });
+
+      expect(pendingOpportunity.isPendingEarlyAccessReview, isTrue);
+      expect(pendingOpportunity.isVisibleToStudents(now: now), isFalse);
+      expect(approvedOpportunity.isVisibleToStudents(now: now), isTrue);
+      expect(
+        CompanyService.shouldNotifyStudentsAboutOpportunity({
+          ...baseOpportunity,
+          'earlyAccessStatus': 'pending',
+        }),
+        isFalse,
+      );
+      expect(
+        CompanyService.shouldNotifyStudentsAboutOpportunity({
+          ...baseOpportunity,
+          'earlyAccessStatus': 'approved',
+        }),
+        isTrue,
+      );
+    },
+  );
+
   test('Date-only deadlines remain valid until the end of the day', () {
     final opportunity = OpportunityModel.fromMap({
       'id': 'opp_last_day',

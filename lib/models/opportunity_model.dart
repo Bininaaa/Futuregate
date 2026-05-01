@@ -270,12 +270,12 @@ class OpportunityModel {
     return DateTime.now().isBefore(publicVisibleAt!);
   }
 
+  bool get isPendingEarlyAccessReview => earlyAccessStatus == 'pending';
+
   bool get usesStructuredMetadata =>
       OpportunityMetadata.usesStructuredFields(type);
 
-  String? fundingLabel({
-    bool preferFundingNote = false,
-  }) {
+  String? fundingLabel({bool preferFundingNote = false}) {
     return OpportunityMetadata.buildFundingLabel(
       fundingAmount: fundingAmount,
       fundingCurrency: fundingCurrency,
@@ -309,7 +309,9 @@ class OpportunityModel {
   }
 
   bool isVisibleToStudents({DateTime? now}) =>
-      !isHidden && effectiveStatus(now: now) == 'open';
+      !isHidden &&
+      effectiveStatus(now: now) == 'open' &&
+      !isPendingEarlyAccessReview;
 
   String get deadlineLabel {
     if (applicationDeadline != null) {

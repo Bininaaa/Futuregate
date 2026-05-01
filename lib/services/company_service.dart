@@ -394,9 +394,14 @@ class CompanyService {
   static bool shouldNotifyStudentsAboutOpportunity(Map<String, dynamic> data) {
     final type = OpportunityType.parse(data['type']?.toString());
     final status = normalizeOpportunityStatus(data['status']);
+    final earlyAccessStatus = (data['earlyAccessStatus'] ?? 'none')
+        .toString()
+        .trim()
+        .toLowerCase();
 
     return OpportunityType.supportsStudentPostNotification(type) &&
-        status == 'open';
+        status == 'open' &&
+        earlyAccessStatus != 'pending';
   }
 
   static String normalizeOpportunityStatus(Object? rawStatus) {
@@ -576,10 +581,7 @@ class CompanyService {
     }
 
     if (nextData['earlyAccessRequested'] == true &&
-        (nextData['earlyAccessStatus'] ?? '')
-                .toString()
-                .trim()
-                .toLowerCase() ==
+        (nextData['earlyAccessStatus'] ?? '').toString().trim().toLowerCase() ==
             'pending' &&
         !nextData.containsKey('requestedEarlyAccessAt')) {
       nextData['requestedEarlyAccessAt'] = FieldValue.serverTimestamp();

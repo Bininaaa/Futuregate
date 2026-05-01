@@ -3202,6 +3202,18 @@ async function handleNotifyOpportunity(request, env) {
     });
   }
 
+  if (trim(opportunity.earlyAccessStatus).toLowerCase() === "pending") {
+    return json({
+      created: 0,
+      pushSent: 0,
+      duplicatesSkipped: 0,
+      missingTokens: 0,
+      invalidTokens: 0,
+      skipped: true,
+      reason: "early_access_pending_review",
+    });
+  }
+
   const opportunityType = normalizeOpportunityType(opportunity.type);
   if (opportunityType !== "sponsoring") {
     return json({

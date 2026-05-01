@@ -83,18 +83,46 @@ class _PremiumPassScreenState extends State<PremiumPassScreen>
       return;
     }
 
-    final url = premium.checkoutUrl;
-    if (url == null || url.isEmpty) return;
+    final url = premium.checkoutUrl?.trim();
+    if (url == null || url.isEmpty) {
+      _showSnack(premium.checkoutError ?? 'Payment setup failed.');
+      return;
+    }
+
+    final uri = Uri.tryParse(url);
+    if (uri == null || !_isHttpUrl(uri)) {
+      _showSnack('Could not open payment page.');
+      return;
+    }
 
     _pendingCheckoutId = premium.checkoutId;
     _waitingForReturn = true;
 
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
+    final launched = await _launchCheckout(uri);
+    if (!launched) {
       _waitingForReturn = false;
       _showSnack('Could not open payment page.');
+    }
+  }
+
+  bool _isHttpUrl(Uri uri) {
+    final scheme = uri.scheme.toLowerCase();
+    return (scheme == 'https' || scheme == 'http') && uri.host.isNotEmpty;
+  }
+
+  Future<bool> _launchCheckout(Uri uri) async {
+    try {
+      if (await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+        return true;
+      }
+    } catch (_) {
+      // Fall back below. Some Android browsers report poorly through intents.
+    }
+
+    try {
+      return launchUrl(uri, mode: LaunchMode.platformDefault);
+    } catch (_) {
+      return false;
     }
   }
 

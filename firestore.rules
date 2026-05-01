@@ -46,6 +46,7 @@ service cloud.firestore {
       return exists(opportunityPath(opportunityId)) &&
           get(opportunityPath(opportunityId)).data.status == 'open' &&
           get(opportunityPath(opportunityId)).data.get('isHidden', false) != true &&
+          get(opportunityPath(opportunityId)).data.get('earlyAccessStatus', 'none') != 'pending' &&
           (
             !get(opportunityPath(opportunityId)).data.keys().hasAny(['applicationDeadline']) ||
             get(opportunityPath(opportunityId)).data.applicationDeadline == null ||

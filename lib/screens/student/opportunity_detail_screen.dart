@@ -1168,13 +1168,6 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                 ],
               ),
             ),
-          ] else if (widget.opportunity.earlyAccessStatus != 'none') ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-              child: EarlyAccessLabel(
-                status: widget.opportunity.earlyAccessStatus,
-              ),
-            ),
           ],
           AppDetailHeroCard(
             theme: _theme,
