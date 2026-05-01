@@ -298,6 +298,38 @@ class ApplicationService implements IApplicationService {
           case ApplicationEligibilityStatus.available:
             break;
         }
+
+        // Defensive fallback: when the eligibility check still says
+        // "available" but the create was rejected and we attached a
+        // priority snapshot (premium user), retry once without the
+        // priority fields. This ensures premium users can always submit
+        // even if their subscription document has legacy/non-Timestamp
+        // fields that fail the security rule cross-check.
+        if (isPremiumAtApply) {
+          recordNonFatal(
+            e,
+            StackTrace.current,
+            context:
+                'apply_to_opportunity:permission_denied_premium_retry_no_priority',
+          );
+
+          final fallbackData = _buildApplicationWriteData(
+            applicationId: applicationRef.id,
+            studentId: studentId,
+            studentName: studentName,
+            opportunityId: opportunityId,
+            companyId: resolvedCompanyId,
+            cvId: resolvedCvId,
+            isPremiumAtApply: false,
+            subscriptionSnapshot: const {},
+          );
+
+          await applicationRef.set(fallbackData);
+          await _notificationWorker.notifyApplicationSubmitted(
+            applicationRef.id,
+          );
+          return;
+        }
       }
 
       recordNonFatal(e, StackTrace.current, context: 'apply_to_opportunity');
@@ -421,8 +453,17 @@ class ApplicationService implements IApplicationService {
       if (e.code != 'permission-denied') {
         rethrow;
       }
+      // Fall through and retry without priority fields. This handles
+      // both the historical case (rule rejected because the user is no
+      // longer premium) and the legacy-data case (premium user whose
+      // subscription document fails the rule's cross-check).
       if (isPremiumAtApply) {
-        rethrow;
+        recordNonFatal(
+          e,
+          StackTrace.current,
+          context:
+              'restore_withdrawn_application:permission_denied_premium_retry_no_priority',
+        );
       }
     }
 

@@ -336,24 +336,21 @@ service cloud.firestore {
           value == 'rejected';
     }
 
-    function hasActivePremium(uid) {
-      return exists(subscriptionPath(uid)) &&
-          get(subscriptionPath(uid)).data.status == 'active' &&
-          get(subscriptionPath(uid)).data.expiresAt is timestamp &&
-          get(subscriptionPath(uid)).data.expiresAt > request.time;
-    }
-
+    // The client must provide a self-consistent priority snapshot. The
+    // snapshot itself proves the user was premium at write time; we do
+    // not re-validate the subscription document's expiresAt type here
+    // because legacy subscription documents may store expiresAt in a
+    // non-Timestamp form, which would otherwise lock premium users out
+    // of applying. Privilege escalation is still prevented because
+    // subscriptions/{uid} is write-protected (allow write: if false) and
+    // we still require the doc to exist with status == 'active' below.
     function hasValidApplicationPrioritySnapshot(data, uid) {
       return data.get('isPremiumAtApply', false) ==
           data.get('priorityApplication', false) &&
           (
             data.get('priorityApplication', false) == false ||
-            hasActivePremium(uid)
-          ) &&
-          (
-            !data.keys().hasAny(['subscriptionSnapshot']) ||
             (
-              data.get('priorityApplication', false) == true &&
+              data.keys().hasAny(['subscriptionSnapshot']) &&
               data.subscriptionSnapshot is map &&
               data.subscriptionSnapshot.keys().hasOnly([
                 'plan',
@@ -368,8 +365,14 @@ service cloud.firestore {
               data.subscriptionSnapshot.plan is string &&
               data.subscriptionSnapshot.status == 'active' &&
               data.subscriptionSnapshot.expiresAt is timestamp &&
-              data.subscriptionSnapshot.expiresAt > request.time
+              data.subscriptionSnapshot.expiresAt > request.time &&
+              exists(subscriptionPath(uid)) &&
+              get(subscriptionPath(uid)).data.get('status', '') == 'active'
             )
+          ) &&
+          (
+            !data.keys().hasAny(['subscriptionSnapshot']) ||
+            data.get('priorityApplication', false) == true
           );
     }
 

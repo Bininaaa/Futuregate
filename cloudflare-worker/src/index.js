@@ -4834,6 +4834,72 @@ async function handleSubscriptionConfig(request, env) {
   }
 }
 
+// Admin-only one-shot migration. Scans every subscription document and
+// rewrites timestamp-like fields (expiresAt, startedAt, createdAt,
+// updatedAt, lastVerifiedAt) as proper Firestore Timestamps. This is
+// needed because legacy worker code (and some imported data) stored
+// these fields as ISO strings or {seconds, nanoseconds} maps, which
+// causes the Firestore security rule `expiresAt is timestamp` check to
+// fail and prevents premium students from creating applications.
+async function handleMigrateSubscriptionTimestamps(request, env) {
+  const auth = await requireUser(request, env, { roles: ["admin"] });
+  if (auth.error) return auth.error;
+
+  const subscriptions = await firestoreQuery(env, "subscriptions", []);
+  const timestampFields = [
+    "expiresAt",
+    "startedAt",
+    "createdAt",
+    "updatedAt",
+    "lastVerifiedAt",
+  ];
+
+  let scanned = 0;
+  let migrated = 0;
+  const failures = [];
+
+  for (const row of subscriptions) {
+    scanned += 1;
+    const data = row.data || {};
+    const update = {};
+
+    for (const field of timestampFields) {
+      const value = data[field];
+      if (value == null) continue;
+      if (value instanceof Date) continue;
+      // Firestore REST decodes timestampValue into an ISO string. Detect
+      // any string-or-map representation and rewrite it as a Date so the
+      // encoder produces a real Timestamp.
+      const parsed = dateFromFirestoreLike(value);
+      const isString = typeof value === "string";
+      const isLegacyMap = isLegacyTimestampMap(value);
+      if (parsed && (isString || isLegacyMap)) {
+        update[field] = parsed;
+      }
+    }
+
+    if (Object.keys(update).length === 0) continue;
+
+    try {
+      await firestoreUpdate(env, "subscriptions", row.id, update);
+      migrated += 1;
+    } catch (error) {
+      failures.push({
+        uid: row.id,
+        error: error?.message || String(error),
+      });
+    }
+  }
+
+  return json({
+    ok: true,
+    scanned,
+    migrated,
+    failureCount: failures.length,
+    failures: failures.slice(0, 25),
+  });
+}
+
 async function handleGetPayment(request, env, checkoutId) {
   const auth = await requireUser(request, env);
   if (auth.error) return auth.error;
@@ -5033,6 +5099,12 @@ function matchRoute(method, path) {
   if (method === "GET" && path === "/api/subscriptions/config") {
     return { handler: "subscriptionConfig" };
   }
+  if (
+    method === "POST" &&
+    path === "/api/admin/migrate-subscription-timestamps"
+  ) {
+    return { handler: "migrateSubscriptionTimestamps" };
+  }
   const paymentRoute = path.match(/^\/api\/payments\/([^/]+)$/);
   if (method === "GET" && paymentRoute) {
     return {
@@ -5195,6 +5267,9 @@ export default {
           break;
         case "subscriptionConfig":
           response = await handleSubscriptionConfig(request, env);
+          break;
+        case "migrateSubscriptionTimestamps":
+          response = await handleMigrateSubscriptionTimestamps(request, env);
           break;
         case "getPayment":
           response = await handleGetPayment(request, env, route.id);
