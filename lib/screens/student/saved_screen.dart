@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/opportunity_model.dart';
+import '../../models/premium_config_model.dart';
 import '../../models/saved_idea_model.dart';
 import '../../models/saved_opportunity_model.dart';
 import '../../models/saved_scholarship_model.dart';
@@ -13,6 +14,7 @@ import '../../providers/opportunity_provider.dart';
 import '../../providers/project_idea_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/saved_scholarship_provider.dart';
+import '../../providers/subscription_provider.dart';
 import '../../providers/training_provider.dart';
 import '../../services/opportunity_service.dart';
 import '../../services/scholarship_service.dart';
@@ -30,6 +32,7 @@ import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'idea_details_screen.dart';
 import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
+import 'premium_pass_screen.dart';
 import 'profile_screen.dart';
 import 'scholarship_detail_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -447,6 +450,8 @@ class _SavedScreenState extends State<SavedScreen> {
     final trainingProvider = context.watch<TrainingProvider>();
     final savedIdeasProvider = context.watch<ProjectIdeaProvider>();
     final authProvider = context.watch<AuthProvider>();
+    final subscriptionProvider = context.watch<SubscriptionProvider>();
+    final isPremium = subscriptionProvider.hasActivePremium;
     final mediaQuery = MediaQuery.of(context);
     final screenSize = mediaQuery.size;
     final isCompact = screenSize.width < 390 || screenSize.height < 780;
@@ -529,6 +534,12 @@ class _SavedScreenState extends State<SavedScreen> {
                                 trainings:
                                     trainingProvider.savedTrainings.length,
                                 ideas: savedIdeasProvider.savedIdeas.length,
+                                isPremium: isPremium,
+                                freeLimit: PremiumConfigModel.defaults.freeSavedLimit,
+                                onUpgrade: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+                                ),
                               ),
                               const SizedBox(height: 12),
                               if ((savedIdeasProvider.savedIdeasError ?? '')
@@ -868,6 +879,9 @@ class _SavedCompactSummary extends StatelessWidget {
   final int scholarships;
   final int trainings;
   final int ideas;
+  final bool isPremium;
+  final int freeLimit;
+  final VoidCallback? onUpgrade;
 
   const _SavedCompactSummary({
     required this.total,
@@ -875,10 +889,21 @@ class _SavedCompactSummary extends StatelessWidget {
     required this.scholarships,
     required this.trainings,
     required this.ideas,
+    required this.isPremium,
+    required this.freeLimit,
+    this.onUpgrade,
   });
 
   @override
   Widget build(BuildContext context) {
+    final nearLimit = !isPremium && opportunities >= (freeLimit * 0.75).ceil();
+    final atLimit = !isPremium && opportunities >= freeLimit;
+    final limitColor = atLimit
+        ? StudentOpportunityHubPalette.error
+        : nearLimit
+            ? StudentOpportunityHubPalette.accent
+            : StudentOpportunityHubPalette.primary;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -888,7 +913,9 @@ class _SavedCompactSummary extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: StudentOpportunityHubPalette.border.withValues(alpha: 0.95),
+          color: atLimit
+              ? StudentOpportunityHubPalette.error.withValues(alpha: 0.35)
+              : StudentOpportunityHubPalette.border.withValues(alpha: 0.95),
         ),
       ),
       child: Column(
@@ -937,8 +964,44 @@ class _SavedCompactSummary extends StatelessWidget {
                   ],
                 ),
               ),
+              if (isPremium)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: StudentOpportunityHubPalette.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: StudentOpportunityHubPalette.primary.withValues(alpha: 0.25),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.all_inclusive_rounded,
+                          size: 12, color: StudentOpportunityHubPalette.primary),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Unlimited',
+                        style: AppTypography.product(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: StudentOpportunityHubPalette.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
+          if (!isPremium) ...[
+            const SizedBox(height: 10),
+            _SavedLimitBar(
+              current: opportunities,
+              limit: freeLimit,
+              color: limitColor,
+              onUpgrade: onUpgrade,
+            ),
+          ],
           const SizedBox(height: 10),
           LayoutBuilder(
             builder: (context, constraints) {
@@ -1001,6 +1064,87 @@ class _SavedCompactSummary extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SavedLimitBar extends StatelessWidget {
+  final int current;
+  final int limit;
+  final Color color;
+  final VoidCallback? onUpgrade;
+
+  const _SavedLimitBar({
+    required this.current,
+    required this.limit,
+    required this.color,
+    this.onUpgrade,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = (current / limit).clamp(0.0, 1.0);
+    final remaining = (limit - current).clamp(0, limit);
+    final atLimit = current >= limit;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              atLimit ? Icons.lock_outline_rounded : Icons.bookmark_border_rounded,
+              size: 12,
+              color: color,
+            ),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Text(
+                atLimit
+                    ? 'Opportunity save limit reached ($limit/$limit)'
+                    : '$remaining slot${remaining == 1 ? '' : 's'} remaining · $current / $limit opportunities saved',
+                style: AppTypography.product(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+            ),
+            if (atLimit && onUpgrade != null) ...[
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: onUpgrade,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: color.withValues(alpha: 0.30)),
+                  ),
+                  child: Text(
+                    'Upgrade',
+                    style: AppTypography.product(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 5,
+            backgroundColor: StudentOpportunityHubPalette.border.withValues(alpha: 0.5),
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+          ),
+        ),
+      ],
     );
   }
 }

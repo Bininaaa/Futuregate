@@ -1,14 +1,20 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../services/app_intro_preferences_service.dart';
+import '../../theme/app_typography.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_animated_tab_body.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../notifications_screen.dart';
 import 'chat_list_screen.dart';
 import 'opportunities_screen.dart';
+import 'premium_pass_screen.dart';
 import 'project_ideas_screen.dart';
 import 'saved_screen.dart';
 import 'scholarships_screen.dart';
@@ -120,6 +126,17 @@ class _HomeScreenState extends State<HomeScreen> {
     _visitedIndexes.add(_currentIndex);
     StudentHomeNavigation.requestedTabIndex.addListener(_handleRequestedTab);
     _handleRequestedTab();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowDailyWelcome());
+  }
+
+  Future<void> _maybeShowDailyWelcome() async {
+    if (!mounted) return;
+    final prefs = AppIntroPreferencesService();
+    final shouldShow = await prefs.shouldShowDailyWelcome();
+    if (!shouldShow || !mounted) return;
+    await prefs.markDailyWelcomeShown();
+    if (!mounted) return;
+    await _DailyWelcomeSheet.show(context);
   }
 
   @override
@@ -334,4 +351,363 @@ class _StudentDestination {
     required this.navIcon,
     required this.activeNavIcon,
   });
+}
+
+// ── Daily Welcome Sheet ────────────────────────────────────────────────────────
+
+class _DailyWelcomeSheet extends StatefulWidget {
+  const _DailyWelcomeSheet();
+
+  static Future<void> show(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _DailyWelcomeSheet(),
+    );
+  }
+
+  @override
+  State<_DailyWelcomeSheet> createState() => _DailyWelcomeSheetState();
+}
+
+class _DailyWelcomeSheetState extends State<_DailyWelcomeSheet>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnim;
+  late Animation<Offset> _slideAnim;
+
+  static const _tips = [
+    (
+      icon: Icons.rocket_launch_rounded,
+      title: 'Apply Early, Stand Out',
+      body:
+          'Companies review the earliest applicants first. Don\'t wait — the best roles fill up fast.',
+      color: Color(0xFF6C63FF),
+    ),
+    (
+      icon: Icons.workspace_premium_rounded,
+      title: 'Early Access = First Mover',
+      body:
+          'Premium members see new opportunities 48 h before everyone else. Get in before the rush.',
+      color: Color(0xFFF59E0B),
+    ),
+    (
+      icon: Icons.auto_awesome_rounded,
+      title: 'A Strong CV Opens Doors',
+      body:
+          'Take 5 minutes to update your CV today. A complete profile gets 3× more views.',
+      color: Color(0xFF10B981),
+    ),
+    (
+      icon: Icons.lightbulb_rounded,
+      title: 'Share Your Ideas',
+      body:
+          'The Innovation Hub is growing. Post your project idea and connect with teams looking for your skills.',
+      color: Color(0xFFEF4444),
+    ),
+    (
+      icon: Icons.school_rounded,
+      title: 'Scholarships Are Waiting',
+      body:
+          'New scholarships are added every week. Bookmark the ones that match your field and never miss a deadline.',
+      color: Color(0xFF3B82F6),
+    ),
+  ];
+
+  late final _tip = _tips[math.Random().nextInt(_tips.length)];
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _fadeAnim = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, 0.18),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.read<AuthProvider>().userModel;
+    final firstName = (user?.fullName ?? '').split(' ').first.trim();
+    final greeting = firstName.isEmpty ? 'Welcome back' : 'Hey, $firstName 👋';
+    final now = DateTime.now();
+    final hour = now.hour;
+    final timeGreeting = hour < 12
+        ? 'Good morning'
+        : hour < 17
+            ? 'Good afternoon'
+            : 'Good evening';
+
+    return FadeTransition(
+      opacity: _fadeAnim,
+      child: SlideTransition(
+        position: _slideAnim,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF0F0F1A),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            _tip.color,
+                            _tip.color.withValues(alpha: 0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _tip.color.withValues(alpha: 0.35),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Icon(_tip.icon, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '$timeGreeting!',
+                            style: AppTypography.product(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: _tip.color,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            greeting,
+                            style: AppTypography.product(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close_rounded),
+                      color: Colors.white.withValues(alpha: 0.5),
+                      iconSize: 20,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Tip card
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        _tip.color.withValues(alpha: 0.18),
+                        _tip.color.withValues(alpha: 0.06),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(
+                      color: _tip.color.withValues(alpha: 0.30),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: _tip.color.withValues(alpha: 0.20),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'Tip of the day',
+                              style: AppTypography.product(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w700,
+                                color: _tip.color,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _tip.title,
+                        style: AppTypography.product(
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1.25,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _tip.body,
+                        style: AppTypography.product(
+                          fontSize: 13,
+                          height: 1.55,
+                          color: Colors.white.withValues(alpha: 0.72),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Quick actions
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _DailyAction(
+                        icon: Icons.explore_rounded,
+                        label: 'Discover',
+                        color: const Color(0xFF6C63FF),
+                        onTap: () {
+                          Navigator.pop(context);
+                          StudentHomeNavigation.switchToDiscover(context);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _DailyAction(
+                        icon: Icons.workspace_premium_rounded,
+                        label: 'Go Premium',
+                        color: const Color(0xFFF59E0B),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const PremiumPassScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _DailyAction(
+                        icon: Icons.school_rounded,
+                        label: 'Scholarships',
+                        color: const Color(0xFF3B82F6),
+                        onTap: () {
+                          Navigator.pop(context);
+                          StudentHomeNavigation.switchToTab(
+                              context, StudentHomeNavigation.scholarshipsTab);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DailyAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _DailyAction({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withValues(alpha: 0.22)),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: AppTypography.product(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

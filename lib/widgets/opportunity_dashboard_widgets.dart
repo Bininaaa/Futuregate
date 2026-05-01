@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/opportunity_model.dart';
+import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../utils/application_status.dart';
 import '../utils/display_text.dart';
@@ -1052,6 +1053,9 @@ class OpportunityListTile extends StatelessWidget {
         badgeColor ?? OpportunityDashboardPalette.primary;
     final earlyAccessChips = _earlyAccessChips(opportunity);
 
+    final isEarlyAccess = earlyAccessChips.isNotEmpty;
+    final accentColor = AppColors.current.accent;
+
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(18),
@@ -1063,11 +1067,18 @@ class OpportunityListTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: OpportunityDashboardPalette.surface,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: tone.borderColor),
+            border: Border.all(
+              color: isEarlyAccess
+                  ? accentColor.withValues(alpha: 0.45)
+                  : tone.borderColor,
+              width: isEarlyAccess ? 1.5 : 1.0,
+            ),
             boxShadow: [
               BoxShadow(
-                color: tone.glowColor.withValues(alpha: 0.30),
-                blurRadius: 12,
+                color: isEarlyAccess
+                    ? accentColor.withValues(alpha: 0.18)
+                    : tone.glowColor.withValues(alpha: 0.30),
+                blurRadius: isEarlyAccess ? 20 : 12,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -1075,11 +1086,19 @@ class OpportunityListTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // -- Colored header strip --
+              // -- Colored header strip (gold gradient for early access) --
               Container(
                 padding: const EdgeInsets.fromLTRB(12, 9, 8, 9),
                 decoration: BoxDecoration(
-                  color: tone.softBackground,
+                  gradient: isEarlyAccess
+                      ? LinearGradient(
+                          colors: [
+                            accentColor.withValues(alpha: 0.18),
+                            accentColor.withValues(alpha: 0.06),
+                          ],
+                        )
+                      : null,
+                  color: isEarlyAccess ? null : tone.softBackground,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(17),
                     topRight: Radius.circular(17),
@@ -1093,7 +1112,11 @@ class OpportunityListTile extends StatelessWidget {
                       background: tone.accent.withValues(alpha: 0.16),
                       icon: OpportunityType.icon(opportunity.type),
                     ),
-                    if (badgeText != null && badgeText!.isNotEmpty) ...[
+                    if (isEarlyAccess) ...[
+                      const SizedBox(width: 6),
+                      _EarlyAccessInlineChip(accentColor: accentColor),
+                    ],
+                    if (!isEarlyAccess && badgeText != null && badgeText!.isNotEmpty) ...[
                       const SizedBox(width: 6),
                       _OpportunityAccentChip(
                         label: badgeText!,
@@ -1520,6 +1543,50 @@ class _OpportunitySaveButton extends StatelessWidget {
         color: isSaved
             ? (activeColor ?? OpportunityDashboardPalette.primary)
             : OpportunityDashboardPalette.textSecondary,
+      ),
+    );
+  }
+}
+
+class _EarlyAccessInlineChip extends StatelessWidget {
+  final Color accentColor;
+  const _EarlyAccessInlineChip({required this.accentColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            accentColor.withValues(alpha: 0.25),
+            accentColor.withValues(alpha: 0.12),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: accentColor.withValues(alpha: 0.40)),
+        boxShadow: [
+          BoxShadow(
+            color: accentColor.withValues(alpha: 0.18),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.bolt_rounded, size: 10, color: accentColor),
+          const SizedBox(width: 3),
+          Text(
+            'Early Access',
+            style: AppTypography.product(
+              fontSize: 9.5,
+              fontWeight: FontWeight.w700,
+              color: accentColor,
+            ),
+          ),
+        ],
       ),
     );
   }

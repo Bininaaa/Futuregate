@@ -645,6 +645,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       case ApplicationEligibilityStatus.requiresLogin:
         return AppLocalizations.of(context)!.studentLoginToApply;
       case ApplicationEligibilityStatus.available:
+        if (widget.opportunity.isEarlyAccessActive) {
+          return '⚡ Claim Your Spot Now';
+        }
         return _effectiveType == OpportunityType.sponsoring
             ? AppLocalizations.of(context)!.studentApplyForFunding
             : AppLocalizations.of(context)!.uiApplyNow;
@@ -1032,7 +1035,9 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                             )!.studentApplyingEllipsis
                           : _buttonLabelForStatus(status, applicationProvider),
                       icon: canApply
-                          ? Icons.send_rounded
+                          ? (widget.opportunity.isEarlyAccessActive
+                              ? Icons.bolt_rounded
+                              : Icons.send_rounded)
                           : Icons.info_outline_rounded,
                       isBusy: _isApplying,
                       onPressed: canApply
@@ -1153,19 +1158,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           canOpenCompanyChat ? 178 : 132,
         ),
         children: <Widget>[
-          // Early access chip shown above the hero card (when applicable)
+          // Early access banner shown above the hero card (when applicable)
           if (widget.opportunity.isEarlyAccessActive) ...[
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-              child: Row(
-                children: [
-                  EarlyAccessLabel(status: 'approved'),
-                  const SizedBox(width: 8),
-                  if (widget.opportunity.publicVisibleAt != null)
-                    EarlyAccessCountdownChip(
-                      publicVisibleAt: widget.opportunity.publicVisibleAt!,
-                    ),
-                ],
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+              child: EarlyAccessDetailBanner(
+                publicVisibleAt: widget.opportunity.publicVisibleAt,
               ),
             ),
           ],

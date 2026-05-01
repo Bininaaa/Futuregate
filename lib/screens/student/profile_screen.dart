@@ -850,6 +850,36 @@ class _AvatarRing extends StatelessWidget {
             ),
             child: ClipOval(child: ProfileAvatar(user: user, radius: 39)),
           ),
+          // Student badge — bottom-right corner
+          Positioned(
+            bottom: 4,
+            right: 4,
+            child: Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6C63FF), Color(0xFF3B82F6)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF6C63FF).withValues(alpha: 0.45),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.school_rounded,
+                size: 13,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ],
       ),
     );

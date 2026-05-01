@@ -1147,26 +1147,30 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         runSpacing: 8,
                         children: [
                           AdminPill(
-                            label:
-                                '${liveApplications.length} ${l10n.uiApplications.toLowerCase()}',
+                            label: l10n.contentPillApplicationsCount(
+                              liveApplications.length,
+                            ),
                             color: Colors.white,
                             icon: Icons.group_outlined,
                           ),
                           AdminPill(
-                            label:
-                                '$pendingCount ${l10n.uiPending.toLowerCase()}',
+                            label: l10n.contentPillStatusPendingCount(
+                              pendingCount,
+                            ),
                             color: Colors.white,
                             icon: Icons.hourglass_top_rounded,
                           ),
                           AdminPill(
-                            label:
-                                '$approvedCount ${l10n.uiApproved.toLowerCase()}',
+                            label: l10n.contentPillStatusApprovedCount(
+                              approvedCount,
+                            ),
                             color: Colors.white,
                             icon: Icons.verified_outlined,
                           ),
                           AdminPill(
-                            label:
-                                '$rejectedCount ${l10n.uiRejected.toLowerCase()}',
+                            label: l10n.contentPillStatusRejectedCount(
+                              rejectedCount,
+                            ),
                             color: Colors.white,
                             icon: Icons.block_outlined,
                           ),

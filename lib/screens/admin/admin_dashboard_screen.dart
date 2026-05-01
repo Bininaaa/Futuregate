@@ -846,9 +846,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ConnectionState.waiting => l10n.uiLoadingOpportunities,
           _ when snapshot.hasError => l10n.uiOpportunitiesUnavailable,
           _ when opportunities.isEmpty => l10n.uiNoOpportunitiesPostedYet,
-          _ when opportunities.length == 1 =>
-            '1 ${l10n.uiOpportunities.toLowerCase()}',
-          _ => '${opportunities.length} ${l10n.uiOpportunities.toLowerCase()}',
+          _ => l10n.dashboardOpportunitiesCount(opportunities.length),
         };
 
         return AdminSurface(

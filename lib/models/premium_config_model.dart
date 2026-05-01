@@ -25,7 +25,7 @@ class PremiumConfigModel {
     price: 1500,
     currency: 'DZD',
     durationDays: 180,
-    freeSavedLimit: 10,
+    freeSavedLimit: 20,
     premiumSavedLimit: -1, // unlimited
     earlyAccessDefaultDelayHours: 48,
     premiumEnabled: true,

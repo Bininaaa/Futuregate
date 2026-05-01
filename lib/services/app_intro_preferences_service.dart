@@ -4,6 +4,8 @@ class AppIntroPreferencesService {
   static const String getStartedKey = 'futuregate.has_seen_get_started_v1';
   static const String skipLaunchAnimationKey =
       'futuregate.skip_launch_animation_v1';
+  static const String dailyWelcomeDateKey =
+      'futuregate.daily_welcome_last_shown_v1';
 
   AppIntroPreferencesService({SharedPreferencesAsync? preferences})
     : _preferences = preferences;
@@ -39,5 +41,23 @@ class AppIntroPreferencesService {
 
   Future<void> setSkipLaunchAnimation(bool skip) async {
     await _client.setBool(skipLaunchAnimationKey, skip);
+  }
+
+  Future<bool> shouldShowDailyWelcome() async {
+    try {
+      final stored = await _client.getString(dailyWelcomeDateKey);
+      if (stored == null) return true;
+      final today = DateTime.now();
+      final todayKey = '${today.year}-${today.month}-${today.day}';
+      return stored != todayKey;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  Future<void> markDailyWelcomeShown() async {
+    final today = DateTime.now();
+    final todayKey = '${today.year}-${today.month}-${today.day}';
+    await _client.setString(dailyWelcomeDateKey, todayKey);
   }
 }

@@ -139,32 +139,37 @@ class _UsersScreenState extends State<UsersScreen> {
                       runSpacing: 10,
                       children: [
                         AdminPill(
-                          label:
-                              '${provider.totalUsersCount} ${l10n.uiUsers.toLowerCase()}',
+                          label: l10n.usersPillUsersCount(
+                            provider.totalUsersCount,
+                          ),
                           color: AdminPalette.primary,
                           icon: Icons.people_alt_outlined,
                         ),
                         AdminPill(
-                          label:
-                              '${provider.activeUsersCount} ${l10n.uiActive.toLowerCase()}',
+                          label: l10n.usersPillActiveCount(
+                            provider.activeUsersCount,
+                          ),
                           color: AdminPalette.success,
                           icon: Icons.check_circle_outline_rounded,
                         ),
                         AdminPill(
-                          label:
-                              '${provider.blockedUsersCount} ${l10n.uiBlocked.toLowerCase()}',
+                          label: l10n.usersPillBlockedCount(
+                            provider.blockedUsersCount,
+                          ),
                           color: AdminPalette.danger,
                           icon: Icons.block_outlined,
                         ),
                         AdminPill(
-                          label:
-                              '${provider.adminUsersCount} ${l10n.uiAdmins.toLowerCase()}',
+                          label: l10n.usersPillAdminsCount(
+                            provider.adminUsersCount,
+                          ),
                           color: AdminPalette.accent,
                           icon: Icons.admin_panel_settings_outlined,
                         ),
                         AdminPill(
-                          label:
-                              '${provider.pendingCompanyUsersCount} ${l10n.uiCompanyReview.toLowerCase()}',
+                          label: l10n.usersPillCompanyReviewCount(
+                            provider.pendingCompanyUsersCount,
+                          ),
                           color: AdminPalette.warning,
                           icon: Icons.pending_actions_rounded,
                         ),
