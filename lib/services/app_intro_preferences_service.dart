@@ -43,21 +43,24 @@ class AppIntroPreferencesService {
     await _client.setBool(skipLaunchAnimationKey, skip);
   }
 
-  Future<bool> shouldShowDailyWelcome() async {
+  Future<bool> shouldShowDailyWelcome({required bool hasActivePremium}) async {
+    if (hasActivePremium) return false;
+
     try {
       final stored = await _client.getString(dailyWelcomeDateKey);
       if (stored == null) return true;
-      final today = DateTime.now();
-      final todayKey = '${today.year}-${today.month}-${today.day}';
-      return stored != todayKey;
+      return stored != _todayKey();
     } catch (_) {
       return true;
     }
   }
 
   Future<void> markDailyWelcomeShown() async {
+    await _client.setString(dailyWelcomeDateKey, _todayKey());
+  }
+
+  String _todayKey() {
     final today = DateTime.now();
-    final todayKey = '${today.year}-${today.month}-${today.day}';
-    await _client.setString(dailyWelcomeDateKey, todayKey);
+    return '${today.year}-${today.month}-${today.day}';
   }
 }

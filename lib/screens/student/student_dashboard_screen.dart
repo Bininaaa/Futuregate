@@ -358,6 +358,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     _DashboardSnapshot snapshot,
   ) {
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
+    final isPremium = context.watch<SubscriptionProvider>().hasActivePremium;
     final studentIdentity = _studentIdentityLine(user);
     final focus = _resolveDashboardFocus(
       context,
@@ -438,42 +439,75 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           Positioned.fill(
                             child: CustomPaint(
                               painter: _ProfileCompletionRingPainter(
-                                progress: profileCompletion / 100,
-                                trackColor: Colors.white.withValues(
-                                  alpha: 0.18,
-                                ),
-                                progressColor: profileCompletion >= 100
-                                    ? const Color(0xFF47D16C)
-                                    : const Color(0xFFFFC857),
+                                progress: isPremium ? 1.0 : profileCompletion / 100,
+                                trackColor: Colors.white.withValues(alpha: 0.18),
+                                progressColor: isPremium
+                                    ? const Color(0xFFF59E0B)
+                                    : profileCompletion >= 100
+                                        ? const Color(0xFF47D16C)
+                                        : const Color(0xFFFFC857),
                                 strokeWidth: 2.6,
                               ),
                             ),
                           ),
                           Center(child: ProfileAvatar(user: user, radius: 25)),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              width: 22,
-                              height: 22,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.18),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 1),
+                          // Premium badge — top-right (premium only)
+                          if (isPremium)
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFF59E0B), Color(0xFFEF6C00)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.edit_rounded,
-                                size: 12,
-                                color: Color(0xFF4F46E5),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 1.8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFF59E0B).withValues(alpha: 0.55),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.workspace_premium_rounded,
+                                  size: 10,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
+                          // Edit badge — bottom-right (non-premium only, to avoid overlap)
+                          if (!isPremium)
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                width: 22,
+                                height: 22,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.18),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.edit_rounded,
+                                  size: 12,
+                                  color: Color(0xFF4F46E5),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),

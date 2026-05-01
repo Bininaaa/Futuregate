@@ -435,6 +435,19 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         return;
       }
 
+      if (error == null && existingSaved == null) {
+        final showedLimit = await showSavedLimitReachedAfterSave(
+          context,
+          currentCount: savedProvider.savedOpportunities.length,
+          onUpgrade: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const PremiumPassScreen())),
+        );
+        if (showedLimit || !mounted) {
+          return;
+        }
+      }
+
       context.showAppSnackBar(
         error ?? message,
         title: error == null
@@ -1036,8 +1049,8 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                           : _buttonLabelForStatus(status, applicationProvider),
                       icon: canApply
                           ? (widget.opportunity.isEarlyAccessActive
-                              ? Icons.bolt_rounded
-                              : Icons.send_rounded)
+                                ? Icons.bolt_rounded
+                                : Icons.send_rounded)
                           : Icons.info_outline_rounded,
                       isBusy: _isApplying,
                       onPressed: canApply

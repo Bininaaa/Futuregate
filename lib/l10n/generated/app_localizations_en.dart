@@ -12470,6 +12470,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Free accounts can save a limited number of opportunities.';
 
   @override
+  String savedLimitReachedFullMessage(int count, int limit) {
+    return 'You\'ve saved $count/$limit opportunities. Your free shortlist is full now.';
+  }
+
+  @override
+  String savedLimitBlockedMessage(int limit) {
+    return 'Free accounts can save up to $limit opportunities. Remove one saved item or upgrade to keep building your shortlist.';
+  }
+
+  @override
+  String savedLimitProgressLabel(int current, int limit) {
+    return '$current/$limit saved';
+  }
+
+  @override
+  String get savedLimitUpgradeSheetSubtitle =>
+      'Keep every opportunity that matters without trimming your list.';
+
+  @override
   String get savedLimitUpgradeMessage =>
       'Upgrade to Premium Pass to save unlimited opportunities.';
 

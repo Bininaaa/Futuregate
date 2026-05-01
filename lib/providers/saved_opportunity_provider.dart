@@ -9,10 +9,14 @@ class SavedOpportunityProvider extends ChangeNotifier {
   final SavedOpportunityService _service = SavedOpportunityService();
 
   List<SavedOpportunityModel> _savedOpportunities = [];
+  final Set<String> _savingOpportunityIds = <String>{};
   bool _isLoading = false;
 
   List<SavedOpportunityModel> get savedOpportunities => _savedOpportunities;
-  bool get isLoading => _isLoading;
+  bool get isSaving => _savingOpportunityIds.isNotEmpty;
+  bool get isLoading => _isLoading || isSaving;
+  bool isSavingOpportunity(String opportunityId) =>
+      _savingOpportunityIds.contains(opportunityId);
 
   Future<void> fetchSavedOpportunities(String studentId) async {
     try {
@@ -38,20 +42,32 @@ class SavedOpportunityProvider extends ChangeNotifier {
     required String deadline,
     String fundingLabel = '',
   }) async {
-    // Re-throw SavedLimitReachedException so callers can show upgrade modal.
-    await _service.saveOpportunity(
-      studentId: studentId,
-      opportunityId: opportunityId,
-      title: title,
-      companyName: companyName,
-      type: type,
-      location: location,
-      deadline: deadline,
-      fundingLabel: fundingLabel,
-    );
+    if (_savingOpportunityIds.isNotEmpty) {
+      return 'Please wait for the current save to finish.';
+    }
 
-    await fetchSavedOpportunities(studentId);
-    return null;
+    _savingOpportunityIds.add(opportunityId);
+    notifyListeners();
+
+    try {
+      // Re-throw SavedLimitReachedException so callers can show upgrade modal.
+      await _service.saveOpportunity(
+        studentId: studentId,
+        opportunityId: opportunityId,
+        title: title,
+        companyName: companyName,
+        type: type,
+        location: location,
+        deadline: deadline,
+        fundingLabel: fundingLabel,
+      );
+
+      await fetchSavedOpportunities(studentId);
+      return null;
+    } finally {
+      _savingOpportunityIds.remove(opportunityId);
+      notifyListeners();
+    }
   }
 
   Future<String?> unsaveOpportunity(String id, String studentId) async {
@@ -67,6 +83,7 @@ class SavedOpportunityProvider extends ChangeNotifier {
 
   void clearSavedOpportunities() {
     _savedOpportunities = <SavedOpportunityModel>[];
+    _savingOpportunityIds.clear();
     _isLoading = false;
     notifyListeners();
   }

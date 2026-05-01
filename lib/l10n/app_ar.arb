@@ -5691,6 +5691,37 @@
   "paymentTestModeNotice": "وضع الاختبار — لن يتم خصم أي مبلغ حقيقي.",
   "savedLimitReachedTitle": "وصلت إلى حد الحفظ",
   "savedLimitReachedMessage": "الحسابات المجانية محدودة بعدد الفرص المحفوظة.",
+  "savedLimitReachedFullMessage": "لقد حفظت {count}/{limit} فرص. أصبحت قائمتك المجانية ممتلئة الآن.",
+  "@savedLimitReachedFullMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "savedLimitBlockedMessage": "يمكن للحسابات المجانية حفظ حتى {limit} فرص. احذف فرصة محفوظة أو قم بالترقية لمواصلة الحفظ.",
+  "@savedLimitBlockedMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "savedLimitProgressLabel": "{current}/{limit} محفوظة",
+  "@savedLimitProgressLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "savedLimitUpgradeSheetSubtitle": "احتفظ بكل الفرص المهمة دون حذف أي منها.",
   "savedLimitUpgradeMessage": "قم بالترقية إلى بريميوم لحفظ فرص غير محدودة.",
   "adminEarlyAccessTitle": "إدارة الوصول المبكر",
   "adminEarlyAccessPendingTab": "قيد الانتظار",

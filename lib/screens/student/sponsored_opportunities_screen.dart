@@ -258,6 +258,20 @@ class _SponsoredOpportunitiesScreenState
         return;
       }
 
+      if (error == null && existingSaved == null) {
+        final showedLimit = await showSavedLimitReachedAfterSave(
+          context,
+          currentCount: savedProvider.savedOpportunities.length,
+          onUpgrade: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+          ),
+        );
+        if (showedLimit || !mounted) {
+          return;
+        }
+      }
+
       context.showAppSnackBar(
         error ?? message,
         title: error == null

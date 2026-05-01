@@ -76,7 +76,7 @@ class PremiumService {
       if (config.hasUnlimitedSaved) return true;
       return currentCount < config.premiumSavedLimit;
     }
-    return currentCount < config.freeSavedLimit;
+    return currentCount < config.effectiveFreeSavedLimit;
   }
 
   bool shouldShowPremiumBadge(SubscriptionModel? sub) => sub?.isActive ?? false;
@@ -91,9 +91,7 @@ class PremiumService {
     required String adminUid,
     required int delayHours,
   }) async {
-    final publicVisibleAt = DateTime.now().add(
-      Duration(hours: delayHours),
-    );
+    final publicVisibleAt = DateTime.now().add(Duration(hours: delayHours));
     await _firestore.collection('opportunities').doc(opportunityId).update({
       'earlyAccessStatus': 'approved',
       'premiumEarlyAccess': true,

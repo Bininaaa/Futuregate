@@ -12741,6 +12741,25 @@ class AppLocalizationsAr extends AppLocalizations {
       'الحسابات المجانية محدودة بعدد الفرص المحفوظة.';
 
   @override
+  String savedLimitReachedFullMessage(int count, int limit) {
+    return 'لقد حفظت $count/$limit فرص. أصبحت قائمتك المجانية ممتلئة الآن.';
+  }
+
+  @override
+  String savedLimitBlockedMessage(int limit) {
+    return 'يمكن للحسابات المجانية حفظ حتى $limit فرص. احذف فرصة محفوظة أو قم بالترقية لمواصلة الحفظ.';
+  }
+
+  @override
+  String savedLimitProgressLabel(int current, int limit) {
+    return '$current/$limit محفوظة';
+  }
+
+  @override
+  String get savedLimitUpgradeSheetSubtitle =>
+      'احتفظ بكل الفرص المهمة دون حذف أي منها.';
+
+  @override
   String get savedLimitUpgradeMessage =>
       'قم بالترقية إلى بريميوم لحفظ فرص غير محدودة.';
 

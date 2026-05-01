@@ -89,7 +89,6 @@ class SavedOpportunityService {
     // Enforce save limit for free users
     await _enforceSaveLimit(studentId);
 
-
     final opportunityDoc = await _firestore
         .collection('opportunities')
         .doc(opportunityId)
@@ -213,7 +212,9 @@ class SavedOpportunityService {
         .get();
     final currentCount = countSnap.count ?? 0;
 
-    final limit = isPremium ? config.premiumSavedLimit : config.freeSavedLimit;
+    final limit = isPremium
+        ? config.premiumSavedLimit
+        : config.effectiveFreeSavedLimit;
 
     if (!_premiumService.canSaveMoreItems(
       sub: sub,

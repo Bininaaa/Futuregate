@@ -7,7 +7,7 @@ const PREMIUM_CONFIG = {
   premiumPassPrice: 1500,
   premiumCurrency: 'DZD',
   premiumPassDurationDays: 180,
-  freeSavedItemsLimit: 10,
+  freeSavedItemsLimit: 8,
   premiumSavedItemsLimit: -1,
   earlyAccessDefaultDelayHours: 48,
   premiumEnabled: true,

@@ -20437,6 +20437,30 @@ abstract class AppLocalizations {
   /// **'Free accounts can save a limited number of opportunities.'**
   String get savedLimitReachedMessage;
 
+  /// No description provided for @savedLimitReachedFullMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve saved {count}/{limit} opportunities. Your free shortlist is full now.'**
+  String savedLimitReachedFullMessage(int count, int limit);
+
+  /// No description provided for @savedLimitBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Free accounts can save up to {limit} opportunities. Remove one saved item or upgrade to keep building your shortlist.'**
+  String savedLimitBlockedMessage(int limit);
+
+  /// No description provided for @savedLimitProgressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}/{limit} saved'**
+  String savedLimitProgressLabel(int current, int limit);
+
+  /// No description provided for @savedLimitUpgradeSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep every opportunity that matters without trimming your list.'**
+  String get savedLimitUpgradeSheetSubtitle;
+
   /// No description provided for @savedLimitUpgradeMessage.
   ///
   /// In en, this message translates to:

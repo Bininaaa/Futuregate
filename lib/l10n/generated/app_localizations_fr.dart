@@ -12669,6 +12669,25 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les comptes gratuits ont un nombre limité d\'offres sauvegardées.';
 
   @override
+  String savedLimitReachedFullMessage(int count, int limit) {
+    return 'Vous avez sauvegardé $count/$limit offres. Votre liste gratuite est maintenant pleine.';
+  }
+
+  @override
+  String savedLimitBlockedMessage(int limit) {
+    return 'Les comptes gratuits peuvent sauvegarder jusqu\'à $limit offres. Retirez une offre sauvegardée ou passez au Premium pour continuer.';
+  }
+
+  @override
+  String savedLimitProgressLabel(int current, int limit) {
+    return '$current/$limit sauvegardées';
+  }
+
+  @override
+  String get savedLimitUpgradeSheetSubtitle =>
+      'Gardez toutes les offres importantes sans devoir faire le tri.';
+
+  @override
   String get savedLimitUpgradeMessage =>
       'Passez au Pass Premium pour sauvegarder des offres en illimité.';
 

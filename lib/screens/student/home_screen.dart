@@ -1,12 +1,14 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../providers/premium_provider.dart';
+import '../../providers/subscription_provider.dart';
 import '../../services/app_intro_preferences_service.dart';
+import '../../services/subscription_service.dart';
+import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/shared/app_animated_tab_body.dart';
@@ -126,17 +128,41 @@ class _HomeScreenState extends State<HomeScreen> {
     _visitedIndexes.add(_currentIndex);
     StudentHomeNavigation.requestedTabIndex.addListener(_handleRequestedTab);
     _handleRequestedTab();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowDailyWelcome());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _maybeShowDailyWelcome(),
+    );
   }
 
   Future<void> _maybeShowDailyWelcome() async {
     if (!mounted) return;
+    final user = context.read<AuthProvider>().userModel;
+    if (user == null || user.role != 'student') return;
+
+    final hasActivePremium = await _hasActivePremium(user.uid);
+    if (!mounted) return;
+
     final prefs = AppIntroPreferencesService();
-    final shouldShow = await prefs.shouldShowDailyWelcome();
+    final shouldShow = await prefs.shouldShowDailyWelcome(
+      hasActivePremium: hasActivePremium,
+    );
     if (!shouldShow || !mounted) return;
+
     await prefs.markDailyWelcomeShown();
     if (!mounted) return;
-    await _DailyWelcomeSheet.show(context);
+    await _DailyPremiumUpgradeScreen.show(context);
+  }
+
+  Future<bool> _hasActivePremium(String uid) async {
+    if (uid.isEmpty) return true;
+
+    final subscriptionProvider = context.read<SubscriptionProvider>();
+    if (subscriptionProvider.hasActivePremium) return true;
+
+    try {
+      return await SubscriptionService().hasActivePremium(uid);
+    } catch (_) {
+      return true;
+    }
   }
 
   @override
@@ -353,308 +379,131 @@ class _StudentDestination {
   });
 }
 
-// ── Daily Welcome Sheet ────────────────────────────────────────────────────────
+// Daily premium upgrade screen
 
-class _DailyWelcomeSheet extends StatefulWidget {
-  const _DailyWelcomeSheet();
+class _DailyPremiumUpgradeScreen extends StatelessWidget {
+  const _DailyPremiumUpgradeScreen();
 
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const _DailyWelcomeSheet(),
+    return Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => const _DailyPremiumUpgradeScreen(),
+      ),
     );
-  }
-
-  @override
-  State<_DailyWelcomeSheet> createState() => _DailyWelcomeSheetState();
-}
-
-class _DailyWelcomeSheetState extends State<_DailyWelcomeSheet>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnim;
-  late Animation<Offset> _slideAnim;
-
-  static const _tips = [
-    (
-      icon: Icons.rocket_launch_rounded,
-      title: 'Apply Early, Stand Out',
-      body:
-          'Companies review the earliest applicants first. Don\'t wait — the best roles fill up fast.',
-      color: Color(0xFF6C63FF),
-    ),
-    (
-      icon: Icons.workspace_premium_rounded,
-      title: 'Early Access = First Mover',
-      body:
-          'Premium members see new opportunities 48 h before everyone else. Get in before the rush.',
-      color: Color(0xFFF59E0B),
-    ),
-    (
-      icon: Icons.auto_awesome_rounded,
-      title: 'A Strong CV Opens Doors',
-      body:
-          'Take 5 minutes to update your CV today. A complete profile gets 3× more views.',
-      color: Color(0xFF10B981),
-    ),
-    (
-      icon: Icons.lightbulb_rounded,
-      title: 'Share Your Ideas',
-      body:
-          'The Innovation Hub is growing. Post your project idea and connect with teams looking for your skills.',
-      color: Color(0xFFEF4444),
-    ),
-    (
-      icon: Icons.school_rounded,
-      title: 'Scholarships Are Waiting',
-      body:
-          'New scholarships are added every week. Bookmark the ones that match your field and never miss a deadline.',
-      color: Color(0xFF3B82F6),
-    ),
-  ];
-
-  late final _tip = _tips[math.Random().nextInt(_tips.length)];
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    _fadeAnim = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _slideAnim = Tween<Offset>(
-      begin: const Offset(0, 0.18),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = context.read<AuthProvider>().userModel;
-    final firstName = (user?.fullName ?? '').split(' ').first.trim();
-    final greeting = firstName.isEmpty ? 'Welcome back' : 'Hey, $firstName 👋';
-    final now = DateTime.now();
-    final hour = now.hour;
-    final timeGreeting = hour < 12
-        ? 'Good morning'
-        : hour < 17
-            ? 'Good afternoon'
-            : 'Good evening';
+    final colors = AppColors.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final premium = context.watch<PremiumProvider>();
+    final compact = MediaQuery.sizeOf(context).width < 390;
+    final priceLabel =
+        '${premium.config.price} ${premium.config.currency} - ${l10n.premiumPassPriceLabel}';
 
-    return FadeTransition(
-      opacity: _fadeAnim,
-      child: SlideTransition(
-        position: _slideAnim,
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFF0F0F1A),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 10),
-              Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
+    return Scaffold(
+      backgroundColor: colors.background,
+      body: DecoratedBox(
+        decoration: BoxDecoration(gradient: colors.shellGradient),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              compact ? 18 : 24,
+              14,
+              compact ? 18 : 24,
+              28,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            _tip.color,
-                            _tip.color.withValues(alpha: 0.6),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                    Row(
+                      children: [
+                        _UpgradeLabel(
+                          colors: colors,
+                          text: l10n.premiumPassTitle,
                         ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: _tip.color.withValues(alpha: 0.35),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: Icon(_tip.icon, color: Colors.white, size: 24),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '$timeGreeting!',
-                            style: AppTypography.product(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
-                              color: _tip.color,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            greeting,
-                            style: AppTypography.product(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close_rounded),
-                      color: Colors.white.withValues(alpha: 0.5),
-                      iconSize: 20,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Tip card
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        _tip.color.withValues(alpha: 0.18),
-                        _tip.color.withValues(alpha: 0.06),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(
-                      color: _tip.color.withValues(alpha: 0.30),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: _tip.color.withValues(alpha: 0.20),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'Tip of the day',
-                              style: AppTypography.product(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w700,
-                                color: _tip.color,
+                        const Spacer(),
+                        Tooltip(
+                          message: l10n.cancelLabel,
+                          child: Material(
+                            color: colors.surface.withValues(alpha: 0.82),
+                            borderRadius: BorderRadius.circular(16),
+                            child: InkWell(
+                              onTap: () => Navigator.of(context).pop(),
+                              borderRadius: BorderRadius.circular(16),
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  color: colors.textSecondary,
+                                  size: 22,
+                                ),
                               ),
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: compact ? 18 : 24),
+                    _UpgradeHero(
+                      colors: colors,
+                      title: l10n.premiumPassUpgradeButton,
+                      subtitle: l10n.premiumPassDescription,
+                      priceLabel: priceLabel,
+                    ),
+                    const SizedBox(height: 18),
+                    _UpgradeBenefits(
+                      colors: colors,
+                      l10n: l10n,
+                      earlyAccessHours:
+                          premium.config.earlyAccessDefaultDelayHours,
+                    ),
+                    const SizedBox(height: 22),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (_) => const PremiumPassScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.workspace_premium_rounded),
+                      label: Text(l10n.premiumPassUpgradeButton),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: colors.accent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        textStyle: AppTypography.product(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        _tip.title,
-                        style: AppTypography.product(
-                          fontSize: 15.5,
+                    ),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: TextButton.styleFrom(
+                        foregroundColor: colors.textMuted,
+                        minimumSize: const Size.fromHeight(48),
+                        textStyle: AppTypography.product(
+                          fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          height: 1.25,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _tip.body,
-                        style: AppTypography.product(
-                          fontSize: 13,
-                          height: 1.55,
-                          color: Colors.white.withValues(alpha: 0.72),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Quick actions
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _DailyAction(
-                        icon: Icons.explore_rounded,
-                        label: 'Discover',
-                        color: const Color(0xFF6C63FF),
-                        onTap: () {
-                          Navigator.pop(context);
-                          StudentHomeNavigation.switchToDiscover(context);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _DailyAction(
-                        icon: Icons.workspace_premium_rounded,
-                        label: 'Go Premium',
-                        color: const Color(0xFFF59E0B),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const PremiumPassScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _DailyAction(
-                        icon: Icons.school_rounded,
-                        label: 'Scholarships',
-                        color: const Color(0xFF3B82F6),
-                        onTap: () {
-                          Navigator.pop(context);
-                          StudentHomeNavigation.switchToTab(
-                              context, StudentHomeNavigation.scholarshipsTab);
-                        },
-                      ),
+                      child: Text(l10n.cancelLabel),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
-            ],
+            ),
           ),
         ),
       ),
@@ -662,50 +511,285 @@ class _DailyWelcomeSheetState extends State<_DailyWelcomeSheet>
   }
 }
 
-class _DailyAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
+class _UpgradeHero extends StatelessWidget {
+  final AppColors colors;
+  final String title;
+  final String subtitle;
+  final String priceLabel;
 
-  const _DailyAction({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
+  const _UpgradeHero({
+    required this.colors,
+    required this.title,
+    required this.subtitle,
+    required this.priceLabel,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(16),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withValues(alpha: 0.22)),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            colors.primaryDeep,
+            colors.primary,
+            colors.accent.withValues(alpha: 0.92),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: colors.softShadow(0.14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 62,
+            height: 62,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+            ),
+            child: const Icon(
+              Icons.workspace_premium_rounded,
+              color: Colors.white,
+              size: 34,
+            ),
           ),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                textAlign: TextAlign.center,
+          const SizedBox(height: 20),
+          Text(
+            title,
+            style: AppTypography.product(
+              fontSize: 31,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              height: 1.05,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            subtitle,
+            style: AppTypography.product(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.white.withValues(alpha: 0.86),
+              height: 1.48,
+            ),
+          ),
+          const SizedBox(height: 18),
+          _PricePill(text: priceLabel),
+        ],
+      ),
+    );
+  }
+}
+
+class _UpgradeBenefits extends StatelessWidget {
+  final AppColors colors;
+  final AppLocalizations l10n;
+  final int earlyAccessHours;
+
+  const _UpgradeBenefits({
+    required this.colors,
+    required this.l10n,
+    required this.earlyAccessHours,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final benefits = [
+      (
+        icon: Icons.bolt_rounded,
+        title: l10n.premiumFeatureEarlyAccess,
+        detail: '${earlyAccessHours}h advantage window',
+        color: colors.accent,
+      ),
+      (
+        icon: Icons.trending_up_rounded,
+        title: l10n.premiumFeaturePriority,
+        detail: 'Stand higher when companies review applicants',
+        color: colors.secondary,
+      ),
+      (
+        icon: Icons.bookmark_rounded,
+        title: l10n.premiumFeatureSaved,
+        detail: 'Keep every opportunity you want to revisit',
+        color: colors.info,
+      ),
+      (
+        icon: Icons.verified_rounded,
+        title: l10n.premiumFeatureBadge,
+        detail: 'Make your profile instantly recognizable',
+        color: colors.success,
+      ),
+    ];
+
+    return Column(
+      children: benefits
+          .map((benefit) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _UpgradeBenefitTile(
+                colors: colors,
+                icon: benefit.icon,
+                title: benefit.title,
+                detail: benefit.detail,
+                color: benefit.color,
+              ),
+            );
+          })
+          .toList(growable: false),
+    );
+  }
+}
+
+class _UpgradeBenefitTile extends StatelessWidget {
+  final AppColors colors;
+  final IconData icon;
+  final String title;
+  final String detail;
+  final Color color;
+
+  const _UpgradeBenefitTile({
+    required this.colors,
+    required this.icon,
+    required this.title,
+    required this.detail,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(
+          alpha: colors.isDarkMode ? 0.86 : 0.94,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colors.border.withValues(alpha: 0.78)),
+        boxShadow: colors.softShadow(0.05),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: colors.stateLayer(color),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.product(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textPrimary,
+                      height: 1.18,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    detail,
+                    style: AppTypography.product(
+                      fontSize: 12.2,
+                      fontWeight: FontWeight.w500,
+                      color: colors.textSecondary,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.check_circle_rounded, color: colors.success, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _UpgradeLabel extends StatelessWidget {
+  final AppColors colors;
+  final String text;
+
+  const _UpgradeLabel({required this.colors, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: colors.accentSoft,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: colors.accent.withValues(alpha: 0.24)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.workspace_premium_rounded, color: colors.accent, size: 17),
+          const SizedBox(width: 7),
+          Text(
+            text,
+            style: AppTypography.product(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: colors.accent,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PricePill extends StatelessWidget {
+  final String text;
+
+  const _PricePill({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 320),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.sell_rounded, color: Colors.white, size: 16),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppTypography.product(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w700,
-                  color: color,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

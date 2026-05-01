@@ -360,12 +360,15 @@ service cloud.firestore {
                 'status',
                 'expiresAt'
               ]) &&
-              data.subscriptionSnapshot.plan ==
-                  get(subscriptionPath(uid)).data.plan &&
-              data.subscriptionSnapshot.status ==
-                  get(subscriptionPath(uid)).data.status &&
-              data.subscriptionSnapshot.expiresAt ==
-                  get(subscriptionPath(uid)).data.expiresAt
+              data.subscriptionSnapshot.keys().hasAll([
+                'plan',
+                'status',
+                'expiresAt'
+              ]) &&
+              data.subscriptionSnapshot.plan is string &&
+              data.subscriptionSnapshot.status == 'active' &&
+              data.subscriptionSnapshot.expiresAt is timestamp &&
+              data.subscriptionSnapshot.expiresAt > request.time
             )
           );
     }

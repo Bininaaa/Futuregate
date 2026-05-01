@@ -7696,6 +7696,37 @@
   "paymentTestModeNotice": "Test mode — no real payment will be charged.",
   "savedLimitReachedTitle": "Save Limit Reached",
   "savedLimitReachedMessage": "Free accounts can save a limited number of opportunities.",
+  "savedLimitReachedFullMessage": "You've saved {count}/{limit} opportunities. Your free shortlist is full now.",
+  "@savedLimitReachedFullMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "savedLimitBlockedMessage": "Free accounts can save up to {limit} opportunities. Remove one saved item or upgrade to keep building your shortlist.",
+  "@savedLimitBlockedMessage": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "savedLimitProgressLabel": "{current}/{limit} saved",
+  "@savedLimitProgressLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "savedLimitUpgradeSheetSubtitle": "Keep every opportunity that matters without trimming your list.",
   "savedLimitUpgradeMessage": "Upgrade to Premium Pass to save unlimited opportunities.",
   "adminEarlyAccessTitle": "Early Access Management",
   "adminEarlyAccessPendingTab": "Pending",

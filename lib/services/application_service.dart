@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/application_model.dart';
 import '../models/opportunity_model.dart';
 import '../models/student_application_item_model.dart';
-import '../models/subscription_model.dart';
 import 'notification_worker_service.dart';
 import 'cv_service.dart';
 import 'subscription_service.dart';
@@ -249,31 +248,26 @@ class ApplicationService implements IApplicationService {
       throw Exception('This opportunity is no longer available');
     }
 
-    // Fetch subscription for priority snapshot (best-effort, don't block apply)
-    SubscriptionModel? sub;
-    try {
-      sub = await _subscriptionService.getSubscription(studentId);
-    } catch (_) {}
-    final isPremiumAtApply = sub?.isActive ?? false;
+    if (await _tryRestoreWithdrawnApplication(
+      applicationRef: applicationRef,
+      studentId: studentId,
+      studentName: studentName,
+      resolvedCompanyId: resolvedCompanyId,
+      resolvedCvId: resolvedCvId,
+    )) {
+      await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
+      return;
+    }
 
-    final createData = {
-      'id': applicationRef.id,
-      'studentId': studentId,
-      'studentName': studentName.trim(),
-      'opportunityId': opportunityId,
-      'companyId': resolvedCompanyId,
-      'cvId': resolvedCvId,
-      'status': ApplicationStatus.pending,
-      'appliedAt': FieldValue.serverTimestamp(),
-      'isPremiumAtApply': isPremiumAtApply,
-      'priorityApplication': isPremiumAtApply,
-      if (isPremiumAtApply && sub != null)
-        'subscriptionSnapshot': {
-          'plan': sub.plan,
-          'status': sub.status,
-          'expiresAt': sub.expiresAt,
-        },
-    };
+    final createData = _buildApplicationWriteData(
+      applicationId: applicationRef.id,
+      studentId: studentId,
+      studentName: studentName,
+      opportunityId: opportunityId,
+      companyId: resolvedCompanyId,
+      cvId: resolvedCvId,
+      isPremiumAtApply: false,
+    );
 
     try {
       await applicationRef.set(createData);
@@ -296,21 +290,6 @@ class ApplicationService implements IApplicationService {
           case ApplicationEligibilityStatus.available:
             break;
         }
-
-        if (await _tryRestoreWithdrawnApplication(
-          applicationRef: applicationRef,
-          studentId: studentId,
-          studentName: studentName,
-          resolvedCompanyId: resolvedCompanyId,
-          resolvedCvId: resolvedCvId,
-          isPremiumAtApply: isPremiumAtApply,
-          sub: sub,
-        )) {
-          await _notificationWorker.notifyApplicationSubmitted(
-            applicationRef.id,
-          );
-          return;
-        }
       }
 
       recordNonFatal(e, StackTrace.current, context: 'apply_to_opportunity');
@@ -320,6 +299,29 @@ class ApplicationService implements IApplicationService {
     await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
   }
 
+  Map<String, dynamic> _buildApplicationWriteData({
+    required String applicationId,
+    required String studentId,
+    required String studentName,
+    required String opportunityId,
+    required String companyId,
+    required String cvId,
+    required bool isPremiumAtApply,
+  }) {
+    return {
+      'id': applicationId,
+      'studentId': studentId,
+      'studentName': studentName.trim(),
+      'opportunityId': opportunityId,
+      'companyId': companyId,
+      'cvId': cvId,
+      'status': ApplicationStatus.pending,
+      'appliedAt': FieldValue.serverTimestamp(),
+      'isPremiumAtApply': isPremiumAtApply,
+      'priorityApplication': isPremiumAtApply,
+    };
+  }
+
   Future<bool> _tryRestoreWithdrawnApplication({
     required DocumentReference<Map<String, dynamic>> applicationRef,
     required String studentId,
@@ -327,9 +329,17 @@ class ApplicationService implements IApplicationService {
     required String resolvedCompanyId,
     required String resolvedCvId,
     bool isPremiumAtApply = false,
-    SubscriptionModel? sub,
   }) async {
-    final applicationSnapshot = await applicationRef.get();
+    DocumentSnapshot<Map<String, dynamic>> applicationSnapshot;
+    try {
+      applicationSnapshot = await applicationRef.get();
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return false;
+      }
+      rethrow;
+    }
+
     if (!applicationSnapshot.exists) {
       return false;
     }
@@ -356,12 +366,6 @@ class ApplicationService implements IApplicationService {
       'hadWithdrawnBefore': true,
       'isPremiumAtApply': isPremiumAtApply,
       'priorityApplication': isPremiumAtApply,
-      if (isPremiumAtApply && sub != null)
-        'subscriptionSnapshot': {
-          'plan': sub.plan,
-          'status': sub.status,
-          'expiresAt': sub.expiresAt,
-        },
     };
 
     final previousWithdrawnAt = data?['withdrawnAt'];
@@ -369,8 +373,28 @@ class ApplicationService implements IApplicationService {
       updateData['lastWithdrawnAt'] = previousWithdrawnAt;
     }
 
-    await applicationRef.update(updateData);
-    return true;
+    try {
+      await applicationRef.update(updateData);
+      return true;
+    } on FirebaseException catch (e) {
+      if (e.code != 'permission-denied') {
+        rethrow;
+      }
+    }
+
+    updateData['isPremiumAtApply'] = false;
+    updateData['priorityApplication'] = false;
+    updateData['subscriptionSnapshot'] = FieldValue.delete();
+
+    try {
+      await applicationRef.update(updateData);
+      return true;
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return false;
+      }
+      rethrow;
+    }
   }
 
   @override

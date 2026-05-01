@@ -535,10 +535,13 @@ class _SavedScreenState extends State<SavedScreen> {
                                     trainingProvider.savedTrainings.length,
                                 ideas: savedIdeasProvider.savedIdeas.length,
                                 isPremium: isPremium,
-                                freeLimit: PremiumConfigModel.defaults.freeSavedLimit,
+                                freeLimit:
+                                    PremiumConfigModel.normalStudentSavedLimit,
                                 onUpgrade: () => Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+                                  MaterialPageRoute(
+                                    builder: (_) => const PremiumPassScreen(),
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -901,8 +904,8 @@ class _SavedCompactSummary extends StatelessWidget {
     final limitColor = atLimit
         ? StudentOpportunityHubPalette.error
         : nearLimit
-            ? StudentOpportunityHubPalette.accent
-            : StudentOpportunityHubPalette.primary;
+        ? StudentOpportunityHubPalette.accent
+        : StudentOpportunityHubPalette.primary;
 
     return Container(
       width: double.infinity,
@@ -966,19 +969,29 @@ class _SavedCompactSummary extends StatelessWidget {
               ),
               if (isPremium)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: StudentOpportunityHubPalette.primary.withValues(alpha: 0.12),
+                    color: StudentOpportunityHubPalette.primary.withValues(
+                      alpha: 0.12,
+                    ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: StudentOpportunityHubPalette.primary.withValues(alpha: 0.25),
+                      color: StudentOpportunityHubPalette.primary.withValues(
+                        alpha: 0.25,
+                      ),
                     ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.all_inclusive_rounded,
-                          size: 12, color: StudentOpportunityHubPalette.primary),
+                      Icon(
+                        Icons.all_inclusive_rounded,
+                        size: 12,
+                        color: StudentOpportunityHubPalette.primary,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Unlimited',
@@ -1093,7 +1106,9 @@ class _SavedLimitBar extends StatelessWidget {
         Row(
           children: [
             Icon(
-              atLimit ? Icons.lock_outline_rounded : Icons.bookmark_border_rounded,
+              atLimit
+                  ? Icons.lock_outline_rounded
+                  : Icons.bookmark_border_rounded,
               size: 12,
               color: color,
             ),
@@ -1101,8 +1116,10 @@ class _SavedLimitBar extends StatelessWidget {
             Expanded(
               child: Text(
                 atLimit
-                    ? 'Opportunity save limit reached ($limit/$limit)'
-                    : '$remaining slot${remaining == 1 ? '' : 's'} remaining · $current / $limit opportunities saved',
+                    ? AppLocalizations.of(
+                        context,
+                      )!.savedLimitReachedFullMessage(limit, limit)
+                    : '$remaining slot${remaining == 1 ? '' : 's'} remaining - $current / $limit opportunities saved',
                 style: AppTypography.product(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w600,
@@ -1115,14 +1132,17 @@ class _SavedLimitBar extends StatelessWidget {
               GestureDetector(
                 onTap: onUpgrade,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: color.withValues(alpha: 0.30)),
                   ),
                   child: Text(
-                    'Upgrade',
+                    AppLocalizations.of(context)!.premiumPassUpgradeButton,
                     style: AppTypography.product(
                       fontSize: 9.5,
                       fontWeight: FontWeight.w700,
@@ -1140,7 +1160,9 @@ class _SavedLimitBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 5,
-            backgroundColor: StudentOpportunityHubPalette.border.withValues(alpha: 0.5),
+            backgroundColor: StudentOpportunityHubPalette.border.withValues(
+              alpha: 0.5,
+            ),
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
