@@ -248,13 +248,31 @@ const TRANSLATIONS = {
   'feedback.loadingDetails': { ar: 'جارٍ تحميل التفاصيل…', fr: 'Chargement des détails…' },
 
   // ─── Notifications page ─────────────────────────────────
+  'notif.title': { ar: 'إشعارات الإدارة', fr: 'Notifications administrateur' },
   'notif.all': { ar: 'الكل', fr: 'Tout' },
   'notif.unread': { ar: 'غير المقروءة', fr: 'Non lues' },
   'notif.read': { ar: 'المقروءة', fr: 'Lues' },
+  'notif.filter.applications': { ar: 'الطلبات', fr: 'Candidatures' },
+  'notif.filter.messages': { ar: 'الرسائل', fr: 'Messages' },
   'notif.inboxEmpty': { ar: 'الصندوق فارغ', fr: 'Boîte vide' },
   'notif.allCaughtUp': { ar: 'لقد اطّلعت على كل شيء.', fr: 'Vous êtes à jour.' },
   'notif.markedAllRead': { ar: 'تم وضع علامة قراءة على جميع الإشعارات.', fr: 'Toutes les notifications ont été marquées comme lues.' },
   'notif.couldNotMarkAll': { ar: 'تعذّر وضع علامة قراءة على الكل.', fr: 'Impossible de tout marquer comme lu.' },
+  'notif.attention.one': { ar: 'تحديث واحد يحتاج انتباهك', fr: '1 mise à jour demande votre attention' },
+  'notif.attention.many': { ar: '{n} تحديثات تحتاج انتباهك', fr: '{n} mises à jour demandent votre attention' },
+  'notif.applications.one': { ar: 'تحديث طلب واحد', fr: '1 mise à jour de candidature' },
+  'notif.applications.many': { ar: '{n} تحديثات طلبات', fr: '{n} mises à jour de candidatures' },
+  'notif.messages.one': { ar: 'تحديث رسالة واحد', fr: '1 mise à jour de message' },
+  'notif.messages.many': { ar: '{n} تحديثات رسائل', fr: '{n} mises à jour de messages' },
+  'notif.summary.all': { ar: 'تابع المراجعات ونشاط المحتوى وتنبيهات المنصة في مكان واحد.', fr: 'Suivez les révisions, le contenu et les alertes de la plateforme au même endroit.' },
+  'notif.summary.unread': { ar: 'ركّز على التحديثات التي لم تفتحها بعد.', fr: 'Concentrez-vous sur les mises à jour non ouvertes.' },
+  'notif.summary.applications': { ar: 'تابع الطلبات الجديدة والموافقات والرفض من صندوق واحد.', fr: 'Suivez les nouvelles candidatures, approbations et refus depuis cette boîte.' },
+  'notif.summary.messages': { ar: 'تابع المحادثات النشطة وعد مباشرة إلى الدردشة.', fr: 'Suivez les conversations actives et revenez directement au chat.' },
+  'notif.summary.empty': { ar: 'سيمتلئ مركز إشعارات الإدارة مع المراجعات والمحتوى وتحديثات المنصة.', fr: 'Votre centre admin se remplira avec les révisions, le contenu et les mises à jour.' },
+  'notif.empty.applications': { ar: 'لا توجد تحديثات طلبات', fr: 'Aucune mise à jour de candidature' },
+  'notif.empty.applicationsMsg': { ar: 'ستظهر قرارات الطلبات والإرسالات هنا.', fr: 'Les décisions et envois de candidatures apparaîtront ici.' },
+  'notif.empty.messages': { ar: 'لا توجد تحديثات رسائل', fr: 'Aucune mise à jour de messages' },
+  'notif.empty.messagesMsg': { ar: 'ستظهر المحادثات والردود الجديدة هنا.', fr: 'Les nouvelles conversations et réponses apparaîtront ici.' },
 
   // ─── Activity page ──────────────────────────────────────
   'activity.searchPlaceholder': { ar: 'ابحث بالعنوان أو الشخص أو الحالة...', fr: 'Rechercher par titre, personne ou statut...' },
@@ -266,9 +284,45 @@ const TRANSLATIONS = {
   'activity.projectIdeas': { ar: 'أفكار المشاريع', fr: 'Idées de projets' },
   'activity.accounts': { ar: 'الحسابات', fr: 'Comptes' },
   'activity.noMatching': { ar: 'لا يوجد نشاط مطابق', fr: 'Aucune activité correspondante' },
-  'activity.tryChange': { ar: 'جرّب تغيير النوع أو مسح البحث.', fr: 'Essayez de changer le type ou d\'effacer la recherche.' },
+  'activity.tryChange': { ar: 'جرّب تغيير القسم أو مسح البحث.', fr: 'Essayez de changer la section ou d\'effacer la recherche.' },
   'activity.noActivity': { ar: 'لا يوجد نشاط', fr: 'Aucune activité' },
   'activity.nothingHappened': { ar: 'لم يحدث شيء مؤخرًا.', fr: 'Rien ne s\'est passé récemment.' },
+  'activity.eyebrow.liveFeed': { ar: 'البث المباشر', fr: 'Flux en direct' },
+  'activity.title.recent': { ar: 'النشاط الأخير على المنصة', fr: 'Activité récente de la plateforme' },
+  'activity.subtitle.review': { ar: 'راجع آخر تحديثات الإشراف وتغييرات النشر والطلبات في صف واحد منظّم.', fr: 'Examinez les dernières mises à jour de modération, les changements de publication et les soumissions en une seule file claire.' },
+  'activity.refreshTooltip': { ar: 'تحديث خلاصة النشاط', fr: 'Actualiser le flux d\'activité' },
+  'activity.openTooltip': { ar: 'فتح النشاط', fr: 'Ouvrir l\'activité' },
+  'activity.unknownTime': { ar: 'وقت غير معروف', fr: 'Heure inconnue' },
+  'activity.justNow': { ar: 'الآن', fr: 'À l\'instant' },
+  'activity.minAgo': { ar: 'منذ {n} د', fr: 'il y a {n} min' },
+  'activity.hoursAgo': { ar: 'منذ {n} س', fr: 'il y a {n} h' },
+  'activity.daysAgo': { ar: 'منذ {n} ي', fr: 'il y a {n} j' },
+  'activity.unavailableTitle': { ar: 'خلاصة النشاط غير متوفرة', fr: 'Flux d\'activité indisponible' },
+  'activity.noMatchTitle': { ar: 'لا يوجد نشاط مطابق لهذا البحث', fr: 'Aucune activité ne correspond à cette recherche' },
+  'activity.noMatchMsg': { ar: 'جرّب استعلامًا أوسع أو حدّث لتحميل الأحدث.', fr: 'Essayez une requête plus large ou actualisez pour charger les dernières.' },
+  'activity.endTitle': { ar: 'وصلت إلى النهاية', fr: 'Vous êtes arrivé à la fin' },
+  'activity.endCopy': { ar: 'لقد وصلت إلى نهاية خلاصة النشاط الأخير.', fr: 'Vous avez atteint la fin du fil d\'actualité récent.' },
+  'activity.needMoreTitle': { ar: 'هل تريد المزيد من النشاط؟', fr: 'Besoin de plus d\'activité ?' },
+  'activity.loadOlderCopy': { ar: 'حمّل التحديثات الأقدم من الطلبات والفرص والتدريبات والمنح وأفكار المشاريع.', fr: 'Chargez les anciennes mises à jour des candidatures, offres, formations, bourses et idées de projets.' },
+  'activity.olderUnavailable': { ar: 'تعذّر تحميل النشاط الأقدم', fr: 'Impossible de charger les activités plus anciennes' },
+  'activity.fetchingOlder': { ar: 'جارٍ جلب التحديثات الأقدم من المنصة.', fr: 'Récupération des anciennes mises à jour depuis la plateforme.' },
+  'activity.olderBtn': { ar: 'نشاط أقدم', fr: 'Activité ancienne' },
+  'activity.section.all': { ar: 'الكل', fr: 'Tout' },
+  'activity.section.reviews': { ar: 'المراجعات', fr: 'Révisions' },
+  'activity.section.content': { ar: 'المحتوى', fr: 'Contenu' },
+  'activity.section.library': { ar: 'المكتبة', fr: 'Bibliothèque' },
+  'activity.section.accounts': { ar: 'الحسابات', fr: 'Comptes' },
+  'activity.section.pending': { ar: 'قيد الانتظار', fr: 'En attente' },
+  'activity.refresh': { ar: 'تحديث', fr: 'Actualiser' },
+  'activity.recent.one': { ar: 'نشاط أخير واحد', fr: '1 activité récente' },
+  'activity.recent.many': { ar: '{n} نشاطات أخيرة', fr: '{n} activités récentes' },
+  'activity.matching.one': { ar: 'نشاط مطابق واحد', fr: '1 activité correspondante' },
+  'activity.matching.many': { ar: '{n} نشاطات مطابقة', fr: '{n} activités correspondantes' },
+  'activity.newestFirst': { ar: 'الأحدث أولاً', fr: 'Les plus récentes en premier' },
+  'activity.endOfFeed': { ar: 'وصلت إلى نهاية السجل.', fr: 'Vous avez atteint la fin du registre.' },
+  'activity.loadOlder': { ar: 'تحميل الأقدم', fr: 'Charger les plus anciennes' },
+  'activity.loadingMore': { ar: 'جارٍ تحميل المزيد…', fr: 'Chargement…' },
+  'activity.preview.openManage': { ar: 'فتح للإدارة', fr: 'Ouvrir pour gérer' },
 
   // ─── Dashboard ──────────────────────────────────────────
   'dash.commandCenter': { ar: 'مركز التحكم', fr: 'Centre de contrôle' },
@@ -626,6 +680,25 @@ const TRANSLATIONS = {
   'editor.fundingType.merit': { ar: 'على أساس الجدارة', fr: 'Au mérite' },
   'editor.fundingType.needs': { ar: 'على أساس الحاجة', fr: 'Selon les besoins' },
 
+  'editor.level.bac': { ar: 'باكالوريا', fr: 'Bac' },
+  'editor.level.licence': { ar: 'إجازة', fr: 'Licence' },
+  'editor.level.master': { ar: 'ماستر', fr: 'Master' },
+  'editor.level.doctorat': { ar: 'دكتوراه', fr: 'Doctorat' },
+  'editor.level.phd': { ar: 'دكتوراه', fr: 'Doctorat' },
+  'editor.level.bachelor': { ar: 'إجازة', fr: 'Licence' },
+
+  'editor.source.youtube': { ar: 'يوتيوب', fr: 'YouTube' },
+  'editor.source.book': { ar: 'كتاب', fr: 'Livre' },
+  'editor.source.article': { ar: 'مقال', fr: 'Article' },
+  'editor.source.manual': { ar: 'يدوي', fr: 'Manuel' },
+  'editor.source.course': { ar: 'دورة', fr: 'Cours' },
+
+  'editor.provider.email': { ar: 'البريد الإلكتروني', fr: 'E-mail' },
+  'editor.provider.google': { ar: 'جوجل', fr: 'Google' },
+  'editor.provider.facebook': { ar: 'فيسبوك', fr: 'Facebook' },
+  'editor.provider.apple': { ar: 'آبل', fr: 'Apple' },
+  'editor.provider.anonymous': { ar: 'مجهول', fr: 'Anonyme' },
+
   'editor.saveFailed': { ar: 'فشل الحفظ', fr: 'Échec de l\'enregistrement' },
 
   // ─── Users page ────────────────────────────────────────
@@ -855,6 +928,24 @@ export function t(key, fallback) {
     return entry[currentLang];
   }
   return fallback != null ? String(fallback) : (key || '');
+}
+
+function titleCase(value) {
+  return String(value || '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export function translateValue(category, raw, fallback) {
+  const value = String(raw == null ? '' : raw).trim();
+  if (!value) return fallback != null ? String(fallback) : '';
+  const normalized = value.toLowerCase().replace(/[\s-]+/g, '_');
+  const direct = TRANSLATIONS[`editor.${category}.${normalized}`];
+  if (direct && direct[currentLang]) return direct[currentLang];
+  if (currentLang === 'en') return fallback != null ? String(fallback) : titleCase(value);
+  return fallback != null ? String(fallback) : titleCase(value);
 }
 
 export function getLang() {

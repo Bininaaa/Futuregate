@@ -23,24 +23,60 @@
     import { t, applyTranslations } from './js/i18n.js';
     import './js/ui.js';
 
+    const FILTERS = [
+      { id: 'all',          key: 'notif.all',                  fallback: 'All',          icon: 'inbox' },
+      { id: 'unread',       key: 'notif.unread',               fallback: 'Unread',       icon: 'mail-warning' },
+      { id: 'applications', key: 'notif.filter.applications',  fallback: 'Applications', icon: 'file-text' },
+      { id: 'messages',     key: 'notif.filter.messages',      fallback: 'Messages',     icon: 'message-circle' },
+    ];
+
+    const APPLICATION_TYPES = new Set(['application', 'rejected']);
+
+    function isApplicationType(n) { return APPLICATION_TYPES.has(String(n.type || '').toLowerCase()); }
+    function isMessageType(n) { return String(n.type || '').toLowerCase() === 'chat'; }
+
+    function matchesFilter(n, filter) {
+      switch (filter) {
+        case 'all':          return true;
+        case 'unread':       return !n.isRead;
+        case 'applications': return isApplicationType(n);
+        case 'messages':     return isMessageType(n);
+        default:             return true;
+      }
+    }
+
+    function unreadCountForFilter(items, filter) {
+      return items.reduce((acc, n) => acc + ((!n.isRead && matchesFilter(n, filter)) ? 1 : 0), 0);
+    }
+
     function resolveNotificationTarget(n) {
-      const route = (n.route || '').toLowerCase();
+      const type = String(n.type || '').toLowerCase();
+      const route = String(n.route || '').toLowerCase();
+
+      if (type === 'company_review') {
+        const tid = encodeURIComponent(String(n.targetId || '').trim());
+        return tid
+          ? `users?role=company&approval=pending&userId=${tid}`
+          : 'users?role=company&approval=pending';
+      }
+
+      if (type === 'chat') return null;
+
       const map = {
-        application: 'application', applications: 'application',
+        application: 'application', applications: 'application', rejected: 'application',
         opportunity: 'opportunity', opportunities: 'opportunity',
         scholarship: 'scholarship', scholarships: 'scholarship',
         training: 'training', trainings: 'training',
         idea: 'project_idea', project_idea: 'project_idea', ideas: 'project_idea',
       };
-      const key = map[n.type?.toLowerCase()] || map[route];
+      const key = map[type] || map[route];
       if (key) return adminTargetUrl(key, n.targetId);
-      if (n.conversationId) return null;
       return null;
     }
 
     mountShell({ page: 'notifications' });
 
-    const state = { items: [], cursor: null, hasMore: true, userId: null, filter: 'all' };
+    const state = { items: [], cursor: null, hasMore: true, userId: null, filter: 'all', loading: false, loadingMore: false, error: null };
 
     checkAuth(async (user) => {
       state.userId = user.uid;
@@ -52,42 +88,63 @@
     async function initNotifs() {
       const root = document.getElementById('page-content');
       root.innerHTML = `
+        <section class="surface-panel" id="notif-summary-panel" style="margin-bottom:14px;display:flex;align-items:center;gap:14px;">
+          <div class="activity-icon" style="background:#6366f11a;color:#6366f1;width:48px;height:48px;flex:none;"><i data-lucide="bell-ring"></i></div>
+          <div style="flex:1;min-width:0;">
+            <div id="notif-summary-title" class="row-title"></div>
+            <div id="notif-summary-msg" class="row-sub"></div>
+          </div>
+          <button id="mark-all" class="btn" type="button" style="flex:none;">
+            <i data-lucide="check-check"></i>
+            <span data-i18n="btn.markAllRead" data-i18n-fallback="Mark all as read">${esc(t('btn.markAllRead', 'Mark all as read'))}</span>
+          </button>
+        </section>
         <section class="surface-panel">
-          <div class="filter-bar">
-            <select id="notif-filter">
-              <option value="all" data-i18n="notif.all" data-i18n-fallback="All">${esc(t('notif.all', 'All'))}</option>
-              <option value="unread" data-i18n="notif.unread" data-i18n-fallback="Unread">${esc(t('notif.unread', 'Unread'))}</option>
-              <option value="read" data-i18n="notif.read" data-i18n-fallback="Read">${esc(t('notif.read', 'Read'))}</option>
-            </select>
-            <button id="mark-all" class="btn" style="margin-left:auto;"><i data-lucide="check-check"></i><span data-i18n="btn.markAllRead" data-i18n-fallback="Mark all as read">${esc(t('btn.markAllRead', 'Mark all as read'))}</span></button>
-          </div>
+          <div id="notif-chips" class="chip-row"></div>
           <div id="notif-list" class="list-grid"></div>
-          <div class="load-more-wrap">
-            <button id="notif-load" class="btn"><i data-lucide="plus"></i><span data-i18n="btn.loadMore" data-i18n-fallback="Load more">${esc(t('btn.loadMore', 'Load more'))}</span></button>
-          </div>
+          <div id="notif-footer" class="load-more-wrap"></div>
         </section>
       `;
       applyTranslations(root);
 
-      document.getElementById('notif-filter').addEventListener('change', (e) => { state.filter = e.target.value; render(); });
       document.getElementById('mark-all').addEventListener('click', markAll);
-      document.getElementById('notif-load').addEventListener('click', loadMore);
-      await loadMore();
+      await initialLoad();
       showPage();
     }
 
+    async function initialLoad() {
+      state.loading = true;
+      state.error = null;
+      render();
+      try {
+        const result = await loadNotificationsPage({ userId: state.userId, pageSize: 20, cursor: state.cursor });
+        state.items = result.items;
+        state.cursor = result.cursor;
+        state.hasMore = result.hasMore;
+      } catch (e) {
+        console.error(e);
+        state.error = e;
+      } finally {
+        state.loading = false;
+        render();
+      }
+    }
+
     async function loadMore() {
+      if (state.loadingMore || !state.hasMore) return;
+      state.loadingMore = true;
+      renderFooter();
       try {
         const result = await loadNotificationsPage({ userId: state.userId, pageSize: 20, cursor: state.cursor });
         state.items = state.items.concat(result.items);
         state.cursor = result.cursor;
         state.hasMore = result.hasMore;
-        document.getElementById('notif-load').style.display = state.hasMore ? '' : 'none';
-        render();
       } catch (e) {
         console.error(e);
-        document.getElementById('notif-list').innerHTML = feedbackCardHtml(t('feedback.couldNotLoadNotifications', 'Could not load notifications.'), { type: 'error' });
-        if (window.lucide) window.lucide.createIcons();
+        state.error = e;
+      } finally {
+        state.loadingMore = false;
+        render();
       }
     }
 
@@ -99,49 +156,163 @@
         state.items.forEach((n) => { if (ids.includes(n.id)) n.isRead = true; });
         render();
         showToast(t('notif.markedAllRead', 'All notifications marked as read.'), 'success');
-      } catch (e) { showToast(t('notif.couldNotMarkAll', 'Could not mark all as read.'), 'error'); }
+      } catch (e) {
+        showToast(t('notif.couldNotMarkAll', 'Could not mark all as read.'), 'error');
+      }
+    }
+
+    function visibleItems() {
+      return state.items.filter((n) => matchesFilter(n, state.filter));
+    }
+
+    function renderChips() {
+      const wrap = document.getElementById('notif-chips');
+      if (!wrap) return;
+      wrap.innerHTML = FILTERS.map((f) => {
+        const count = unreadCountForFilter(state.items, f.id);
+        const isActive = state.filter === f.id;
+        const side = document.dir === 'rtl' ? 'right' : 'left';
+        const badge = count > 0 ? `<span class="badge ${isActive ? 'badge-primary' : 'badge-info'}" style="margin-${side}:6px;">${count}</span>` : '';
+        return `<button class="chip${isActive ? ' active' : ''}" data-filter="${f.id}" type="button"><i data-lucide="${f.icon}"></i><span>${esc(t(f.key, f.fallback))}</span>${badge}</button>`;
+      }).join('');
+      wrap.querySelectorAll('.chip').forEach((el) => {
+        el.addEventListener('click', () => {
+          state.filter = el.getAttribute('data-filter');
+          render();
+        });
+      });
+    }
+
+    function renderSummary() {
+      const titleEl = document.getElementById('notif-summary-title');
+      const msgEl = document.getElementById('notif-summary-msg');
+      const markBtn = document.getElementById('mark-all');
+      if (!titleEl || !msgEl) return;
+
+      const totalUnread = state.items.reduce((acc, n) => acc + (n.isRead ? 0 : 1), 0);
+      if (markBtn) markBtn.style.display = totalUnread > 0 ? '' : 'none';
+
+      if (state.items.length === 0) {
+        titleEl.textContent = t('notif.allCaughtUp', 'You are all caught up.');
+        msgEl.textContent = t('notif.summary.empty', 'Your admin notification center will fill up as reviews, content, and platform updates arrive.');
+        return;
+      }
+
+      const visibleCount = visibleItems().length;
+      const visibleUnread = unreadCountForFilter(state.items, state.filter);
+
+      if (state.filter === 'applications') {
+        titleEl.textContent = visibleCount === 1
+          ? t('notif.applications.one', '1 application update')
+          : t('notif.applications.many', '{n} application updates').replace('{n}', visibleCount);
+      } else if (state.filter === 'messages') {
+        titleEl.textContent = visibleCount === 1
+          ? t('notif.messages.one', '1 message update')
+          : t('notif.messages.many', '{n} message updates').replace('{n}', visibleCount);
+      } else if (visibleUnread > 0) {
+        titleEl.textContent = visibleUnread === 1
+          ? t('notif.attention.one', '1 update needing attention')
+          : t('notif.attention.many', '{n} updates needing attention').replace('{n}', visibleUnread);
+      } else {
+        titleEl.textContent = t('notif.allCaughtUp', 'You are all caught up.');
+      }
+
+      const summaryKey = {
+        all: 'notif.summary.all',
+        unread: 'notif.summary.unread',
+        applications: 'notif.summary.applications',
+        messages: 'notif.summary.messages',
+      }[state.filter] || 'notif.summary.all';
+      const summaryFallback = {
+        all: 'Track reviews, content activity, and platform alerts in one place.',
+        unread: 'Focus on the updates you have not opened yet.',
+        applications: 'Follow new applications, approvals, and rejections without leaving this inbox.',
+        messages: 'Keep up with active conversations and jump straight back into chat.',
+      }[state.filter];
+      msgEl.textContent = t(summaryKey, summaryFallback);
+    }
+
+    function renderFooter() {
+      const el = document.getElementById('notif-footer');
+      if (!el) return;
+      if (state.loadingMore) {
+        el.innerHTML = `<button class="btn" disabled><i data-lucide="loader"></i><span>${esc(t('activity.loadingMore', 'Loading more...'))}</span></button>`;
+      } else if (state.hasMore && state.items.length > 0) {
+        el.innerHTML = `<button id="notif-load" class="btn"><i data-lucide="plus"></i><span data-i18n="btn.loadMore">${esc(t('btn.loadMore', 'Load more'))}</span></button>`;
+        el.querySelector('#notif-load').addEventListener('click', loadMore);
+      } else {
+        el.innerHTML = '';
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function emptyStateForFilter() {
+      switch (state.filter) {
+        case 'unread':
+          return { title: t('notif.allCaughtUp', 'You are all caught up.'), msg: t('notif.summary.unread', 'Focus on the updates you have not opened yet.'), icon: 'check-check' };
+        case 'applications':
+          return { title: t('notif.empty.applications', 'No application updates'), msg: t('notif.empty.applicationsMsg', 'Application decisions and submissions will appear here.'), icon: 'file-text' };
+        case 'messages':
+          return { title: t('notif.empty.messages', 'No message updates'), msg: t('notif.empty.messagesMsg', 'New conversations and replies will show up here.'), icon: 'message-circle' };
+        default:
+          return { title: t('notif.inboxEmpty', 'Inbox empty'), msg: t('notif.allCaughtUp', 'You are all caught up.'), icon: 'bell-off' };
+      }
+    }
+
+    function renderList() {
+      const list = document.getElementById('notif-list');
+      if (!list) return;
+
+      if (state.loading && state.items.length === 0) {
+        list.innerHTML = `<div class="surface-panel" style="text-align:center;padding:32px;"><div class="spinner" style="margin:0 auto 12px;"></div><div class="row-sub">${esc(t('feedback.loadingDetails', 'Loading…'))}</div></div>`;
+        return;
+      }
+
+      if (state.error && state.items.length === 0) {
+        list.innerHTML = feedbackCardHtml(t('feedback.couldNotLoadNotifications', 'Could not load notifications.'), { type: 'error' });
+        return;
+      }
+
+      const items = visibleItems();
+      if (!items.length) {
+        const e = emptyStateForFilter();
+        list.innerHTML = emptyStateHtml(e.msg, { title: e.title, icon: e.icon });
+        return;
+      }
+
+      list.innerHTML = items.map((n) => `
+        <div class="notif-row${n.isRead ? '' : ' unread'}" data-id="${esc(n.id)}">
+          <div class="notif-icon"><i data-lucide="${n.isRead ? 'bell' : 'bell-ring'}"></i></div>
+          <div class="notif-body">
+            <div class="notif-title">${esc(n.title)}</div>
+            <div class="notif-message">${esc(n.message)}</div>
+            <div class="notif-time">${esc(formatTimestamp(n.createdAt))}</div>
+          </div>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('.notif-row').forEach((row) => {
+        row.addEventListener('click', async () => {
+          const id = row.getAttribute('data-id');
+          const item = state.items.find((x) => x.id === id);
+          if (!item) return;
+          if (!item.isRead) {
+            try { await markNotificationRead(id); item.isRead = true; render(); } catch {}
+          }
+          const target = resolveNotificationTarget(item);
+          if (target) {
+            if (window.FutureGateWorkspace?.navigate) window.FutureGateWorkspace.navigate(target);
+            else window.location.href = target;
+          }
+        });
+      });
     }
 
     function render() {
-      const list = document.getElementById('notif-list');
-      if (!list) return;
-      let items = state.items.slice();
-      if (state.filter === 'unread') items = items.filter((n) => !n.isRead);
-      else if (state.filter === 'read') items = items.filter((n) => n.isRead);
-
-      if (!items.length) {
-        list.innerHTML = emptyStateHtml(t('notif.allCaughtUp', 'You are all caught up.'), { title: t('notif.inboxEmpty', 'Inbox empty'), icon: 'bell-off' });
-      } else {
-        list.innerHTML = items.map((n) => `
-          <div class="notif-row${n.isRead ? '' : ' unread'}" data-id="${n.id}">
-            <div class="notif-icon"><i data-lucide="${n.isRead ? 'bell' : 'bell-ring'}"></i></div>
-            <div class="notif-body">
-              <div class="notif-title">${esc(n.title)}</div>
-              <div class="notif-message">${esc(n.message)}</div>
-              <div class="notif-time">${esc(formatTimestamp(n.createdAt))}</div>
-            </div>
-          </div>
-        `).join('');
-
-        list.querySelectorAll('.notif-row').forEach((row) => {
-          row.addEventListener('click', async () => {
-            const id = row.getAttribute('data-id');
-            const item = state.items.find((x) => x.id === id);
-            if (!item) return;
-            if (!item.isRead) {
-              try { await markNotificationRead(id); item.isRead = true; render(); } catch {}
-            }
-            const target = resolveNotificationTarget(item);
-            if (target) {
-              if (window.FutureGateWorkspace?.navigate) {
-                window.FutureGateWorkspace.navigate(target);
-              } else {
-                window.location.href = target;
-              }
-            }
-          });
-        });
-      }
+      renderChips();
+      renderSummary();
+      renderList();
+      renderFooter();
       if (window.lucide) window.lucide.createIcons();
     }
   </script>

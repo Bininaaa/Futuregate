@@ -138,7 +138,7 @@ function typeColor(type) {
   const colors = {
     application: '#7C3AED',
     opportunity: '#F59E0B',
-    scholarship: '#E24A4A',
+    scholarship: '#EC4899',
     training: '#14B8A6',
     project_idea: '#2563EB',
     user: '#0EA5E9',

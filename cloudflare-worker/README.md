@@ -36,6 +36,16 @@ wrangler secret put FIREBASE_WEB_API_KEY
 wrangler secret put ALLOWED_ORIGINS
 ```
 
+Chargily return pages should be real URLs, not Wrangler commands. In PowerShell:
+
+```powershell
+"https://payment.futuregate.tech/success" | npx wrangler secret put FUTUREGATE_SUCCESS_URL
+"https://payment.futuregate.tech/failed" | npx wrangler secret put FUTUREGATE_FAILURE_URL
+"https://avenirdz-api.yasserabh13.workers.dev/api/webhooks/chargily" | npx wrangler secret put CHARGILY_WEBHOOK_URL
+```
+
+When Wrangler prompts interactively, paste only the URL value for the secret.
+
 `FIREBASE_SERVICE_ACCOUNT_KEY` is the full Firebase service-account JSON string. The Worker uses it for Firestore REST access, FCM HTTP v1 sends, and admin Identity Platform lookups.
 
 `FIREBASE_WEB_API_KEY` should be the public Firebase Web API key from the same project. The Worker uses it for `accounts:createAuthUri` so it can detect whether an email has `password`, `google.com`, or both sign-in methods before sending reset emails.

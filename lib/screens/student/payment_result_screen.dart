@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen> {
   }
 
   void _startPolling() {
+    _pollTimer?.cancel();
     _checkStatus();
     _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (_pollCount >= _maxPolls) {
@@ -49,10 +51,13 @@ class _PaymentResultScreenState extends State<PaymentResultScreen> {
 
   Future<void> _checkStatus() async {
     _pollCount++;
+    await context.read<PremiumProvider>().syncAfterReturn();
+    if (!mounted) return;
+
     final subProvider = context.read<SubscriptionProvider>();
-    await subProvider.refresh(
-      context.read<SubscriptionProvider>().subscription?.uid ?? '',
-    );
+    final uid =
+        subProvider.subscription?.uid ?? FirebaseAuth.instance.currentUser?.uid;
+    await subProvider.refresh(uid ?? '');
     if (!mounted) return;
 
     final sub = subProvider.subscription;
@@ -92,15 +97,15 @@ class _PaymentResultScreenState extends State<PaymentResultScreen> {
             _State.checking => _CheckingView(colors: colors, l10n: l10n),
             _State.success => _SuccessView(colors: colors, l10n: l10n),
             _State.pending => _PendingView(
-                colors: colors,
-                l10n: l10n,
-                onCheck: _syncAndRetry,
-              ),
+              colors: colors,
+              l10n: l10n,
+              onCheck: _syncAndRetry,
+            ),
             _State.failed => _FailedView(
-                colors: colors,
-                l10n: l10n,
-                onRetry: () => Navigator.of(context).pop(),
-              ),
+              colors: colors,
+              l10n: l10n,
+              onRetry: () => Navigator.of(context).pop(),
+            ),
           },
         ),
       ),
@@ -203,9 +208,8 @@ class _SuccessView extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: FilledButton(
-            onPressed: () => Navigator.of(context).popUntil(
-              (route) => route.isFirst,
-            ),
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
             style: FilledButton.styleFrom(
               backgroundColor: colors.accent,
               foregroundColor: Colors.white,
@@ -240,11 +244,7 @@ class _PendingView extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.hourglass_bottom_rounded,
-          size: 64,
-          color: colors.warning,
-        ),
+        Icon(Icons.hourglass_bottom_rounded, size: 64, color: colors.warning),
         const SizedBox(height: 20),
         Text(
           l10n.premiumPassPendingTitle,
@@ -267,14 +267,16 @@ class _PendingView extends StatelessWidget {
           icon: Icon(Icons.refresh_rounded, color: colors.primary),
           label: Text(
             l10n.paymentCheckStatusButton,
-            style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              color: colors.primary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         const SizedBox(height: 12),
         TextButton(
-          onPressed: () => Navigator.of(context).popUntil(
-            (route) => route.isFirst,
-          ),
+          onPressed: () =>
+              Navigator.of(context).popUntil((route) => route.isFirst),
           child: Text(
             l10n.closeLabel,
             style: TextStyle(color: colors.textMuted),

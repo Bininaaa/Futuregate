@@ -10,6 +10,61 @@
   <script src="js/theme-init.js"></script>
   <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .act-header-card { display:flex; align-items:flex-start; gap:14px; }
+    .act-header-text { flex:1; min-width:0; }
+    .act-eyebrow { font-size:11px; font-weight:700; letter-spacing:.10em; text-transform:uppercase; color:var(--c-primary); margin-bottom:4px; }
+    .act-title { font-size:18px; font-weight:800; color:var(--c-text); line-height:1.25; margin-bottom:4px; }
+    .act-subtitle { font-size:13px; color:var(--c-text-muted); line-height:1.45; }
+    .act-refresh-btn { display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border-radius:14px; border:0; background:rgba(99,102,241,0.12); color:var(--c-primary); cursor:pointer; flex-shrink:0; transition:background .15s; }
+    .act-refresh-btn:hover { background:rgba(99,102,241,0.22); }
+    .act-refresh-btn:disabled { opacity:.55; cursor:not-allowed; }
+    .act-refresh-btn [data-lucide] { width:18px; height:18px; }
+    .act-refresh-btn .spinner { width:18px; height:18px; border-width:2px; }
+
+    .act-tile { background:var(--c-surface); border:1px solid var(--c-border); border-radius:20px; padding:14px; box-shadow:0 12px 24px rgba(15,23,42,.04); cursor:pointer; transition:transform .15s, box-shadow .15s; display:flex; flex-direction:column; gap:10px; }
+    .act-tile:hover { transform:translateY(-1px); box-shadow:0 16px 28px rgba(15,23,42,.07); }
+    .act-tile-row1 { display:flex; align-items:flex-start; gap:12px; }
+    .act-tile-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .act-tile-icon [data-lucide] { width:20px; height:20px; }
+    .act-tile-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:8px; }
+    .act-tile-headline { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .act-type-pill { padding:4px 8px; border-radius:999px; font-size:10.2px; font-weight:800; letter-spacing:.045em; text-transform:uppercase; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .act-actor { font-size:11.3px; font-weight:600; color:var(--c-text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; }
+    .act-tile-title { font-size:14.3px; font-weight:700; color:var(--c-text); line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .act-tile-desc  { font-size:12.5px; color:var(--c-text-muted); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .act-open-btn { width:40px; height:40px; border-radius:14px; border:0; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:transform .15s; }
+    .act-open-btn:hover { transform:translate(2px,-2px); }
+    .act-open-btn [data-lucide] { width:18px; height:18px; }
+    .act-tile-row2 { display:flex; align-items:center; gap:10px; }
+    .act-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex:1; min-width:0; }
+    .act-status-pill { padding:5px 8px; border-radius:999px; font-size:10.8px; font-weight:700; border:1px solid; white-space:nowrap; }
+    .act-time-info { display:inline-flex; align-items:center; gap:4px; font-size:11.4px; font-weight:600; color:var(--c-text-faint); }
+    .act-time-info [data-lucide] { width:13px; height:13px; }
+
+    @media (max-width:380px) {
+      .act-tile-row1 .act-open-btn { display:none; }
+      .act-open-btn-compact { width:36px; height:36px; padding:8px; }
+    }
+    @media (min-width:381px) {
+      .act-open-btn-compact { display:none; }
+    }
+
+    .act-footer-card { background:var(--c-surface-muted); border:1px solid var(--c-border); border-radius:18px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
+    .act-footer-text { flex:1; min-width:0; }
+    .act-footer-title { font-size:13px; font-weight:700; color:var(--c-text); margin-bottom:2px; }
+    .act-footer-sub   { font-size:11.8px; font-weight:500; color:var(--c-text-muted); line-height:1.35; }
+    .act-footer-sub.is-error { color:var(--c-danger); }
+    .act-footer-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:14px; border:0; background:rgba(99,102,241,0.12); color:var(--c-primary); font-weight:600; cursor:pointer; flex-shrink:0; }
+    .act-footer-btn:disabled { opacity:.6; cursor:not-allowed; }
+    .act-footer-btn [data-lucide] { width:16px; height:16px; }
+    .act-end { text-align:center; padding:8px 0; font-size:12px; font-weight:600; color:var(--c-text-muted); }
+
+    @media (max-width:420px) {
+      .act-footer-card { flex-direction:column; align-items:stretch; }
+      .act-footer-btn { justify-content:center; }
+    }
+  </style>
 </head>
 <body data-page="activity">
   <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
@@ -17,72 +72,121 @@
 
   <script type="module">
     import { mountShell, showPage } from './js/shell.js';
-    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, formatTimestamp } from './js/auth.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml } from './js/auth.js';
     import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
-    import { activityTypeLabel, typeColor, typeIcon, matchesSearch } from './js/admin-utils.js';
+    import { activityTypeLabel, adminTargetUrl, typeColor, typeIcon, matchesSearch } from './js/admin-utils.js';
     import { openDetailsModal } from './js/details.js';
-    import { t, applyTranslations } from './js/i18n.js';
+    import { t, applyTranslations, getLang } from './js/i18n.js';
     import './js/ui.js';
 
     mountShell({ page: 'activity' });
 
-    const state = { items: [], cursor: createActivityState(), hasMore: true, search: '', type: 'all' };
+    const SECTIONS = [
+      { id: 'all',      key: 'activity.section.all',      fallback: 'All',       icon: 'layers' },
+      { id: 'reviews',  key: 'activity.section.reviews',  fallback: 'Reviews',   icon: 'shield-check' },
+      { id: 'content',  key: 'activity.section.content',  fallback: 'Content',   icon: 'newspaper' },
+      { id: 'library',  key: 'activity.section.library',  fallback: 'Library',   icon: 'book-open' },
+      { id: 'accounts', key: 'activity.section.accounts', fallback: 'Accounts',  icon: 'users' },
+      { id: 'pending',  key: 'activity.section.pending',  fallback: 'Pending',   icon: 'clock' },
+    ];
+
+    const state = {
+      items: [],
+      cursor: createActivityState(),
+      hasMore: true,
+      loading: false,
+      loadingMore: false,
+      error: null,
+      search: '',
+      section: 'all',
+    };
 
     checkAuth(async () => { await initActivity(); });
-
     document.addEventListener('languagechange', () => { render(); });
 
     async function initActivity() {
       const root = document.getElementById('page-content');
       root.innerHTML = `
         <section class="surface-panel">
-          <div class="filter-bar">
-            <div class="search-bar">
-              <i data-lucide="search"></i>
-              <input id="act-search" type="search"
-                data-i18n-placeholder="activity.searchPlaceholder"
-                data-i18n-placeholder-fallback="Search by title, person, or status..."
-                placeholder="${esc(t('activity.searchPlaceholder', 'Search by title, person, or status...'))}"/>
+          <div class="act-header-card">
+            <div class="act-header-text">
+              <div class="act-eyebrow" data-i18n="activity.eyebrow.liveFeed" data-i18n-fallback="Live feed">${esc(t('activity.eyebrow.liveFeed', 'Live feed'))}</div>
+              <div class="act-title" data-i18n="activity.title.recent" data-i18n-fallback="Recent platform activity">${esc(t('activity.title.recent', 'Recent platform activity'))}</div>
+              <div class="act-subtitle" data-i18n="activity.subtitle.review" data-i18n-fallback="Review the latest moderation updates, publishing changes, and submissions from one clean queue.">${esc(t('activity.subtitle.review', 'Review the latest moderation updates, publishing changes, and submissions from one clean queue.'))}</div>
             </div>
-            <select id="act-type">
-              <option value="all" data-i18n="activity.allTypes" data-i18n-fallback="All types">${esc(t('activity.allTypes', 'All types'))}</option>
-              <option value="application" data-i18n="activity.applications" data-i18n-fallback="Applications">${esc(t('activity.applications', 'Applications'))}</option>
-              <option value="opportunity" data-i18n="activity.opportunities" data-i18n-fallback="Opportunities">${esc(t('activity.opportunities', 'Opportunities'))}</option>
-              <option value="scholarship" data-i18n="activity.scholarships" data-i18n-fallback="Scholarships">${esc(t('activity.scholarships', 'Scholarships'))}</option>
-              <option value="training" data-i18n="activity.trainings" data-i18n-fallback="Trainings">${esc(t('activity.trainings', 'Trainings'))}</option>
-              <option value="project_idea" data-i18n="activity.projectIdeas" data-i18n-fallback="Project ideas">${esc(t('activity.projectIdeas', 'Project ideas'))}</option>
-              <option value="user" data-i18n="activity.accounts" data-i18n-fallback="Accounts">${esc(t('activity.accounts', 'Accounts'))}</option>
-            </select>
+            <button id="act-refresh" class="act-refresh-btn" type="button" title="${esc(t('activity.refreshTooltip', 'Refresh activity feed'))}" aria-label="${esc(t('activity.refreshTooltip', 'Refresh activity feed'))}">
+              <i data-lucide="refresh-cw"></i>
+            </button>
           </div>
+
+          <div class="search-bar" style="margin-top:14px;">
+            <i data-lucide="search"></i>
+            <input id="act-search" type="search"
+              data-i18n-placeholder="activity.searchPlaceholder"
+              data-i18n-placeholder-fallback="Search by type, title, actor, or status..."
+              placeholder="${esc(t('activity.searchPlaceholder', 'Search by type, title, actor, or status...'))}"/>
+          </div>
+
+          <div id="act-chips" class="chip-row" style="margin-top:12px;"></div>
+          <div id="act-summary" class="row-sub" style="margin:6px 2px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"></div>
           <div id="act-list" class="list-grid"></div>
-          <div class="load-more-wrap">
-            <button id="act-load" class="btn"><i data-lucide="plus"></i><span data-i18n="btn.loadMore" data-i18n-fallback="Load more">${esc(t('btn.loadMore', 'Load more'))}</span></button>
-          </div>
+          <div id="act-footer" style="margin-top:14px;"></div>
         </section>
       `;
       applyTranslations(root);
 
       document.getElementById('act-search').addEventListener('input', (e) => { state.search = e.target.value; render(); });
-      document.getElementById('act-type').addEventListener('change', (e) => { state.type = e.target.value; render(); });
-      document.getElementById('act-load').addEventListener('click', loadMore);
+      document.getElementById('act-refresh').addEventListener('click', refresh);
 
-      await loadMore();
+      await initialLoad();
       showPage();
     }
 
-    async function loadMore() {
+    async function initialLoad() {
+      state.loading = true;
+      state.error = null;
+      renderRefreshBtn();
+      renderList();
       try {
         const result = await loadRecentActivitiesPage(state.cursor, { pageSize: 8, maxItems: 200 });
         state.cursor = result.state;
         state.items = result.items;
         state.hasMore = result.hasMore;
-        document.getElementById('act-load').style.display = state.hasMore ? '' : 'none';
-        render();
       } catch (e) {
         console.error(e);
-        document.getElementById('act-list').innerHTML = feedbackCardHtml(t('feedback.couldNotLoadActivity', 'Could not load activity.'), { type: 'error' });
-        if (window.lucide) window.lucide.createIcons();
+        state.error = e;
+      } finally {
+        state.loading = false;
+        render();
       }
+    }
+
+    async function loadMore() {
+      if (state.loadingMore || state.loading || !state.hasMore) return;
+      state.loadingMore = true;
+      state.error = null;
+      renderFooter();
+      try {
+        const result = await loadRecentActivitiesPage(state.cursor, { pageSize: 8, maxItems: 200 });
+        state.cursor = result.state;
+        state.items = result.items;
+        state.hasMore = result.hasMore;
+      } catch (e) {
+        console.error(e);
+        state.error = e;
+      } finally {
+        state.loadingMore = false;
+        render();
+      }
+    }
+
+    async function refresh() {
+      if (state.loading || state.loadingMore) return;
+      state.cursor = createActivityState();
+      state.items = [];
+      state.hasMore = true;
+      state.error = null;
+      await initialLoad();
     }
 
     function displayLabel(value) {
@@ -98,48 +202,262 @@
       return typeIcon(item.type);
     }
 
-    function activityIconColor(item) {
+    function activityAccent(item) {
       if (item.type !== 'opportunity') return typeColor(item.type);
       if (item.subType === 'internship') return '#3B82F6';
       if (item.subType === 'sponsoring') return '#14B8A6';
       return typeColor(item.type);
     }
 
-    function render() {
+    function statusColor(status) {
+      const s = String(status || '').trim().toLowerCase();
+      if (['approved','accepted','open','featured','active','visible','published'].includes(s)) return '#10B981';
+      if (['rejected','blocked','hidden','deleted','banned','archived'].includes(s)) return '#EF4444';
+      return '#F59E0B';
+    }
+
+    function relativeTime(ts) {
+      if (!ts) return t('activity.unknownTime', 'Unknown time');
+      let date;
+      try { date = ts && typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts); }
+      catch { return t('activity.unknownTime', 'Unknown time'); }
+      if (!date || isNaN(date.getTime())) return t('activity.unknownTime', 'Unknown time');
+
+      const diffMs = Date.now() - date.getTime();
+      const diffMin = Math.floor(diffMs / 60000);
+      if (diffMin < 1) return t('activity.justNow', 'Just now');
+      if (diffMin < 60) return t('activity.minAgo', '{n}m ago').replace('{n}', diffMin);
+      const diffH = Math.floor(diffMin / 60);
+      if (diffH < 24) return t('activity.hoursAgo', '{n}h ago').replace('{n}', diffH);
+      const diffD = Math.floor(diffH / 24);
+      if (diffD < 7) return t('activity.daysAgo', '{n}d ago').replace('{n}', diffD);
+      try {
+        const lang = (getLang && getLang()) || document.documentElement.lang || 'en';
+        return date.toLocaleDateString(lang, { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch {
+        return date.toLocaleDateString();
+      }
+    }
+
+    function matchesSection(it, sectionId) {
+      const status = String(it.status || '').trim().toLowerCase();
+      switch (sectionId) {
+        case 'all':      return true;
+        case 'reviews':  return it.type === 'application' || it.type === 'user' || status === 'pending';
+        case 'content':  return it.type === 'opportunity' || it.type === 'scholarship' || it.type === 'project_idea';
+        case 'library':  return it.type === 'training';
+        case 'accounts': return it.type === 'user';
+        case 'pending':  return status === 'pending';
+        default:         return true;
+      }
+    }
+
+    function sectionCount(sectionId) {
+      return state.items.reduce((acc, it) => acc + (matchesSection(it, sectionId) ? 1 : 0), 0);
+    }
+
+    function visibleItems() {
+      let items = state.items.filter((it) => matchesSection(it, state.section));
+      if (state.search.trim()) {
+        items = items.filter((it) => matchesSearch([it.title, it.actorName, it.status, it.typeLabel, it.subTypeLabel, it.action, it.description], state.search));
+      }
+      return items;
+    }
+
+    function renderRefreshBtn() {
+      const btn = document.getElementById('act-refresh');
+      if (!btn) return;
+      const busy = state.loading;
+      const tip = t('activity.refreshTooltip', 'Refresh activity feed');
+      btn.disabled = busy;
+      btn.title = tip;
+      btn.setAttribute('aria-label', tip);
+      btn.innerHTML = busy
+        ? '<div class="spinner"></div>'
+        : '<i data-lucide="refresh-cw"></i>';
+    }
+
+    function renderChips() {
+      const wrap = document.getElementById('act-chips');
+      if (!wrap) return;
+      wrap.innerHTML = SECTIONS.map((s) => {
+        const count = sectionCount(s.id);
+        const isActive = state.section === s.id;
+        const sideKey = document.dir === 'rtl' ? 'right' : 'left';
+        const badge = count > 0 ? `<span class="badge ${isActive ? 'badge-primary' : ''}" style="margin-${sideKey}:6px;">${count}</span>` : '';
+        return `<button class="chip${isActive ? ' active' : ''}" data-section="${s.id}" type="button"><i data-lucide="${s.icon}"></i><span>${esc(t(s.key, s.fallback))}</span>${badge}</button>`;
+      }).join('');
+      wrap.querySelectorAll('.chip').forEach((el) => {
+        el.addEventListener('click', () => {
+          state.section = el.getAttribute('data-section');
+          render();
+        });
+      });
+    }
+
+    function renderSummary() {
+      const el = document.getElementById('act-summary');
+      if (!el) return;
+      const visible = visibleItems().length;
+      const total = state.items.length;
+      const isFiltered = state.section !== 'all' || state.search.trim().length > 0;
+      const countText = isFiltered
+        ? (visible === 1 ? t('activity.matching.one', '1 matching activity') : t('activity.matching.many', '{n} matching activities').replace('{n}', visible))
+        : (total === 1 ? t('activity.recent.one', '1 recent activity') : t('activity.recent.many', '{n} recent activities').replace('{n}', total));
+      if (visible === 0 || total === 0) { el.innerHTML = ''; return; }
+      el.innerHTML = `<i data-lucide="activity" style="width:14px;height:14px;"></i><strong>${esc(countText)}</strong><span style="opacity:.6;">·</span><span>${esc(t('activity.newestFirst', 'Newest first'))}</span>`;
+    }
+
+    function renderFooter() {
+      const el = document.getElementById('act-footer');
+      if (!el) return;
+
+      if (state.items.length === 0) { el.innerHTML = ''; return; }
+
+      if (!state.hasMore && !state.error) {
+        el.innerHTML = `<div class="act-end"><i data-lucide="check-circle-2" style="width:14px;height:14px;vertical-align:middle;"></i> ${esc(t('activity.endCopy', 'You have reached the end of the recent activity feed.'))}</div>`;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+
+      const isRetry = !!state.error;
+      const isLoading = state.loadingMore;
+      const titleText = isRetry
+        ? t('activity.olderUnavailable', 'Older activity could not be loaded')
+        : t('activity.needMoreTitle', 'Need more activity?');
+      const subText = isRetry
+        ? (state.error?.message || t('activity.olderUnavailable', 'Older activity could not be loaded'))
+        : (isLoading
+            ? t('activity.fetchingOlder', 'Fetching older updates from the platform.')
+            : t('activity.loadOlderCopy', 'Load older updates from submissions, listings, trainings, scholarships, and project ideas.'));
+      const btnIcon = isLoading ? '<div class="spinner" style="width:16px;height:16px;border-width:2px;"></div>' : `<i data-lucide="${isRetry ? 'refresh-cw' : 'chevron-down'}"></i>`;
+      const btnLabel = isLoading
+        ? t('activity.loadingMore', 'Loading…')
+        : (isRetry ? t('btn.retry', 'Retry') : t('activity.olderBtn', 'Older activity'));
+
+      el.innerHTML = `
+        <div class="act-footer-card">
+          <div class="act-footer-text">
+            <div class="act-footer-title">${esc(titleText)}</div>
+            <div class="act-footer-sub${isRetry ? ' is-error' : ''}">${esc(subText)}</div>
+          </div>
+          <button id="act-load" class="act-footer-btn" ${isLoading ? 'disabled' : ''}>${btnIcon}<span>${esc(btnLabel)}</span></button>
+        </div>
+      `;
+      const loadBtn = el.querySelector('#act-load');
+      if (loadBtn) loadBtn.addEventListener('click', loadMore);
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderList() {
       const list = document.getElementById('act-list');
       if (!list) return;
-      let items = state.items.slice();
-      if (state.type !== 'all') items = items.filter((it) => it.type === state.type);
-      if (state.search.trim()) items = items.filter((it) => matchesSearch([it.title, it.actorName, it.status, it.typeLabel, it.subTypeLabel, it.action], state.search));
 
-      if (!items.length) {
-        list.innerHTML = emptyStateHtml(t('activity.tryChange', 'Try changing the type or clearing the search.'), { title: t('activity.noMatching', 'No matching activity'), icon: 'activity' });
-      } else {
-        list.innerHTML = items.map((it) => `
-          <div class="activity-row" data-type="${esc(it.type)}" data-id="${esc(it.targetId || '')}" role="button" tabindex="0">
-            <div class="activity-icon" style="background:${activityIconColor(it)}1a;color:${activityIconColor(it)}"><i data-lucide="${activityIcon(it)}"></i></div>
-            <div class="row-body">
-              <div class="row-title">${esc(it.title)}</div>
-              <div class="row-sub">${esc(it.description)}</div>
-              <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-                <span class="badge">${esc(activityTypeLabel(it.type))}</span>
-                ${it.subTypeLabel ? `<span class="badge"><i data-lucide="${typeIcon('opportunity', it.subType)}"></i>${esc(it.subTypeLabel)}</span>` : ''}
-                ${it.status ? `<span class="badge badge-info">${esc(displayLabel(it.status))}</span>` : ''}
-              </div>
-            </div>
-            <div class="activity-time">${esc(formatTimestamp(it.timestamp))}</div>
-          </div>
-        `).join('');
-        list.querySelectorAll('.activity-row').forEach((row) => {
-          const go = () => {
-            const type = row.getAttribute('data-type');
-            const id = row.getAttribute('data-id');
-            if (type && id) openDetailsModal(type, id);
-          };
-          row.addEventListener('click', go);
-          row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
-        });
+      if (state.loading && state.items.length === 0) {
+        list.innerHTML = `<div class="surface-panel" style="text-align:center;padding:32px;"><div class="spinner" style="margin:0 auto 12px;"></div><div class="row-sub">${esc(t('feedback.loadingDetails', 'Loading…'))}</div></div>`;
+        return;
       }
+
+      if (state.error && state.items.length === 0) {
+        list.innerHTML = emptyStateHtml(
+          state.error?.message || t('feedback.couldNotLoadActivity', 'Could not load activity.'),
+          { title: t('activity.unavailableTitle', 'Activity feed unavailable'), icon: 'alert-circle' }
+        );
+        const card = list.querySelector('.empty-state, .feedback-card') || list.firstElementChild;
+        if (card) {
+          const retry = document.createElement('button');
+          retry.className = 'btn';
+          retry.style.marginTop = '10px';
+          retry.innerHTML = `<i data-lucide="rotate-ccw"></i><span>${esc(t('btn.retry', 'Retry'))}</span>`;
+          retry.addEventListener('click', refresh);
+          card.appendChild(retry);
+        }
+        return;
+      }
+
+      const items = visibleItems();
+      if (!items.length) {
+        list.innerHTML = emptyStateHtml(
+          t('activity.noMatchMsg', 'Try a broader query or refresh to load the latest.'),
+          {
+            title: t('activity.noMatchTitle', 'No activity matches this search'),
+            icon: 'history',
+          }
+        );
+        return;
+      }
+
+      list.innerHTML = items.map((it) => renderTile(it)).join('');
+      list.querySelectorAll('.act-tile').forEach((row) => {
+        const go = (e) => {
+          e.stopPropagation();
+          const type = row.getAttribute('data-type');
+          const id = row.getAttribute('data-id');
+          if (!id) return;
+          if (type === 'user') {
+            const url = adminTargetUrl('user', id);
+            if (window.FutureGateWorkspace?.navigate) window.FutureGateWorkspace.navigate(url);
+            else window.location.href = url;
+            return;
+          }
+          if (type) openDetailsModal(type, id);
+        };
+        row.addEventListener('click', go);
+        row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(e); } });
+        row.querySelectorAll('.act-open-btn,.act-open-btn-compact').forEach((b) => b.addEventListener('click', go));
+      });
+    }
+
+    function renderTile(it) {
+      const accent = activityAccent(it);
+      const stColor = statusColor(it.status);
+      const typeLabelText = displayLabel(activityTypeLabel(it.type));
+      const actorName = it.actorName ? displayLabel(it.actorName) : '';
+      const status = it.status ? displayLabel(it.status) : '';
+      const description = it.description ? displayLabel(it.description) : '';
+      const title = displayLabel(it.title);
+      const time = relativeTime(it.timestamp);
+
+      return `
+        <div class="act-tile" data-type="${esc(it.type)}" data-id="${esc(it.targetId || '')}" role="button" tabindex="0"
+             style="border-color:${accent}29;">
+          <div class="act-tile-row1">
+            <div class="act-tile-icon" style="background:${accent}1f;color:${accent};">
+              <i data-lucide="${activityIcon(it)}"></i>
+            </div>
+            <div class="act-tile-body">
+              <div class="act-tile-headline">
+                <span class="act-type-pill" style="background:${accent}1a;color:${accent};">${esc(typeLabelText)}</span>
+                ${actorName ? `<span class="act-actor">${esc(actorName)}</span>` : ''}
+              </div>
+              <div class="act-tile-title">${esc(title)}</div>
+              ${description ? `<div class="act-tile-desc">${esc(description)}</div>` : ''}
+            </div>
+            <button class="act-open-btn" type="button" title="${esc(t('activity.openTooltip', 'Open activity'))}"
+              style="background:${accent}1a;color:${accent};">
+              <i data-lucide="arrow-up-right"></i>
+            </button>
+          </div>
+          <div class="act-tile-row2">
+            <div class="act-meta">
+              ${status ? `<span class="act-status-pill" style="background:${stColor}1f;color:${stColor};border-color:${stColor}24;">${esc(status)}</span>` : ''}
+              <span class="act-time-info"><i data-lucide="clock"></i><span>${esc(time)}</span></span>
+            </div>
+            <button class="act-open-btn act-open-btn-compact" type="button" title="${esc(t('activity.openTooltip', 'Open activity'))}"
+              style="background:${accent}1a;color:${accent};">
+              <i data-lucide="arrow-up-right"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function render() {
+      renderRefreshBtn();
+      renderChips();
+      renderSummary();
+      renderList();
+      renderFooter();
       if (window.lucide) window.lucide.createIcons();
     }
   </script>

@@ -24,6 +24,10 @@
   //   APP_BASE_URL                  (e.g. "https://payment.futuregate.tech" - used for fallback success/failure URLs)
   //   FUTUREGATE_SUCCESS_URL        (http/https web URL shown after successful Chargily test payment)
   //   FUTUREGATE_FAILURE_URL        (http/https web URL shown after failed/cancelled Chargily test payment)
+  //
+  // For return URL secrets, save only the URL value:
+  //   https://payment.futuregate.tech/success
+  //   https://payment.futuregate.tech/failed
 
   // Production environment override (optional)
   "env": {

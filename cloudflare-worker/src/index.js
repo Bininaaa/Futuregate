@@ -61,6 +61,7 @@ function normalizeHttpUrl(value, fallback) {
   const fallbackUrl = parseHttpUrl(fallback);
   const raw = trim(value);
   if (!raw) return fallbackUrl;
+  if (/\s/.test(raw)) return fallbackUrl;
 
   const absoluteUrl = parseHttpUrl(raw);
   if (absoluteUrl) return absoluteUrl;
@@ -4367,6 +4368,175 @@ async function verifyChargilySignature(env, rawBody, signatureHeader) {
   return hex === trim(signatureHeader).toLowerCase();
 }
 
+function dateFromFirestoreLike(value) {
+  if (!value) return null;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value === "number") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value === "object") {
+    const seconds = Number(value._seconds ?? value.seconds);
+    const nanos = Number(value._nanoseconds ?? value.nanoseconds ?? 0);
+    if (Number.isFinite(seconds)) {
+      return new Date(seconds * 1000 + Math.floor((Number.isFinite(nanos) ? nanos : 0) / 1e6));
+    }
+  }
+  return null;
+}
+
+function isLegacyTimestampMap(value) {
+  if (!value || typeof value !== "object" || value instanceof Date) return false;
+  return Number.isFinite(Number(value._seconds ?? value.seconds));
+}
+
+function isActiveSubscription(sub, now = new Date()) {
+  if (!sub || sub.status !== "active") return false;
+  const expiresAt = dateFromFirestoreLike(sub.expiresAt);
+  return Boolean(expiresAt && expiresAt > now);
+}
+
+function normalizeChargilyStatus(value) {
+  const status = trim(value).toLowerCase();
+  if (status === "canceled") return "cancelled";
+  return status;
+}
+
+function isPaidChargilyStatus(status) {
+  return normalizeChargilyStatus(status) === "paid";
+}
+
+function isFailedChargilyStatus(status) {
+  return ["failed", "failure", "cancelled", "expired"].includes(
+    normalizeChargilyStatus(status),
+  );
+}
+
+function paymentStatusFromChargily(status) {
+  const normalized = normalizeChargilyStatus(status);
+  if (normalized === "paid") return "paid";
+  if (normalized === "cancelled") return "cancelled";
+  if (normalized === "failed" || normalized === "failure" || normalized === "expired") {
+    return "failed";
+  }
+  return "pending";
+}
+
+async function findPaymentByCheckoutId(env, checkoutId) {
+  const safeCheckoutId = trim(checkoutId);
+  if (!safeCheckoutId) return null;
+
+  const results = await firestoreQuery(env, "payments", [
+    { field: "checkoutId", op: "EQUAL", value: safeCheckoutId },
+  ]);
+
+  return results && results.length > 0 ? results[0] : null;
+}
+
+async function activateChargilySubscription(env, {
+  uid,
+  plan = "semester",
+  checkoutId,
+  checkoutStatus = "paid",
+  paymentId = "",
+  existingPayment = null,
+}) {
+  const safeUid = trim(uid);
+  const safeCheckoutId = trim(checkoutId);
+  if (!safeUid || !safeCheckoutId) {
+    throw new Error("Missing subscription activation identifiers.");
+  }
+
+  const existingSub = await firestoreGet(env, "subscriptions", safeUid);
+  const sub = existingSub?.data || {};
+  const resolvedPaymentId =
+    trim(paymentId) ||
+    trim(existingPayment?.id) ||
+    trim(existingPayment?.data?.id) ||
+    trim(sub.paymentId) ||
+    safeCheckoutId;
+
+  if (isActiveSubscription(sub) && trim(sub.checkoutId) === safeCheckoutId) {
+    return { status: "active", alreadyProcessed: true, paymentId: resolvedPaymentId };
+  }
+
+  const now = new Date();
+  const expiresAt = new Date(now);
+  expiresAt.setDate(expiresAt.getDate() + CHARGILY_SEMESTER_DURATION_DAYS);
+
+  await firestoreSet(env, "subscriptions", safeUid, {
+    uid: safeUid,
+    role: trim(sub.role) || "student",
+    plan: trim(plan) || trim(sub.plan) || "semester",
+    status: "active",
+    provider: "chargily",
+    checkoutId: safeCheckoutId,
+    paymentId: resolvedPaymentId,
+    startedAt: now,
+    expiresAt,
+    lastVerifiedAt: now,
+    updatedAt: now,
+    livemode: false,
+    mode: "test",
+  }, true);
+
+  if (resolvedPaymentId) {
+    await firestoreUpdate(env, "payments", resolvedPaymentId, {
+      status: "paid",
+      rawProviderStatus: normalizeChargilyStatus(checkoutStatus) || "paid",
+      paidAt: now,
+    });
+  }
+
+  console.log(`[chargily] Premium activated for uid=${safeUid} checkout=${safeCheckoutId}`);
+  return { status: "active", activated: true, paymentId: resolvedPaymentId };
+}
+
+async function markChargilyPaymentNotPaid(env, {
+  uid,
+  checkoutId,
+  checkoutStatus,
+  paymentId = "",
+  existingPayment = null,
+}) {
+  const safeUid = trim(uid);
+  const safeCheckoutId = trim(checkoutId);
+  const normalizedStatus = normalizeChargilyStatus(checkoutStatus);
+  const appStatus = paymentStatusFromChargily(normalizedStatus);
+  const now = new Date();
+  const resolvedPaymentId =
+    trim(paymentId) ||
+    trim(existingPayment?.id) ||
+    trim(existingPayment?.data?.id) ||
+    safeCheckoutId;
+
+  if (safeUid) {
+    const existingSub = await firestoreGet(env, "subscriptions", safeUid);
+    const sub = existingSub?.data || {};
+    if (!isActiveSubscription(sub)) {
+      await firestoreUpdate(env, "subscriptions", safeUid, {
+        status: appStatus === "cancelled" ? "cancelled" : "failed",
+        lastVerifiedAt: now,
+        updatedAt: now,
+      });
+    }
+  }
+
+  if (resolvedPaymentId) {
+    await firestoreUpdate(env, "payments", resolvedPaymentId, {
+      status: appStatus,
+      rawProviderStatus: normalizedStatus || appStatus,
+      failedAt: appStatus === "paid" ? undefined : now,
+    });
+  }
+
+  return { status: appStatus, providerStatus: normalizedStatus };
+}
+
 async function handleChargilyCreateCheckout(request, env) {
   const auth = await requireUser(request, env, { roles: ["student"] });
   if (auth.error) return auth.error;
@@ -4377,10 +4547,7 @@ async function handleChargilyCreateCheckout(request, env) {
   const existingSub = await firestoreGet(env, "subscriptions", user.uid);
   if (existingSub) {
     const sub = existingSub.data || {};
-    const isActive = sub.status === "active" &&
-      sub.expiresAt &&
-      new Date(sub.expiresAt._seconds * 1000) > new Date();
-    if (isActive) {
+    if (isActiveSubscription(sub)) {
       return err("You already have an active Premium Pass.", 409);
     }
   }
@@ -4451,7 +4618,7 @@ async function handleChargilyCreateCheckout(request, env) {
     amount: price,
     currency: currency.toUpperCase(),
     plan,
-    createdAt: { _type: "serverTimestamp" },
+    createdAt: now,
     rawProviderStatus: "pending",
     metadata: { uid: user.uid, plan, mode: "test" },
     livemode: false,
@@ -4471,8 +4638,8 @@ async function handleChargilyCreateCheckout(request, env) {
     currency: currency.toUpperCase(),
     checkoutId,
     paymentId: paymentDocRef,
-    createdAt: { _type: "serverTimestamp" },
-    updatedAt: { _type: "serverTimestamp" },
+    createdAt: now,
+    updatedAt: now,
     mode: "test",
   };
 
@@ -4498,67 +4665,63 @@ async function handleChargilyWebhook(request, env) {
     return err("Malformed webhook body.", 400);
   }
 
-  const eventType = trim(event.type);
-  if (eventType !== "checkout.paid") {
-    // Acknowledge but do nothing for non-paid events
-    return json({ received: true, eventType });
-  }
-
+  const eventType = trim(event.type).toLowerCase();
   const checkout = event.data?.checkout || event.data || {};
   const checkoutId = trim(checkout.id);
-  const checkoutStatus = trim(checkout.status);
-  const metadata = checkout.metadata || {};
-  const uid = trim(metadata.uid);
-  const plan = trim(metadata.plan) || "semester";
-  const paymentId = trim(metadata.paymentId);
+  const checkoutStatus = normalizeChargilyStatus(checkout.status);
 
-  if (!checkoutId || !uid) {
-    console.error("[chargily:webhook] Missing checkoutId or uid in metadata");
-    return err("Missing required metadata.", 400);
+  if (!checkoutId) {
+    console.error("[chargily:webhook] Missing checkoutId in payload");
+    return err("Missing checkout id.", 400);
   }
 
-  // Idempotency: check if already activated
-  const existingSub = await firestoreGet(env, "subscriptions", uid);
-  if (existingSub) {
-    const sub = existingSub.data || {};
-    if (sub.status === "active" && sub.checkoutId === checkoutId) {
-      return json({ received: true, alreadyProcessed: true });
-    }
+  let paymentRecord = null;
+  try {
+    paymentRecord = await findPaymentByCheckoutId(env, checkoutId);
+  } catch (error) {
+    console.error("[chargily:webhook] Payment lookup failed:", error?.message ?? error);
   }
 
-  // Activate subscription
-  const now = new Date();
-  const expiresAt = new Date(now);
-  expiresAt.setDate(expiresAt.getDate() + CHARGILY_SEMESTER_DURATION_DAYS);
+  const metadata = checkout.metadata && typeof checkout.metadata === "object"
+    ? checkout.metadata
+    : {};
+  const paymentData = paymentRecord?.data || {};
+  const uid = trim(metadata.uid) || trim(paymentData.uid);
+  const plan = trim(metadata.plan) || trim(paymentData.plan) || "semester";
+  const paymentId =
+    trim(metadata.paymentId) ||
+    trim(paymentData.id) ||
+    trim(paymentRecord?.id);
 
-  const subUpdate = {
-    uid,
-    plan,
-    status: "active",
-    provider: "chargily",
-    checkoutId,
-    paymentId: paymentId || checkoutId,
-    startedAt: { _type: "serverTimestamp" },
-    expiresAt: { _seconds: Math.floor(expiresAt.getTime() / 1000), _nanoseconds: 0 },
-    lastVerifiedAt: { _type: "serverTimestamp" },
-    updatedAt: { _type: "serverTimestamp" },
-    livemode: false,
-    mode: "test",
-  };
+  if (!uid) {
+    console.error("[chargily:webhook] Missing uid for checkout", checkoutId);
+    return err("Missing checkout owner.", 400);
+  }
 
-  await firestoreSet(env, "subscriptions", uid, subUpdate, true);
-
-  // Update payment record
-  if (paymentId) {
-    await firestoreUpdate(env, "payments", paymentId, {
-      status: "paid",
-      rawProviderStatus: checkoutStatus,
-      paidAt: { _type: "serverTimestamp" },
+  if (eventType === "checkout.paid" || isPaidChargilyStatus(checkoutStatus)) {
+    const result = await activateChargilySubscription(env, {
+      uid,
+      plan,
+      checkoutId,
+      checkoutStatus: checkoutStatus || "paid",
+      paymentId,
+      existingPayment: paymentRecord,
     });
+    return json({ received: true, ...result });
   }
 
-  console.log(`[chargily:webhook] Premium activated for uid=${uid} checkout=${checkoutId}`);
-  return json({ received: true, activated: true });
+  if (eventType === "checkout.failed" || isFailedChargilyStatus(checkoutStatus)) {
+    const result = await markChargilyPaymentNotPaid(env, {
+      uid,
+      checkoutId,
+      checkoutStatus: checkoutStatus || eventType.replace("checkout.", ""),
+      paymentId,
+      existingPayment: paymentRecord,
+    });
+    return json({ received: true, ...result });
+  }
+
+  return json({ received: true, eventType, providerStatus: checkoutStatus || null });
 }
 
 async function handleSubscriptionMe(request, env) {
@@ -4578,17 +4741,85 @@ async function handleSubscriptionSync(request, env) {
   if (!doc) return json({ synced: true, status: null });
 
   const sub = doc.data || {};
-  const isExpired =
-    sub.status === "active" &&
-    sub.expiresAt &&
-    new Date(sub.expiresAt._seconds * 1000) <= new Date();
+  const now = new Date();
+  const expiresAt = dateFromFirestoreLike(sub.expiresAt);
 
-  if (isExpired) {
+  if (isActiveSubscription(sub, now)) {
+    if (isLegacyTimestampMap(sub.expiresAt) && expiresAt) {
+      await firestoreUpdate(env, "subscriptions", auth.user.uid, {
+        expiresAt,
+        lastVerifiedAt: now,
+        updatedAt: now,
+      });
+    }
+    return json({ synced: true, status: "active" });
+  }
+
+  if (sub.status === "active" && expiresAt && expiresAt <= now) {
     await firestoreUpdate(env, "subscriptions", auth.user.uid, {
       status: "expired",
-      updatedAt: { _type: "serverTimestamp" },
+      updatedAt: now,
     });
     return json({ synced: true, status: "expired" });
+  }
+
+  const checkoutId = trim(sub.checkoutId);
+  if (sub.status === "pending" && checkoutId) {
+    let checkout = null;
+    try {
+      checkout = await chargilyRequest(
+        env,
+        "GET",
+        `/checkouts/${encodeURIComponent(checkoutId)}`,
+      );
+    } catch (error) {
+      console.error("[chargily:sync] Checkout lookup failed:", error?.message ?? error);
+      return json({
+        synced: true,
+        status: sub.status || null,
+        providerChecked: false,
+      });
+    }
+
+    const providerStatus = normalizeChargilyStatus(checkout.status);
+    const metadata = checkout.metadata && typeof checkout.metadata === "object"
+      ? checkout.metadata
+      : {};
+    const paymentId = trim(metadata.paymentId) || trim(sub.paymentId);
+    const plan = trim(metadata.plan) || trim(sub.plan) || "semester";
+
+    if (isPaidChargilyStatus(providerStatus)) {
+      const result = await activateChargilySubscription(env, {
+        uid: auth.user.uid,
+        plan,
+        checkoutId,
+        checkoutStatus: providerStatus,
+        paymentId,
+      });
+      return json({ synced: true, providerChecked: true, ...result });
+    }
+
+    if (isFailedChargilyStatus(providerStatus)) {
+      const result = await markChargilyPaymentNotPaid(env, {
+        uid: auth.user.uid,
+        checkoutId,
+        checkoutStatus: providerStatus,
+        paymentId,
+      });
+      return json({ synced: true, providerChecked: true, ...result });
+    }
+
+    await firestoreUpdate(env, "subscriptions", auth.user.uid, {
+      lastVerifiedAt: now,
+      updatedAt: now,
+    });
+
+    return json({
+      synced: true,
+      providerChecked: true,
+      status: sub.status || "pending",
+      providerStatus: providerStatus || null,
+    });
   }
 
   return json({ synced: true, status: sub.status || null });

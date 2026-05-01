@@ -98,6 +98,13 @@ class PaymentModel {
       final parsed = DateTime.tryParse(value);
       if (parsed != null) return Timestamp.fromDate(parsed);
     }
+    if (value is Map) {
+      final seconds = value['_seconds'] ?? value['seconds'];
+      final nanos = value['_nanoseconds'] ?? value['nanoseconds'] ?? 0;
+      if (seconds is num) {
+        return Timestamp(seconds.toInt(), nanos is num ? nanos.toInt() : 0);
+      }
+    }
     return null;
   }
 }

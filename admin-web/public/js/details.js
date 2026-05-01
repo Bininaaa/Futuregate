@@ -7,9 +7,10 @@ import {
   getCompanyCommercialRegisterDocument,
   openResolvedDocument,
 } from './document-access.js';
-import { t } from './i18n.js';
+import { t, translateValue } from './i18n.js';
 
 const MODAL_ID = 'details-modal';
+let lastDetail = null;
 
 function ensureModal() {
   let modal = document.getElementById(MODAL_ID);
@@ -133,9 +134,13 @@ function editLink(canEdit, href, label) {
     : '';
 }
 
-export function closeDetailsModal() { closeModal(MODAL_ID); }
+export function closeDetailsModal() {
+  lastDetail = null;
+  closeModal(MODAL_ID);
+}
 
 export async function openDetailsModal(type, id) {
+  lastDetail = { type, id };
   ensureModal();
   openModal(MODAL_ID);
   renderLoading();
@@ -155,6 +160,14 @@ export async function openDetailsModal(type, id) {
     console.error('details load failed', e);
     renderError();
   }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('languagechange', () => {
+    const modal = document.getElementById(MODAL_ID);
+    if (!modal || !modal.classList.contains('open') || !lastDetail) return;
+    openDetailsModal(lastDetail.type, lastDetail.id).catch((e) => console.error(e));
+  });
 }
 
 async function fetchDoc(path, id) {
@@ -189,8 +202,8 @@ async function renderOpportunity(id) {
       { label: t('label.location', 'Location'), value: it.location, icon: 'map-pin' },
       { label: t('label.type', 'Type'), value: typeLabel, icon: 'tag' },
       { label: t('label.status', 'Status'), value: statusBadge(it.status || 'open'), html: true, icon: 'circle-dot' },
-      { label: t('label.workMode', 'Work Mode'), value: capitalizeFirst(it.workMode || ''), icon: 'monitor' },
-      { label: t('label.employment', 'Employment'), value: capitalizeFirst((it.employmentType || '').replace(/_/g, ' ')), icon: 'briefcase' },
+      { label: t('label.workMode', 'Work Mode'), value: translateValue('workMode', it.workMode), icon: 'monitor' },
+      { label: t('label.employment', 'Employment'), value: translateValue('employment', it.employmentType), icon: 'briefcase' },
       { label: t('label.amount', 'Amount'), value: salaryRange || (it.isPaid === false ? t('label.unpaid', 'Unpaid') : ''), icon: 'coins' },
       { label: t('label.deadline', 'Deadline'), value: formatFullTimestamp(it.applicationDeadline || it.deadline), icon: 'calendar-clock' },
       { label: t('label.posted', 'Posted'), value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
@@ -221,7 +234,7 @@ async function renderScholarship(id) {
     ? it.eligibilityItems.join('\n')
     : it.eligibility;
   const isFeatured = it.featured === true || it.isFeatured === true;
-  const fundingLabel = (it.fundingType || '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const fundingLabel = translateValue('fundingType', it.fundingType);
   const publisherId = String(it.createdBy || '').trim();
 
   setHeader({ icon: 'graduation-cap', color: typeColor('scholarship'), eyebrow: t('type.scholarship', 'Scholarship'), title: it.title || t('mod.untitled', 'Untitled') });
@@ -232,7 +245,7 @@ async function renderScholarship(id) {
       { label: t('label.city', 'City'), value: it.city, icon: 'map-pin' },
       { label: t('label.amount', 'Amount'), value: it.amount, icon: 'coins' },
       { label: t('label.fundingType', 'Funding Type'), value: fundingLabel, icon: 'tag' },
-      { label: t('label.level', 'Level'), value: capitalizeFirst(it.level || it.academicLevel || ''), icon: 'graduation-cap' },
+      { label: t('label.level', 'Level'), value: translateValue('level', it.level || it.academicLevel), icon: 'graduation-cap' },
       { label: t('label.category', 'Category'), value: capitalizeFirst(it.category || ''), icon: 'folder' },
       { label: t('label.deadline', 'Deadline'), value: formatFullTimestamp(it.deadline), icon: 'calendar-clock' },
       { label: t('label.applyUrl', 'Apply URL'), value: applyLink ? `<a href="${esc(applyLink)}" target="_blank" rel="noopener">${esc(applyLink)}</a>` : '', html: true, icon: 'external-link' },
@@ -267,7 +280,7 @@ async function renderIdea(id) {
     ${kvGrid([
       { label: t('label.domain', 'Domain'), value: capitalizeFirst(it.domain || ''), icon: 'tag' },
       { label: t('label.stage', 'Stage'), value: capitalizeFirst(it.stage || ''), icon: 'flag' },
-      { label: t('label.level', 'Level'), value: capitalizeFirst(it.level || ''), icon: 'graduation-cap' },
+      { label: t('label.level', 'Level'), value: translateValue('level', it.level), icon: 'graduation-cap' },
       { label: t('label.category', 'Category'), value: capitalizeFirst(it.category || ''), icon: 'folder' },
       { label: t('label.status', 'Status'), value: statusBadge(it.status || 'pending'), html: true, icon: 'circle-dot' },
       { label: t('label.submittedBy', 'Submitted by'), value: it.submittedByName || '—', icon: 'user' },
@@ -298,8 +311,8 @@ async function renderTraining(id) {
   setBody(`
     ${kvGrid([
       { label: t('label.author', 'Author'), value: it.author || it.provider, icon: 'user' },
-      { label: t('label.source', 'Source'), value: capitalizeFirst(it.source || (it.videoId ? 'YouTube' : it.isbn ? 'Book' : '')), icon: 'tag' },
-      { label: t('label.level', 'Level'), value: capitalizeFirst(it.level || ''), icon: 'graduation-cap' },
+      { label: t('label.source', 'Source'), value: translateValue('source', it.source || (it.videoId ? 'youtube' : it.isbn ? 'book' : '')), icon: 'tag' },
+      { label: t('label.level', 'Level'), value: translateValue('level', it.level), icon: 'graduation-cap' },
       { label: t('label.added', 'Added'), value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
       { label: t('label.link', 'Link'), value: it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(t('btn.openResource', 'Open resource'))}</a>` : '', html: true, icon: 'external-link' },
     ])}
@@ -358,13 +371,13 @@ async function renderUser(id) {
     { label: t('label.location', 'Location'), value: it.location || it.address, icon: 'map-pin' },
     { label: t('label.status', 'Status'), value: statusBadge(statusValue), html: true, icon: 'circle-dot' },
     { label: t('label.joined', 'Joined'), value: formatFullTimestamp(it.createdAt), icon: 'calendar' },
-    { label: t('label.provider', 'Provider'), value: capitalizeFirst(it.provider || 'email'), icon: 'key' },
+    { label: t('label.provider', 'Provider'), value: translateValue('provider', it.provider || 'email'), icon: 'key' },
   ].filter(Boolean);
 
   let roleSection = '';
   if (role === 'student') {
     const studentRows = [
-      { label: t('label.academicLevel', 'Academic Level'), value: capitalizeFirst(it.academicLevel || ''), icon: 'graduation-cap' },
+      { label: t('label.academicLevel', 'Academic Level'), value: translateValue('level', it.academicLevel), icon: 'graduation-cap' },
       { label: t('label.university', 'University'), value: it.university, icon: 'building-2' },
       { label: t('label.fieldOfStudy', 'Field of Study'), value: it.fieldOfStudy, icon: 'book-open' },
       it.researchTopic ? { label: t('label.researchTopic', 'Research Topic'), value: it.researchTopic, icon: 'microscope' } : null,
@@ -575,9 +588,10 @@ function buildSalaryRange(it) {
   const min = it.salaryMin ?? it.fundingAmount;
   const max = it.salaryMax;
   const currency = it.salaryCurrency || it.fundingCurrency || '';
-  const period = it.salaryPeriod ? `/${it.salaryPeriod}` : '';
+  const periodLabel = it.salaryPeriod ? translateValue('period', it.salaryPeriod) : '';
+  const period = periodLabel ? ` · ${periodLabel}` : '';
   if (min != null && max != null) return `${min}–${max} ${currency}${period}`.trim();
-  if (min != null) return `${t('label.amount', 'From')} ${min} ${currency}${period}`.trim();
+  if (min != null) return `${t('label.from', 'From')} ${min} ${currency}${period}`.trim();
   if (it.compensationText) return it.compensationText;
   if (it.fundingNote) return it.fundingNote;
   return '';
