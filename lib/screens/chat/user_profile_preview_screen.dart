@@ -9,6 +9,7 @@ import '../../utils/localized_display.dart';
 import '../../widgets/chat/chat_formatters.dart';
 import '../../widgets/chat/chat_theme.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/profile_premium_badge.dart';
 
 enum UserProfilePreviewPresentation { floatingDialog, bottomSheet }
 
@@ -23,6 +24,7 @@ Future<void> showFloatingUserProfilePreview(
   String fallbackWebsite = '',
   String contextLabel = '',
   bool showRole = true,
+  bool? isPremium,
   UserProfilePreviewPresentation presentation =
       UserProfilePreviewPresentation.floatingDialog,
 }) {
@@ -49,6 +51,7 @@ Future<void> showFloatingUserProfilePreview(
               fallbackWebsite: fallbackWebsite,
               contextLabel: contextLabel,
               showRole: showRole,
+              isPremium: isPremium,
               scrollController: scrollController,
               asSheet: true,
             );
@@ -98,6 +101,7 @@ Future<void> showFloatingUserProfilePreview(
                 fallbackWebsite: fallbackWebsite,
                 contextLabel: contextLabel,
                 showRole: showRole,
+                isPremium: isPremium,
               ),
             ),
           ),
@@ -117,6 +121,7 @@ class UserProfilePreviewScreen extends StatefulWidget {
   final String fallbackWebsite;
   final String contextLabel;
   final bool showRole;
+  final bool? isPremium;
   final ScrollController? scrollController;
   final bool asSheet;
 
@@ -131,6 +136,7 @@ class UserProfilePreviewScreen extends StatefulWidget {
     this.fallbackWebsite = '',
     this.contextLabel = '',
     this.showRole = true,
+    this.isPremium,
     this.scrollController,
     this.asSheet = false,
   });
@@ -197,6 +203,7 @@ class _UserProfilePreviewScreenState extends State<UserProfilePreviewScreen> {
                   fallbackRole: widget.fallbackRole,
                   contextLabel: widget.contextLabel,
                   showRole: widget.showRole,
+                  isPremium: widget.isPremium,
                 ),
                 if (snapshot.hasError) ...[
                   const SizedBox(height: 12),
@@ -532,6 +539,7 @@ class _ProfileIdentityBlock extends StatelessWidget {
   final String fallbackRole;
   final String contextLabel;
   final bool showRole;
+  final bool? isPremium;
 
   const _ProfileIdentityBlock({
     required this.user,
@@ -543,6 +551,7 @@ class _ProfileIdentityBlock extends StatelessWidget {
     required this.fallbackRole,
     required this.contextLabel,
     required this.showRole,
+    required this.isPremium,
   });
 
   @override
@@ -554,6 +563,9 @@ class _ProfileIdentityBlock extends StatelessWidget {
     );
     final resolvedHeadline = headline.trim();
     final resolvedContext = contextLabel.trim();
+    final resolvedRole = (user?.role ?? fallbackRole).trim().toLowerCase();
+    final premiumStatus =
+        isPremium ?? (resolvedRole == 'student' ? null : false);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
@@ -591,6 +603,10 @@ class _ProfileIdentityBlock extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
+              ProfilePremiumBadge(
+                userId: user?.uid ?? userId,
+                isPremium: premiumStatus,
+              ),
               if (showRole) _RolePill(label: roleLabel),
               _PresencePill(label: presence, isOnline: user?.isOnline ?? false),
               if (resolvedContext.isNotEmpty)

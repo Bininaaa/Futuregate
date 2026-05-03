@@ -25,6 +25,7 @@ import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/admin_charts.dart';
 import '../../widgets/opportunity_type_badge.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/profile_premium_badge.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
 import '../../widgets/stat_card.dart';
@@ -441,9 +442,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void _openEarlyAccessManagement() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const AdminEarlyAccessScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const AdminEarlyAccessScreen()),
     );
   }
 
@@ -561,6 +560,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
+                  ProfilePremiumBadge(userId: user.uid),
                   AdminPill(
                     label: DisplayText.capitalizeLeadingLabel(user.role),
                     color: _roleColor(user.role),
@@ -716,6 +716,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final roleLabel = _roleDisplayLabel(user.role);
     final approvalLabel = _approvalDisplayLabel(user.normalizedApprovalStatus);
     final chips = <Widget>[
+      ProfilePremiumBadge(userId: user.uid),
       AdminPill(
         label: roleLabel,
         color: Colors.white,
@@ -2747,7 +2748,9 @@ class _PendingAdminAlert extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      AppLocalizations.of(context)!.uiJumpStraightIntoTheQueueThatNeedsReview,
+                      AppLocalizations.of(
+                        context,
+                      )!.uiJumpStraightIntoTheQueueThatNeedsReview,
                       style: AppTypography.product(
                         fontSize: 12,
                         color: AdminPalette.textSecondary,

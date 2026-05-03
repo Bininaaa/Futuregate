@@ -40,6 +40,7 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
 import '../../widgets/opportunity_type_badge.dart';
+import '../../widgets/premium_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -251,7 +252,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             // ── Premium discovery banner (only for free students) ──────
             Consumer<SubscriptionProvider>(
               builder: (context, subProvider, _) {
-                if (subProvider.hasActivePremium) return const SliverToBoxAdapter(child: SizedBox.shrink());
+                if (subProvider.hasActivePremium) {
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                }
                 return SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                   sliver: SliverToBoxAdapter(
@@ -360,6 +363,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
     final isPremium = context.watch<SubscriptionProvider>().hasActivePremium;
     final studentIdentity = _studentIdentityLine(user);
+    final profileCompletionLabel = AppLocalizations.of(
+      context,
+    )!.uiCompletion(profileCompletion);
     final focus = _resolveDashboardFocus(
       context,
       user: user,
@@ -439,75 +445,18 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           Positioned.fill(
                             child: CustomPaint(
                               painter: _ProfileCompletionRingPainter(
-                                progress: isPremium ? 1.0 : profileCompletion / 100,
-                                trackColor: Colors.white.withValues(alpha: 0.18),
-                                progressColor: isPremium
-                                    ? const Color(0xFFF59E0B)
-                                    : profileCompletion >= 100
-                                        ? const Color(0xFF47D16C)
-                                        : const Color(0xFFFFC857),
+                                progress: profileCompletion / 100,
+                                trackColor: Colors.white.withValues(
+                                  alpha: 0.18,
+                                ),
+                                progressColor: profileCompletion >= 100
+                                    ? const Color(0xFF47D16C)
+                                    : const Color(0xFFFFC857),
                                 strokeWidth: 2.6,
                               ),
                             ),
                           ),
                           Center(child: ProfileAvatar(user: user, radius: 25)),
-                          // Premium badge — top-right (premium only)
-                          if (isPremium)
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFFF59E0B), Color(0xFFEF6C00)],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 1.8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFF59E0B).withValues(alpha: 0.55),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.workspace_premium_rounded,
-                                  size: 10,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          // Edit badge — bottom-right (non-premium only, to avoid overlap)
-                          if (!isPremium)
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                width: 22,
-                                height: 22,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.18),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.edit_rounded,
-                                  size: 12,
-                                  color: Color(0xFF4F46E5),
-                                ),
-                              ),
-                            ),
                         ],
                       ),
                     ),
@@ -548,6 +497,20 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
+                        const SizedBox(height: 7),
+                        Wrap(
+                          spacing: 7,
+                          runSpacing: 6,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            _DashboardHeaderStatusPill(
+                              icon: Icons.percent_rounded,
+                              label: profileCompletionLabel,
+                            ),
+                            if (isPremium)
+                              const PremiumBadge(size: PremiumBadgeSize.small),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -3726,6 +3689,40 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 // Data classes
 // ═══════════════════════════════════════════════════════════════════════════
+
+class _DashboardHeaderStatusPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _DashboardHeaderStatusPill({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 11, color: Colors.white.withValues(alpha: 0.92)),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: AppTypography.product(
+              fontSize: 9.5,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _DashboardSnapshot {
   final int savedCount;

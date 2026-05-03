@@ -466,6 +466,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       fallbackName: application.studentName,
       fallbackRole: 'student',
       contextLabel: _l10n.uiApplication,
+      isPremium: application.shouldPrioritizeApplication,
     );
   }
 

@@ -8,12 +8,14 @@ import '../../utils/localized_display.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/company_provider.dart';
+import '../../providers/subscription_provider.dart';
 import '../../services/document_access_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/company_dashboard_palette.dart';
 import '../../utils/document_upload_validator.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/premium_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
@@ -296,6 +298,7 @@ class CompanyProfileScreen extends StatelessWidget {
     final approvalBackgroundColor = approvalForegroundColor.withValues(
       alpha: AppColors.isDark ? 0.18 : 0.12,
     );
+    final isPremium = context.watch<SubscriptionProvider>().hasActivePremium;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -378,6 +381,10 @@ class CompanyProfileScreen extends StatelessWidget {
                               color: Colors.white.withValues(alpha: 0.82),
                             ),
                           ),
+                        ],
+                        if (isPremium) ...[
+                          const SizedBox(height: 8),
+                          const PremiumBadge(size: PremiumBadgeSize.small),
                         ],
                       ],
                     ),

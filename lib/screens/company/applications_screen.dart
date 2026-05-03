@@ -173,6 +173,7 @@ class _StandaloneApplicationDetailsSheetState
       fallbackRole: 'student',
       contextLabel: l10n.uiApplication,
       showRole: false,
+      isPremium: application.shouldPrioritizeApplication,
       presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }
@@ -2564,6 +2565,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       fallbackRole: 'student',
       contextLabel: _l10n.uiApplication,
       showRole: false,
+      isPremium: application.shouldPrioritizeApplication,
       presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }

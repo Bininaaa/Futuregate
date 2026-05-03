@@ -810,12 +810,9 @@ class _AvatarRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPremium = context.watch<SubscriptionProvider>().hasActivePremium;
-    final ringColor = isPremium
-        ? const Color(0xFFF59E0B)
-        : completion >= 0.85
-            ? SettingsFlowPalette.success
-            : Colors.white;
+    final ringColor = completion >= 0.85
+        ? SettingsFlowPalette.success
+        : Colors.white;
 
     return SizedBox(
       width: 104,
@@ -828,7 +825,7 @@ class _AvatarRing extends StatelessWidget {
             height: 104,
             child: CustomPaint(
               painter: _RingPainter(
-                progress: isPremium ? 1.0 : completion,
+                progress: completion,
                 trackColor: Colors.white.withValues(alpha: 0.12),
                 progressColor: ringColor,
               ),
@@ -840,16 +837,12 @@ class _AvatarRing extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isPremium
-                    ? const Color(0xFFF59E0B).withValues(alpha: 0.55)
-                    : Colors.white.withValues(alpha: 0.18),
+                color: Colors.white.withValues(alpha: 0.18),
                 width: 2.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: isPremium
-                      ? const Color(0xFFF59E0B).withValues(alpha: 0.30)
-                      : Colors.black.withValues(alpha: 0.14),
+                  color: Colors.black.withValues(alpha: 0.14),
                   blurRadius: 14,
                   offset: const Offset(0, 8),
                 ),
@@ -887,37 +880,6 @@ class _AvatarRing extends StatelessWidget {
               ),
             ),
           ),
-          // Premium badge — top-right corner (premium users only)
-          if (isPremium)
-            Positioned(
-              top: 4,
-              right: 4,
-              child: Container(
-                width: 26,
-                height: 26,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFF59E0B), Color(0xFFEF6C00)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFF59E0B).withValues(alpha: 0.55),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.workspace_premium_rounded,
-                  size: 13,
-                  color: Colors.white,
-                ),
-              ),
-            ),
         ],
       ),
     );

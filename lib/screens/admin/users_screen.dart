@@ -16,6 +16,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_typography.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/profile_premium_badge.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
 import 'admin_student_profile_sheet.dart';
@@ -815,6 +816,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final avatarRadius = compact ? 20.0 : 42.0;
 
     final chips = <Widget>[
+      ProfilePremiumBadge(userId: user.uid),
       AdminPill(
         label: roleLabel,
         color: Colors.white,

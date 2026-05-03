@@ -18,6 +18,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/admin/admin_ui.dart';
 import '../../widgets/profile_avatar.dart';
+import '../../widgets/profile_premium_badge.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/reviewer_cv_widgets.dart';
 
@@ -525,7 +526,8 @@ class _AdminStudentApplicationsSheetState
                     AdminEmptyState(
                       icon: Icons.work_off_outlined,
                       title: l10n.uiOpportunityUnavailable,
-                      message: l10n.adminStudentProfileOpportunityUnavailableMessage,
+                      message:
+                          l10n.adminStudentProfileOpportunityUnavailableMessage,
                     )
                   else ...[
                     _DetailRow(
@@ -1078,6 +1080,7 @@ class _StudentHeroCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
+              ProfilePremiumBadge(userId: user.uid),
               AdminPill(
                 label: l10n.uiStudent,
                 color: Colors.white,
