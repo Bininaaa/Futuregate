@@ -50,7 +50,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
   _OpportunityFilter _selectedFilter = _OpportunityFilter.all;
   _OpportunityTypeFilter _selectedTypeFilter = _OpportunityTypeFilter.all;
-  bool _sortByApplicants = false;
+  bool _oldestFirst = false;
   bool _isGridView = true;
   String _searchQuery = '';
 
@@ -97,7 +97,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   bool get _hasActiveFilters {
     return _selectedFilter != _OpportunityFilter.all ||
         _selectedTypeFilter != _OpportunityTypeFilter.all ||
-        _sortByApplicants ||
+        _oldestFirst ||
         _searchQuery.isNotEmpty;
   }
 
@@ -115,10 +115,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     return result;
   }
 
-  List<OpportunityModel> _filteredOpportunities(
-    CompanyProvider provider,
-    Map<String, int> applicationCounts,
-  ) {
+  List<OpportunityModel> _filteredOpportunities(CompanyProvider provider) {
     final normalizedQuery = _searchQuery.toLowerCase();
     final items = provider.opportunities.where((opportunity) {
       final publisherStatus = opportunity.publisherStatus();
@@ -163,27 +160,48 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }).toList();
 
     items.sort((first, second) {
-      if (_sortByApplicants) {
-        final applicantCompare = (applicationCounts[second.id] ?? 0).compareTo(
-          applicationCounts[first.id] ?? 0,
-        );
-        if (applicantCompare != 0) {
-          return applicantCompare;
-        }
+      final firstTime = _sortTime(first);
+      final secondTime = _sortTime(second);
+
+      if (firstTime == null && secondTime == null) {
+        return _compareStableOpportunityLabels(first, second);
+      }
+      if (firstTime == null) {
+        return 1;
+      }
+      if (secondTime == null) {
+        return -1;
       }
 
-      final secondTime =
-          second.updatedAt?.millisecondsSinceEpoch ??
-          second.createdAt?.millisecondsSinceEpoch ??
-          0;
-      final firstTime =
-          first.updatedAt?.millisecondsSinceEpoch ??
-          first.createdAt?.millisecondsSinceEpoch ??
-          0;
-      return secondTime.compareTo(firstTime);
+      final timeCompare = _oldestFirst
+          ? firstTime.compareTo(secondTime)
+          : secondTime.compareTo(firstTime);
+      if (timeCompare != 0) {
+        return timeCompare;
+      }
+
+      return _compareStableOpportunityLabels(first, second);
     });
 
     return items;
+  }
+
+  int? _sortTime(OpportunityModel opportunity) {
+    return opportunity.updatedAt?.millisecondsSinceEpoch ??
+        opportunity.createdAt?.millisecondsSinceEpoch;
+  }
+
+  int _compareStableOpportunityLabels(
+    OpportunityModel first,
+    OpportunityModel second,
+  ) {
+    final titleCompare = first.title.trim().toLowerCase().compareTo(
+      second.title.trim().toLowerCase(),
+    );
+    if (titleCompare != 0) {
+      return titleCompare;
+    }
+    return first.id.compareTo(second.id);
   }
 
   Color _toneTint(Color color, {double lightAlpha = 0.10}) {
@@ -288,7 +306,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       _searchQuery = '';
       _selectedFilter = _OpportunityFilter.all;
       _selectedTypeFilter = _OpportunityTypeFilter.all;
-      _sortByApplicants = false;
+      _oldestFirst = false;
     });
   }
 
@@ -1359,7 +1377,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     }
 
     final applicationCounts = _applicationCounts(provider);
-    final opportunities = _filteredOpportunities(provider, applicationCounts);
+    final opportunities = _filteredOpportunities(provider);
     final totalApplicants = applicationCounts.values.fold<int>(
       0,
       (total, applicantCount) => total + applicantCount,
@@ -1692,10 +1710,10 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         ),
         const SizedBox(width: 8),
         _SortButton(
-          selected: _sortByApplicants,
+          selected: _oldestFirst,
           onTap: () {
             setState(() {
-              _sortByApplicants = !_sortByApplicants;
+              _oldestFirst = !_oldestFirst;
             });
           },
         ),
@@ -2040,7 +2058,7 @@ class _SortButton extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              AppLocalizations.of(context)!.uiTop,
+              AppLocalizations.of(context)!.uiOldestFirst,
               style: AppTypography.product(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -2803,8 +2821,13 @@ class _OpportunityGridCard extends StatelessWidget {
                       color: tone.foreground,
                     ),
                   ),
-                  const Spacer(),
-                  _StatusDot(tone: statusTone, label: statusLabel),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: _StatusDot(tone: statusTone, label: statusLabel),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -3090,33 +3113,41 @@ class _StatusDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: tone.background,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: tone.foreground,
-              shape: BoxShape.circle,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 112),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: tone.background,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 5,
+              height: 5,
+              decoration: BoxDecoration(
+                color: tone.foreground,
+                shape: BoxShape.circle,
+              ),
             ),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: AppTypography.product(
-              fontSize: 9.5,
-              fontWeight: FontWeight.w700,
-              color: tone.foreground,
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                style: AppTypography.product(
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w700,
+                  color: tone.foreground,
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -2439,6 +2439,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiNewestFirst => 'الأحدث أولاً';
 
   @override
+  String get uiOldestFirst => 'الأقدم أولاً';
+
+  @override
   String get uiNoActivityMatchesThisSearch => 'لا يوجد نشاط يطابق هذا البحث';
 
   @override

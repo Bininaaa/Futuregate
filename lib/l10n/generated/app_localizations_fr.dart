@@ -2479,6 +2479,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uiNewestFirst => 'Le plus récent en premier';
 
   @override
+  String get uiOldestFirst => 'Le plus ancien en premier';
+
+  @override
   String get uiNoActivityMatchesThisSearch =>
       'Aucune activité ne correspond à cette recherche';
 

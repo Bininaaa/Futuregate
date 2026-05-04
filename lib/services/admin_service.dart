@@ -137,13 +137,34 @@ class AdminService {
     final double applicationRate = totalOpportunities > 0
         ? (totalApplications / totalOpportunities)
         : 0.0;
+    final currentAdminId = (_auth.currentUser?.uid ?? '').trim();
+    final adminOpportunityIds = currentAdminId.isEmpty
+        ? const <String>{}
+        : opportunitiesSnapshot.docs
+              .where((doc) {
+                final data = doc.data();
+                final ownerId = (data['companyId'] ?? '').toString().trim();
+                final createdByRole = (data['createdByRole'] ?? '')
+                    .toString()
+                    .trim()
+                    .toLowerCase();
+                return ownerId == currentAdminId && createdByRole == 'admin';
+              })
+              .map((doc) => doc.id)
+              .toSet();
     var pendingApplications = 0;
+    var pendingAdminApplications = 0;
     var approvedApplications = 0;
     var rejectedApplications = 0;
     for (final doc in applicationsSnapshot.docs) {
-      switch (ApplicationStatus.parse(doc.data()['status'])) {
+      final data = doc.data();
+      switch (ApplicationStatus.parse(data['status'])) {
         case ApplicationStatus.pending:
           pendingApplications++;
+          final opportunityId = (data['opportunityId'] ?? '').toString().trim();
+          if (adminOpportunityIds.contains(opportunityId)) {
+            pendingAdminApplications++;
+          }
           break;
         case ApplicationStatus.accepted:
           approvedApplications++;
@@ -284,6 +305,7 @@ class AdminService {
       'scholarships': scholarshipsSnapshot.docs.length,
       'applications': totalApplications,
       'pendingApplications': pendingApplications,
+      'pendingAdminApplications': pendingAdminApplications,
       'approvedApplications': approvedApplications,
       'rejectedApplications': rejectedApplications,
       'projectIdeas': projectIdeasSnapshot.docs.length,

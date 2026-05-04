@@ -144,7 +144,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             _PendingAdminAlert(
               pendingCompanies: _intStat(stats, 'pendingCompanies'),
               pendingIdeas: _intStat(stats, 'pendingIdeas'),
-              pendingApplications: _intStat(stats, 'pendingApplications'),
+              pendingApplications: _intStat(stats, 'pendingAdminApplications'),
               onOpenCompanies: () => AdminHomeNavigation.switchToUsers(
                 context,
                 roleFilter: 'company',

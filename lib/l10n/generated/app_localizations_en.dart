@@ -2453,6 +2453,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uiNewestFirst => 'Newest first';
 
   @override
+  String get uiOldestFirst => 'Oldest first';
+
+  @override
   String get uiNoActivityMatchesThisSearch => 'No activity matches this search';
 
   @override

@@ -4570,6 +4570,12 @@ abstract class AppLocalizations {
   /// **'Newest first'**
   String get uiNewestFirst;
 
+  /// No description provided for @uiOldestFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest first'**
+  String get uiOldestFirst;
+
   /// No description provided for @uiNoActivityMatchesThisSearch.
   ///
   /// In en, this message translates to:
