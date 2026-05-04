@@ -651,6 +651,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Opportunity published successfully.';
 
   @override
+  String get earlyAccessApprovalRequiredTitle => 'Admin approval required';
+
+  @override
+  String get earlyAccessApprovalRequiredMessage =>
+      'Your early access opportunity was submitted for review. An admin must approve it before it goes live.';
+
+  @override
   String get scholarshipUpdatedMessage => 'Scholarship updated successfully.';
 
   @override

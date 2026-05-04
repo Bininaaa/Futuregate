@@ -198,6 +198,8 @@
   "uploadUnavailableTitle": "Téléchargement indisponible",
   "opportunityUpdatedMessage": "Les détails de votre opportunité ont été mis à jour.",
   "opportunityPublishedMessage": "Opportunité publiée avec succès.",
+  "earlyAccessApprovalRequiredTitle": "Validation admin requise",
+  "earlyAccessApprovalRequiredMessage": "Votre opportunité en accès anticipé a été envoyée pour examen. Un admin doit l'approuver avant sa mise en ligne.",
   "scholarshipUpdatedMessage": "Bourse mise à jour avec succès.",
   "scholarshipPublishedMessage": "Bourse publiée avec succès.",
   "ideaUploadSizeMessage": "Choisissez une image inférieure à 5 Mo.",

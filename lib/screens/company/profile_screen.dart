@@ -881,7 +881,7 @@ class CompanyProfileScreen extends StatelessWidget {
             icon: Icons.logout_rounded,
             iconColor: SettingsFlowPalette.error,
             title: l10n.signOutTitle,
-            subtitle: l10n.signOutSubtitle,
+            subtitle: l10n.signOutCompanySubtitle,
             destructive: true,
             compact: true,
             onTap: () => showLogoutConfirmationSheet(context),

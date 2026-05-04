@@ -989,6 +989,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
         OpportunityMetadata.parseDateTimeLike(_deadlineController.text);
     final structuredData = _buildStructuredPayload();
     final requirementText = _requirementItems.join('\n');
+    final submittedForEarlyAccessApproval =
+        _requestEarlyAccess && _currentEarlyAccessStatus == 'none';
     final data = {
       'title': _titleController.text.trim(),
       'description': _descriptionController.text.trim(),
@@ -1011,10 +1013,8 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       'status': _selectedStatus,
       ...structuredData,
       // Early access request — company can only set to true; admin controls approval.
-      if (_requestEarlyAccess && _currentEarlyAccessStatus == 'none')
-        'earlyAccessRequested': true,
-      if (_requestEarlyAccess && _currentEarlyAccessStatus == 'none')
-        'earlyAccessStatus': 'pending',
+      if (submittedForEarlyAccessApproval) 'earlyAccessRequested': true,
+      if (submittedForEarlyAccessApproval) 'earlyAccessStatus': 'pending',
     };
 
     String? error;
@@ -1042,17 +1042,36 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
       return;
     }
 
-    context.showAppSnackBar(
-      _isEditMode
+    late final String feedbackMessage;
+    late final String feedbackTitle;
+    late final AppFeedbackType feedbackType;
+    late final IconData? feedbackIcon;
+
+    if (submittedForEarlyAccessApproval) {
+      feedbackMessage = _l10n.earlyAccessApprovalRequiredMessage;
+      feedbackTitle = _l10n.earlyAccessApprovalRequiredTitle;
+      feedbackType = AppFeedbackType.info;
+      feedbackIcon = Icons.pending_actions_rounded;
+    } else {
+      feedbackMessage = _isEditMode
           ? _l10n.opportunityUpdatedMessage
-          : _l10n.opportunityPublishedMessage,
-      title: _isEditMode
+          : _l10n.opportunityPublishedMessage;
+      feedbackTitle = _isEditMode
           ? _l10n.opportunityUpdatedTitle
-          : _l10n.opportunityPublishedTitle,
-      type: _selectedStatus == 'closed'
+          : _l10n.opportunityPublishedTitle;
+      feedbackType = _selectedStatus == 'closed'
           ? AppFeedbackType.removed
-          : AppFeedbackType.success,
-      icon: _selectedStatus == 'closed' ? Icons.lock_outline_rounded : null,
+          : AppFeedbackType.success;
+      feedbackIcon = _selectedStatus == 'closed'
+          ? Icons.lock_outline_rounded
+          : null;
+    }
+
+    context.showAppSnackBar(
+      feedbackMessage,
+      title: feedbackTitle,
+      type: feedbackType,
+      icon: feedbackIcon,
     );
     Navigator.pop(context);
   }

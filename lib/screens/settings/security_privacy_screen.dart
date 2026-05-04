@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import 'account_security_screens.dart';
+import 'logout_confirmation_sheet.dart';
 import 'settings_flow_theme.dart';
 import 'settings_flow_widgets.dart';
 
@@ -21,6 +22,7 @@ class SecurityPrivacyScreen extends StatelessWidget {
     final canChangePassword = authProvider.canChangePassword;
     final canChangeEmail = authProvider.canChangeEmail;
     final providerLabel = authProvider.linkedProviderLabel;
+    final isCompany = user?.isCompany ?? false;
 
     return SettingsPageScaffold(
       title: l10n.securityPrivacyTitle,
@@ -214,6 +216,25 @@ class SecurityPrivacyScreen extends StatelessWidget {
               ],
             ),
           ),
+          if (isCompany) ...[
+            const SizedBox(height: 18),
+            SettingsPanel(
+              padding: const EdgeInsets.all(10),
+              color: SettingsFlowPalette.dangerTint,
+              border: Border.all(
+                color: SettingsFlowPalette.error.withValues(alpha: 0.16),
+              ),
+              child: SettingsListRow(
+                icon: Icons.logout_rounded,
+                iconColor: SettingsFlowPalette.error,
+                title: l10n.signOutTitle,
+                subtitle: l10n.signOutCompanySubtitle,
+                destructive: true,
+                compact: true,
+                onTap: () => showLogoutConfirmationSheet(context),
+              ),
+            ),
+          ],
         ],
       ),
     );

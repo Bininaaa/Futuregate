@@ -662,6 +662,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get opportunityPublishedMessage => 'Opportunité publiée avec succès.';
 
   @override
+  String get earlyAccessApprovalRequiredTitle => 'Validation admin requise';
+
+  @override
+  String get earlyAccessApprovalRequiredMessage =>
+      'Votre opportunité en accès anticipé a été envoyée pour examen. Un admin doit l\'approuver avant sa mise en ligne.';
+
+  @override
   String get scholarshipUpdatedMessage => 'Bourse mise à jour avec succès.';
 
   @override

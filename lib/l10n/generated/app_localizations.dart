@@ -1288,6 +1288,18 @@ abstract class AppLocalizations {
   /// **'Opportunity published successfully.'**
   String get opportunityPublishedMessage;
 
+  /// No description provided for @earlyAccessApprovalRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin approval required'**
+  String get earlyAccessApprovalRequiredTitle;
+
+  /// No description provided for @earlyAccessApprovalRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your early access opportunity was submitted for review. An admin must approve it before it goes live.'**
+  String get earlyAccessApprovalRequiredMessage;
+
   /// No description provided for @scholarshipUpdatedMessage.
   ///
   /// In en, this message translates to:

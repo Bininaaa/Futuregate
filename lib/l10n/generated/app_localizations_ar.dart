@@ -638,6 +638,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get opportunityPublishedMessage => 'تم نشر الفرصة بنجاح.';
 
   @override
+  String get earlyAccessApprovalRequiredTitle => 'تتطلب موافقة الإدارة';
+
+  @override
+  String get earlyAccessApprovalRequiredMessage =>
+      'تم إرسال فرصة الوصول المبكر للمراجعة. يجب أن يوافق عليها مسؤول قبل أن تظهر للطلاب.';
+
+  @override
   String get scholarshipUpdatedMessage => 'تم تحديث المنحة بنجاح';
 
   @override

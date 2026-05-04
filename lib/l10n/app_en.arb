@@ -198,6 +198,8 @@
   "uploadUnavailableTitle": "Upload unavailable",
   "opportunityUpdatedMessage": "Your opportunity details have been updated.",
   "opportunityPublishedMessage": "Opportunity published successfully.",
+  "earlyAccessApprovalRequiredTitle": "Admin approval required",
+  "earlyAccessApprovalRequiredMessage": "Your early access opportunity was submitted for review. An admin must approve it before it goes live.",
   "scholarshipUpdatedMessage": "Scholarship updated successfully.",
   "scholarshipPublishedMessage": "Scholarship published successfully.",
   "ideaUploadSizeMessage": "Choose an image smaller than 5 MB.",

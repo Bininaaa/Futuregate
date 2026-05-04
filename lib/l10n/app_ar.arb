@@ -198,6 +198,8 @@
   "uploadUnavailableTitle": "الرفع غير متاح",
   "opportunityUpdatedMessage": "تم تحديث تفاصيل الفرصة.",
   "opportunityPublishedMessage": "تم نشر الفرصة بنجاح.",
+  "earlyAccessApprovalRequiredTitle": "تتطلب موافقة الإدارة",
+  "earlyAccessApprovalRequiredMessage": "تم إرسال فرصة الوصول المبكر للمراجعة. يجب أن يوافق عليها مسؤول قبل أن تظهر للطلاب.",
   "scholarshipUpdatedMessage": "تم تحديث المنحة بنجاح",
   "scholarshipPublishedMessage": "تم نشر المنحة الدراسية بنجاح.",
   "ideaUploadSizeMessage": "اختر صورة أصغر من 5 ميغابايت.",
