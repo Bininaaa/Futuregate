@@ -15,6 +15,7 @@ import '../settings/settings_screen.dart';
 import 'admin_activity_center_screen.dart';
 import 'admin_content_center_screen.dart';
 import 'admin_dashboard_screen.dart';
+import 'admin_early_access_screen.dart';
 import 'admin_home_navigation.dart';
 import 'users_screen.dart';
 
@@ -76,6 +77,15 @@ class _HomeScreenState extends State<HomeScreen> {
       compactNavLabel: l10n.uiContent,
       navIcon: Icons.view_quilt_outlined,
       activeNavIcon: Icons.view_quilt_rounded,
+    ),
+    _AdminDestination(
+      title: l10n.earlyAccessLabel,
+      subtitle: l10n.premiumFeatureEarlyAccess,
+      icon: Icons.workspace_premium_rounded,
+      navLabel: l10n.earlyAccessLabel,
+      compactNavLabel: l10n.earlyAccessLabel,
+      navIcon: Icons.workspace_premium_outlined,
+      activeNavIcon: Icons.workspace_premium_rounded,
     ),
     _AdminDestination(
       title: l10n.uiActivity,
@@ -272,6 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return AdminDashboardScreen(
           onOpenUsers: _openUsersTab,
           onOpenContent: _openContentTab,
+          onOpenEarlyAccess: _openEarlyAccessTab,
           onOpenActivity: _openActivityTab,
           onOpenLibrary: _openLibraryTab,
         );
@@ -291,6 +302,8 @@ class _HomeScreenState extends State<HomeScreen> {
           resetToken: _contentSessionId,
         );
       case 3:
+        return const AdminEarlyAccessScreen(embedded: true);
+      case 4:
         return AdminActivityCenterScreen(
           embedded: true,
           onOpenContent: _openContentTab,
@@ -336,7 +349,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _openActivityTab() => _selectIndex(3);
+  void _openEarlyAccessTab() =>
+      _selectIndex(AdminHomeNavigation.earlyAccessTab);
+
+  void _openActivityTab() => _selectIndex(AdminHomeNavigation.activityTab);
 
   void _openLibraryTab() =>
       _openContentTab(AdminContentCenterScreen.libraryTab);

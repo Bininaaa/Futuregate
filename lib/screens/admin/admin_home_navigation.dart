@@ -24,8 +24,9 @@ class AdminHomeNavigation {
   static const int dashboardTab = 0;
   static const int usersTab = 1;
   static const int contentTab = 2;
-  static const int activityTab = 3;
-  static const int settingsTab = 4;
+  static const int earlyAccessTab = 3;
+  static const int activityTab = 4;
+  static const int settingsTab = 5;
 
   static final ValueNotifier<AdminHomeNavigationRequest?> request =
       ValueNotifier<AdminHomeNavigationRequest?>(null);

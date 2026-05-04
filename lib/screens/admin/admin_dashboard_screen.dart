@@ -42,6 +42,7 @@ const int _dashboardPreviewLimit = 5;
 class AdminDashboardScreen extends StatefulWidget {
   final VoidCallback? onOpenUsers;
   final void Function(int tab, {String targetId})? onOpenContent;
+  final VoidCallback? onOpenEarlyAccess;
   final VoidCallback? onOpenActivity;
   final VoidCallback? onOpenLibrary;
 
@@ -49,6 +50,7 @@ class AdminDashboardScreen extends StatefulWidget {
     super.key,
     this.onOpenUsers,
     this.onOpenContent,
+    this.onOpenEarlyAccess,
     this.onOpenActivity,
     this.onOpenLibrary,
   });
@@ -440,6 +442,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _openEarlyAccessManagement() {
+    if (widget.onOpenEarlyAccess != null) {
+      widget.onOpenEarlyAccess!();
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const AdminEarlyAccessScreen()),
