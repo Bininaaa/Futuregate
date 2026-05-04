@@ -7738,5 +7738,7 @@
   "adminEarlyAccessPostLabel": "Post",
   "adminEarlyAccessMakeNormalButton": "Remove Early Access",
   "priorityApplicationLabel": "Priority",
-  "priorityApplicationTooltip": "This applicant had an active Premium Pass when they applied."
+  "priorityApplicationTooltip": "This applicant had an active Premium Pass when they applied.",
+  "applicationSortOrderLabel": "Sort order",
+  "applicationSortPriorityFirst": "Priority first"
 }

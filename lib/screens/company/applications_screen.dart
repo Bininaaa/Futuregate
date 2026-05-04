@@ -1015,6 +1015,8 @@ class _StandaloneCvSheet extends StatelessWidget {
 
 enum _ApplicationStatusFilter { all, pending, approved, rejected }
 
+enum _ApplicationSortMode { priorityFirst, newestFirst }
+
 class _ApplicationsScreenState extends State<ApplicationsScreen> {
   static const String _allOpportunityFilter = 'all';
   static const String _allTypeFilter = 'all';
@@ -1025,6 +1027,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   final GlobalKey _candidateQueueKey = GlobalKey();
 
   _ApplicationStatusFilter _selectedStatusFilter = _ApplicationStatusFilter.all;
+  _ApplicationSortMode _selectedSortMode = _ApplicationSortMode.priorityFirst;
   String _selectedOpportunityFilter = _allOpportunityFilter;
   String _selectedTypeFilter = _allTypeFilter;
   String _searchQuery = '';
@@ -1136,12 +1139,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
               ),
             )
             .toList()
-          ..sort(
-            (first, second) => ApplicationModel.comparePriorityThenRecent(
-              first.application,
-              second.application,
-            ),
-          );
+          ..sort(_compareApplicationItems);
 
     final focusedId = (widget.initialApplicationId ?? '').trim();
     if (focusedId.isNotEmpty) {
@@ -1166,6 +1164,32 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       _ApplicationStatusFilter.approved => status == ApplicationStatus.accepted,
       _ApplicationStatusFilter.rejected => status == ApplicationStatus.rejected,
     };
+  }
+
+  int _compareApplicationItems(
+    _ApplicationListItem first,
+    _ApplicationListItem second,
+  ) {
+    return switch (_selectedSortMode) {
+      _ApplicationSortMode.priorityFirst =>
+        ApplicationModel.comparePriorityThenRecent(
+          first.application,
+          second.application,
+        ),
+      _ApplicationSortMode.newestFirst => _compareApplicationsByRecent(
+        first.application,
+        second.application,
+      ),
+    };
+  }
+
+  int _compareApplicationsByRecent(
+    ApplicationModel first,
+    ApplicationModel second,
+  ) {
+    final firstTime = first.appliedAt?.millisecondsSinceEpoch ?? 0;
+    final secondTime = second.appliedAt?.millisecondsSinceEpoch ?? 0;
+    return secondTime.compareTo(firstTime);
   }
 
   bool _matchesTypeFilter(_ApplicationListItem item) {
@@ -1227,6 +1251,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     _searchController.clear();
     setState(() {
       _selectedStatusFilter = _ApplicationStatusFilter.all;
+      _selectedSortMode = _ApplicationSortMode.priorityFirst;
       _selectedTypeFilter = _allTypeFilter;
       _selectedOpportunityFilter = _allOpportunityFilter;
       _searchQuery = '';
@@ -1478,6 +1503,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     _searchController.clear();
     setState(() {
       _selectedStatusFilter = _ApplicationStatusFilter.pending;
+      _selectedSortMode = _ApplicationSortMode.priorityFirst;
       _selectedTypeFilter = _allTypeFilter;
       _selectedOpportunityFilter = _allOpportunityFilter;
       _searchQuery = '';
@@ -1498,15 +1524,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         );
       }
     });
-  }
-
-  bool _isFreshApplication(Timestamp? value) {
-    if (value == null) {
-      return false;
-    }
-
-    final difference = DateTime.now().difference(value.toDate());
-    return !difference.isNegative && difference.inHours < 48;
   }
 
   String? _relativeDateLabel(Timestamp? value) {
@@ -1760,6 +1777,46 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
         ),
         const SizedBox(height: 12),
         Text(
+          _l10n.applicationSortOrderLabel.toUpperCase(),
+          style: sectionLabelStyle,
+        ),
+        const SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              _TypeFilterChip(
+                label: _l10n.applicationSortPriorityFirst,
+                icon: Icons.bolt_rounded,
+                selected:
+                    _selectedSortMode == _ApplicationSortMode.priorityFirst,
+                tone: _OpportunityTypeTone(
+                  background: AppColors.current.accentSoft,
+                  foreground: _ApplicationsPalette.accent,
+                ),
+                onTap: () => setState(
+                  () => _selectedSortMode = _ApplicationSortMode.priorityFirst,
+                ),
+              ),
+              const SizedBox(width: 6),
+              _TypeFilterChip(
+                label: _l10n.uiNewestFirst,
+                icon: Icons.schedule_rounded,
+                selected: _selectedSortMode == _ApplicationSortMode.newestFirst,
+                tone: _OpportunityTypeTone(
+                  background: _ApplicationsPalette.primarySoft,
+                  foreground: _ApplicationsPalette.primary,
+                ),
+                onTap: () => setState(
+                  () => _selectedSortMode = _ApplicationSortMode.newestFirst,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
           AppLocalizations.of(context)!.uiType.toUpperCase(),
           style: sectionLabelStyle,
         ),
@@ -1971,9 +2028,11 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final opportunity = item.opportunity;
     final typeTone = _toneForOpportunity(opportunity);
     final relativeAppliedLabel = _relativeDateLabel(application.appliedAt);
-    final isFresh = _isFreshApplication(application.appliedAt);
     final titleLabel = _opportunityTitleLabel(opportunity);
     final isPriority = application.shouldPrioritizeApplication;
+    final cardBorderColor = isPriority
+        ? AppColors.current.accent.withValues(alpha: 0.4)
+        : _ApplicationsPalette.border;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -1983,16 +2042,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           borderRadius: BorderRadius.circular(14),
           onTap: () => _showApplicationDetailsSheet(item, provider),
           child: Container(
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: isPriority
                   ? AppColors.current.accentSoft
                   : _ApplicationsPalette.surface,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isPriority
-                    ? AppColors.current.accent.withValues(alpha: 0.4)
-                    : _ApplicationsPalette.border,
-              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.03),
@@ -2000,6 +2055,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   offset: const Offset(0, 2),
                 ),
               ],
+            ),
+            foregroundDecoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: cardBorderColor),
             ),
             child: IntrinsicHeight(
               child: Row(
@@ -2056,31 +2115,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                                       const SizedBox(width: 6),
                                       const PriorityApplicationBadge(
                                         compact: true,
-                                      ),
-                                    ],
-                                    if (isFresh) ...[
-                                      const SizedBox(width: 6),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 7,
-                                          vertical: 3,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              _ApplicationsPalette.accentSoft,
-                                          borderRadius: BorderRadius.circular(
-                                            999,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          _l10n.uiNew,
-                                          style: AppTypography.product(
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.w700,
-                                            color: _ApplicationsPalette.accent,
-                                            letterSpacing: 0.4,
-                                          ),
-                                        ),
                                       ),
                                     ],
                                   ],
@@ -4607,10 +4641,20 @@ class _DetailHeroCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    ApplicationStatusBadge(status: status, fontSize: 10.5),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ApplicationStatusBadge(status: status, fontSize: 10.5),
+                        if (isPriority) ...[
+                          const SizedBox(height: 8),
+                          const PriorityApplicationBadge(),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
-                if (typeLabel != null || appliedText != null || isPriority) ...[
+                if (typeLabel != null || appliedText != null) ...[
                   const SizedBox(height: 14),
                   Wrap(
                     spacing: 8,
@@ -4625,7 +4669,6 @@ class _DetailHeroCard extends StatelessWidget {
                             context,
                           )!.uiAppliedAppliedtext(appliedText),
                         ),
-                      if (isPriority) const PriorityApplicationBadge(),
                     ],
                   ),
                 ],

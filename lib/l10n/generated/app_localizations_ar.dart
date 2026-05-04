@@ -12796,4 +12796,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get priorityApplicationTooltip =>
       'هذا المتقدم كان لديه اشتراك مميز فعّال عند تقديم طلبه.';
+
+  @override
+  String get applicationSortOrderLabel => 'ترتيب العرض';
+
+  @override
+  String get applicationSortPriorityFirst => 'الأولوية أولاً';
 }

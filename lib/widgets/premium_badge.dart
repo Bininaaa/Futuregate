@@ -19,20 +19,36 @@ class PremiumBadge extends StatelessWidget {
     final colors = AppColors.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    final (iconSize, fontSize, padding) = switch (size) {
-      PremiumBadgeSize.small => (10.0, 9.0, const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
-      PremiumBadgeSize.medium => (12.0, 10.0, const EdgeInsets.symmetric(horizontal: 8, vertical: 3)),
-      PremiumBadgeSize.large => (14.0, 12.0, const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
+    final (iconSize, fontSize, padding, minHeight, gap) = switch (size) {
+      PremiumBadgeSize.small => (
+        13.0,
+        11.0,
+        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        25.0,
+        5.0,
+      ),
+      PremiumBadgeSize.medium => (
+        14.0,
+        11.5,
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        32.0,
+        8.0,
+      ),
+      PremiumBadgeSize.large => (
+        16.0,
+        13.0,
+        const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        40.0,
+        8.0,
+      ),
     };
 
     return Container(
+      constraints: BoxConstraints(minHeight: minHeight),
       padding: padding,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            colors.accent,
-            colors.accent.withValues(alpha: 0.75),
-          ],
+          colors: [colors.accent, colors.accent.withValues(alpha: 0.75)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -48,16 +64,20 @@ class PremiumBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.workspace_premium_rounded, size: iconSize, color: Colors.white),
+          Icon(
+            Icons.workspace_premium_rounded,
+            size: iconSize,
+            color: Colors.white,
+          ),
           if (showLabel) ...[
-            const SizedBox(width: 3),
+            SizedBox(width: gap),
             Text(
               l10n.premiumBadgeLabel,
               style: TextStyle(
                 fontSize: fontSize,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
-                letterSpacing: 0.3,
+                letterSpacing: 0,
               ),
             ),
           ],

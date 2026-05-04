@@ -20532,6 +20532,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This applicant had an active Premium Pass when they applied.'**
   String get priorityApplicationTooltip;
+
+  /// No description provided for @applicationSortOrderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort order'**
+  String get applicationSortOrderLabel;
+
+  /// No description provided for @applicationSortPriorityFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority first'**
+  String get applicationSortPriorityFirst;
 }
 
 class _AppLocalizationsDelegate

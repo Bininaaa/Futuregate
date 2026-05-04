@@ -12525,4 +12525,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get priorityApplicationTooltip =>
       'This applicant had an active Premium Pass when they applied.';
+
+  @override
+  String get applicationSortOrderLabel => 'Sort order';
+
+  @override
+  String get applicationSortPriorityFirst => 'Priority first';
 }

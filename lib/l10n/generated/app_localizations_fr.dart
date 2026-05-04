@@ -12724,4 +12724,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get priorityApplicationTooltip =>
       'Ce candidat avait un Pass Premium actif au moment de sa candidature.';
+
+  @override
+  String get applicationSortOrderLabel => 'Ordre de tri';
+
+  @override
+  String get applicationSortPriorityFirst => 'Prioritaires d\'abord';
 }

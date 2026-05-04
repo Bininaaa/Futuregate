@@ -21,6 +21,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
+import '../../widgets/priority_application_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/shared/app_loading.dart';
@@ -414,11 +415,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         )
         .toList();
 
-    applications.sort((first, second) {
-      final secondTime = second.appliedAt?.millisecondsSinceEpoch ?? 0;
-      final firstTime = first.appliedAt?.millisecondsSinceEpoch ?? 0;
-      return secondTime.compareTo(firstTime);
-    });
+    applications.sort(ApplicationModel.comparePriorityThenRecent);
 
     return applications;
   }
@@ -2471,9 +2468,7 @@ class _ApplicantDetailsSheet extends StatelessWidget {
                 tone: tone,
                 status: application.status,
                 studentId: application.studentId,
-                isPremium: application.shouldPrioritizeApplication
-                    ? true
-                    : null,
+                isPriority: application.shouldPrioritizeApplication,
                 onTapProfile: onTapProfile,
                 l10n: l10n,
               ),
@@ -2600,15 +2595,19 @@ class _ApplicantListTile extends StatelessWidget {
         ? l10n.uiStudent
         : application.studentName.trim();
     final statusLabel = ApplicationStatus.label(application.status, l10n);
+    final isPriority = application.shouldPrioritizeApplication;
+    final priorityLabel = isPriority
+        ? ', ${l10n.priorityApplicationLabel}'
+        : '';
 
     return Semantics(
       button: true,
       label:
-          '$studentName, $statusLabel. $appliedDateLabel. ${l10n.uiOpenDetails}',
+          '$studentName$priorityLabel, $statusLabel. $appliedDateLabel. ${l10n.uiOpenDetails}',
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Material(
-          color: _OpportunityPalette.surface,
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(14),
           child: InkWell(
             onTap: onTap,
@@ -2616,8 +2615,15 @@ class _ApplicantListTile extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
+                color: isPriority
+                    ? AppColors.current.accentSoft
+                    : _OpportunityPalette.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: _OpportunityPalette.border),
+                border: Border.all(
+                  color: isPriority
+                      ? AppColors.current.accent.withValues(alpha: 0.4)
+                      : _OpportunityPalette.border,
+                ),
               ),
               child: Row(
                 children: [
@@ -2626,24 +2632,32 @@ class _ApplicantListTile extends StatelessWidget {
                     userId: application.studentId,
                     fallbackName: studentName,
                     role: 'student',
-                    isPremium: application.shouldPrioritizeApplication
-                        ? true
-                        : null,
+                    isPremium: isPriority ? true : null,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          studentName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.product(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: _OpportunityPalette.textPrimary,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                studentName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.product(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: _OpportunityPalette.textPrimary,
+                                ),
+                              ),
+                            ),
+                            if (isPriority) ...[
+                              const SizedBox(width: 6),
+                              const PriorityApplicationBadge(compact: true),
+                            ],
+                          ],
                         ),
                         const SizedBox(height: 4),
                         Row(
@@ -3563,7 +3577,7 @@ class _AppDetailHeroCard extends StatelessWidget {
   final _OpportunityTone tone;
   final String status;
   final String studentId;
-  final bool? isPremium;
+  final bool isPriority;
   final VoidCallback? onTapProfile;
   final AppLocalizations l10n;
 
@@ -3576,7 +3590,7 @@ class _AppDetailHeroCard extends StatelessWidget {
     required this.tone,
     required this.status,
     required this.studentId,
-    required this.isPremium,
+    required this.isPriority,
     required this.l10n,
     this.onTapProfile,
   });
@@ -3593,9 +3607,15 @@ class _AppDetailHeroCard extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: _OpportunityPalette.surface,
+            color: isPriority
+                ? AppColors.current.accentSoft
+                : _OpportunityPalette.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: _OpportunityPalette.border),
+            border: Border.all(
+              color: isPriority
+                  ? AppColors.current.accent.withValues(alpha: 0.4)
+                  : _OpportunityPalette.border,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -3611,7 +3631,7 @@ class _AppDetailHeroCard extends StatelessWidget {
                         userId: studentId,
                         fallbackName: studentName,
                         role: 'student',
-                        isPremium: isPremium,
+                        isPremium: isPriority ? true : null,
                       ),
                       Positioned(
                         right: -2,
@@ -3662,7 +3682,17 @@ class _AppDetailHeroCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  ApplicationStatusBadge(status: status, fontSize: 10.5),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ApplicationStatusBadge(status: status, fontSize: 10.5),
+                      if (isPriority) ...[
+                        const SizedBox(height: 8),
+                        const PriorityApplicationBadge(),
+                      ],
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 14),

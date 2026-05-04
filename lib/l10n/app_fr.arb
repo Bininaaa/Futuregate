@@ -5733,5 +5733,7 @@
   "adminEarlyAccessPostLabel": "Publication",
   "adminEarlyAccessMakeNormalButton": "Retirer l'accès anticipé",
   "priorityApplicationLabel": "Prioritaire",
-  "priorityApplicationTooltip": "Ce candidat avait un Pass Premium actif au moment de sa candidature."
+  "priorityApplicationTooltip": "Ce candidat avait un Pass Premium actif au moment de sa candidature.",
+  "applicationSortOrderLabel": "Ordre de tri",
+  "applicationSortPriorityFirst": "Prioritaires d'abord"
 }

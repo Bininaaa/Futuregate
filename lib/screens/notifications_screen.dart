@@ -4,19 +4,21 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../models/application_model.dart';
 import '../models/notification_model.dart';
 import '../models/opportunity_model.dart';
 import '../models/project_idea_model.dart';
 import '../models/scholarship_model.dart';
 import '../models/training_model.dart';
 import '../providers/auth_provider.dart';
+import '../providers/company_provider.dart';
 import '../providers/notification_provider.dart';
 import '../utils/localized_display.dart';
 import '../utils/opportunity_type.dart';
 import 'admin/admin_content_center_screen.dart';
 import 'admin/admin_home_navigation.dart';
+import 'company/applications_screen.dart';
 import 'company/chat_screen.dart' as company_chat;
-import 'company/company_home_navigation.dart';
 import 'settings/settings_flow_theme.dart';
 import 'settings/settings_flow_widgets.dart';
 import 'student/chat_screen.dart' as student_chat;
@@ -1311,15 +1313,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           if (role == 'company') {
             final applicationId = _extractApplicationId(notif);
             if (applicationId.isNotEmpty) {
-              final appDoc = await FirebaseFirestore.instance
-                  .collection('applications')
-                  .doc(applicationId)
-                  .get();
-              if (appDoc.exists && context.mounted) {
-                CompanyHomeNavigation.switchToApplications(
-                  context,
-                  applicationId: applicationId,
-                );
+              final openedDetails = await _openCompanyApplicationDetails(
+                context,
+                applicationId,
+              );
+              if (openedDetails) {
                 return;
               }
             }
@@ -1392,6 +1390,47 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     } catch (e) {
       debugPrint('Failed to navigate to target: $e');
     }
+  }
+
+  Future<bool> _openCompanyApplicationDetails(
+    BuildContext context,
+    String applicationId,
+  ) async {
+    final appDoc = await FirebaseFirestore.instance
+        .collection('applications')
+        .doc(applicationId)
+        .get();
+    final appData = appDoc.data();
+    if (!appDoc.exists || appData == null || !context.mounted) {
+      return false;
+    }
+
+    final application = ApplicationModel.fromMap({...appData, 'id': appDoc.id});
+
+    OpportunityModel? opportunity;
+    final opportunityId = application.opportunityId.trim();
+    if (opportunityId.isNotEmpty) {
+      final oppDoc = await FirebaseFirestore.instance
+          .collection('opportunities')
+          .doc(opportunityId)
+          .get();
+      final oppData = oppDoc.data();
+      if (oppDoc.exists && oppData != null) {
+        opportunity = OpportunityModel.fromMap({...oppData, 'id': oppDoc.id});
+      }
+    }
+
+    if (!context.mounted) {
+      return false;
+    }
+
+    await ApplicationsScreen.showApplicationDetailsSheet(
+      context,
+      application: application,
+      opportunity: opportunity,
+      provider: context.read<CompanyProvider>(),
+    );
+    return true;
   }
 
   String _extractApplicationId(NotificationModel notif) {
