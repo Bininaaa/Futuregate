@@ -308,6 +308,18 @@ class OpportunityModel {
     return 'open';
   }
 
+  String publisherStatus({DateTime? now}) {
+    final availabilityStatus = effectiveStatus(now: now);
+    if (availabilityStatus == 'closed') {
+      return 'closed';
+    }
+    if (isPendingEarlyAccessReview) {
+      return 'pending';
+    }
+
+    return availabilityStatus;
+  }
+
   bool isVisibleToStudents({DateTime? now}) =>
       !isHidden &&
       effectiveStatus(now: now) == 'open' &&

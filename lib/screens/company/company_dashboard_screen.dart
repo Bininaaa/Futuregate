@@ -174,7 +174,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
 
     return opportunities.where((opportunity) {
       final deadline = opportunity.effectiveDeadline;
-      if (opportunity.effectiveStatus() != 'open' || deadline == null) {
+      if (opportunity.publisherStatus() != 'open' || deadline == null) {
         return false;
       }
 
@@ -239,7 +239,7 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
       stats,
       'openOpportunities',
       provider.opportunities
-          .where((item) => item.effectiveStatus() == 'open')
+          .where((item) => item.publisherStatus() == 'open')
           .length,
     );
     final totalApplications = _intStat(

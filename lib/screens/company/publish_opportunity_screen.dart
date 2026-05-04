@@ -113,6 +113,17 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     );
   }
 
+  String get _formPublisherStatus {
+    if (_selectedStatus == 'closed') {
+      return 'closed';
+    }
+    if (_currentEarlyAccessStatus == 'pending') {
+      return 'pending';
+    }
+
+    return 'open';
+  }
+
   Future<void> _loadOpportunity() async {
     setState(() => _isLoading = true);
 
@@ -406,9 +417,22 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
   }
 
   Widget _buildHeroCard() {
-    final statusColor = _selectedStatus == 'open'
-        ? CompanyDashboardPalette.success
-        : CompanyDashboardPalette.textSecondary;
+    final publisherStatus = _formPublisherStatus;
+    final statusColor = switch (publisherStatus) {
+      'pending' => CompanyDashboardPalette.warning,
+      'closed' => CompanyDashboardPalette.textSecondary,
+      _ => CompanyDashboardPalette.success,
+    };
+    final statusLabel = switch (publisherStatus) {
+      'pending' => _l10n.earlyAccessPendingStatus,
+      'closed' => _l10n.closedStatusLabel,
+      _ => _l10n.openStatusLabel,
+    };
+    final statusIcon = switch (publisherStatus) {
+      'pending' => Icons.pending_actions_rounded,
+      'closed' => Icons.lock_outline_rounded,
+      _ => Icons.visibility_outlined,
+    };
 
     return AppFormHeaderCard(
       theme: _theme,
@@ -423,15 +447,7 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
           icon: OpportunityType.icon(_selectedType),
           color: _typeColor,
         ),
-        AppBadgeData(
-          label: _selectedStatus == 'open'
-              ? _l10n.openStatusLabel
-              : _l10n.closedStatusLabel,
-          icon: _selectedStatus == 'open'
-              ? Icons.visibility_outlined
-              : Icons.lock_outline_rounded,
-          color: statusColor,
-        ),
+        AppBadgeData(label: statusLabel, icon: statusIcon, color: statusColor),
       ],
     );
   }
@@ -744,18 +760,35 @@ class _PublishOpportunityScreenState extends State<PublishOpportunityScreen> {
     required String subtitle,
   }) {
     final isSelected = _selectedStatus == value;
-    final chipColor = value == 'open'
-        ? CompanyDashboardPalette.success
-        : CompanyDashboardPalette.textSecondary;
+    final displayStatus =
+        value == 'open' && isSelected && _formPublisherStatus == 'pending'
+        ? 'pending'
+        : value;
+    final displayLabel = switch (displayStatus) {
+      'pending' => _l10n.earlyAccessPendingStatus,
+      'closed' => _l10n.closedStatusLabel,
+      _ => label,
+    };
+    final displaySubtitle = displayStatus == 'pending'
+        ? _l10n.earlyAccessApprovalRequiredTitle
+        : subtitle;
+    final chipColor = switch (displayStatus) {
+      'pending' => CompanyDashboardPalette.warning,
+      'closed' => CompanyDashboardPalette.textSecondary,
+      _ => CompanyDashboardPalette.success,
+    };
+    final icon = switch (displayStatus) {
+      'pending' => Icons.pending_actions_rounded,
+      'closed' => Icons.lock_outline_rounded,
+      _ => Icons.visibility_outlined,
+    };
 
     return AppChoiceCard(
       theme: _theme,
-      label: label,
-      subtitle: subtitle,
+      label: displayLabel,
+      subtitle: displaySubtitle,
       selected: isSelected,
-      icon: value == 'open'
-          ? Icons.visibility_outlined
-          : Icons.lock_outline_rounded,
+      icon: icon,
       color: chipColor,
       onTap: () => setState(() => _selectedStatus = value),
     );

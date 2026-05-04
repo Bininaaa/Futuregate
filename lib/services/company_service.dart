@@ -184,10 +184,13 @@ class CompanyService {
       'acceptedApplications': approvedCount,
       'rejectedApplications': rejectedCount,
       'openOpportunities': opps
-          .where((o) => o.effectiveStatus() == 'open')
+          .where((o) => o.publisherStatus() == 'open')
+          .length,
+      'pendingOpportunities': opps
+          .where((o) => o.publisherStatus() == 'pending')
           .length,
       'closedOpportunities': opps
-          .where((o) => o.effectiveStatus() == 'closed')
+          .where((o) => o.publisherStatus() == 'closed')
           .length,
     };
   }

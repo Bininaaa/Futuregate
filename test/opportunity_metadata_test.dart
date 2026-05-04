@@ -338,10 +338,19 @@ void main() {
         'premiumEarlyAccess': true,
         'publicVisibleAt': Timestamp.fromDate(DateTime(2026, 4, 15)),
       });
+      final closedPendingOpportunity = OpportunityModel.fromMap({
+        ...baseOpportunity,
+        'status': 'closed',
+        'earlyAccessStatus': 'pending',
+      });
 
       expect(pendingOpportunity.isPendingEarlyAccessReview, isTrue);
+      expect(pendingOpportunity.effectiveStatus(now: now), 'open');
+      expect(pendingOpportunity.publisherStatus(now: now), 'pending');
       expect(pendingOpportunity.isVisibleToStudents(now: now), isFalse);
+      expect(approvedOpportunity.publisherStatus(now: now), 'open');
       expect(approvedOpportunity.isVisibleToStudents(now: now), isTrue);
+      expect(closedPendingOpportunity.publisherStatus(now: now), 'closed');
       expect(
         CompanyService.shouldNotifyStudentsAboutOpportunity({
           ...baseOpportunity,

@@ -41,7 +41,7 @@ class MyOpportunitiesScreen extends StatefulWidget {
   State<MyOpportunitiesScreen> createState() => _MyOpportunitiesScreenState();
 }
 
-enum _OpportunityFilter { all, open, closed }
+enum _OpportunityFilter { all, open, pending, closed }
 
 enum _OpportunityTypeFilter { all, jobs, internships, sponsored }
 
@@ -121,11 +121,12 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   ) {
     final normalizedQuery = _searchQuery.toLowerCase();
     final items = provider.opportunities.where((opportunity) {
-      final effectiveStatus = opportunity.effectiveStatus();
+      final publisherStatus = opportunity.publisherStatus();
       final matchesStatus = switch (_selectedFilter) {
         _OpportunityFilter.all => true,
-        _OpportunityFilter.open => effectiveStatus == 'open',
-        _OpportunityFilter.closed => effectiveStatus == 'closed',
+        _OpportunityFilter.open => publisherStatus == 'open',
+        _OpportunityFilter.pending => publisherStatus == 'pending',
+        _OpportunityFilter.closed => publisherStatus == 'closed',
       };
       final normalizedType = OpportunityType.parse(opportunity.type);
       final matchesType = switch (_selectedTypeFilter) {
@@ -152,6 +153,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         opportunity.requirements,
         opportunity.companyName,
         OpportunityType.label(opportunity.type, _l10n),
+        _statusLabel(publisherStatus),
         ...opportunity.tags.map(
           (tag) => OpportunityMetadata.localizeTag(tag, _l10n),
         ),
@@ -210,6 +212,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   }
 
   _OpportunityTone _toneForStatus(String status) {
+    if (status == 'pending') {
+      return _OpportunityTone(
+        background: _toneTint(_OpportunityPalette.warning, lightAlpha: 0.14),
+        foreground: _OpportunityPalette.warning,
+      );
+    }
+
     if (status == 'closed') {
       return _OpportunityTone(
         background: _OpportunityPalette.surfaceMuted,
@@ -223,8 +232,11 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     );
   }
 
-  String _statusLabel(String status) =>
-      status == 'closed' ? _l10n.closedStatusLabel : _l10n.openStatusLabel;
+  String _statusLabel(String status) => switch (status) {
+    'closed' => _l10n.closedStatusLabel,
+    'pending' => _l10n.earlyAccessPendingStatus,
+    _ => _l10n.openStatusLabel,
+  };
 
   DateTime? _deadlineDate(OpportunityModel opportunity) {
     return opportunity.applicationDeadline ??
@@ -232,8 +244,12 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
   }
 
   String _timeLeftLabel(OpportunityModel opportunity) {
-    if (opportunity.effectiveStatus() == 'closed') {
+    final publisherStatus = opportunity.publisherStatus();
+    if (publisherStatus == 'closed') {
       return _l10n.closedStatusLabel;
+    }
+    if (publisherStatus == 'pending') {
+      return _l10n.earlyAccessPendingStatus;
     }
 
     final deadline = _deadlineDate(opportunity);
@@ -776,7 +792,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
 
   Future<void> _toggleStatus(OpportunityModel opportunity) async {
     final provider = context.read<CompanyProvider>();
-    final currentStatus = opportunity.effectiveStatus();
+    final currentStatus = opportunity.publisherStatus();
     if (currentStatus == 'closed' && opportunity.isDeadlineExpired()) {
       context.showAppSnackBar(
         _l10n.uiMoveTheDeadlineIntoTheFutureBeforeReopeningThisOpportunity,
@@ -917,7 +933,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     int applicantCount,
   ) async {
     final tone = _toneForType(opportunity.type);
-    final effectiveStatus = opportunity.effectiveStatus();
+    final effectiveStatus = opportunity.publisherStatus();
     final statusTone = _toneForStatus(effectiveStatus);
     final deadline = _deadlineDate(opportunity);
     final metadata = OpportunityMetadata.buildMetadataItems(
@@ -1055,6 +1071,15 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         icon: Icons.lock_outline_rounded,
                         title: _l10n.uiOpportunityClosed,
                         message: _l10n.opportunityClosedNoticeMessage,
+                        color: _OpportunityPalette.warning,
+                      ),
+                    ],
+                    if (effectiveStatus == 'pending') ...[
+                      const SizedBox(height: 12),
+                      _InlineBanner(
+                        icon: Icons.pending_actions_rounded,
+                        title: _l10n.earlyAccessApprovalRequiredTitle,
+                        message: _l10n.earlyAccessApprovalRequiredMessage,
                         color: _OpportunityPalette.warning,
                       ),
                     ],
@@ -1340,7 +1365,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       (total, applicantCount) => total + applicantCount,
     );
     final openCount = provider.opportunities
-        .where((item) => item.effectiveStatus() == 'open')
+        .where((item) => item.publisherStatus() == 'open')
         .length;
 
     return wrapScaffold(
@@ -1435,7 +1460,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                         ),
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final opportunity = opportunities[index];
-                      final effectiveStatus = opportunity.effectiveStatus();
+                      final effectiveStatus = opportunity.publisherStatus();
                       final applicantCount =
                           applicationCounts[opportunity.id] ?? 0;
                       return _OpportunityGridCard(
@@ -1459,7 +1484,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final opportunity = opportunities[index];
-                      final effectiveStatus = opportunity.effectiveStatus();
+                      final effectiveStatus = opportunity.publisherStatus();
                       final applicantCount =
                           applicationCounts[opportunity.id] ?? 0;
                       return Padding(
@@ -1913,6 +1938,13 @@ class _SegmentGroup extends StatelessWidget {
           ),
           Expanded(
             child: _SegmentButton(
+              label: l10n.uiPending,
+              selected: selectedFilter == _OpportunityFilter.pending,
+              onTap: () => onSelected(_OpportunityFilter.pending),
+            ),
+          ),
+          Expanded(
+            child: _SegmentButton(
               label: l10n.uiClosed,
               selected: selectedFilter == _OpportunityFilter.closed,
               onTap: () => onSelected(_OpportunityFilter.closed),
@@ -1948,14 +1980,21 @@ class _SegmentButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(9),
         ),
         child: Center(
-          child: Text(
-            label,
-            style: AppTypography.product(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: selected
-                  ? Colors.white
-                  : _OpportunityPalette.textSecondary,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                style: AppTypography.product(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: selected
+                      ? Colors.white
+                      : _OpportunityPalette.textSecondary,
+                ),
+              ),
             ),
           ),
         ),
