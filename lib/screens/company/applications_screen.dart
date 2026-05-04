@@ -2026,6 +2026,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                             userId: application.studentId,
                             fallbackName: application.studentName,
                             role: 'student',
+                            isPremium: application.shouldPrioritizeApplication,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -4553,10 +4554,11 @@ class _DetailHeroCard extends StatelessWidget {
                           userId: studentId,
                           fallbackName: studentName,
                           role: 'student',
+                          isPremium: isPriority,
                         ),
                         Positioned(
                           right: -2,
-                          bottom: -2,
+                          top: -2,
                           child: Container(
                             width: 18,
                             height: 18,

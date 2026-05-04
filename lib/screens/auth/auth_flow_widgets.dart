@@ -385,6 +385,8 @@ class AuthHeroPanel extends StatelessWidget {
               const SizedBox(height: 22),
               Text(
                 title,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
                 style: AppTypography.product(
                   fontSize: 30,
                   height: 1.08,
@@ -647,6 +649,7 @@ class AuthCompactHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
+        // Fixed 170 × 96 area for icon + sticker bubbles; safe on all phones ≥ 320 px.
         SizedBox(
           width: 170,
           height: 96,
@@ -710,6 +713,8 @@ class AuthCompactHeader extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: authFlowTheme.headline(
             size: 24.8,
             color: authFlowTheme.textPrimary,
@@ -722,6 +727,8 @@ class AuthCompactHeader extends StatelessWidget {
           child: Text(
             subtitle,
             textAlign: TextAlign.center,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
             style: authFlowTheme.body(
               size: 12.5,
               color: authFlowTheme.textSecondary,

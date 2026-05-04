@@ -286,6 +286,8 @@ class OpportunityHeader extends StatelessWidget {
               Expanded(
                 child: Text(
                   company,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.product(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,

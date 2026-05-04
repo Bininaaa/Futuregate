@@ -228,7 +228,7 @@ class _BlockedScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               SizedBox(
-                width: 180,
+                width: double.infinity,
                 height: 48,
                 child: ElevatedButton.icon(
                   onPressed: onLogout,

@@ -297,7 +297,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
               if (contact.isOnline)
                 Positioned(
                   right: -1,
-                  bottom: -1,
+                  top: -1,
                   child: Container(
                     width: 12,
                     height: 12,

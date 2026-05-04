@@ -582,6 +582,7 @@ class _ProfileIdentityBlock extends StatelessWidget {
             radius: 42,
             fallbackName: fallbackName,
             role: fallbackRole,
+            isPremium: premiumStatus,
           ),
           const SizedBox(height: 14),
           Text(

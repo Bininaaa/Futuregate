@@ -1208,6 +1208,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         userId: item.application.studentId,
                         fallbackName: item.studentName,
                         role: 'student',
+                        isPremium: item.application.shouldPrioritizeApplication,
                       ),
                       title: item.studentName,
                       subtitle: subtitle.isNotEmpty
@@ -4132,6 +4133,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                         ),
                         applicationTitle: applicationTitle,
                         appliedLabel: _formatTimestamp(liveItem.appliedAt),
+                        isPremium:
+                            liveItem.application.shouldPrioritizeApplication,
                         canManageApplication: liveItem.canBeManagedByAdmin(
                           adminId,
                         ),
@@ -4241,6 +4244,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required IconData statusIcon,
     required String applicationTitle,
     required String appliedLabel,
+    required bool isPremium,
     required bool canManageApplication,
   }) {
     final l10n = AppLocalizations.of(context)!;
@@ -4261,6 +4265,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 fallbackName: studentName,
                 role: 'student',
                 radius: 26,
+                isPremium: isPremium,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -4348,7 +4353,9 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 ),
               ),
               child: Text(
-                AppLocalizations.of(context)!.uiThisApplicationIsReadOnlyForYourAdminAccount,
+                AppLocalizations.of(
+                  context,
+                )!.uiThisApplicationIsReadOnlyForYourAdminAccount,
                 style: AppTypography.product(
                   fontSize: 11.6,
                   height: 1.35,

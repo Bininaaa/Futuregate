@@ -2471,6 +2471,7 @@ class _ApplicantDetailsSheet extends StatelessWidget {
                 tone: tone,
                 status: application.status,
                 studentId: application.studentId,
+                isPremium: application.shouldPrioritizeApplication,
                 onTapProfile: onTapProfile,
                 l10n: l10n,
               ),
@@ -2623,6 +2624,7 @@ class _ApplicantListTile extends StatelessWidget {
                     userId: application.studentId,
                     fallbackName: studentName,
                     role: 'student',
+                    isPremium: application.shouldPrioritizeApplication,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -3557,6 +3559,7 @@ class _AppDetailHeroCard extends StatelessWidget {
   final _OpportunityTone tone;
   final String status;
   final String studentId;
+  final bool isPremium;
   final VoidCallback? onTapProfile;
   final AppLocalizations l10n;
 
@@ -3569,6 +3572,7 @@ class _AppDetailHeroCard extends StatelessWidget {
     required this.tone,
     required this.status,
     required this.studentId,
+    required this.isPremium,
     required this.l10n,
     this.onTapProfile,
   });
@@ -3603,6 +3607,7 @@ class _AppDetailHeroCard extends StatelessWidget {
                         userId: studentId,
                         fallbackName: studentName,
                         role: 'student',
+                        isPremium: isPremium,
                       ),
                       Positioned(
                         right: -2,

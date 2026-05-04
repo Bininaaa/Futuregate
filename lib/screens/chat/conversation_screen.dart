@@ -978,7 +978,7 @@ class _ConversationHeader extends StatelessWidget {
                   if (isOnline)
                     Positioned(
                       right: -1,
-                      bottom: -1,
+                      top: -1,
                       child: Container(
                         width: 11,
                         height: 11,

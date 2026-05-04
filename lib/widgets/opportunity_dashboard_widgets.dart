@@ -995,13 +995,21 @@ class TrendingOpportunityCard extends StatelessWidget {
               ],
               if (applicationStatus != null) ...[
                 const SizedBox(height: 8),
-                _OpportunityAccentChip(
-                  label: ApplicationStatus.label(applicationStatus, l10n),
-                  foreground: ApplicationStatus.color(applicationStatus),
-                  background: ApplicationStatus.color(
-                    applicationStatus,
-                  ).withValues(alpha: 0.14),
-                  icon: _applicationStatusIcon(applicationStatus!),
+                // Row + Flexible constrains the chip's inner Row(mainAxisSize.min)
+                // so it can't overflow the card on narrow screens.
+                Row(
+                  children: [
+                    Flexible(
+                      child: _OpportunityAccentChip(
+                        label: ApplicationStatus.label(applicationStatus, l10n),
+                        foreground: ApplicationStatus.color(applicationStatus),
+                        background: ApplicationStatus.color(
+                          applicationStatus,
+                        ).withValues(alpha: 0.14),
+                        icon: _applicationStatusIcon(applicationStatus!),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ],
@@ -1105,37 +1113,49 @@ class OpportunityListTile extends StatelessWidget {
                   ),
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _OpportunityAccentChip(
-                      label: typeLabel,
-                      foreground: tone.strongAccent,
-                      background: tone.accent.withValues(alpha: 0.16),
-                      icon: OpportunityType.icon(opportunity.type),
+                    // Chips wrap to next line on narrow screens instead of overflowing
+                    Expanded(
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          _OpportunityAccentChip(
+                            label: typeLabel,
+                            foreground: tone.strongAccent,
+                            background: tone.accent.withValues(alpha: 0.16),
+                            icon: OpportunityType.icon(opportunity.type),
+                          ),
+                          if (isEarlyAccess)
+                            _EarlyAccessInlineChip(accentColor: accentColor),
+                          if (!isEarlyAccess &&
+                              badgeText != null &&
+                              badgeText!.isNotEmpty)
+                            _OpportunityAccentChip(
+                              label: badgeText!,
+                              foreground: effectiveBadgeColor,
+                              background:
+                                  effectiveBadgeColor.withValues(alpha: 0.16),
+                            ),
+                          if (applicationStatus != null)
+                            _OpportunityAccentChip(
+                              label: ApplicationStatus.label(
+                                applicationStatus,
+                                l10n,
+                              ),
+                              foreground:
+                                  ApplicationStatus.color(applicationStatus),
+                              background: ApplicationStatus.color(
+                                applicationStatus,
+                              ).withValues(alpha: 0.14),
+                              icon: _applicationStatusIcon(applicationStatus!),
+                            ),
+                        ],
+                      ),
                     ),
-                    if (isEarlyAccess) ...[
-                      const SizedBox(width: 6),
-                      _EarlyAccessInlineChip(accentColor: accentColor),
-                    ],
-                    if (!isEarlyAccess && badgeText != null && badgeText!.isNotEmpty) ...[
-                      const SizedBox(width: 6),
-                      _OpportunityAccentChip(
-                        label: badgeText!,
-                        foreground: effectiveBadgeColor,
-                        background: effectiveBadgeColor.withValues(alpha: 0.16),
-                      ),
-                    ],
-                    if (applicationStatus != null) ...[
-                      const SizedBox(width: 6),
-                      _OpportunityAccentChip(
-                        label: ApplicationStatus.label(applicationStatus, l10n),
-                        foreground: ApplicationStatus.color(applicationStatus),
-                        background: ApplicationStatus.color(
-                          applicationStatus,
-                        ).withValues(alpha: 0.14),
-                        icon: _applicationStatusIcon(applicationStatus!),
-                      ),
-                    ],
-                    const Spacer(),
+                    const SizedBox(width: 6),
                     Container(
                       width: 32,
                       height: 32,

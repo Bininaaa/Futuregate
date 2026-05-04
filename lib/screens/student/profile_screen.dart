@@ -810,8 +810,11 @@ class _AvatarRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPremium = context.watch<SubscriptionProvider>().hasActivePremium;
     final ringColor = completion >= 0.85
         ? SettingsFlowPalette.success
+        : isPremium
+        ? const Color(0xFFF6C453)
         : Colors.white;
 
     return SizedBox(
@@ -848,38 +851,39 @@ class _AvatarRing extends StatelessWidget {
                 ),
               ],
             ),
-            child: ClipOval(child: ProfileAvatar(user: user, radius: 39)),
+            child: ProfileAvatar(user: user, radius: 39, isPremium: isPremium),
           ),
-          // Student badge — bottom-right corner (always visible)
-          Positioned(
-            bottom: 4,
-            right: 4,
-            child: Container(
-              width: 26,
-              height: 26,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF6C63FF), Color(0xFF3B82F6)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF6C63FF).withValues(alpha: 0.45),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+          // Student badge for non-premium profiles.
+          if (!isPremium)
+            Positioned(
+              bottom: 4,
+              right: 4,
+              child: Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6C63FF), Color(0xFF3B82F6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ],
-              ),
-              child: const Icon(
-                Icons.school_rounded,
-                size: 13,
-                color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6C63FF).withValues(alpha: 0.45),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.school_rounded,
+                  size: 13,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

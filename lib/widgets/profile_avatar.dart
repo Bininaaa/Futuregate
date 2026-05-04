@@ -1,10 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../config/avatar_config.dart';
-import '../theme/app_typography.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/user_model.dart';
+import '../providers/subscription_provider.dart';
+import '../services/premium_status_resolver.dart';
 import '../services/public_profile_service.dart';
+import '../theme/app_typography.dart';
 
 /// Centralized widget that resolves and displays the correct profile image
 /// for any user (student, company, admin).
@@ -32,6 +36,7 @@ class ProfileAvatar extends StatefulWidget {
   final String? photoUrl;
   final String? fallbackName;
   final String? role;
+  final bool? isPremium;
 
   const ProfileAvatar({
     super.key,
@@ -43,6 +48,7 @@ class ProfileAvatar extends StatefulWidget {
     this.photoUrl,
     this.fallbackName,
     this.role,
+    this.isPremium,
   });
 
   @override
@@ -104,18 +110,18 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
   @override
   Widget build(BuildContext context) {
     if (_profileLookup == null) {
-      return _buildResolvedAvatar(widget.user);
+      return _buildResolvedAvatar(context, widget.user);
     }
 
     return FutureBuilder<UserModel?>(
       future: _profileLookup,
       builder: (context, snapshot) {
-        return _buildResolvedAvatar(snapshot.data ?? widget.user);
+        return _buildResolvedAvatar(context, snapshot.data ?? widget.user);
       },
     );
   }
 
-  Widget _buildResolvedAvatar(UserModel? resolvedUser) {
+  Widget _buildResolvedAvatar(BuildContext context, UserModel? resolvedUser) {
     final resolvedRole = resolvedUser?.role ?? widget.role ?? 'student';
     final resolvedPhotoType = resolvedUser?.photoType ?? widget.photoType;
     final resolvedAvatarId = resolvedUser?.avatarId ?? widget.avatarId;
@@ -130,30 +136,108 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
       widget.photoUrl,
     );
 
+    late final Widget avatar;
     if (resolvedPhotoType == 'upload' && resolvedPhotoUrl.isNotEmpty) {
-      return _buildNetworkAvatar(resolvedPhotoUrl, resolvedName, resolvedRole);
-    }
-
-    if (resolvedRole != 'company' && resolvedPhotoType == 'avatar') {
-      final avatar = AvatarConfig.getById(resolvedAvatarId);
-      if (avatar != null) {
-        return CircleAvatar(
-          radius: widget.radius,
-          backgroundColor: avatar.backgroundColor,
-          child: Icon(
-            avatar.icon,
-            color: avatar.iconColor,
-            size: widget.radius,
+      avatar = _buildNetworkAvatar(
+        resolvedPhotoUrl,
+        resolvedName,
+        resolvedRole,
+      );
+    } else if (resolvedRole != 'company' && resolvedPhotoType == 'avatar') {
+      final avatarDefinition = AvatarConfig.getById(resolvedAvatarId);
+      if (avatarDefinition != null) {
+        return _withPremiumTreatment(
+          context,
+          CircleAvatar(
+            radius: widget.radius,
+            backgroundColor: avatarDefinition.backgroundColor,
+            child: Icon(
+              avatarDefinition.icon,
+              color: avatarDefinition.iconColor,
+              size: widget.radius,
+            ),
           ),
+          resolvedUser,
+          resolvedRole,
         );
       }
+      avatar = _buildFallback(resolvedName, resolvedRole);
+    } else if (resolvedPhotoUrl.isNotEmpty) {
+      avatar = _buildNetworkAvatar(
+        resolvedPhotoUrl,
+        resolvedName,
+        resolvedRole,
+      );
+    } else {
+      avatar = _buildFallback(resolvedName, resolvedRole);
     }
 
-    if (resolvedPhotoUrl.isNotEmpty) {
-      return _buildNetworkAvatar(resolvedPhotoUrl, resolvedName, resolvedRole);
+    return _withPremiumTreatment(context, avatar, resolvedUser, resolvedRole);
+  }
+
+  Widget _withPremiumTreatment(
+    BuildContext context,
+    Widget avatar,
+    UserModel? resolvedUser,
+    String resolvedRole,
+  ) {
+    if (resolvedRole != 'student') {
+      return avatar;
     }
 
-    return _buildFallback(resolvedName, resolvedRole);
+    final resolvedUserId = (resolvedUser?.uid ?? widget.userId ?? '').trim();
+    final explicitPremium =
+        widget.isPremium ??
+        resolvedUser?.hasActivePremium ??
+        _currentUserPremiumStatus(context, resolvedUserId);
+
+    if (explicitPremium != null) {
+      if (resolvedUserId.isNotEmpty) {
+        PremiumStatusResolver.instance.prime(resolvedUserId, explicitPremium);
+      }
+      return explicitPremium
+          ? _PremiumAvatarFrame(radius: widget.radius, child: avatar)
+          : avatar;
+    }
+
+    if (resolvedUserId.isEmpty) {
+      return avatar;
+    }
+
+    final cachedPremium = PremiumStatusResolver.instance.cachedActivePremium(
+      resolvedUserId,
+    );
+    if (cachedPremium != null) {
+      return cachedPremium
+          ? _PremiumAvatarFrame(radius: widget.radius, child: avatar)
+          : avatar;
+    }
+
+    return FutureBuilder<bool>(
+      future: PremiumStatusResolver.instance.hasActivePremiumForStudent(
+        resolvedUserId,
+      ),
+      builder: (context, snapshot) {
+        return snapshot.data == true
+            ? _PremiumAvatarFrame(radius: widget.radius, child: avatar)
+            : avatar;
+      },
+    );
+  }
+
+  bool? _currentUserPremiumStatus(BuildContext context, String userId) {
+    if (userId.isEmpty) {
+      return null;
+    }
+
+    try {
+      final subscriptionProvider = context.watch<SubscriptionProvider>();
+      return subscriptionProvider.subscription?.uid.trim() == userId
+          ? subscriptionProvider.hasActivePremium
+          : null;
+    } on ProviderNotFoundException {
+      return null;
+    }
   }
 
   String _resolvePhotoUrl(
@@ -363,5 +447,93 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
       default:
         return Colors.white;
     }
+  }
+}
+
+class _PremiumAvatarFrame extends StatelessWidget {
+  final double radius;
+  final Widget child;
+
+  const _PremiumAvatarFrame({required this.radius, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final diameter = radius * 2;
+    final strokeWidth = (radius * 0.10).clamp(1.5, 3.2).toDouble();
+    final badgeSize = (radius * 0.62).clamp(11.0, 23.0).toDouble();
+    final iconSize = (badgeSize * 0.62).clamp(7.0, 15.0).toDouble();
+    final label = AppLocalizations.of(context)?.premiumBadgeLabel ?? 'Premium';
+
+    return Tooltip(
+      message: label,
+      child: Semantics(
+        label: label,
+        child: SizedBox(
+          width: diameter,
+          height: diameter,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(child: child),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFFF6C453),
+                        width: strokeWidth,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(
+                            0xFFF6C453,
+                          ).withValues(alpha: 0.22),
+                          blurRadius: radius * 0.38,
+                          spreadRadius: 0.5,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  width: badgeSize,
+                  height: badgeSize,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFFD76A), Color(0xFFE59A18)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.92),
+                      width: (badgeSize * 0.12).clamp(1.2, 2.0).toDouble(),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFE59A18).withValues(alpha: 0.34),
+                        blurRadius: radius * 0.22,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.workspace_premium_rounded,
+                    size: iconSize,
+                    color: const Color(0xFF3B2500),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

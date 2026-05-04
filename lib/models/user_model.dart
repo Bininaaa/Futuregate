@@ -33,6 +33,7 @@ class UserModel {
   final bool isOnline;
   final Timestamp? lastSeenAt;
   final bool isActive;
+  final bool? hasActivePremium;
   final String provider; // 'email' or 'google'
   final bool studentOnboardingPending;
   final String preferredPostingLanguage;
@@ -41,6 +42,7 @@ class UserModel {
   bool get isGoogleProvider => provider == 'google';
   bool get isAdmin => role == 'admin';
   bool get isCompany => role == 'company';
+  bool get isPremiumStudent => role == 'student' && hasActivePremium == true;
   bool get needsStudentOnboarding =>
       role == 'student' && studentOnboardingPending;
 
@@ -79,6 +81,7 @@ class UserModel {
     this.isOnline = false,
     this.lastSeenAt,
     this.studentOnboardingPending = false,
+    this.hasActivePremium,
     this.preferredPostingLanguage = '',
   });
 
@@ -159,6 +162,12 @@ class UserModel {
       isOnline: map['isOnline'] == true,
       lastSeenAt: _parseTimestamp(map['lastSeenAt']),
       isActive: map['isActive'] ?? true,
+      hasActivePremium: _parseOptionalBool(
+        map['hasActivePremium'] ??
+            map['isPremium'] ??
+            map['premiumActive'] ??
+            map['premium'],
+      ),
       provider: map['provider'] ?? 'email',
       studentOnboardingPending: map['studentOnboardingPending'] == true,
       preferredPostingLanguage: (map['preferredPostingLanguage'] ?? '')
@@ -201,6 +210,7 @@ class UserModel {
       'isOnline': isOnline,
       'lastSeenAt': lastSeenAt,
       'isActive': isActive,
+      if (hasActivePremium != null) 'hasActivePremium': hasActivePremium,
       'provider': provider,
       'studentOnboardingPending': studentOnboardingPending,
       'preferredPostingLanguage': preferredPostingLanguage,
@@ -240,6 +250,7 @@ class UserModel {
     bool? isOnline,
     Timestamp? lastSeenAt,
     bool? isActive,
+    bool? hasActivePremium,
     String? provider,
     bool? studentOnboardingPending,
     String? preferredPostingLanguage,
@@ -282,6 +293,7 @@ class UserModel {
       isOnline: isOnline ?? this.isOnline,
       lastSeenAt: lastSeenAt ?? this.lastSeenAt,
       isActive: isActive ?? this.isActive,
+      hasActivePremium: hasActivePremium ?? this.hasActivePremium,
       provider: provider ?? this.provider,
       studentOnboardingPending:
           studentOnboardingPending ?? this.studentOnboardingPending,
@@ -339,6 +351,24 @@ class UserModel {
     }
 
     return '';
+  }
+
+  static bool? _parseOptionalBool(dynamic value) {
+    if (value is bool) {
+      return value;
+    }
+
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'true') {
+        return true;
+      }
+      if (normalized == 'false') {
+        return false;
+      }
+    }
+
+    return null;
   }
 
   static String _normalizeApprovalStatus(

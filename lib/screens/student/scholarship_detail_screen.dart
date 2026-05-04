@@ -1461,6 +1461,8 @@ class _ApplicationPreviewCard extends StatelessWidget {
                       AppLocalizations.of(
                         context,
                       )!.studentOfficialScholarshipSource,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.product(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,

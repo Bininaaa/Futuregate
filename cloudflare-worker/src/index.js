@@ -2612,13 +2612,40 @@ function resolveChatAttachmentMetadata(messageData) {
   };
 }
 
-function buildPublicUserProfile(userId, userData) {
+async function resolveActivePremiumStatus(env, userId, role) {
+  if (trim(role).toLowerCase() !== "student") {
+    return false;
+  }
+
+  const normalizedUserId = trim(userId);
+  if (!normalizedUserId) {
+    return false;
+  }
+
+  try {
+    const subscriptionDoc = await firestoreGet(
+      env,
+      "subscriptions",
+      normalizedUserId,
+    );
+    return isActiveSubscription(subscriptionDoc?.data || {});
+  } catch (error) {
+    console.warn(
+      `[public-profile:premium] failed for ${normalizedUserId}:`,
+      error?.message || error,
+    );
+    return false;
+  }
+}
+
+async function buildPublicUserProfile(env, userId, userData) {
   const safeUserData =
     userData && typeof userData === "object" ? userData : {};
   const photoType = trim(safeUserData.photoType);
   const avatarId = trim(safeUserData.avatarId);
   const role = trim(safeUserData.role);
   const isAdmin = role.toLowerCase() === "admin";
+  const hasActivePremium = await resolveActivePremiumStatus(env, userId, role);
 
   return {
     uid: trim(userId),
@@ -2642,6 +2669,7 @@ function buildPublicUserProfile(userId, userData) {
     isOnline: safeUserData.isOnline === true,
     lastSeenAt: safeUserData.lastSeenAt || null,
     isActive: safeUserData.isActive !== false,
+    hasActivePremium,
   };
 }
 
@@ -2965,7 +2993,7 @@ async function handleGetPublicUserProfile(request, env, userId) {
   }
 
   return json({
-    user: buildPublicUserProfile(userId, userDoc.data || {}),
+    user: await buildPublicUserProfile(env, userId, userDoc.data || {}),
   });
 }
 
@@ -3035,11 +3063,17 @@ async function handleSearchChatContacts(request, env) {
     { field: "isActive", op: "EQUAL", value: true },
   ]);
 
-  const filteredUsers = users
+  const eligibleUsers = users
     .filter((userDoc) => trim(userDoc.id) !== auth.user.uid)
-    .filter((userDoc) => eligibleApplicationsByUserId.has(trim(userDoc.id)))
-    .map((userDoc) => {
-      const profile = buildPublicUserProfile(userDoc.id, userDoc.data || {});
+    .filter((userDoc) => eligibleApplicationsByUserId.has(trim(userDoc.id)));
+
+  const filteredUsers = (await Promise.all(
+    eligibleUsers.map(async (userDoc) => {
+      const profile = await buildPublicUserProfile(
+        env,
+        userDoc.id,
+        userDoc.data || {},
+      );
       const application = eligibleApplicationsByUserId.get(trim(userDoc.id));
       return {
         ...profile,
@@ -3047,7 +3081,8 @@ async function handleSearchChatContacts(request, env) {
         applicationStatus: application?.status || "",
         opportunityId: application?.opportunityId || "",
       };
-    })
+    }),
+  ))
     .filter((user) => {
       if (!query) {
         return true;

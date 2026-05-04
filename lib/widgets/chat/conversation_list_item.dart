@@ -315,7 +315,7 @@ class _ConversationAvatar extends StatelessWidget {
         if (isOnline)
           Positioned(
             right: 0,
-            bottom: 0,
+            top: 0,
             child: Container(
               width: 13,
               height: 13,

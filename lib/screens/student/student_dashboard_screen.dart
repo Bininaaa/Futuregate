@@ -40,7 +40,6 @@ import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/opportunity_dashboard_widgets.dart';
 import '../../widgets/opportunity_type_badge.dart';
-import '../../widgets/premium_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -361,11 +360,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     _DashboardSnapshot snapshot,
   ) {
     final unreadCount = context.watch<NotificationProvider>().unreadCount;
-    final isPremium = context.watch<SubscriptionProvider>().hasActivePremium;
     final studentIdentity = _studentIdentityLine(user);
-    final profileCompletionLabel = AppLocalizations.of(
-      context,
-    )!.uiCompletion(profileCompletion);
     final focus = _resolveDashboardFocus(
       context,
       user: user,
@@ -457,6 +452,30 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             ),
                           ),
                           Center(child: ProfileAvatar(user: user, radius: 25)),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.18),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.edit_rounded,
+                                size: 12,
+                                color: Color(0xFF4F46E5),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -497,20 +516,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
-                        const SizedBox(height: 7),
-                        Wrap(
-                          spacing: 7,
-                          runSpacing: 6,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            _DashboardHeaderStatusPill(
-                              icon: Icons.percent_rounded,
-                              label: profileCompletionLabel,
-                            ),
-                            if (isPremium)
-                              const PremiumBadge(size: PremiumBadgeSize.small),
-                          ],
-                        ),
                       ],
                     ),
                   ),
@@ -1507,49 +1512,60 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           const SizedBox(height: 12),
           Row(
             children: [
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _openProfilePrimaryAction(context, user, cv),
-                  borderRadius: BorderRadius.circular(14),
-                  child: Ink(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: accent,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(
-                      primaryLabel,
-                      style: AppTypography.product(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+              Flexible(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _openProfilePrimaryAction(context, user, cv),
+                    borderRadius: BorderRadius.circular(14),
+                    child: Ink(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: accent,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        primaryLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.product(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 10),
-              TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                ),
-                style: TextButton.styleFrom(
-                  foregroundColor: textDark,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 10,
+              Flexible(
+                fit: FlexFit.loose,
+                child: TextButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
                   ),
-                  textStyle: AppTypography.product(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w700,
+                  style: TextButton.styleFrom(
+                    foregroundColor: textDark,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 10,
+                    ),
+                    textStyle: AppTypography.product(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.uiViewProfile,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                child: Text(AppLocalizations.of(context)!.uiViewProfile),
               ),
             ],
           ),
@@ -1633,6 +1649,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ? item.location.trim()
         : _closingSoonLocationFallback(normalizedType);
 
+    final cardWidth = (MediaQuery.sizeOf(context).width * 0.58).clamp(
+      180.0,
+      236.0,
+    );
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1641,7 +1661,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         },
         borderRadius: BorderRadius.circular(24),
         child: Ink(
-          width: 222,
+          width: cardWidth,
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: cardWhite,
@@ -1976,15 +1996,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
 
-    if (textScale > 1.16) {
-      return 252;
-    }
-
-    if (screenWidth < 390 || textScale > 1.0) {
-      return 240;
-    }
-
-    return 236;
+    if (textScale > 1.16) return 260;
+    if (textScale > 1.0) return 248;
+    if (screenWidth < 360) return 230;
+    if (screenWidth < 390) return 240;
+    return 244;
   }
 
   Widget _buildRecommendedCard(
@@ -2009,13 +2025,20 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ? item.location.trim()
         : _closingSoonLocationFallback(normalizedType);
 
+    final recCardWidth = (MediaQuery.sizeOf(context).width * 0.62).clamp(
+      190.0,
+      252.0,
+    );
+    // Maximum text width inside the footer pill:
+    //   innerWidth(recCardWidth-28) - icon(11) - gap(3) - pillPadding(16) - fixedGap(8) - arrow(26) = recCardWidth - 92
+    final footerTextMaxWidth = math.max(60.0, recCardWidth - 92);
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () => OpportunityDetailScreen.show(context, item),
         borderRadius: BorderRadius.circular(22),
         child: Ink(
-          width: 236,
+          width: recCardWidth,
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: cardWhite,
@@ -2194,7 +2217,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           ),
                           const SizedBox(width: 3),
                           ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 128),
+                            constraints: BoxConstraints(
+                              maxWidth: footerTextMaxWidth,
+                            ),
                             child: Text(
                               fundingLabel != null
                                   ? AppLocalizations.of(
@@ -3689,40 +3714,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
 // ═══════════════════════════════════════════════════════════════════════════
 // Data classes
 // ═══════════════════════════════════════════════════════════════════════════
-
-class _DashboardHeaderStatusPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _DashboardHeaderStatusPill({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 11, color: Colors.white.withValues(alpha: 0.92)),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: AppTypography.product(
-              fontSize: 9.5,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _DashboardSnapshot {
   final int savedCount;

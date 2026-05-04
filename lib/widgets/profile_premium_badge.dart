@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../services/subscription_service.dart';
+import '../services/premium_status_resolver.dart';
 import 'premium_badge.dart';
 
 class ProfilePremiumBadge extends StatefulWidget {
@@ -22,7 +22,6 @@ class ProfilePremiumBadge extends StatefulWidget {
 }
 
 class _ProfilePremiumBadgeState extends State<ProfilePremiumBadge> {
-  final SubscriptionService _subscriptionService = SubscriptionService();
   late Future<bool> _isPremiumFuture;
 
   @override
@@ -51,11 +50,7 @@ class _ProfilePremiumBadgeState extends State<ProfilePremiumBadge> {
       return false;
     }
 
-    try {
-      return await _subscriptionService.hasActivePremium(uid);
-    } catch (_) {
-      return false;
-    }
+    return PremiumStatusResolver.instance.hasActivePremiumForStudent(uid);
   }
 
   @override

@@ -369,10 +369,17 @@ class _SlideView extends StatelessWidget {
                           child: Transform.scale(
                             scale: heroScale * heroVisualScale,
                             alignment: Alignment.topCenter,
-                            child: SizedBox(
-                              width: scaledWidth,
-                              height: spec.heroHeight,
-                              child: _HeroStage(spec: spec),
+                            // OverflowBox allows scaledWidth > viewport intentionally;
+                            // Transform.scale shrinks the painted output back to fit.
+                            child: OverflowBox(
+                              maxWidth: scaledWidth,
+                              maxHeight: spec.heroHeight,
+                              alignment: Alignment.topCenter,
+                              child: SizedBox(
+                                width: scaledWidth,
+                                height: spec.heroHeight,
+                                child: _HeroStage(spec: spec),
+                              ),
                             ),
                           ),
                         ),
@@ -928,219 +935,244 @@ class _HeroStage extends StatelessWidget {
 
   Widget _buildFutureHero(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return SizedBox(
-      height: spec.heroHeight,
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                Image.asset(
-                  spec.assetPath,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
-                  filterQuality: FilterQuality.high,
-                ),
-                const DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: <Color>[
-                        Color(0x20F7F8FE),
-                        Color(0x0007112E),
-                        Color(0xC60A1026),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            left: 16,
-            top: 72,
-            child: Opacity(
-              opacity: 0.8,
-              child: _GlassCard(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                borderRadius: 28,
-                child: SizedBox(
-                  width: 204,
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 46,
-                        height: 46,
-                        decoration: const BoxDecoration(
-                          color: _primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.work_rounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(
-                              l10n.uiInternshipUppercase,
-                              style: AppTypography.product(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.9,
-                                color: _primary,
-                              ),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              l10n.uiUxDesignAtTech,
-                              style: AppTypography.product(
-                                fontSize: 14.5,
-                                fontWeight: FontWeight.w800,
-                                color: _ink,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 12,
-            top: 182,
-            child: Opacity(
-              opacity: 0.8,
-              child: _GlassCard(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                borderRadius: 28,
-                child: SizedBox(
-                  width: 194,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          const Icon(
-                            Icons.workspace_premium_outlined,
-                            color: _deepTeal,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n.uiGlobalScholarship,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.product(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                color: _ink,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.uiFullTuitionCoverage,
-                        style: AppTypography.product(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF6D7891),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 12,
-            bottom: 28,
-            child: _GlassCard(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              borderRadius: 28,
-              child: SizedBox(
-                width: 188,
-                child: Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final w = constraints.maxWidth;
+        // Card widths scale with available width; clamped so they never look
+        // too small on tablets or too large on tiny phones.
+        final cardWide = (w * 0.44).clamp(160.0, 210.0);
+        final cardMid = (w * 0.42).clamp(150.0, 200.0);
+        final cardNarrow = (w * 0.41).clamp(145.0, 195.0);
+
+        return SizedBox(
+          height: spec.heroHeight,
+          child: Stack(
+            children: <Widget>[
+              Positioned.fill(
+                child: Stack(
+                  fit: StackFit.expand,
                   children: <Widget>[
-                    SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: <Widget>[
-                          SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: CircularProgressIndicator(
-                              value: 0.7,
-                              strokeWidth: 4,
-                              backgroundColor: const Color(0xFFDDE4EF),
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                _deepTeal,
-                              ),
-                            ),
-                          ),
-                          const Icon(
-                            Icons.insights_outlined,
-                            color: _deepTeal,
-                            size: 18,
-                          ),
-                        ],
-                      ),
+                    Image.asset(
+                      spec.assetPath,
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center,
+                      filterQuality: FilterQuality.high,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            l10n.uiDataSciencePro,
-                            style: AppTypography.product(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: _ink,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '70% Completed',
-                            style: AppTypography.product(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w600,
-                              color: _deepTeal,
-                            ),
-                          ),
-                        ],
+                    const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: <Color>[
+                            Color(0x20F7F8FE),
+                            Color(0x0007112E),
+                            Color(0xC60A1026),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+              Positioned(
+                left: 16,
+                top: 72,
+                child: Opacity(
+                  opacity: 0.8,
+                  child: _GlassCard(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    borderRadius: 28,
+                    child: SizedBox(
+                      width: cardWide,
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            width: 46,
+                            height: 46,
+                            decoration: const BoxDecoration(
+                              color: _primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.work_rounded,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Text(
+                                  l10n.uiInternshipUppercase,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.product(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.9,
+                                    color: _primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  l10n.uiUxDesignAtTech,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.product(
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: _ink,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 12,
+                top: 182,
+                child: Opacity(
+                  opacity: 0.8,
+                  child: _GlassCard(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    borderRadius: 28,
+                    child: SizedBox(
+                      width: cardMid,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              const Icon(
+                                Icons.workspace_premium_outlined,
+                                color: _deepTeal,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  l10n.uiGlobalScholarship,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.product(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                    color: _ink,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.uiFullTuitionCoverage,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.product(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF6D7891),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 12,
+                bottom: 28,
+                child: _GlassCard(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  borderRadius: 28,
+                  child: SizedBox(
+                    width: cardNarrow,
+                    child: Row(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: CircularProgressIndicator(
+                                  value: 0.7,
+                                  strokeWidth: 4,
+                                  backgroundColor: const Color(0xFFDDE4EF),
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                    _deepTeal,
+                                  ),
+                                ),
+                              ),
+                              const Icon(
+                                Icons.insights_outlined,
+                                color: _deepTeal,
+                                size: 18,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                l10n.uiDataSciencePro,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.product(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: _ink,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '70% Completed',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.product(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: _deepTeal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
