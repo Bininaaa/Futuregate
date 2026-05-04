@@ -77,7 +77,8 @@ class ApplicationModel {
   }
 
   bool get shouldPrioritizeApplication =>
-      priorityApplication || isPremiumAtApply;
+      ApplicationStatus.parse(status) == ApplicationStatus.pending &&
+      (priorityApplication || isPremiumAtApply);
 
   static int comparePriorityThenRecent(
     ApplicationModel first,

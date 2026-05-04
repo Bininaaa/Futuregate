@@ -173,7 +173,7 @@ class _StandaloneApplicationDetailsSheetState
       fallbackRole: 'student',
       contextLabel: l10n.uiApplication,
       showRole: false,
-      isPremium: application.shouldPrioritizeApplication,
+      isPremium: application.shouldPrioritizeApplication ? true : null,
       presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }
@@ -2026,7 +2026,9 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                             userId: application.studentId,
                             fallbackName: application.studentName,
                             role: 'student',
-                            isPremium: application.shouldPrioritizeApplication,
+                            isPremium: application.shouldPrioritizeApplication
+                                ? true
+                                : null,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -2566,7 +2568,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       fallbackRole: 'student',
       contextLabel: _l10n.uiApplication,
       showRole: false,
-      isPremium: application.shouldPrioritizeApplication,
+      isPremium: application.shouldPrioritizeApplication ? true : null,
       presentation: UserProfilePreviewPresentation.bottomSheet,
     );
   }
@@ -4554,7 +4556,7 @@ class _DetailHeroCard extends StatelessWidget {
                           userId: studentId,
                           fallbackName: studentName,
                           role: 'student',
-                          isPremium: isPriority,
+                          isPremium: isPriority ? true : null,
                         ),
                         Positioned(
                           right: -2,

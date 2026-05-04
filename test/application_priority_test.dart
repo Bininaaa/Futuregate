@@ -65,6 +65,29 @@ void main() {
     expect(application.shouldPrioritizeApplication, isTrue);
   });
 
+  test('ApplicationModel only prioritizes pending premium applications', () {
+    final withdrawnPremium = ApplicationModel(
+      id: 'student_1_opp_1',
+      studentId: 'student_1',
+      studentName: 'Student One',
+      opportunityId: 'opp_1',
+      companyId: 'company_1',
+      cvId: '',
+      status: 'withdrawn',
+      isPremiumAtApply: true,
+      priorityApplication: true,
+    );
+
+    final acceptedPremium = withdrawnPremium.copyWith(
+      id: 'student_1_opp_2',
+      opportunityId: 'opp_2',
+      status: 'accepted',
+    );
+
+    expect(withdrawnPremium.shouldPrioritizeApplication, isFalse);
+    expect(acceptedPremium.shouldPrioritizeApplication, isFalse);
+  });
+
   test(
     'Priority comparator sorts premium applications before newer free ones',
     () {
@@ -111,6 +134,53 @@ void main() {
         'legacy',
         'premium',
         'free',
+      ]);
+    },
+  );
+
+  test(
+    'Priority comparator does not elevate withdrawn premium applications',
+    () {
+      final withdrawnPremium = ApplicationModel(
+        id: 'withdrawn',
+        studentId: 'student_1',
+        studentName: 'Withdrawn Premium Student',
+        opportunityId: 'opp_1',
+        companyId: 'company_1',
+        cvId: '',
+        status: 'withdrawn',
+        appliedAt: Timestamp.fromDate(DateTime(2026, 5, 1, 9)),
+        priorityApplication: true,
+      );
+      final newerFree = ApplicationModel(
+        id: 'free',
+        studentId: 'student_2',
+        studentName: 'Free Student',
+        opportunityId: 'opp_1',
+        companyId: 'company_1',
+        cvId: '',
+        status: 'pending',
+        appliedAt: Timestamp.fromDate(DateTime(2026, 5, 1, 10)),
+      );
+      final pendingPremium = ApplicationModel(
+        id: 'pending-premium',
+        studentId: 'student_3',
+        studentName: 'Pending Premium Student',
+        opportunityId: 'opp_1',
+        companyId: 'company_1',
+        cvId: '',
+        status: 'pending',
+        appliedAt: Timestamp.fromDate(DateTime(2026, 5, 1, 8)),
+        priorityApplication: true,
+      );
+
+      final applications = [withdrawnPremium, newerFree, pendingPremium]
+        ..sort(ApplicationModel.comparePriorityThenRecent);
+
+      expect(applications.map((application) => application.id), [
+        'pending-premium',
+        'free',
+        'withdrawn',
       ]);
     },
   );
