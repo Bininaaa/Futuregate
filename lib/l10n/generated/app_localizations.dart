@@ -20365,6 +20365,102 @@ abstract class AppLocalizations {
   /// **'Premium Pass holders can apply right now. Free students can apply once the early access period ends.'**
   String get earlyAccessLockedModalBody;
 
+  /// No description provided for @premiumEarlyAccessLockedChip.
+  ///
+  /// In en, this message translates to:
+  /// **'🔒 Premium Early Access'**
+  String get premiumEarlyAccessLockedChip;
+
+  /// No description provided for @premiumEarlyAccessUnlockedChip.
+  ///
+  /// In en, this message translates to:
+  /// **'⚡ Early Access Unlocked'**
+  String get premiumEarlyAccessUnlockedChip;
+
+  /// No description provided for @premiumEarlyAccessBadgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Early Access'**
+  String get premiumEarlyAccessBadgeLabel;
+
+  /// No description provided for @earlyAccessUnlockedBadgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Access Unlocked'**
+  String get earlyAccessUnlockedBadgeLabel;
+
+  /// No description provided for @earlyAccessApplicationsOpenForYouIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications open for you in {time}'**
+  String earlyAccessApplicationsOpenForYouIn(String time);
+
+  /// No description provided for @earlyAccessTimeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{1 day} other{{days} days}}'**
+  String earlyAccessTimeDays(int days);
+
+  /// No description provided for @earlyAccessTimeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours, plural, =1{1 hour} other{{hours} hours}}'**
+  String earlyAccessTimeHours(int hours);
+
+  /// No description provided for @earlyAccessFreeLockedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can view this opportunity now, but applications open for free students in {time}.'**
+  String earlyAccessFreeLockedBody(String time);
+
+  /// No description provided for @earlyAccessPremiumCanApplyImmediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium students can apply immediately with priority.'**
+  String get earlyAccessPremiumCanApplyImmediately;
+
+  /// No description provided for @earlyAccessPremiumUnlockedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can apply before free students.'**
+  String get earlyAccessPremiumUnlockedBody;
+
+  /// No description provided for @earlyAccessPriorityVisibilityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your application will be sent with priority visibility.'**
+  String get earlyAccessPriorityVisibilityBody;
+
+  /// No description provided for @upgradeToApplyNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Apply Now'**
+  String get upgradeToApplyNow;
+
+  /// No description provided for @applyWithPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply with Priority'**
+  String get applyWithPriority;
+
+  /// No description provided for @applicationSentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Sent'**
+  String get applicationSentLabel;
+
+  /// No description provided for @sentWithPriorityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'⭐ Sent with Priority'**
+  String get sentWithPriorityLabel;
+
+  /// No description provided for @closedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get closedLabel;
+
   /// No description provided for @earlyAccessRejectReasonHint.
   ///
   /// In en, this message translates to:
@@ -20544,6 +20640,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Priority'**
   String get priorityApplicationLabel;
+
+  /// No description provided for @priorityApplicationFullLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'⭐ Priority Application'**
+  String get priorityApplicationFullLabel;
 
   /// No description provided for @priorityApplicationTooltip.
   ///

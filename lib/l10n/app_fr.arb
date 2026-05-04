@@ -5679,6 +5679,51 @@
   "earlyAccessLockedMessage": "Les étudiants Premium peuvent postuler maintenant. Bientôt ouvert à tous.",
   "earlyAccessLockedModalTitle": "Offre en accès anticipé",
   "earlyAccessLockedModalBody": "Les détenteurs du Pass Premium peuvent postuler maintenant. Les autres pourront postuler à la fin de la période d'accès anticipé.",
+  "premiumEarlyAccessLockedChip": "🔒 Accès anticipé Premium",
+  "premiumEarlyAccessUnlockedChip": "⚡ Accès anticipé débloqué",
+  "premiumBadgeLabel": "Premium",
+  "premiumEarlyAccessBadgeLabel": "Accès anticipé Premium",
+  "earlyAccessUnlockedBadgeLabel": "Accès anticipé débloqué",
+  "earlyAccessApplicationsOpenForYouIn": "Les candidatures ouvriront pour vous dans {time}",
+  "@earlyAccessApplicationsOpenForYouIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "earlyAccessTimeDays": "{days, plural, =1{1 jour} other{{days} jours}}",
+  "@earlyAccessTimeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "earlyAccessTimeHours": "{hours, plural, =1{1 heure} other{{hours} heures}}",
+  "@earlyAccessTimeHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "earlyAccessFreeLockedBody": "Vous pouvez voir cette opportunité maintenant, mais les candidatures ouvriront aux étudiants gratuits dans {time}.",
+  "@earlyAccessFreeLockedBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "earlyAccessPremiumCanApplyImmediately": "Les étudiants Premium peuvent postuler immédiatement avec priorité.",
+  "earlyAccessPremiumUnlockedBody": "Vous pouvez postuler avant les étudiants gratuits.",
+  "earlyAccessPriorityVisibilityBody": "Votre candidature sera envoyée avec une visibilité prioritaire.",
+  "upgradeToApplyNow": "Passer Premium pour postuler",
+  "applyWithPriority": "Postuler avec priorité",
+  "applicationSentLabel": "Candidature envoyée",
+  "sentWithPriorityLabel": "⭐ Envoyée avec priorité",
+  "closedLabel": "Clôturée",
   "earlyAccessRejectReasonHint": "Motif du rejet (facultatif)",
   "earlyAccessDelayLabel": "Délai avant publication publique (heures)",
   "earlyAccessOpensSoonLabel": "Bientôt disponible",
@@ -5736,6 +5781,7 @@
   "adminEarlyAccessPostLabel": "Publication",
   "adminEarlyAccessMakeNormalButton": "Retirer l'accès anticipé",
   "priorityApplicationLabel": "Prioritaire",
+  "priorityApplicationFullLabel": "⭐ Candidature prioritaire",
   "priorityApplicationTooltip": "Ce candidat avait un Pass Premium actif au moment de sa candidature.",
   "applicationSortOrderLabel": "Ordre de tri",
   "applicationSortPriorityFirst": "Prioritaires d'abord"

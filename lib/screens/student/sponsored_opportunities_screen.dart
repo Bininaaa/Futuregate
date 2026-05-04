@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
+import '../../models/student_application_item_model.dart';
+import '../../models/subscription_model.dart';
 import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cv_provider.dart';
@@ -15,11 +17,14 @@ import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
 import '../../utils/localized_display.dart';
+import '../../utils/opportunity_access.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/early_access_label.dart';
 import '../../widgets/premium_upgrade_modal.dart';
+import '../../widgets/priority_application_badge.dart';
 import '../../widgets/saved_limit_upgrade_modal.dart';
 import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -295,6 +300,20 @@ class _SponsoredOpportunitiesScreenState
     }
   }
 
+  Future<void> _showEarlyAccessUpgradeModal() async {
+    final l10n = AppLocalizations.of(context)!;
+    await showPremiumUpgradeModal(
+      context,
+      title: l10n.earlyAccessLockedModalTitle,
+      body: l10n.earlyAccessLockedModalBody,
+      highlightText: l10n.earlyAccessLockedMessage,
+      onUpgrade: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+      ),
+    );
+  }
+
   Future<void> _applyNow(_SponsoredCardModel item) async {
     final opportunity = item.opportunity;
 
@@ -316,22 +335,12 @@ class _SponsoredOpportunitiesScreenState
       return;
     }
 
-    if (opportunity.isEarlyAccessActive) {
-      final sub = context.read<SubscriptionProvider>().subscription;
-      if (!(sub?.isActive ?? false)) {
-        final l10n = AppLocalizations.of(context)!;
-        await showPremiumUpgradeModal(
-          context,
-          title: l10n.earlyAccessLockedModalTitle,
-          body: l10n.earlyAccessLockedModalBody,
-          highlightText: l10n.earlyAccessLockedMessage,
-          onUpgrade: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
-          ),
-        );
-        return;
-      }
+    if (isEarlyAccessLockedForUser(
+      opportunity,
+      context.read<SubscriptionProvider>().subscription,
+    )) {
+      await _showEarlyAccessUpgradeModal();
+      return;
     }
 
     setState(() {
@@ -383,16 +392,7 @@ class _SponsoredOpportunitiesScreenState
         );
       } on EarlyAccessLockedException {
         if (!mounted) return;
-        final l10n = AppLocalizations.of(context)!;
-        await showPremiumUpgradeModal(
-          context,
-          title: l10n.earlyAccessLockedModalTitle,
-          body: l10n.earlyAccessLockedModalBody,
-          onUpgrade: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
-          ),
-        );
+        await _showEarlyAccessUpgradeModal();
         return;
       }
 
@@ -435,11 +435,13 @@ class _SponsoredOpportunitiesScreenState
 
   _SponsoredActionState _actionStateForOpportunity(
     OpportunityModel opportunity,
-    Map<String, String> appliedStatuses,
+    Map<String, StudentApplicationItemModel> submittedApplications,
+    SubscriptionModel? subscription,
   ) {
-    final applicationStatus = appliedStatuses[opportunity.id];
-    if (applicationStatus != null &&
-        ApplicationStatus.parse(applicationStatus) !=
+    final submittedApplication = submittedApplications[opportunity.id];
+    final applicationStatus = submittedApplication?.status;
+    if (submittedApplication != null &&
+        ApplicationStatus.parse(applicationStatus ?? '') !=
             ApplicationStatus.withdrawn) {
       return _SponsoredActionState(
         label: ApplicationStatus.label(
@@ -448,6 +450,16 @@ class _SponsoredOpportunitiesScreenState
         ),
         color: ApplicationStatus.color(applicationStatus),
         icon: _sponsoredApplicationStatusIcon(applicationStatus),
+        priorityApplied: shouldShowPriorityApplication(submittedApplication),
+      );
+    }
+
+    final normalizedStatus = opportunity.effectiveStatus();
+    if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
+      return _SponsoredActionState(
+        label: AppLocalizations.of(context)!.closedLabel,
+        color: const Color(0xFF94A3B8),
+        icon: Icons.lock_outline_rounded,
       );
     }
 
@@ -459,12 +471,21 @@ class _SponsoredOpportunitiesScreenState
       );
     }
 
-    final normalizedStatus = opportunity.effectiveStatus();
-    if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
+    if (isEarlyAccessLockedForUser(opportunity, subscription)) {
       return _SponsoredActionState(
-        label: AppLocalizations.of(context)!.uiClosed,
-        color: const Color(0xFF94A3B8),
-        icon: Icons.lock_outline_rounded,
+        label: AppLocalizations.of(context)!.upgradeToApplyNow,
+        icon: Icons.workspace_premium_rounded,
+        isLockedEarlyAccess: true,
+        remaining: getRemainingEarlyAccessTime(opportunity),
+      );
+    }
+
+    if (isEarlyAccessActive(opportunity) && hasActivePremium(subscription)) {
+      return _SponsoredActionState(
+        label: AppLocalizations.of(context)!.applyWithPriority,
+        icon: Icons.flash_on_rounded,
+        isPriorityEarlyAccess: true,
+        remaining: getRemainingEarlyAccessTime(opportunity),
       );
     }
 
@@ -967,7 +988,8 @@ class _SponsoredOpportunitiesScreenState
     final allOpportunities = opportunityProvider.opportunities;
     final allCards = _buildCardModels(allOpportunities);
     final visibleCards = _applyFilters(allCards);
-    final appliedStatuses = applicationProvider.appliedStatusMap;
+    final submittedApplications = applicationProvider.submittedApplicationMap;
+    final subscription = context.watch<SubscriptionProvider>().subscription;
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
         .toSet();
@@ -1203,7 +1225,8 @@ class _SponsoredOpportunitiesScreenState
                                                   final actionState =
                                                       _actionStateForOpportunity(
                                                         opportunity,
-                                                        appliedStatuses,
+                                                        submittedApplications,
+                                                        subscription,
                                                       );
 
                                                   return _SponsoredGridCard(
@@ -1264,7 +1287,8 @@ class _SponsoredOpportunitiesScreenState
                                                   final listAction =
                                                       _actionStateForOpportunity(
                                                         listOpp,
-                                                        appliedStatuses,
+                                                        submittedApplications,
+                                                        subscription,
                                                       );
 
                                                   return _SponsoredListTile(
@@ -1681,6 +1705,13 @@ class _FeaturedSponsoredCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                      if (actionState.hasAccessMessaging) ...[
+                        const SizedBox(height: 10),
+                        _SponsoredAccessHighlights(
+                          actionState: actionState,
+                          compact: true,
+                        ),
+                      ],
                       const Spacer(),
                       if (item.compensation != null || item.duration != null)
                         Padding(
@@ -1815,9 +1846,15 @@ class _SponsoredGridCard extends StatelessWidget {
     final radius = BorderRadius.circular(compact ? 22 : 24);
     final heroColors = [
       item.iconColor.withValues(alpha: 0.94),
-      item.badgeColor.withValues(alpha: 0.86),
+      (actionState.isPriorityEarlyAccess
+              ? _SponsoredPalette.accent
+              : item.badgeColor)
+          .withValues(alpha: 0.86),
       _SponsoredPalette.heroEnd,
     ];
+    final borderAccent = actionState.isPriorityEarlyAccess
+        ? _SponsoredPalette.accent
+        : item.badgeColor;
 
     return Material(
       color: Colors.transparent,
@@ -1837,11 +1874,13 @@ class _SponsoredGridCard extends StatelessWidget {
               ],
             ),
             borderRadius: radius,
-            border: Border.all(color: item.badgeColor.withValues(alpha: 0.18)),
+            border: Border.all(color: borderAccent.withValues(alpha: 0.22)),
             boxShadow: [
               BoxShadow(
-                color: item.badgeColor.withValues(alpha: 0.08),
-                blurRadius: 24,
+                color: borderAccent.withValues(
+                  alpha: actionState.isPriorityEarlyAccess ? 0.16 : 0.08,
+                ),
+                blurRadius: actionState.isPriorityEarlyAccess ? 28 : 24,
                 offset: const Offset(0, 12),
               ),
             ],
@@ -2024,6 +2063,13 @@ class _SponsoredGridCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 14),
                     ],
+                    if (actionState.hasAccessMessaging) ...[
+                      _SponsoredAccessHighlights(
+                        actionState: actionState,
+                        compact: compact,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -2128,6 +2174,9 @@ class _SponsoredListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(16);
+    final stripeEnd = actionState.isPriorityEarlyAccess
+        ? _SponsoredPalette.accent
+        : item.badgeColor;
 
     return Material(
       color: Colors.transparent,
@@ -2163,7 +2212,7 @@ class _SponsoredListTile extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [item.iconColor, item.badgeColor],
+                      colors: [item.iconColor, stripeEnd],
                     ),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(radius.topLeft.x),
@@ -2235,6 +2284,13 @@ class _SponsoredListTile extends StatelessWidget {
                             ),
                           ] else
                             const SizedBox(height: 1),
+                          if (actionState.hasAccessMessaging) ...[
+                            const SizedBox(height: 7),
+                            _SponsoredAccessHighlights(
+                              actionState: actionState,
+                              compact: true,
+                            ),
+                          ],
                           const SizedBox(height: 7),
                           Row(
                             children: [
@@ -2497,6 +2553,55 @@ class _ApplyButton extends StatelessWidget {
   }
 }
 
+class _SponsoredAccessHighlights extends StatelessWidget {
+  final _SponsoredActionState actionState;
+  final bool compact;
+
+  const _SponsoredAccessHighlights({
+    required this.actionState,
+    required this.compact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (actionState.priorityApplied) {
+      return const PriorityApplicationBadge(compact: true, fullLabel: true);
+    }
+
+    if (!actionState.isLockedEarlyAccess &&
+        !actionState.isPriorityEarlyAccess) {
+      return const SizedBox.shrink();
+    }
+
+    return Wrap(
+      spacing: 7,
+      runSpacing: 7,
+      children: [
+        EarlyAccessStatusChip(
+          unlocked: actionState.isPriorityEarlyAccess,
+          compact: true,
+        ),
+        if (actionState.isLockedEarlyAccess)
+          EarlyAccessCountdownText(
+            remaining: actionState.remaining,
+            compact: true,
+          )
+        else
+          Text(
+            AppLocalizations.of(context)!.earlyAccessPremiumUnlockedBody,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.product(
+              fontSize: compact ? 10.5 : 11.2,
+              fontWeight: FontWeight.w700,
+              color: _SponsoredPalette.accentDark,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 class _BookmarkButton extends StatelessWidget {
   final bool isSaved;
   final bool isLoading;
@@ -2614,7 +2719,7 @@ class _SponsoredEmptyState extends StatelessWidget {
   }
 }
 
-IconData _sponsoredApplicationStatusIcon(String status) {
+IconData _sponsoredApplicationStatusIcon(String? status) {
   switch (ApplicationStatus.parse(status)) {
     case ApplicationStatus.accepted:
       return Icons.check_circle_rounded;
@@ -2632,10 +2737,24 @@ class _SponsoredActionState {
   final String label;
   final Color? color;
   final IconData? icon;
+  final bool isLockedEarlyAccess;
+  final bool isPriorityEarlyAccess;
+  final bool priorityApplied;
+  final Duration? remaining;
 
-  const _SponsoredActionState({required this.label, this.color, this.icon});
+  const _SponsoredActionState({
+    required this.label,
+    this.color,
+    this.icon,
+    this.isLockedEarlyAccess = false,
+    this.isPriorityEarlyAccess = false,
+    this.priorityApplied = false,
+    this.remaining,
+  });
 
   bool get isEnabled => color == null;
+  bool get hasAccessMessaging =>
+      isLockedEarlyAccess || isPriorityEarlyAccess || priorityApplied;
 }
 
 class _SponsoredFilterDefinition {

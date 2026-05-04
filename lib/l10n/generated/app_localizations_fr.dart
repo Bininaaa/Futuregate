@@ -12627,6 +12627,77 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les détenteurs du Pass Premium peuvent postuler maintenant. Les autres pourront postuler à la fin de la période d\'accès anticipé.';
 
   @override
+  String get premiumEarlyAccessLockedChip => '🔒 Accès anticipé Premium';
+
+  @override
+  String get premiumEarlyAccessUnlockedChip => '⚡ Accès anticipé débloqué';
+
+  @override
+  String get premiumEarlyAccessBadgeLabel => 'Accès anticipé Premium';
+
+  @override
+  String get earlyAccessUnlockedBadgeLabel => 'Accès anticipé débloqué';
+
+  @override
+  String earlyAccessApplicationsOpenForYouIn(String time) {
+    return 'Les candidatures ouvriront pour vous dans $time';
+  }
+
+  @override
+  String earlyAccessTimeDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days jours',
+      one: '1 jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String earlyAccessTimeHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours heures',
+      one: '1 heure',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String earlyAccessFreeLockedBody(String time) {
+    return 'Vous pouvez voir cette opportunité maintenant, mais les candidatures ouvriront aux étudiants gratuits dans $time.';
+  }
+
+  @override
+  String get earlyAccessPremiumCanApplyImmediately =>
+      'Les étudiants Premium peuvent postuler immédiatement avec priorité.';
+
+  @override
+  String get earlyAccessPremiumUnlockedBody =>
+      'Vous pouvez postuler avant les étudiants gratuits.';
+
+  @override
+  String get earlyAccessPriorityVisibilityBody =>
+      'Votre candidature sera envoyée avec une visibilité prioritaire.';
+
+  @override
+  String get upgradeToApplyNow => 'Passer Premium pour postuler';
+
+  @override
+  String get applyWithPriority => 'Postuler avec priorité';
+
+  @override
+  String get applicationSentLabel => 'Candidature envoyée';
+
+  @override
+  String get sentWithPriorityLabel => '⭐ Envoyée avec priorité';
+
+  @override
+  String get closedLabel => 'Clôturée';
+
+  @override
   String get earlyAccessRejectReasonHint => 'Motif du rejet (facultatif)';
 
   @override
@@ -12730,6 +12801,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get priorityApplicationLabel => 'Prioritaire';
+
+  @override
+  String get priorityApplicationFullLabel => '⭐ Candidature prioritaire';
 
   @override
   String get priorityApplicationTooltip =>

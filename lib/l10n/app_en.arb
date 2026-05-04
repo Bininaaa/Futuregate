@@ -7684,6 +7684,51 @@
   "earlyAccessLockedMessage": "Premium students can apply now. Opens to everyone soon.",
   "earlyAccessLockedModalTitle": "Early Access Opportunity",
   "earlyAccessLockedModalBody": "Premium Pass holders can apply right now. Free students can apply once the early access period ends.",
+  "premiumEarlyAccessLockedChip": "🔒 Premium Early Access",
+  "premiumEarlyAccessUnlockedChip": "⚡ Early Access Unlocked",
+  "premiumBadgeLabel": "Premium",
+  "premiumEarlyAccessBadgeLabel": "Premium Early Access",
+  "earlyAccessUnlockedBadgeLabel": "Early Access Unlocked",
+  "earlyAccessApplicationsOpenForYouIn": "Applications open for you in {time}",
+  "@earlyAccessApplicationsOpenForYouIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "earlyAccessTimeDays": "{days, plural, =1{1 day} other{{days} days}}",
+  "@earlyAccessTimeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "earlyAccessTimeHours": "{hours, plural, =1{1 hour} other{{hours} hours}}",
+  "@earlyAccessTimeHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "earlyAccessFreeLockedBody": "You can view this opportunity now, but applications open for free students in {time}.",
+  "@earlyAccessFreeLockedBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "earlyAccessPremiumCanApplyImmediately": "Premium students can apply immediately with priority.",
+  "earlyAccessPremiumUnlockedBody": "You can apply before free students.",
+  "earlyAccessPriorityVisibilityBody": "Your application will be sent with priority visibility.",
+  "upgradeToApplyNow": "Upgrade to Apply Now",
+  "applyWithPriority": "Apply with Priority",
+  "applicationSentLabel": "Application Sent",
+  "sentWithPriorityLabel": "⭐ Sent with Priority",
+  "closedLabel": "Closed",
   "earlyAccessRejectReasonHint": "Reason for rejection (optional)",
   "earlyAccessDelayLabel": "Delay before public (hours)",
   "earlyAccessOpensSoonLabel": "Opens soon",
@@ -7741,6 +7786,7 @@
   "adminEarlyAccessPostLabel": "Post",
   "adminEarlyAccessMakeNormalButton": "Remove Early Access",
   "priorityApplicationLabel": "Priority",
+  "priorityApplicationFullLabel": "⭐ Priority Application",
   "priorityApplicationTooltip": "This applicant had an active Premium Pass when they applied.",
   "applicationSortOrderLabel": "Sort order",
   "applicationSortPriorityFirst": "Priority first"

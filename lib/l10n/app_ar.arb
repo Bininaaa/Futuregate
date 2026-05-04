@@ -5679,6 +5679,51 @@
   "earlyAccessLockedMessage": "الطلاب المميزون يمكنهم التقديم الآن. يُفتح للجميع قريبًا.",
   "earlyAccessLockedModalTitle": "فرصة بوصول مبكر",
   "earlyAccessLockedModalBody": "حاملو بطاقة بريميوم يمكنهم التقديم الآن. سيُفتح التقديم للجميع بعد انتهاء فترة الوصول المبكر.",
+  "premiumEarlyAccessLockedChip": "🔒 وصول مبكر بريميوم",
+  "premiumEarlyAccessUnlockedChip": "⚡ تم فتح الوصول المبكر",
+  "premiumBadgeLabel": "بريميوم",
+  "premiumEarlyAccessBadgeLabel": "وصول مبكر بريميوم",
+  "earlyAccessUnlockedBadgeLabel": "تم فتح الوصول المبكر",
+  "earlyAccessApplicationsOpenForYouIn": "يُفتح التقديم لك خلال {time}",
+  "@earlyAccessApplicationsOpenForYouIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "earlyAccessTimeDays": "{days, plural, =1{يوم واحد} =2{يومان} few{{days} أيام} many{{days} يومًا} other{{days} يوم}}",
+  "@earlyAccessTimeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "earlyAccessTimeHours": "{hours, plural, =1{ساعة واحدة} =2{ساعتان} few{{hours} ساعات} many{{hours} ساعة} other{{hours} ساعة}}",
+  "@earlyAccessTimeHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "earlyAccessFreeLockedBody": "يمكنك مشاهدة هذه الفرصة الآن، لكن التقديم للطلاب المجانيين يفتح خلال {time}.",
+  "@earlyAccessFreeLockedBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "earlyAccessPremiumCanApplyImmediately": "يمكن لطلاب بريميوم التقديم فورًا مع أولوية.",
+  "earlyAccessPremiumUnlockedBody": "يمكنك التقديم قبل الطلاب المجانيين.",
+  "earlyAccessPriorityVisibilityBody": "سيُرسل طلبك مع ظهور ذي أولوية.",
+  "upgradeToApplyNow": "رقِّ حسابك للتقديم الآن",
+  "applyWithPriority": "قدّم بأولوية",
+  "applicationSentLabel": "تم إرسال الطلب",
+  "sentWithPriorityLabel": "⭐ أُرسل بأولوية",
+  "closedLabel": "مغلق",
   "earlyAccessRejectReasonHint": "سبب الرفض (اختياري)",
   "earlyAccessDelayLabel": "مدة التأخير قبل النشر العام (بالساعات)",
   "earlyAccessOpensSoonLabel": "يُفتح قريبًا",
@@ -5736,6 +5781,7 @@
   "adminEarlyAccessPostLabel": "المنشور",
   "adminEarlyAccessMakeNormalButton": "إزالة الوصول المبكر",
   "priorityApplicationLabel": "أولوية",
+  "priorityApplicationFullLabel": "⭐ طلب ذو أولوية",
   "priorityApplicationTooltip": "هذا المتقدم كان لديه اشتراك مميز فعّال عند تقديم طلبه.",
   "applicationSortOrderLabel": "ترتيب العرض",
   "applicationSortPriorityFirst": "الأولوية أولاً"

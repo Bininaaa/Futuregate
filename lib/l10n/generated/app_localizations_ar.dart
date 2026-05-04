@@ -12701,6 +12701,83 @@ class AppLocalizationsAr extends AppLocalizations {
       'حاملو بطاقة بريميوم يمكنهم التقديم الآن. سيُفتح التقديم للجميع بعد انتهاء فترة الوصول المبكر.';
 
   @override
+  String get premiumEarlyAccessLockedChip => '🔒 وصول مبكر بريميوم';
+
+  @override
+  String get premiumEarlyAccessUnlockedChip => '⚡ تم فتح الوصول المبكر';
+
+  @override
+  String get premiumEarlyAccessBadgeLabel => 'وصول مبكر بريميوم';
+
+  @override
+  String get earlyAccessUnlockedBadgeLabel => 'تم فتح الوصول المبكر';
+
+  @override
+  String earlyAccessApplicationsOpenForYouIn(String time) {
+    return 'يُفتح التقديم لك خلال $time';
+  }
+
+  @override
+  String earlyAccessTimeDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days يوم',
+      many: '$days يومًا',
+      few: '$days أيام',
+      two: 'يومان',
+      one: 'يوم واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String earlyAccessTimeHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours ساعة',
+      many: '$hours ساعة',
+      few: '$hours ساعات',
+      two: 'ساعتان',
+      one: 'ساعة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String earlyAccessFreeLockedBody(String time) {
+    return 'يمكنك مشاهدة هذه الفرصة الآن، لكن التقديم للطلاب المجانيين يفتح خلال $time.';
+  }
+
+  @override
+  String get earlyAccessPremiumCanApplyImmediately =>
+      'يمكن لطلاب بريميوم التقديم فورًا مع أولوية.';
+
+  @override
+  String get earlyAccessPremiumUnlockedBody =>
+      'يمكنك التقديم قبل الطلاب المجانيين.';
+
+  @override
+  String get earlyAccessPriorityVisibilityBody =>
+      'سيُرسل طلبك مع ظهور ذي أولوية.';
+
+  @override
+  String get upgradeToApplyNow => 'رقِّ حسابك للتقديم الآن';
+
+  @override
+  String get applyWithPriority => 'قدّم بأولوية';
+
+  @override
+  String get applicationSentLabel => 'تم إرسال الطلب';
+
+  @override
+  String get sentWithPriorityLabel => '⭐ أُرسل بأولوية';
+
+  @override
+  String get closedLabel => 'مغلق';
+
+  @override
   String get earlyAccessRejectReasonHint => 'سبب الرفض (اختياري)';
 
   @override
@@ -12802,6 +12879,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get priorityApplicationLabel => 'أولوية';
+
+  @override
+  String get priorityApplicationFullLabel => '⭐ طلب ذو أولوية';
 
   @override
   String get priorityApplicationTooltip =>

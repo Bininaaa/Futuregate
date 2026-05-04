@@ -74,6 +74,35 @@ class ApplicationProvider extends ChangeNotifier {
     return null;
   }
 
+  /// Returns the submitted application item for a specific opportunity, or null
+  /// if the student hasn't applied. Uses the already-loaded submitted list.
+  StudentApplicationItemModel? submittedApplicationFor(String opportunityId) {
+    final normalizedOpportunityId = opportunityId.trim();
+    if (normalizedOpportunityId.isEmpty) {
+      return null;
+    }
+
+    for (final item in _submittedApplications) {
+      if (item.opportunityId == normalizedOpportunityId) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  Map<String, StudentApplicationItemModel> get submittedApplicationMap {
+    final map = <String, StudentApplicationItemModel>{};
+    for (final item in _submittedApplications) {
+      final status = ApplicationStatus.parse(item.status);
+      if (status == ApplicationStatus.withdrawn) {
+        continue;
+      }
+
+      map[item.opportunityId] = item;
+    }
+    return map;
+  }
+
   /// Returns a set of opportunity IDs the student has applied to.
   Map<String, String> get appliedStatusMap {
     final map = <String, String>{};

@@ -3,19 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/opportunity_model.dart';
+import '../../models/student_application_item_model.dart';
+import '../../models/subscription_model.dart';
 import '../../providers/application_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/cv_provider.dart';
 import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
+import '../../providers/subscription_provider.dart';
+import '../../services/application_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
 import '../../utils/display_text.dart';
 import '../../utils/localized_display.dart';
+import '../../utils/opportunity_access.dart';
 import '../../utils/opportunity_dashboard_palette.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
+import '../../widgets/early_access_label.dart';
+import '../../widgets/premium_upgrade_modal.dart';
+import '../../widgets/priority_application_badge.dart';
 import '../../widgets/saved_limit_upgrade_modal.dart';
 import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -160,6 +169,7 @@ class _JobsScreenState extends State<JobsScreen> {
   String _searchQuery = '';
   String? _selectedCategoryKey;
   _JobsViewMode _viewMode = _JobsViewMode.grid;
+  final Set<String> _busyApplyIds = <String>{};
 
   @override
   void initState() {
@@ -325,17 +335,149 @@ class _JobsScreenState extends State<JobsScreen> {
     );
   }
 
+  Future<void> _showEarlyAccessUpgradeModal() async {
+    final l10n = AppLocalizations.of(context)!;
+    await showPremiumUpgradeModal(
+      context,
+      title: l10n.earlyAccessLockedModalTitle,
+      body: l10n.earlyAccessLockedModalBody,
+      highlightText: l10n.earlyAccessLockedMessage,
+      onUpgrade: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+      ),
+    );
+  }
+
+  Future<void> _applyNow(OpportunityModel opportunity) async {
+    if (_busyApplyIds.contains(opportunity.id)) {
+      return;
+    }
+
+    final authProvider = context.read<AuthProvider>();
+    final applicationProvider = context.read<ApplicationProvider>();
+    final cvProvider = context.read<CvProvider>();
+    final currentUser = authProvider.userModel;
+
+    if (currentUser == null) {
+      context.showAppSnackBar(
+        AppLocalizations.of(context)!.studentSignInContinueApplication,
+        title: AppLocalizations.of(context)!.uiLoginRequired,
+        type: AppFeedbackType.warning,
+      );
+      return;
+    }
+
+    if (isEarlyAccessLockedForUser(
+      opportunity,
+      context.read<SubscriptionProvider>().subscription,
+    )) {
+      await _showEarlyAccessUpgradeModal();
+      return;
+    }
+
+    setState(() {
+      _busyApplyIds.add(opportunity.id);
+    });
+
+    try {
+      final eligibility = await applicationProvider.getEligibility(
+        studentId: currentUser.uid,
+        opportunityId: opportunity.id,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      if (eligibility != ApplicationEligibilityStatus.available) {
+        context.showAppSnackBar(
+          _messageForEligibility(eligibility),
+          title: AppLocalizations.of(context)!.uiApplicationBlocked,
+          type: AppFeedbackType.warning,
+        );
+        return;
+      }
+
+      await cvProvider.loadCv(currentUser.uid);
+      if (!mounted) {
+        return;
+      }
+
+      final cv = cvProvider.cv;
+      if (cv == null) {
+        context.showAppSnackBar(
+          AppLocalizations.of(context)!.studentCreateCvBeforeApplying,
+          title: AppLocalizations.of(context)!.uiCvRequired,
+          type: AppFeedbackType.warning,
+        );
+        return;
+      }
+
+      String? error;
+      try {
+        error = await applicationProvider.applyToOpportunity(
+          studentId: currentUser.uid,
+          studentName: currentUser.fullName,
+          opportunityId: opportunity.id,
+          cvId: cv.id,
+        );
+      } on EarlyAccessLockedException {
+        if (!mounted) return;
+        await _showEarlyAccessUpgradeModal();
+        return;
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      context.showAppSnackBar(
+        error ??
+            AppLocalizations.of(context)!.studentApplicationSubmittedSuccess,
+        title: error == null
+            ? AppLocalizations.of(context)!.studentApplicationSentTitle
+            : AppLocalizations.of(context)!.uiApplicationUnavailable,
+        type: error == null ? AppFeedbackType.success : AppFeedbackType.error,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _busyApplyIds.remove(opportunity.id);
+        });
+      }
+    }
+  }
+
+  String _messageForEligibility(ApplicationEligibilityStatus status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status) {
+      case ApplicationEligibilityStatus.requiresLogin:
+        return l10n.studentMustBeLoggedInApply;
+      case ApplicationEligibilityStatus.available:
+        return l10n.studentCanApplyOpportunity;
+      case ApplicationEligibilityStatus.alreadyApplied:
+        return l10n.studentAlreadyAppliedOpportunity;
+      case ApplicationEligibilityStatus.closed:
+        return l10n.studentOpportunityClosedMessage;
+      case ApplicationEligibilityStatus.unavailable:
+        return l10n.studentOpportunityUnavailableMessage;
+    }
+  }
+
   JobStatusData? _statusDataForOpportunity(
     OpportunityModel? opportunity,
-    Map<String, String> appliedStatuses,
+    Map<String, StudentApplicationItemModel> submittedApplications,
+    SubscriptionModel? subscription,
   ) {
     if (opportunity == null) {
       return null;
     }
 
-    final applicationStatus = appliedStatuses[opportunity.id];
-    if (applicationStatus != null &&
-        ApplicationStatus.parse(applicationStatus) !=
+    final submittedApplication = submittedApplications[opportunity.id];
+    final applicationStatus = submittedApplication?.status;
+    if (submittedApplication != null &&
+        ApplicationStatus.parse(applicationStatus ?? '') !=
             ApplicationStatus.withdrawn) {
       return JobStatusData(
         label: ApplicationStatus.label(
@@ -344,6 +486,16 @@ class _JobsScreenState extends State<JobsScreen> {
         ),
         color: ApplicationStatus.color(applicationStatus),
         icon: _jobApplicationStatusIcon(applicationStatus),
+        priorityApplied: shouldShowPriorityApplication(submittedApplication),
+      );
+    }
+
+    final normalizedStatus = opportunity.effectiveStatus();
+    if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
+      return JobStatusData(
+        label: AppLocalizations.of(context)!.closedLabel,
+        color: const Color(0xFF64748B),
+        icon: Icons.lock_outline_rounded,
       );
     }
 
@@ -355,12 +507,23 @@ class _JobsScreenState extends State<JobsScreen> {
       );
     }
 
-    final normalizedStatus = opportunity.effectiveStatus();
-    if (normalizedStatus.isNotEmpty && normalizedStatus != 'open') {
+    if (isEarlyAccessLockedForUser(opportunity, subscription)) {
       return JobStatusData(
-        label: AppLocalizations.of(context)!.uiClosed,
-        color: const Color(0xFF64748B),
-        icon: Icons.lock_outline_rounded,
+        label: AppLocalizations.of(context)!.upgradeToApplyNow,
+        color: null,
+        icon: Icons.workspace_premium_rounded,
+        isLockedEarlyAccess: true,
+        remaining: getRemainingEarlyAccessTime(opportunity),
+      );
+    }
+
+    if (isEarlyAccessActive(opportunity) && hasActivePremium(subscription)) {
+      return JobStatusData(
+        label: AppLocalizations.of(context)!.applyWithPriority,
+        color: null,
+        icon: Icons.flash_on_rounded,
+        isPriorityEarlyAccess: true,
+        remaining: getRemainingEarlyAccessTime(opportunity),
       );
     }
 
@@ -1043,7 +1206,8 @@ class _JobsScreenState extends State<JobsScreen> {
     final filteredJobs = _applyFilters(allJobs);
     final featuredJobs = _selectFeaturedJobs(filteredJobs);
     final availableRoles = _selectAvailableRoles(filteredJobs);
-    final appliedStatuses = applicationProvider.appliedStatusMap;
+    final submittedApplications = applicationProvider.submittedApplicationMap;
+    final subscription = context.watch<SubscriptionProvider>().subscription;
     final savedIds = savedProvider.savedOpportunities
         .map((item) => item.opportunityId)
         .toSet();
@@ -1268,7 +1432,8 @@ class _JobsScreenState extends State<JobsScreen> {
                         final job = featuredJobs[index];
                         final statusData = _statusDataForOpportunity(
                           job.opportunity,
-                          appliedStatuses,
+                          submittedApplications,
+                          subscription,
                         );
                         return SizedBox(
                           width: screenSize.width * featuredCardWidthFactor,
@@ -1289,9 +1454,10 @@ class _JobsScreenState extends State<JobsScreen> {
                                 ? null
                                 : () => _openOpportunity(job.opportunity!),
                             onApply:
-                                job.opportunity == null || statusData != null
+                                job.opportunity == null ||
+                                    !(statusData?.isEnabled ?? true)
                                 ? null
-                                : () => _openOpportunity(job.opportunity!),
+                                : () => _applyNow(job.opportunity!),
                           ),
                         );
                       },
@@ -1365,7 +1531,8 @@ class _JobsScreenState extends State<JobsScreen> {
                       final job = availableRoles[index];
                       final statusData = _statusDataForOpportunity(
                         job.opportunity,
-                        appliedStatuses,
+                        submittedApplications,
+                        subscription,
                       );
                       return _AvailableRoleCard(
                         job: job,
@@ -1404,7 +1571,8 @@ class _JobsScreenState extends State<JobsScreen> {
                       final job = availableRoles[index];
                       final statusData = _statusDataForOpportunity(
                         job.opportunity,
-                        appliedStatuses,
+                        submittedApplications,
+                        subscription,
                       );
                       return Padding(
                         padding: EdgeInsets.only(
@@ -1470,12 +1638,10 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final palette = _availableRolePaletteFor(job.uniqueKey);
     final cardRadius = BorderRadius.circular(compact ? 17 : 19);
     final supportingLine = _supportingLine();
-    final showExplicitFullTime =
-        job.typeBadge?.trim().toUpperCase() == 'FULL-TIME';
+    final hasTopAccessBadge = statusData?.hasAccessMessaging ?? false;
     final topSurface = Color.alphaBlend(
       palette.surfaceTint.withValues(alpha: 0.24),
       AppColors.isDark
@@ -1625,22 +1791,6 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                if (showExplicitFullTime) ...[
-                                  SizedBox(width: compact ? 8 : 10),
-                                  Text(
-                                    l10n.employmentTypeFullTime.toUpperCase(),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTypography.product(
-                                      fontSize: compact ? 9.0 : 9.6,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 0.24,
-                                      color: palette.chipTextColor.withValues(
-                                        alpha: 0.80,
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ],
                             ),
                             SizedBox(height: compact ? 3 : 4),
@@ -1661,11 +1811,14 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                               runSpacing: compact ? 3 : 4,
                               children: metadataItems,
                             ),
-                            if (statusData != null) ...[
+                            if (statusData != null &&
+                                !statusData!.isEnabled) ...[
                               SizedBox(height: compact ? 6 : 7),
                               _JobStatusChip(
                                 label: statusData!.label,
-                                color: statusData!.color,
+                                color:
+                                    statusData!.color ??
+                                    AppColors.current.primary,
                                 icon: statusData!.icon,
                                 compact: compact,
                               ),
@@ -1674,9 +1827,16 @@ class _PurpleAvailableRoleListCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: compact ? 8 : 10),
-                      Column(
+                      Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (hasTopAccessBadge) ...[
+                            _JobTopAccessBadge(
+                              statusData: statusData,
+                              showLabel: false,
+                            ),
+                            SizedBox(width: compact ? 6 : 7),
+                          ],
                           _JobSaveButton(
                             isBusy: isSaveBusy,
                             isSaved: isSaved,
@@ -2385,6 +2545,8 @@ class FeaturedJobCard extends StatelessWidget {
         final borderRadiusValue = isTight ? 24.0 : 30.0;
         final cardRadius = BorderRadius.circular(borderRadiusValue);
         final footerButtonCompact = compact || denseLayout;
+        final isPriorityCard = statusData?.isPriorityEarlyAccess ?? false;
+        final hasTopAccessBadge = statusData?.hasAccessMessaging ?? false;
         final actionLabel =
             statusData?.label ??
             (job.opportunity == null
@@ -2468,7 +2630,11 @@ class FeaturedJobCard extends StatelessWidget {
                   end: style.gradientEnd,
                 ),
                 borderRadius: cardRadius,
-                border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                border: Border.all(
+                  color:
+                      (isPriorityCard ? AppColors.current.accent : Colors.white)
+                          .withValues(alpha: isPriorityCard ? 0.38 : 0.12),
+                ),
               ),
               child: ClipRRect(
                 borderRadius: cardRadius,
@@ -2499,7 +2665,10 @@ class FeaturedJobCard extends StatelessWidget {
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
-                              style.accentColor.withValues(alpha: 0.12),
+                              (isPriorityCard
+                                      ? AppColors.current.accent
+                                      : style.accentColor)
+                                  .withValues(alpha: 0.12),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -2541,6 +2710,14 @@ class FeaturedJobCard extends StatelessWidget {
                                 ),
                               ),
                               const Spacer(),
+                              if (hasTopAccessBadge) ...[
+                                _JobTopAccessBadge(
+                                  statusData: statusData,
+                                  onDarkSurface: true,
+                                  fullLabel: !isTight,
+                                ),
+                                SizedBox(width: isTight ? 8 : 10),
+                              ],
                               _JobSaveButton(
                                 isBusy: isSaveBusy,
                                 isSaved: isSaved,
@@ -2563,7 +2740,8 @@ class FeaturedJobCard extends StatelessWidget {
                                 ),
                                 spinnerColor: Colors.white,
                               ),
-                              if (job.badge.trim().isNotEmpty) ...<Widget>[
+                              if (!hasTopAccessBadge &&
+                                  job.badge.trim().isNotEmpty) ...<Widget>[
                                 SizedBox(width: isTight ? 8 : 10),
                                 Container(
                                   padding: EdgeInsets.symmetric(
@@ -2758,17 +2936,41 @@ class _ApplyNowButton extends StatelessWidget {
   }
 }
 
-IconData _jobApplicationStatusIcon(String status) {
-  switch (ApplicationStatus.parse(status)) {
-    case ApplicationStatus.accepted:
-      return Icons.check_circle_rounded;
-    case ApplicationStatus.rejected:
-      return Icons.cancel_rounded;
-    case ApplicationStatus.withdrawn:
-      return Icons.undo_rounded;
-    case ApplicationStatus.pending:
-    default:
-      return Icons.hourglass_top_rounded;
+class _JobTopAccessBadge extends StatelessWidget {
+  final JobStatusData? statusData;
+  final bool onDarkSurface;
+  final bool fullLabel;
+  final bool showLabel;
+
+  const _JobTopAccessBadge({
+    required this.statusData,
+    this.onDarkSurface = false,
+    this.fullLabel = false,
+    this.showLabel = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final data = statusData;
+    if (data == null) {
+      return const SizedBox.shrink();
+    }
+
+    if (data.priorityApplied) {
+      return PriorityApplicationBadge(compact: true, showLabel: showLabel);
+    }
+
+    if (!data.isLockedEarlyAccess && !data.isPriorityEarlyAccess) {
+      return const SizedBox.shrink();
+    }
+
+    return EarlyAccessTopBadge(
+      unlocked: data.isPriorityEarlyAccess,
+      compact: true,
+      onDarkSurface: onDarkSurface,
+      fullLabel: fullLabel,
+      showLabel: showLabel,
+    );
   }
 }
 
@@ -2897,16 +3099,42 @@ class _JobStatusChip extends StatelessWidget {
   }
 }
 
+IconData _jobApplicationStatusIcon(String? status) {
+  switch (ApplicationStatus.parse(status)) {
+    case ApplicationStatus.accepted:
+      return Icons.check_circle_rounded;
+    case ApplicationStatus.rejected:
+      return Icons.cancel_rounded;
+    case ApplicationStatus.withdrawn:
+      return Icons.undo_rounded;
+    case ApplicationStatus.pending:
+    default:
+      return Icons.hourglass_top_rounded;
+  }
+}
+
 class JobStatusData {
   final String label;
-  final Color color;
+  final Color? color;
   final IconData icon;
+  final bool isLockedEarlyAccess;
+  final bool isPriorityEarlyAccess;
+  final bool priorityApplied;
+  final Duration? remaining;
 
   const JobStatusData({
     required this.label,
     required this.color,
     required this.icon,
+    this.isLockedEarlyAccess = false,
+    this.isPriorityEarlyAccess = false,
+    this.priorityApplied = false,
+    this.remaining,
   });
+
+  bool get isEnabled => color == null;
+  bool get hasAccessMessaging =>
+      isLockedEarlyAccess || isPriorityEarlyAccess || priorityApplied;
 }
 
 class _GlowOrb extends StatelessWidget {
@@ -3313,6 +3541,8 @@ class _AvailableRoleCard extends StatelessWidget {
                 final subtitleSize = isTight ? 9.6 : 10.3;
                 final detailSize = isTight ? 9.0 : 9.8;
                 final chipSize = isTight ? 8.6 : 9.1;
+                final hasTopAccessBadge =
+                    statusData?.hasAccessMessaging ?? false;
 
                 return Stack(
                   children: [
@@ -3363,43 +3593,18 @@ class _AvailableRoleCard extends StatelessWidget {
                                 ),
                               ),
                               const Spacer(),
-                              if (job.typeBadge != null)
+                              if (hasTopAccessBadge)
                                 ConstrainedBox(
                                   constraints: BoxConstraints(
-                                    maxWidth: constraints.maxWidth * 0.34,
+                                    maxWidth: constraints.maxWidth * 0.44,
                                   ),
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: isTight ? 7 : 8,
-                                      vertical: isTight ? 4 : 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: palette.chipTextColor.withValues(
-                                        alpha: 0.10,
-                                      ),
-                                      borderRadius: BorderRadius.circular(
-                                        isTight ? 10 : 11,
-                                      ),
-                                      border: Border.all(
-                                        color: palette.chipTextColor.withValues(
-                                          alpha: 0.12,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      job.typeBadge!,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: AppTypography.product(
-                                        fontSize: chipSize,
-                                        fontWeight: FontWeight.w700,
-                                        color: palette.chipTextColor,
-                                        letterSpacing: 0.25,
-                                      ),
-                                    ),
+                                  child: _JobTopAccessBadge(
+                                    statusData: statusData,
+                                    showLabel: false,
                                   ),
                                 ),
-                              SizedBox(width: isTight ? 6 : 7),
+                              if (hasTopAccessBadge)
+                                SizedBox(width: isTight ? 6 : 7),
                               _JobSaveButton(
                                 isBusy: isSaveBusy,
                                 isSaved: isSaved,
@@ -3474,13 +3679,16 @@ class _AvailableRoleCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Expanded(
-                                child: statusData != null
+                                child:
+                                    statusData != null && !statusData!.isEnabled
                                     ? Align(
                                         alignment:
                                             AlignmentDirectional.centerStart,
                                         child: _JobStatusChip(
                                           label: statusData!.label,
-                                          color: statusData!.color,
+                                          color:
+                                              statusData!.color ??
+                                              AppColors.current.primary,
                                           icon: statusData!.icon,
                                           compact: isTight,
                                         ),

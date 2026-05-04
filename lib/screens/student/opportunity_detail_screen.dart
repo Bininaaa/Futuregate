@@ -17,6 +17,7 @@ import '../../utils/application_status.dart';
 import '../../utils/content_language.dart';
 import '../../utils/display_text.dart';
 import '../../utils/localized_display.dart';
+import '../../utils/opportunity_access.dart';
 import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
@@ -186,6 +187,19 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     });
   }
 
+  Future<void> _showEarlyAccessUpgradeModal() async {
+    final l10n = AppLocalizations.of(context)!;
+    await showPremiumUpgradeModal(
+      context,
+      title: l10n.earlyAccessLockedModalTitle,
+      body: l10n.earlyAccessLockedModalBody,
+      highlightText: l10n.earlyAccessLockedMessage,
+      onUpgrade: () => Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const PremiumPassScreen())),
+    );
+  }
+
   Future<void> _apply() async {
     if (_isApplying) {
       return;
@@ -205,27 +219,12 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       return;
     }
 
-    // Check early access lock before doing anything expensive.
-    if (widget.opportunity.isEarlyAccessActive) {
-      final sub = context.read<SubscriptionProvider>().subscription;
-      final isPremium = sub?.isActive ?? false;
-      if (!isPremium) {
-        final l10n = AppLocalizations.of(context)!;
-        final goUpgrade = await showPremiumUpgradeModal(
-          context,
-          title: l10n.earlyAccessLockedModalTitle,
-          body: l10n.earlyAccessLockedModalBody,
-          highlightText: l10n.earlyAccessLockedMessage,
-          onUpgrade: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const PremiumPassScreen())),
-        );
-        if (!goUpgrade) return;
-        // Re-check after return from premium screen.
-        if (!mounted) return;
-        final subNow = context.read<SubscriptionProvider>().subscription;
-        if (!(subNow?.isActive ?? false)) return;
-      }
+    if (isEarlyAccessLockedForUser(
+      widget.opportunity,
+      context.read<SubscriptionProvider>().subscription,
+    )) {
+      await _showEarlyAccessUpgradeModal();
+      return;
     }
 
     setState(() => _isApplying = true);
@@ -275,15 +274,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         );
       } on EarlyAccessLockedException {
         if (!mounted) return;
-        final l10n = AppLocalizations.of(context)!;
-        await showPremiumUpgradeModal(
-          context,
-          title: l10n.earlyAccessLockedModalTitle,
-          body: l10n.earlyAccessLockedModalBody,
-          onUpgrade: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const PremiumPassScreen())),
-        );
+        await _showEarlyAccessUpgradeModal();
         return;
       }
 
@@ -658,9 +649,6 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       case ApplicationEligibilityStatus.requiresLogin:
         return AppLocalizations.of(context)!.studentLoginToApply;
       case ApplicationEligibilityStatus.available:
-        if (widget.opportunity.isEarlyAccessActive) {
-          return '⚡ Claim Your Spot Now';
-        }
         return _effectiveType == OpportunityType.sponsoring
             ? AppLocalizations.of(context)!.studentApplyForFunding
             : AppLocalizations.of(context)!.uiApplyNow;
@@ -991,7 +979,14 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
 
     final savedProvider = context.watch<SavedOpportunityProvider>();
     final applicationProvider = context.watch<ApplicationProvider>();
+    final subscription = context.watch<SubscriptionProvider>().subscription;
     final submittedApplication = _submittedApplication(applicationProvider);
+    final submittedStatus = ApplicationStatus.parse(
+      submittedApplication?.status ?? '',
+    );
+    final hasSubmittedApplication =
+        submittedApplication != null &&
+        submittedStatus != ApplicationStatus.withdrawn;
     final acceptedApplication = _acceptedApplication(applicationProvider);
     final isAcceptedApplication = acceptedApplication != null;
     final hasWithdrawalHistory =
@@ -1004,11 +999,54 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     final canOpenCompanyChat =
         isAcceptedApplication && !widget.opportunity.isAdminPosted;
     final isSaved = _existingSavedOpportunity(savedProvider) != null;
+    final earlyAccessActive = isEarlyAccessActive(widget.opportunity);
+    final earlyAccessLocked = isEarlyAccessLockedForUser(
+      widget.opportunity,
+      subscription,
+    );
+    final earlyAccessRemaining = getRemainingEarlyAccessTime(
+      widget.opportunity,
+    );
+    final opportunityClosed = widget.opportunity.effectiveStatus() != 'open';
     final applyBar = FutureBuilder<ApplicationEligibilityStatus>(
       future: _eligibilityFuture,
       builder: (context, snapshot) {
         final status = snapshot.data ?? ApplicationEligibilityStatus.available;
-        final canApply = status == ApplicationEligibilityStatus.available;
+        final isClosed =
+            opportunityClosed || status == ApplicationEligibilityStatus.closed;
+        final canApply =
+            status == ApplicationEligibilityStatus.available &&
+            !hasSubmittedApplication &&
+            !isClosed;
+
+        late final Widget primaryAction;
+        if (isClosed) {
+          primaryAction = const ClosedStatusBanner(compact: true);
+        } else if (canApply && earlyAccessLocked) {
+          primaryAction = LockedApplyButton(
+            isBusy: _isApplying,
+            onPressed: _showEarlyAccessUpgradeModal,
+          );
+        } else if (canApply &&
+            earlyAccessActive &&
+            hasActivePremium(subscription)) {
+          primaryAction = PremiumApplyButton(
+            isBusy: _isApplying,
+            onPressed: _apply,
+          );
+        } else {
+          primaryAction = AppPrimaryButton(
+            theme: _theme,
+            label: _isApplying
+                ? AppLocalizations.of(context)!.studentApplyingEllipsis
+                : _buttonLabelForStatus(status, applicationProvider),
+            icon: canApply
+                ? (earlyAccessActive ? Icons.bolt_rounded : Icons.send_rounded)
+                : Icons.info_outline_rounded,
+            isBusy: _isApplying,
+            onPressed: canApply ? _apply : () => _refreshEligibility(),
+          );
+        }
 
         return SafeArea(
           top: false,
@@ -1040,23 +1078,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
                       onPressed: _openCompanyChat,
                     ),
                   ] else
-                    AppPrimaryButton(
-                      theme: _theme,
-                      label: _isApplying
-                          ? AppLocalizations.of(
-                              context,
-                            )!.studentApplyingEllipsis
-                          : _buttonLabelForStatus(status, applicationProvider),
-                      icon: canApply
-                          ? (widget.opportunity.isEarlyAccessActive
-                                ? Icons.bolt_rounded
-                                : Icons.send_rounded)
-                          : Icons.info_outline_rounded,
-                      isBusy: _isApplying,
-                      onPressed: canApply
-                          ? _apply
-                          : () => _refreshEligibility(),
-                    ),
+                    primaryAction,
                   const SizedBox(height: 10),
                   Row(
                     children: <Widget>[
@@ -1171,12 +1193,17 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
           canOpenCompanyChat ? 178 : 132,
         ),
         children: <Widget>[
-          // Early access banner shown above the hero card (when applicable)
-          if (widget.opportunity.isEarlyAccessActive) ...[
+          if (opportunityClosed) ...[
+            const Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 12),
+              child: ClosedStatusBanner(),
+            ),
+          ] else if (earlyAccessActive) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
-              child: EarlyAccessDetailBanner(
-                publicVisibleAt: widget.opportunity.publicVisibleAt,
+              child: PremiumAccessBanner(
+                unlocked: !earlyAccessLocked,
+                remaining: earlyAccessRemaining,
               ),
             ),
           ],
