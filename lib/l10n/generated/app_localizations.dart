@@ -14074,7 +14074,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashSavedBannerCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{No saved items ready yet.} =1{1 saved item ready for a second look.} other{{count} saved items ready for a second look.}}'**
+  /// **'{count, plural, =0{No items ready yet.} =1{1 item ready for a second look.} other{{count} items ready for a second look.}}'**
   String dashSavedBannerCount(num count);
 
   /// No description provided for @dashDeadlineSoon.

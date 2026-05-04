@@ -2391,7 +2391,7 @@
   "dashFocusSubtitleDiscover": "Explorez des emplois, stages, financements et formations pensés pour les étudiants qui avancent.",
   "dashFocusSubtitleInReview": "Gardez quelques options solides en mouvement pendant que vous attendez les réponses.",
   "dashLastDay": "Dernier jour",
-  "dashSavedBannerCount": "{count, plural, =0{Aucun élément enregistré prêt pour le moment.} =1{1 élément enregistré prêt pour une deuxième lecture.} other{{count} éléments enregistrés prêts pour une deuxième lecture.}}",
+  "dashSavedBannerCount": "{count, plural, =0{Aucun élément prêt pour le moment.} =1{1 élément prêt pour une deuxième lecture.} other{{count} éléments prêts pour une deuxième lecture.}}",
   "@dashSavedBannerCount": {
     "placeholders": {
       "count": {

@@ -8259,9 +8259,9 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count éléments enregistrés prêts pour une deuxième lecture.',
-      one: '1 élément enregistré prêt pour une deuxième lecture.',
-      zero: 'Aucun élément enregistré prêt pour le moment.',
+      other: '$count éléments prêts pour une deuxième lecture.',
+      one: '1 élément prêt pour une deuxième lecture.',
+      zero: 'Aucun élément prêt pour le moment.',
     );
     return '$_temp0';
   }

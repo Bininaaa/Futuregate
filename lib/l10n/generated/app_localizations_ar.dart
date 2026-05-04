@@ -1652,7 +1652,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get uiCvSaved => 'تم حفظ السيرة الذاتية';
 
   @override
-  String get uiCvStudio => 'استوديو السيرة الذاتية';
+  String get uiCvStudio => 'CV STUDIO';
 
   @override
   String get uiDashboard => 'لوحة التحكم';
@@ -2567,7 +2567,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get uiOpenCvStudio => 'فتح استوديو السيرة الذاتية';
+  String get uiOpenCvStudio => 'CV STUDIO';
 
   @override
   String get uiOpenDetails => 'فتح التفاصيل';
@@ -8167,12 +8167,12 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count عنصر محفوظ جاهز لمراجعة ثانية.',
-      many: '$count عنصرًا محفوظًا جاهزًا لمراجعة ثانية.',
-      few: '$count عناصر محفوظة جاهزة لمراجعة ثانية.',
-      two: 'عنصران محفوظان جاهزان لمراجعة ثانية.',
-      one: 'عنصر محفوظ واحد جاهز لمراجعة ثانية.',
-      zero: 'لا توجد عناصر محفوظة جاهزة بعد.',
+      other: '$count عنصر جاهز لمراجعة ثانية.',
+      many: '$count عنصرًا جاهزًا لمراجعة ثانية.',
+      few: '$count عناصر جاهزة لمراجعة ثانية.',
+      two: 'عنصران جاهزان لمراجعة ثانية.',
+      one: 'عنصر واحد جاهز لمراجعة ثانية.',
+      zero: 'لا توجد عناصر جاهزة بعد.',
     );
     return '$_temp0';
   }

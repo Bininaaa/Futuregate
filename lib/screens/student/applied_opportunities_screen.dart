@@ -14,9 +14,9 @@ import '../../widgets/shared/app_directional.dart';
 import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
-import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'profile_screen.dart';
+import 'student_home_navigation.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 class AppliedOpportunitiesScreen extends StatefulWidget {
@@ -368,12 +368,8 @@ class _AppliedOpportunitiesScreenState
                                 ? l10n.studentNoApplicationsMatchMessage
                                 : l10n.studentNoApplicationsYetMessage,
                             actionLabel: l10n.studentBrowseOpportunities,
-                            onAction: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const OpportunitiesScreen(),
-                              ),
-                            ),
+                            onAction: () =>
+                                StudentHomeNavigation.switchToDiscover(context),
                           ),
                         )
                       else

@@ -1079,24 +1079,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final summary = totalSaved == 0
         ? l10n.dashSavedBannerEmpty
         : l10n.dashSavedBannerCount(totalSaved);
-    final chips = <Widget>[
-      if (snapshot.savedOpportunityCount > 0)
-        _buildSavedShortcutChip(
-          l10n.studentSavedRolesCount(snapshot.savedOpportunityCount),
-        ),
-      if (snapshot.savedScholarshipCount > 0)
-        _buildSavedShortcutChip(
-          l10n.studentSavedScholarshipsCount(snapshot.savedScholarshipCount),
-        ),
-      if (snapshot.savedTrainingCount > 0)
-        _buildSavedShortcutChip(
-          l10n.studentSavedTrainingsCount(snapshot.savedTrainingCount),
-        ),
-      if (snapshot.savedIdeaCount > 0)
-        _buildSavedShortcutChip(
-          l10n.studentSavedIdeasCount(snapshot.savedIdeaCount),
-        ),
-    ];
 
     return Material(
       color: Colors.transparent,
@@ -1185,10 +1167,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         color: Colors.white.withValues(alpha: 0.80),
                       ),
                     ),
-                    if (chips.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      Wrap(spacing: 8, runSpacing: 8, children: chips),
-                    ],
                   ],
                 ),
               ),
@@ -1208,25 +1186,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSavedShortcutChip(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-      ),
-      child: Text(
-        label,
-        style: AppTypography.product(
-          fontSize: 9.6,
-          fontWeight: FontWeight.w700,
-          color: Colors.white.withValues(alpha: 0.92),
         ),
       ),
     );

@@ -8138,9 +8138,9 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count saved items ready for a second look.',
-      one: '1 saved item ready for a second look.',
-      zero: 'No saved items ready yet.',
+      other: '$count items ready for a second look.',
+      one: '1 item ready for a second look.',
+      zero: 'No items ready yet.',
     );
     return '$_temp0';
   }

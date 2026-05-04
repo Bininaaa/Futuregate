@@ -4230,7 +4230,7 @@
     }
   },
   "dashSavedBannerEmpty": "Keep your strongest roles, funding, and learning picks one tap away.",
-  "dashSavedBannerCount": "{count, plural, =0{No saved items ready yet.} =1{1 saved item ready for a second look.} other{{count} saved items ready for a second look.}}",
+  "dashSavedBannerCount": "{count, plural, =0{No items ready yet.} =1{1 item ready for a second look.} other{{count} items ready for a second look.}}",
   "@dashSavedBannerCount": {
     "placeholders": {
       "count": {

@@ -30,11 +30,11 @@ import '../../widgets/shared/app_feedback.dart';
 import '../../widgets/student/student_workspace_shell.dart';
 import '../../widgets/student_opportunity_hub_widgets.dart';
 import 'idea_details_screen.dart';
-import 'opportunities_screen.dart';
 import 'opportunity_detail_screen.dart';
 import 'premium_pass_screen.dart';
 import 'profile_screen.dart';
 import 'scholarship_detail_screen.dart';
+import 'student_home_navigation.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 enum SavedScreenFilter { all, opportunities, scholarships, trainings, ideas }
@@ -776,12 +776,8 @@ class _SavedScreenState extends State<SavedScreen> {
                                 ? l10n.studentNoSavedItemsMatchMessage
                                 : l10n.studentNoSavedItemsYetMessage,
                             actionLabel: l10n.studentExploreOpportunities,
-                            onAction: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const OpportunitiesScreen(),
-                              ),
-                            ),
+                            onAction: () =>
+                                StudentHomeNavigation.switchToDiscover(context),
                           ),
                         )
                       else

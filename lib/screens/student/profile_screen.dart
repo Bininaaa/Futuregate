@@ -654,39 +654,36 @@ class _ProfileHeader extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      LayoutBuilder(
-                        builder: (context, innerConstraints) {
-                          final stacked = innerConstraints.maxWidth < 360;
-                          final editButton = _HeaderButton(
-                            label: AppLocalizations.of(context)!.uiEditProfile,
-                            icon: Icons.edit_outlined,
-                            onTap: onEdit,
-                            filled: true,
-                          );
-                          final cvButton = _HeaderButton(
-                            label: AppLocalizations.of(context)!.uiOpenCvStudio,
-                            icon: Icons.description_outlined,
-                            onTap: onCv,
-                          );
-
-                          if (stacked) {
-                            return Column(
-                              children: [
-                                editButton,
-                                const SizedBox(height: 10),
-                                cvButton,
-                              ],
-                            );
-                          }
-
-                          return Row(
+                      Align(
+                        alignment: wide
+                            ? Alignment.centerLeft
+                            : Alignment.center,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: wide ? 320 : double.infinity,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Expanded(child: editButton),
-                              const SizedBox(width: 10),
-                              Expanded(child: cvButton),
+                              _HeaderButton(
+                                label: AppLocalizations.of(
+                                  context,
+                                )!.uiEditProfile,
+                                icon: Icons.edit_outlined,
+                                onTap: onEdit,
+                                filled: true,
+                              ),
+                              const SizedBox(height: 10),
+                              _HeaderButton(
+                                label: AppLocalizations.of(
+                                  context,
+                                )!.uiOpenCvStudio,
+                                icon: Icons.description_outlined,
+                                onTap: onCv,
+                              ),
                             ],
-                          );
-                        },
+                          ),
+                        ),
                       ),
                     ],
                   );
