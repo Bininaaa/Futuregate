@@ -466,7 +466,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       fallbackName: application.studentName,
       fallbackRole: 'student',
       contextLabel: _l10n.uiApplication,
-      isPremium: application.shouldPrioritizeApplication,
+      isPremium: application.shouldPrioritizeApplication ? true : null,
     );
   }
 
@@ -2471,7 +2471,9 @@ class _ApplicantDetailsSheet extends StatelessWidget {
                 tone: tone,
                 status: application.status,
                 studentId: application.studentId,
-                isPremium: application.shouldPrioritizeApplication,
+                isPremium: application.shouldPrioritizeApplication
+                    ? true
+                    : null,
                 onTapProfile: onTapProfile,
                 l10n: l10n,
               ),
@@ -2624,7 +2626,9 @@ class _ApplicantListTile extends StatelessWidget {
                     userId: application.studentId,
                     fallbackName: studentName,
                     role: 'student',
-                    isPremium: application.shouldPrioritizeApplication,
+                    isPremium: application.shouldPrioritizeApplication
+                        ? true
+                        : null,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -3559,7 +3563,7 @@ class _AppDetailHeroCard extends StatelessWidget {
   final _OpportunityTone tone;
   final String status;
   final String studentId;
-  final bool isPremium;
+  final bool? isPremium;
   final VoidCallback? onTapProfile;
   final AppLocalizations l10n;
 
@@ -3611,7 +3615,7 @@ class _AppDetailHeroCard extends StatelessWidget {
                       ),
                       Positioned(
                         right: -2,
-                        bottom: -2,
+                        top: -2,
                         child: Container(
                           width: 18,
                           height: 18,

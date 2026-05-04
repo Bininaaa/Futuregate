@@ -43,6 +43,8 @@ class CompanyProvider extends ChangeNotifier {
 
   void _rebuildStats() {
     int pendingCount = 0;
+    int pendingPremiumCount = 0;
+    int pendingStandardCount = 0;
     int approvedCount = 0;
     int rejectedCount = 0;
 
@@ -50,6 +52,11 @@ class CompanyProvider extends ChangeNotifier {
       switch (ApplicationStatus.parse(app.status)) {
         case ApplicationStatus.pending:
           pendingCount++;
+          if (app.shouldPrioritizeApplication) {
+            pendingPremiumCount++;
+          } else {
+            pendingStandardCount++;
+          }
           break;
         case ApplicationStatus.accepted:
           approvedCount++;
@@ -64,6 +71,8 @@ class CompanyProvider extends ChangeNotifier {
       'totalOpportunities': _opportunities.length,
       'totalApplications': _applications.length,
       'pendingApplications': pendingCount,
+      'pendingPremiumApplications': pendingPremiumCount,
+      'pendingStandardApplications': pendingStandardCount,
       'approvedApplications': approvedCount,
       'acceptedApplications': approvedCount,
       'rejectedApplications': rejectedCount,

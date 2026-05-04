@@ -150,6 +150,8 @@ class CompanyService {
     final apps = await getCompanyApplications(companyId);
 
     int pendingCount = 0;
+    int pendingPremiumCount = 0;
+    int pendingStandardCount = 0;
     int approvedCount = 0;
     int rejectedCount = 0;
 
@@ -157,6 +159,11 @@ class CompanyService {
       switch (ApplicationStatus.parse(app.status)) {
         case ApplicationStatus.pending:
           pendingCount++;
+          if (app.shouldPrioritizeApplication) {
+            pendingPremiumCount++;
+          } else {
+            pendingStandardCount++;
+          }
           break;
         case ApplicationStatus.accepted:
           approvedCount++;
@@ -171,6 +178,8 @@ class CompanyService {
       'totalOpportunities': opps.length,
       'totalApplications': apps.length,
       'pendingApplications': pendingCount,
+      'pendingPremiumApplications': pendingPremiumCount,
+      'pendingStandardApplications': pendingStandardCount,
       'approvedApplications': approvedCount,
       'acceptedApplications': approvedCount,
       'rejectedApplications': rejectedCount,

@@ -7649,6 +7649,7 @@
       }
     }
   },
+  "normalApplicationLabel": "Normal",
   "premiumBadgeLabel": "Premium",
   "premiumPassTitle": "Premium Pass",
   "premiumPassSubtitle": "Early access · Priority · Unlimited saves",

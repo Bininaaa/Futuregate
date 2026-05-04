@@ -20155,6 +20155,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{0 opportunities} =1{1 opportunity} other{{count} opportunities}}'**
   String dashboardOpportunitiesCount(num count);
 
+  /// No description provided for @normalApplicationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get normalApplicationLabel;
+
   /// No description provided for @premiumBadgeLabel.
   ///
   /// In en, this message translates to:

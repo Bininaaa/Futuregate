@@ -11,6 +11,7 @@ class CompanyDashboardPalette {
   static Color get secondary => AppColors.current.secondary;
   static Color get secondaryDark => AppColors.current.secondaryDeep;
   static Color get accent => AppColors.current.accent;
+  static Color get activity => AppColors.current.activity;
   static Color get background => AppColors.current.background;
   static Color get backgroundAlt => AppColors.current.backgroundAlt;
   static Color get surface => AppColors.current.surface;

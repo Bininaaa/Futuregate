@@ -12515,6 +12515,9 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get normalApplicationLabel => 'Normale';
+
+  @override
   String get premiumBadgeLabel => 'Premium';
 
   @override

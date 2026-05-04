@@ -5644,6 +5644,7 @@
       }
     }
   },
+  "normalApplicationLabel": "Normale",
   "premiumBadgeLabel": "Premium",
   "premiumPassTitle": "Pass Premium Étudiant",
   "premiumPassSubtitle": "Accès anticipé · Priorité · Sauvegardes illimitées",

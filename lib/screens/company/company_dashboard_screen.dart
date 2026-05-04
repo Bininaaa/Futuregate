@@ -258,6 +258,24 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           )
           .length,
     );
+    final pendingPremiumApplications = math.min(
+      pendingApplications,
+      _intStat(
+        stats,
+        'pendingPremiumApplications',
+        provider.applications
+            .where((item) => item.shouldPrioritizeApplication)
+            .length,
+      ),
+    );
+    final pendingStandardApplications = math.max(
+      0,
+      _intStat(
+        stats,
+        'pendingStandardApplications',
+        pendingApplications - pendingPremiumApplications,
+      ),
+    );
     final approvedApplications = _intStat(
       stats,
       'approvedApplications',
@@ -376,6 +394,15 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               const SizedBox(height: 14),
               _buildInlineError(provider.dashboardError!),
             ],
+            if (pendingApplications > 0) ...[
+              const SizedBox(height: 14),
+              _buildPendingApplicationsWarning(
+                context,
+                pendingApplications: pendingApplications,
+                pendingPremiumApplications: pendingPremiumApplications,
+                pendingStandardApplications: pendingStandardApplications,
+              ),
+            ],
             const SizedBox(height: 18),
             _buildStatCard(
               label: _l10n.uiActiveJobPosts,
@@ -393,6 +420,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             const SizedBox(height: 12),
             _buildApplicationStatusSummaryCard(
               pendingApplications: pendingApplications,
+              pendingPremiumApplications: pendingPremiumApplications,
+              pendingStandardApplications: pendingStandardApplications,
               approvedApplications: approvedApplications,
               rejectedApplications: rejectedApplications,
             ),
@@ -808,6 +837,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
 
   Widget _buildApplicationStatusSummaryCard({
     required int pendingApplications,
+    required int pendingPremiumApplications,
+    required int pendingStandardApplications,
     required int approvedApplications,
     required int rejectedApplications,
   }) {
@@ -871,6 +902,188 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          _buildPendingPremiumLine(pendingPremiumApplications),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingApplicationsWarning(
+    BuildContext context, {
+    required int pendingApplications,
+    required int pendingPremiumApplications,
+    required int pendingStandardApplications,
+  }) {
+    final tone = CompanyDashboardPalette.warning;
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(24),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: () => _openApplications(context),
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: tone.withValues(alpha: AppColors.isDark ? 0.16 : 0.08),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: tone.withValues(alpha: 0.28)),
+            boxShadow: [
+              BoxShadow(
+                color: tone.withValues(alpha: 0.10),
+                blurRadius: 22,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: tone.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(Icons.warning_amber_rounded, color: tone, size: 23),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _l10n.uiPendingApplications,
+                      style: AppTypography.product(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                        color: CompanyDashboardPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _l10n.uiPendingApplicationsNeedReview(
+                        pendingApplications,
+                      ),
+                      style: AppTypography.product(
+                        fontSize: 12,
+                        height: 1.45,
+                        color: CompanyDashboardPalette.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        if (pendingPremiumApplications > 0)
+                          _buildPendingWarningPill(
+                            label: _l10n.premiumBadgeLabel,
+                            count: pendingPremiumApplications,
+                            color: CompanyDashboardPalette.activity,
+                          ),
+                        if (pendingStandardApplications > 0)
+                          _buildPendingWarningPill(
+                            label: _l10n.normalApplicationLabel,
+                            count: pendingStandardApplications,
+                            color: CompanyDashboardPalette.warning,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.arrow_forward_ios_rounded, size: 16, color: tone),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _pendingPremiumLabel() =>
+      '${_l10n.uiPending} ${_l10n.premiumBadgeLabel}';
+
+  Widget _buildPendingWarningPill({
+    required String label,
+    required int count,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$count',
+            style: AppTypography.product(
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: AppTypography.product(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingPremiumLine(int pendingPremiumApplications) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: CompanyDashboardPalette.activity.withValues(alpha: 0.09),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: CompanyDashboardPalette.activity.withValues(alpha: 0.16),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.bolt_rounded,
+            size: 16,
+            color: CompanyDashboardPalette.activity,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _pendingPremiumLabel(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.product(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: CompanyDashboardPalette.activity,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '$pendingPremiumApplications',
+            style: AppTypography.product(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: CompanyDashboardPalette.activity,
+            ),
           ),
         ],
       ),
@@ -1231,9 +1444,12 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           Text(
             label,
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.product(
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
+              height: 1.15,
               color: color,
             ),
           ),
@@ -1335,6 +1551,9 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                       userId: application.studentId,
                       fallbackName: application.studentName,
                       role: 'student',
+                      isPremium: application.shouldPrioritizeApplication
+                          ? true
+                          : null,
                       radius: 19,
                     ),
                   ),
@@ -1363,6 +1582,8 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
                             ApplicationStatusBadge(
                               status: application.status,
                               fontSize: 10,
+                              pendingPremium:
+                                  application.shouldPrioritizeApplication,
                             ),
                           ],
                         ),

@@ -12590,6 +12590,9 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get normalApplicationLabel => 'عادي';
+
+  @override
   String get premiumBadgeLabel => 'بريميوم';
 
   @override
