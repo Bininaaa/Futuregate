@@ -1697,6 +1697,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                 typeLabel: OpportunityType.label(opportunityType, l10n),
                 typeColor: opportunityTypeColor,
                 isOwnedByAdmin: isOwnedByCurrentAdmin,
+                earlyAccessStatus: opportunityModel.earlyAccessStatus,
                 workModeLabel: workModeLabel,
                 deadlineLabel: deadlineLabel,
                 compensationLabel: compensationLabel,
@@ -2408,6 +2409,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
     required String typeLabel,
     required Color typeColor,
     required bool isOwnedByAdmin,
+    required String earlyAccessStatus,
     required String workModeLabel,
     required String? deadlineLabel,
     required String? compensationLabel,
@@ -2428,6 +2430,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       _BadgeData(typeLabel, typeColor),
     ];
 
+    final earlyAccessBadge = _earlyAccessBadgeData(earlyAccessStatus, l10n);
+    if (earlyAccessBadge != null) {
+      badges.add(earlyAccessBadge);
+    }
+
     final supportingLabel = isOwnedByAdmin
         ? l10n.uiYourPost
         : workModeLabel.trim().isNotEmpty
@@ -2442,7 +2449,22 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       badges.add(_BadgeData(supportingLabel, AdminPalette.textSecondary));
     }
 
-    return badges.take(3).toList();
+    return badges.take(4).toList();
+  }
+
+  _BadgeData? _earlyAccessBadgeData(String status, AppLocalizations l10n) {
+    switch (status.trim().toLowerCase()) {
+      case 'pending':
+        return _BadgeData(l10n.earlyAccessPendingStatus, AdminPalette.warning);
+      case 'approved':
+        return _BadgeData(l10n.earlyAccessApprovedStatus, AdminPalette.success);
+      case 'rejected':
+        return _BadgeData(l10n.earlyAccessRejectedStatus, AdminPalette.danger);
+      case 'expired':
+        return _BadgeData(l10n.earlyAccessExpiredStatus, AdminPalette.primary);
+      default:
+        return null;
+    }
   }
 
   bool _matchesScholarshipSearch(Map<String, dynamic> scholarship) {

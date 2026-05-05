@@ -301,6 +301,23 @@
       return `<span class="badge ${className}">${icon ? `<i data-lucide="${icon}"></i>` : ''}${esc(text)}</span>`;
     }
 
+    function earlyAccessStatus(value) {
+      const normalized = cleanText(value).toLowerCase();
+      return ['pending', 'approved', 'rejected', 'expired'].includes(normalized) ? normalized : '';
+    }
+
+    function earlyAccessBadge(item) {
+      const status = earlyAccessStatus(item?.earlyAccessStatus);
+      if (!status) return '';
+      const meta = {
+        pending: { label: t('earlyAccess.pending', 'Pending'), className: 'badge-warning', icon: 'hourglass' },
+        approved: { label: t('earlyAccess.approved', 'Approved'), className: 'badge-success', icon: 'badge-check' },
+        rejected: { label: t('earlyAccess.rejected', 'Rejected'), className: 'badge-danger', icon: 'ban' },
+        expired: { label: t('earlyAccess.expired', 'Expired'), className: 'badge-info', icon: 'timer-off' },
+      }[status];
+      return badge(`${t('earlyAccess.label', 'Early access')}: ${meta.label}`, meta.className, meta.icon);
+    }
+
     function iconAction(id, action, icon, title, className = '') {
       return `<button class="btn btn-sm btn-icon ${className}" data-id="${esc(id)}" data-action="${esc(action)}" title="${esc(title)}" aria-label="${esc(title)}"><i data-lucide="${esc(icon)}"></i></button>`;
     }
@@ -1234,6 +1251,7 @@
           badge(effectiveStatus, `badge-${statusBadgeClass(effectiveStatus)}`),
           it.isFeatured ? badge('Featured', 'badge-warning', 'star') : '',
           it.isHidden ? badge('Hidden', 'badge-danger', 'eye-off') : '',
+          earlyAccessBadge(it),
           pendingCount ? badge(`${pendingCount} pending`, 'badge-info', 'hourglass') : '',
           it.workMode ? badge(capitalizeLabel(it.workMode), '', 'map-pinned') : '',
         ],

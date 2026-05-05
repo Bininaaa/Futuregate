@@ -466,9 +466,10 @@ class _ModerateScreenState extends State<ModerateScreen>
         itemCount: opportunities.length,
         itemBuilder: (context, index) {
           final opp = opportunities[index];
-          final effectiveStatus = OpportunityModel.fromMap(
+          final opportunityModel = OpportunityModel.fromMap(
             Map<String, dynamic>.from(opp),
-          ).effectiveStatus();
+          );
+          final effectiveStatus = opportunityModel.effectiveStatus();
           return Container(
             margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
@@ -562,6 +563,37 @@ class _ModerateScreenState extends State<ModerateScreen>
                           ),
                         ),
                       ),
+                      if (opportunityModel.earlyAccessStatus != 'none') ...[
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _earlyAccessBadgeColor(
+                                opportunityModel.earlyAccessStatus,
+                              ).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              _earlyAccessBadgeLabel(
+                                opportunityModel.earlyAccessStatus,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.product(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: _earlyAccessBadgeColor(
+                                  opportunityModel.earlyAccessStatus,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ],
@@ -574,7 +606,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                 ),
                 onPressed: () => _showDeleteDialog(
                   AppLocalizations.of(context)!.moderateDeleteOpportunityTitle,
-                  AppLocalizations.of(context)!.moderateDeleteOpportunityConfirm(
+                  AppLocalizations.of(
+                    context,
+                  )!.moderateDeleteOpportunityConfirm(
                     opp['title']?.toString() ??
                         AppLocalizations.of(
                           context,
@@ -612,6 +646,35 @@ class _ModerateScreenState extends State<ModerateScreen>
         },
       ),
     );
+  }
+
+  String _earlyAccessBadgeLabel(String status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status.trim().toLowerCase()) {
+      case 'pending':
+        return l10n.earlyAccessPendingStatus;
+      case 'approved':
+        return l10n.earlyAccessApprovedStatus;
+      case 'rejected':
+        return l10n.earlyAccessRejectedStatus;
+      case 'expired':
+        return l10n.earlyAccessExpiredStatus;
+      default:
+        return l10n.earlyAccessLabel;
+    }
+  }
+
+  Color _earlyAccessBadgeColor(String status) {
+    switch (status.trim().toLowerCase()) {
+      case 'pending':
+        return AdminPalette.warning;
+      case 'approved':
+        return AdminPalette.success;
+      case 'rejected':
+        return AdminPalette.danger;
+      default:
+        return AdminPalette.primary;
+    }
   }
 
   Widget _buildScholarshipsTab(AdminProvider provider) {
@@ -716,9 +779,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            AppLocalizations.of(context)!.moderateDueLabel(
-                              sch['deadline'].toString(),
-                            ),
+                            AppLocalizations.of(
+                              context,
+                            )!.moderateDueLabel(sch['deadline'].toString()),
                             style: AppTypography.product(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -738,7 +801,9 @@ class _ModerateScreenState extends State<ModerateScreen>
                 ),
                 onPressed: () => _showDeleteDialog(
                   AppLocalizations.of(context)!.moderateDeleteScholarshipTitle,
-                  AppLocalizations.of(context)!.moderateDeleteScholarshipConfirm(
+                  AppLocalizations.of(
+                    context,
+                  )!.moderateDeleteScholarshipConfirm(
                     sch['title']?.toString() ??
                         AppLocalizations.of(
                           context,

@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { id: 'dashboard',     href: '/',             icon: 'layout-dashboard', labelKey: 'nav.dashboard',     labelFallback: 'Dashboard'     },
   { id: 'users',         href: 'users',          icon: 'users',            labelKey: 'nav.users',         labelFallback: 'Users'         },
   { id: 'content',       href: 'moderation',     icon: 'layers',           labelKey: 'nav.content',       labelFallback: 'Content'       },
+  { id: 'early-access',  href: 'early-access',   icon: 'badge-check',      labelKey: 'nav.earlyAccess',   labelFallback: 'Early access'  },
   { id: 'activity',      href: 'activity',       icon: 'activity',         labelKey: 'nav.activity',      labelFallback: 'Activity'      },
   { id: 'notifications', href: 'notifications',  icon: 'bell',             labelKey: 'nav.notifications', labelFallback: 'Notifications', badge: true },
 ];
@@ -16,6 +17,7 @@ const PAGE_META = {
   dashboard:     { titleKey: 'page.dashboard.title',     titleFallback: 'Dashboard',     eyebrowKey: 'page.dashboard.eyebrow',     eyebrowFallback: 'Overview'    },
   users:         { titleKey: 'page.users.title',         titleFallback: 'Users',         eyebrowKey: 'page.users.eyebrow',         eyebrowFallback: 'Accounts'    },
   content:       { titleKey: 'page.content.title',       titleFallback: 'Content',       eyebrowKey: 'page.content.eyebrow',       eyebrowFallback: 'Moderation'  },
+  'early-access':{ titleKey: 'page.earlyAccess.title',  titleFallback: 'Early access',  eyebrowKey: 'page.earlyAccess.eyebrow',  eyebrowFallback: 'Premium'     },
   activity:      { titleKey: 'page.activity.title',      titleFallback: 'Activity',      eyebrowKey: 'page.activity.eyebrow',      eyebrowFallback: 'Live feed'   },
   notifications: { titleKey: 'page.notifications.title', titleFallback: 'Notifications', eyebrowKey: 'page.notifications.eyebrow', eyebrowFallback: 'Inbox'       },
 };

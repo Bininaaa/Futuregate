@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="earlyAccess.pageTitle" data-i18n-fallback="Early access · FutureGate Admin">Early access · FutureGate Admin</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css?v=2026042603">
+  <link rel="stylesheet" href="css/i18n.css?v=2026043001">
+  <script src="js/theme-init.js"></script>
+  <script src="js/lang-init.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .ea-hero { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr); gap:14px; align-items:stretch; }
+    .ea-hero-main { border-radius:26px; padding:22px; color:#fff; background:linear-gradient(135deg,#2a1b93,#3b22f6 54%,#14b8a6); box-shadow:0 24px 54px rgba(59,34,246,.22); }
+    .ea-hero-icon { width:50px; height:50px; border-radius:17px; display:grid; place-items:center; background:rgba(255,255,255,.16); margin-bottom:14px; }
+    .ea-hero-icon [data-lucide] { width:25px; height:25px; }
+    .ea-eyebrow { font-size:11px; font-weight:800; letter-spacing:.10em; text-transform:uppercase; opacity:.78; }
+    .ea-title { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); line-height:1.05; font-weight:800; margin:7px 0 8px; }
+    .ea-copy { color:rgba(255,255,255,.78); line-height:1.6; max-width:62ch; }
+    .ea-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .ea-summary-card { border-radius:22px; padding:16px; background:var(--c-surface); border:1px solid var(--c-border); box-shadow:0 16px 34px rgba(15,23,42,.06); }
+    .ea-summary-label { color:var(--c-text-muted); font-size:12px; font-weight:800; }
+    .ea-summary-value { color:var(--c-text); font-size:28px; font-weight:800; margin-top:4px; }
+    .ea-toolbar { display:flex; flex-direction:column; gap:12px; }
+    .ea-filter-row { display:flex; flex-wrap:wrap; gap:8px; }
+    .ea-filter-chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--c-border); border-radius:999px; background:var(--c-surface); color:var(--c-text); padding:9px 12px; font-weight:800; cursor:pointer; }
+    .ea-filter-chip.is-active { background:linear-gradient(135deg,var(--c-primary),var(--c-activity)); color:#fff; border-color:transparent; }
+    .ea-filter-chip [data-lucide] { width:15px; height:15px; }
+    .ea-card { border-radius:24px; border:1px solid var(--c-border); background:var(--c-surface); box-shadow:0 16px 34px rgba(15,23,42,.06); padding:16px; display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:14px; align-items:start; }
+    .ea-card-icon { width:46px; height:46px; border-radius:16px; display:grid; place-items:center; background:var(--ea-soft); color:var(--ea-color); }
+    .ea-card-icon [data-lucide] { width:22px; height:22px; }
+    .ea-card-title { color:var(--c-text); font-weight:800; line-height:1.25; margin-bottom:5px; }
+    .ea-card-sub { color:var(--c-text-muted); font-size:13px; line-height:1.45; }
+    .ea-meta { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+    .ea-pill { display:inline-flex; align-items:center; gap:5px; border-radius:999px; padding:5px 8px; background:var(--c-surface-muted); color:var(--c-text-muted); font-size:11px; font-weight:800; }
+    .ea-pill [data-lucide] { width:12px; height:12px; }
+    .ea-status { background:var(--ea-status-bg); color:var(--ea-status); }
+    .ea-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .ea-action { border:0; border-radius:14px; padding:10px 12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
+    .ea-action [data-lucide] { width:16px; height:16px; }
+    .ea-action.primary { background:rgba(23,157,108,.13); color:var(--c-success); }
+    .ea-action.danger { background:rgba(226,74,74,.12); color:var(--c-danger); }
+    .ea-action.neutral { background:rgba(100,116,139,.12); color:var(--c-text); }
+    .ea-action:disabled { opacity:.55; cursor:not-allowed; }
+    .ea-details-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
+    .ea-detail-item { border:1px solid var(--c-border); border-radius:16px; background:var(--c-surface-muted); padding:12px; }
+    .ea-detail-label { color:var(--c-text-muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+    .ea-detail-value { color:var(--c-text); font-weight:700; line-height:1.35; word-break:break-word; }
+    .ea-text-section { margin-top:14px; border-top:1px solid var(--c-border); padding-top:14px; }
+    .ea-text-section h4 { margin:0 0 8px; font-size:13px; color:var(--c-text); font-weight:800; }
+    .ea-text-section p, .ea-text-section li { color:var(--c-text-muted); line-height:1.58; font-size:14px; }
+    html[data-theme='dark'] .ea-hero-main { background:linear-gradient(135deg,#151d35,#3b22f6 58%,#0f766e); box-shadow:0 24px 58px rgba(2,6,23,.46); }
+    html[data-theme='dark'] .ea-summary-card,
+    html[data-theme='dark'] .ea-card { box-shadow:0 20px 42px rgba(2,6,23,.34); }
+    html[data-theme='dark'] .ea-filter-chip,
+    html[data-theme='dark'] .ea-action.neutral { background:rgba(21,29,53,.86); }
+    html[data-theme='dark'] .ea-hero-icon { background:rgba(255,255,255,.11); }
+    html[data-theme='dark'] .ea-copy { color:rgba(248,250,252,.76); }
+    @media (max-width:900px) { .ea-hero { grid-template-columns:1fr; } .ea-card { grid-template-columns:1fr; } .ea-actions { justify-content:flex-start; } }
+    @media (prefers-reduced-motion: reduce) { .ea-action, .ea-filter-chip { transition:none; } }
+  </style>
+</head>
+<body data-page="early-access">
+  <div id="auth-gate" class="auth-gate"><div class="spinner"></div><p data-i18n="shell.verifyingSession" data-i18n-fallback="Verifying session...">Verifying session...</p></div>
+  <div id="shell"></div>
+
+  <div class="modal-backdrop" id="ea-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="ea-modal-title" data-i18n="earlyAccess.modalTitle" data-i18n-fallback="Early access request">Early access request</h3>
+        <button class="modal-close" data-close-modal="ea-modal" data-i18n-aria-label="btn.close" data-i18n-aria-label-fallback="Close" aria-label="Close"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" id="ea-modal-body"></div>
+      <div class="modal-footer" id="ea-modal-footer"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { mountShell, showPage } from './js/shell.js';
+    import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, formatTimestamp, showToast } from './js/auth.js';
+    import { auth, db, collection, doc, getDocs, query, where, updateDoc, serverTimestamp } from './js/firebase-config.js';
+    import { formatFullTimestamp, matchesSearch, timestampToMs, typeIcon } from './js/admin-utils.js';
+    import { logAdminActivity } from './js/activity-service.js';
+    import { openModal, closeModal } from './js/ui.js';
+    import { t, applyTranslations } from './js/i18n.js';
+
+    mountShell({ page: 'early-access' });
+
+    const state = { filter: 'pending', search: '', records: [], busyId: '' };
+    const FILTERS = [
+      { id: 'pending', labelKey: 'earlyAccess.pending', labelFallback: 'Pending', icon: 'hourglass' },
+      { id: 'approved', labelKey: 'earlyAccess.approved', labelFallback: 'Approved', icon: 'badge-check' },
+      { id: 'rejected', labelKey: 'earlyAccess.rejected', labelFallback: 'Rejected', icon: 'ban' },
+      { id: 'all', labelKey: 'earlyAccess.all', labelFallback: 'All', icon: 'list' },
+    ];
+
+    checkAuth(async () => { await loadEarlyAccess(); });
+    document.addEventListener('languagechange', () => renderPage());
+
+    async function loadEarlyAccess() {
+      try {
+        const snap = await getDocs(query(collection(db, 'opportunities'), where('earlyAccessRequested', '==', true)));
+        state.records = snap.docs.map((item) => ({ id: item.id, ...item.data() })).sort(compareRecords);
+        renderPage();
+        showPage();
+      } catch (error) {
+        console.error('Early access load error:', error);
+        document.getElementById('loading').innerHTML = feedbackCardHtml(
+          t('earlyAccess.couldNotLoad', 'Could not load early access requests.'),
+          { type: 'error', title: t('earlyAccess.unableToLoad', 'Unable to load') },
+        );
+      }
+    }
+
+    function renderPage() {
+      const root = document.getElementById('page-content');
+      if (!root) return;
+      const summary = summarize(state.records);
+      const filtered = state.records.filter(matchesActiveFilters);
+      root.innerHTML = `
+        <section class="ea-hero">
+          <div class="ea-hero-main">
+            <div class="ea-hero-icon"><i data-lucide="badge-check"></i></div>
+            <div class="ea-eyebrow">${esc(t('earlyAccess.eyebrow', 'Premium queue'))}</div>
+            <div class="ea-title">${esc(t('earlyAccess.title', 'Early access control'))}</div>
+            <div class="ea-copy">${esc(t('earlyAccess.copy', 'Review company requests for premium early visibility, approve the locked window, or return posts to normal publishing.'))}</div>
+          </div>
+          <div class="ea-summary">
+            ${summaryCard(t('earlyAccess.pending', 'Pending'), summary.pending, 'var(--c-warning)')}
+            ${summaryCard(t('earlyAccess.approved', 'Approved'), summary.approved, 'var(--c-success)')}
+            ${summaryCard(t('earlyAccess.rejected', 'Rejected'), summary.rejected, 'var(--c-danger)')}
+            ${summaryCard(t('earlyAccess.total', 'Total'), summary.total, 'var(--c-primary)')}
+          </div>
+        </section>
+        <section class="surface-panel ea-toolbar">
+          <div class="search-bar">
+            <i data-lucide="search" class="search-icon"></i>
+            <input id="ea-search" type="search" value="${esc(state.search)}" placeholder="${esc(t('earlyAccess.searchPlaceholder', 'Search by title, company, location, type, status, or compensation'))}">
+          </div>
+          <div class="ea-filter-row">
+            ${FILTERS.map((filter) => filterChip(filter, summary)).join('')}
+          </div>
+        </section>
+        <section class="list-grid" id="ea-list">
+          ${filtered.length ? filtered.map(cardHtml).join('') : emptyStateHtml(
+            state.records.length ? t('earlyAccess.noResultsBody', 'Try another status or search term.') : t('earlyAccess.emptyBody', 'Company requests for premium early visibility will appear here as soon as they are submitted.'),
+            { title: state.records.length ? t('earlyAccess.noResultsTitle', 'No results in this view') : t('earlyAccess.emptyTitle', 'No early access requests yet'), icon: 'badge-check' },
+          )}
+        </section>
+      `;
+      bindPageEvents();
+      applyTranslations();
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function bindPageEvents() {
+      document.getElementById('ea-search')?.addEventListener('input', (event) => {
+        state.search = event.target.value.trim();
+        renderPage();
+      });
+      document.querySelectorAll('[data-ea-filter]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.filter = button.getAttribute('data-ea-filter') || 'pending';
+          renderPage();
+        });
+      });
+      document.querySelectorAll('[data-ea-open]').forEach((button) => {
+        button.addEventListener('click', () => openDetails(button.getAttribute('data-ea-open')));
+      });
+      bindActionButtons(document.getElementById('page-content') || document);
+    }
+
+    function summaryCard(label, value, color) {
+      return `<div class="ea-summary-card" style="--ea-color:${color}">
+        <div class="ea-summary-label">${esc(label)}</div>
+        <div class="ea-summary-value" style="color:${color}">${value}</div>
+      </div>`;
+    }
+
+    function filterChip(filter, summary) {
+      const count = filter.id === 'all' ? summary.total : summary[filter.id];
+      const label = t(filter.labelKey, filter.labelFallback);
+      return `<button class="ea-filter-chip ${state.filter === filter.id ? 'is-active' : ''}" type="button" data-ea-filter="${filter.id}">
+        <i data-lucide="${filter.icon}"></i>${esc(label)} <span>${count}</span>
+      </button>`;
+    }
+
+    function cardHtml(record) {
+      const status = normalizeStatus(record.earlyAccessStatus);
+      const meta = statusMeta(status);
+      const subType = record.type || record.opportunityType || 'job';
+      const typeColor = opportunityColor(subType);
+      const isBusy = state.busyId === record.id;
+      return `<article class="ea-card" style="--ea-color:${typeColor};--ea-soft:${typeColor}1a;--ea-status:${meta.color};--ea-status-bg:${meta.color}1a">
+        <div class="ea-card-icon"><i data-lucide="${typeIcon('opportunity', subType)}"></i></div>
+        <div>
+          <div class="ea-card-title">${esc(record.title || t('earlyAccess.untitled', 'Untitled opportunity'))}</div>
+          <div class="ea-card-sub">${esc(record.companyName || t('earlyAccess.companyNotAdded', 'Company not added'))} · ${esc(record.location || t('earlyAccess.locationNotSpecified', 'Location not specified'))}</div>
+          <div class="ea-meta">
+            <span class="ea-pill"><i data-lucide="${typeIcon('opportunity', subType)}"></i>${esc(typeLabel(subType))}</span>
+            <span class="ea-pill ea-status"><i data-lucide="${meta.icon}"></i>${esc(meta.label)}</span>
+            <span class="ea-pill"><i data-lucide="clock"></i>${esc(formatTimestamp(record.requestedEarlyAccessAt) || t('earlyAccess.unknownTime', 'Unknown time'))}</span>
+            ${record.isFeatured ? `<span class="ea-pill"><i data-lucide="star"></i>${esc(t('earlyAccess.featured', 'Featured'))}</span>` : ''}
+            ${record.isHidden ? `<span class="ea-pill"><i data-lucide="eye-off"></i>${esc(t('earlyAccess.hidden', 'Hidden'))}</span>` : ''}
+          </div>
+        </div>
+        <div class="ea-actions">
+          <button class="ea-action neutral" type="button" data-ea-open="${esc(record.id)}"><i data-lucide="panel-top-open"></i>${esc(t('earlyAccess.details', 'Details'))}</button>
+          ${status === 'pending' ? `<button class="ea-action primary" type="button" data-ea-approve="${esc(record.id)}" ${isBusy ? 'disabled' : ''}><i data-lucide="check"></i>${esc(t('earlyAccess.approve', 'Approve'))}</button>` : ''}
+          ${status === 'pending' ? `<button class="ea-action danger" type="button" data-ea-reject="${esc(record.id)}" ${isBusy ? 'disabled' : ''}><i data-lucide="x"></i>${esc(t('earlyAccess.reject', 'Reject'))}</button>` : ''}
+          ${status !== 'none' ? `<button class="ea-action neutral" type="button" data-ea-normal="${esc(record.id)}" ${isBusy ? 'disabled' : ''}><i data-lucide="rotate-ccw"></i>${esc(t('earlyAccess.makeNormal', 'Make normal'))}</button>` : ''}
+        </div>
+      </article>`;
+    }
+
+    function openDetails(id) {
+      const record = findRecord(id);
+      if (!record) return;
+      const status = normalizeStatus(record.earlyAccessStatus);
+      const meta = statusMeta(status);
+      const subType = record.type || record.opportunityType || 'job';
+      document.getElementById('ea-modal-title').textContent = record.title || t('earlyAccess.untitled', 'Untitled opportunity');
+      document.getElementById('ea-modal-body').innerHTML = `
+        <div class="ea-details-grid">
+          ${detailItem(t('earlyAccess.company', 'Company'), record.companyName || t('earlyAccess.notSpecified', 'Not specified'))}
+          ${detailItem(t('earlyAccess.type', 'Type'), typeLabel(subType))}
+          ${detailItem(t('earlyAccess.status', 'Status'), meta.label)}
+          ${detailItem(t('earlyAccess.requested', 'Requested'), formatFullTimestamp(record.requestedEarlyAccessAt) || t('earlyAccess.unknownTime', 'Unknown time'))}
+          ${detailItem(t('earlyAccess.reviewed', 'Reviewed'), formatFullTimestamp(record.earlyAccessReviewedAt) || t('earlyAccess.notReviewedYet', 'Not reviewed yet'))}
+          ${detailItem(t('earlyAccess.publicVisibility', 'Public visibility'), formatFullTimestamp(record.publicVisibleAt) || t('earlyAccess.notScheduled', 'Not scheduled'))}
+          ${detailItem(t('earlyAccess.delayWindow', 'Delay window'), record.earlyAccessDurationHours ? `${record.earlyAccessDurationHours}h` : t('earlyAccess.notSet', 'Not set'))}
+          ${detailItem(t('earlyAccess.compensation', 'Compensation'), compensationLabel(record) || t('earlyAccess.notSpecified', 'Not specified'))}
+        </div>
+        ${textSection(t('earlyAccess.description', 'Description'), record.description)}
+        ${textSection(t('earlyAccess.rejectionReason', 'Rejection reason'), record.earlyAccessRejectedReason)}
+        ${listSection(t('earlyAccess.requirements', 'Requirements'), record.requirements || record.requirementsList)}
+        ${listSection(t('earlyAccess.benefits', 'Benefits'), record.benefits)}
+        ${listSection(t('earlyAccess.tags', 'Tags'), record.tags)}
+      `;
+      document.getElementById('ea-modal-footer').innerHTML = `
+        <button class="btn" data-close-modal="ea-modal">${esc(t('btn.close', 'Close'))}</button>
+        ${status === 'pending' ? `<button class="btn btn-approve" data-ea-approve="${esc(record.id)}"><i data-lucide="check"></i>${esc(t('earlyAccess.approve', 'Approve'))}</button>` : ''}
+        ${status === 'pending' ? `<button class="btn btn-reject" data-ea-reject="${esc(record.id)}"><i data-lucide="x"></i>${esc(t('earlyAccess.reject', 'Reject'))}</button>` : ''}
+        ${status !== 'none' ? `<button class="btn btn-secondary" data-ea-normal="${esc(record.id)}"><i data-lucide="rotate-ccw"></i>${esc(t('earlyAccess.makeNormal', 'Make normal'))}</button>` : ''}
+      `;
+      bindActionButtons(document.getElementById('ea-modal-footer'));
+      openModal('ea-modal');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function bindActionButtons(scope = document) {
+      scope.querySelectorAll('[data-ea-approve]').forEach((button) => {
+        button.addEventListener('click', () => promptApprove(button.getAttribute('data-ea-approve')));
+      });
+      scope.querySelectorAll('[data-ea-reject]').forEach((button) => {
+        button.addEventListener('click', () => promptReject(button.getAttribute('data-ea-reject')));
+      });
+      scope.querySelectorAll('[data-ea-normal]').forEach((button) => {
+        button.addEventListener('click', () => makeNormal(button.getAttribute('data-ea-normal')));
+      });
+    }
+
+    async function promptApprove(id) {
+      const record = findRecord(id);
+      if (!record) return;
+      const title = record.title || t('earlyAccess.untitled', 'Untitled opportunity');
+      const raw = window.prompt(
+        fmt(t('earlyAccess.approvePrompt', 'Approve early access for "{title}". Delay hours:'), { title }),
+        String(record.earlyAccessDurationHours || 48),
+      );
+      if (raw === null) return;
+      const delayHours = Math.max(1, Math.min(336, Number.parseInt(raw, 10) || 48));
+      await runRecordAction(id, async () => {
+        const publicVisibleAt = new Date(Date.now() + delayHours * 60 * 60 * 1000);
+        await updateDoc(doc(db, 'opportunities', id), {
+          earlyAccessStatus: 'approved',
+          premiumEarlyAccess: true,
+          earlyAccessReviewedBy: auth.currentUser?.uid || '',
+          earlyAccessReviewedAt: serverTimestamp(),
+          earlyAccessDurationHours: delayHours,
+          publicVisibleAt,
+          updatedAt: serverTimestamp(),
+        });
+        await logEarlyAccessActivity(
+          id,
+          record,
+          'early_access_approved',
+          'approved',
+          fmt(t('earlyAccess.activityApproved', 'Early access approved for {hours}h.'), { hours: delayHours }),
+        );
+      }, t('earlyAccess.approvedToast', 'Early access approved.'));
+    }
+
+    async function promptReject(id) {
+      const record = findRecord(id);
+      if (!record) return;
+      const title = record.title || t('earlyAccess.untitled', 'Untitled opportunity');
+      const reason = window.prompt(
+        fmt(t('earlyAccess.rejectPrompt', 'Reject early access for "{title}". Optional reason:'), { title }),
+        '',
+      );
+      if (reason === null) return;
+      await runRecordAction(id, async () => {
+        await updateDoc(doc(db, 'opportunities', id), {
+          earlyAccessStatus: 'rejected',
+          premiumEarlyAccess: false,
+          earlyAccessReviewedBy: auth.currentUser?.uid || '',
+          earlyAccessReviewedAt: serverTimestamp(),
+          earlyAccessRejectedReason: reason.trim(),
+          updatedAt: serverTimestamp(),
+        });
+        await logEarlyAccessActivity(id, record, 'early_access_rejected', 'rejected', t('earlyAccess.activityRejected', 'Early access request rejected.'));
+      }, t('earlyAccess.rejectedToast', 'Early access rejected.'));
+    }
+
+    async function makeNormal(id) {
+      const record = findRecord(id);
+      const title = record?.title || t('earlyAccess.untitled', 'Untitled opportunity');
+      if (!record || !window.confirm(fmt(t('earlyAccess.normalConfirm', 'Move "{title}" back to normal publishing?'), { title }))) return;
+      await runRecordAction(id, async () => {
+        await updateDoc(doc(db, 'opportunities', id), {
+          earlyAccessStatus: 'none',
+          earlyAccessRequested: false,
+          premiumEarlyAccess: false,
+          publicVisibleAt: null,
+          updatedAt: serverTimestamp(),
+        });
+        await logEarlyAccessActivity(id, record, 'early_access_removed', 'normal', t('earlyAccess.activityRemoved', 'Early access removed from this opportunity.'));
+      }, t('earlyAccess.normalToast', 'Post moved back to normal.'));
+    }
+
+    async function runRecordAction(id, action, successMessage) {
+      state.busyId = id;
+      renderPage();
+      try {
+        await action();
+        closeModal('ea-modal');
+        showToast(successMessage, 'success');
+        await loadEarlyAccess();
+      } catch (error) {
+        console.error('Early access action failed:', error);
+        showToast(error.message || t('earlyAccess.actionFailed', 'Action failed.'), 'error');
+      } finally {
+        state.busyId = '';
+        renderPage();
+      }
+    }
+
+    async function logEarlyAccessActivity(id, record, action, status, description) {
+      await logAdminActivity({
+        type: 'opportunity',
+        action,
+        targetCollection: 'opportunities',
+        targetId: id,
+        title: record.title || t('type.opportunity', 'Opportunity'),
+        description,
+        subjectId: record.companyId || '',
+        subjectName: record.companyName || '',
+        status,
+      }).catch(() => {});
+    }
+
+    function matchesActiveFilters(record) {
+      const status = normalizeStatus(record.earlyAccessStatus);
+      const matchesFilter = state.filter === 'all' || status === state.filter;
+      if (!matchesFilter) return false;
+      return matchesSearch([
+        record.title,
+        record.companyName,
+        record.location,
+        record.description,
+        record.requirements,
+        record.earlyAccessStatus,
+        compensationLabel(record),
+        typeLabel(record.type || record.opportunityType),
+      ], state.search);
+    }
+
+    function compareRecords(a, b) {
+      const rank = statusRank(a) - statusRank(b);
+      if (rank !== 0) return rank;
+      return timestampToMs(b.requestedEarlyAccessAt) - timestampToMs(a.requestedEarlyAccessAt);
+    }
+
+    function statusRank(record) {
+      const status = normalizeStatus(record.earlyAccessStatus);
+      if (status === 'pending') return 0;
+      if (status === 'approved') return 1;
+      if (status === 'rejected') return 2;
+      return 3;
+    }
+
+    function summarize(records) {
+      return records.reduce((acc, record) => {
+        acc.total += 1;
+        const status = normalizeStatus(record.earlyAccessStatus);
+        if (status === 'pending') acc.pending += 1;
+        else if (status === 'approved') acc.approved += 1;
+        else if (status === 'rejected') acc.rejected += 1;
+        return acc;
+      }, { total: 0, pending: 0, approved: 0, rejected: 0 });
+    }
+
+    function normalizeStatus(value) {
+      const status = String(value || 'none').trim().toLowerCase();
+      return ['pending', 'approved', 'rejected', 'expired', 'none'].includes(status) ? status : 'none';
+    }
+
+    function statusMeta(status) {
+      if (status === 'pending') return { label: t('earlyAccess.pending', 'Pending'), icon: 'hourglass', color: '#D97706' };
+      if (status === 'approved') return { label: t('earlyAccess.approved', 'Approved'), icon: 'badge-check', color: '#179D6C' };
+      if (status === 'rejected') return { label: t('earlyAccess.rejected', 'Rejected'), icon: 'ban', color: '#E24A4A' };
+      if (status === 'expired') return { label: t('earlyAccess.expired', 'Expired'), icon: 'timer-off', color: '#7C3AED' };
+      return { label: t('earlyAccess.none', 'None'), icon: 'circle', color: '#64748B' };
+    }
+
+    function typeLabel(value) {
+      const type = String(value || 'job').trim().toLowerCase();
+      const fallback = ({ job: 'Job', internship: 'Internship', sponsoring: 'Sponsoring', contract: 'Contract', volunteer: 'Volunteer', freelance: 'Freelance' })[type] || type.charAt(0).toUpperCase() + type.slice(1);
+      return t(`type.${type}`, fallback);
+    }
+
+    function opportunityColor(value) {
+      const type = String(value || '').trim().toLowerCase();
+      return ({ job: '#F59E0B', internship: '#2563EB', sponsoring: '#14B8A6', contract: '#7C3AED', volunteer: '#179D6C', freelance: '#EC4899' })[type] || '#64748B';
+    }
+
+    function findRecord(id) {
+      return state.records.find((record) => record.id === id);
+    }
+
+    function detailItem(label, value) {
+      return `<div class="ea-detail-item"><div class="ea-detail-label">${esc(label)}</div><div class="ea-detail-value">${esc(value || t('earlyAccess.notSpecified', 'Not specified'))}</div></div>`;
+    }
+
+    function textSection(title, value) {
+      const text = String(value || '').trim();
+      return text ? `<section class="ea-text-section"><h4>${esc(title)}</h4><p>${esc(text)}</p></section>` : '';
+    }
+
+    function listSection(title, value) {
+      const items = toList(value);
+      return items.length ? `<section class="ea-text-section"><h4>${esc(title)}</h4><ul>${items.map((item) => `<li>${esc(item)}</li>`).join('')}</ul></section>` : '';
+    }
+
+    function toList(value) {
+      if (Array.isArray(value)) return value.map((item) => String(item).trim()).filter(Boolean);
+      return String(value || '').split(/\n|,/).map((item) => item.trim()).filter(Boolean);
+    }
+
+    function compensationLabel(record) {
+      if (record.fundingNote) return record.fundingNote;
+      if (record.fundingAmount) return `${record.fundingAmount} ${record.fundingCurrency || ''}`.trim();
+      if (record.compensationText) return record.compensationText;
+      const min = record.salaryMin;
+      const max = record.salaryMax;
+      if (min || max) return `${min || ''}${min && max ? ' - ' : ''}${max || ''} ${record.salaryCurrency || ''}`.trim();
+      return record.isPaid === false ? t('label.unpaid', 'Unpaid') : '';
+    }
+
+    function fmt(template, values) {
+      return String(template || '').replace(/\{(\w+)\}/g, (_, key) => (
+        Object.prototype.hasOwnProperty.call(values, key) ? values[key] : ''
+      ));
+    }
+  </script>
+</body>
+</html>

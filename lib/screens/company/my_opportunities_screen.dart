@@ -21,6 +21,7 @@ import '../../utils/opportunity_metadata.dart';
 import '../../utils/opportunity_type.dart';
 import '../../widgets/app_shell_background.dart';
 import '../../widgets/application_status_badge.dart';
+import '../../widgets/early_access_label.dart';
 import '../../widgets/priority_application_badge.dart';
 import '../../widgets/profile_avatar.dart';
 import '../../widgets/shared/app_feedback.dart';
@@ -2822,6 +2823,13 @@ class _OpportunityGridCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  if (opportunity.earlyAccessStatus != 'none') ...[
+                    EarlyAccessTopBadge(
+                      unlocked: opportunity.earlyAccessStatus == 'approved',
+                      showLabel: false,
+                    ),
+                    const SizedBox(width: 6),
+                  ],
                   Expanded(
                     child: Align(
                       alignment: AlignmentDirectional.centerEnd,
@@ -3040,6 +3048,13 @@ class _OpportunityListRow extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
+                    if (opportunity.earlyAccessStatus != 'none') ...[
+                      EarlyAccessLabel(
+                        status: opportunity.earlyAccessStatus,
+                        compact: true,
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                     Row(
                       children: [
                         Icon(

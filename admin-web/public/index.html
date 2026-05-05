@@ -110,10 +110,54 @@
           if (d.role === 'company' && (d.approvalStatus === 'pending' || d.isApproved === false)) pendingCompanies += 1;
           if (d.isActive === false) blockedUsers += 1;
         });
-        let pendingApps = 0;
-        appsSnap.forEach((s) => { if ((s.data().status || 'pending') === 'pending') pendingApps += 1; });
+        let pendingApps = 0, premiumApps = 0, freeApps = 0;
+        appsSnap.forEach((s) => {
+          const d = s.data();
+          if ((d.status || 'pending') === 'pending') pendingApps += 1;
+          if ((d.status || '').toLowerCase() !== 'withdrawn') {
+            if (d.isPremiumAtApply === true || d.priorityApplication === true) premiumApps += 1;
+            else freeApps += 1;
+          }
+        });
         let hiddenOpps = 0;
-        oppsSnap.forEach((s) => { if (s.data().isHidden) hiddenOpps += 1; });
+        let normalPosts = 0;
+        let earlyAccessPendingRequests = 0;
+        let approvedEarlyAccessPosts = 0;
+        let rejectedEarlyAccessPosts = 0;
+        let expiredEarlyAccessPosts = 0;
+        let lockedApplyClicks = 0;
+        let upgradeModalViews = 0;
+        let upgradeClicks = 0;
+        const earlyRequestedCompanies = {};
+        const earlyApprovedCompanies = {};
+        const earlyRejectedCompanies = {};
+
+        oppsSnap.forEach((s) => {
+          const d = s.data();
+          const status = normalizeEarlyAccessStatus(d.earlyAccessStatus);
+          const isExpired = isExpiredEarlyAccess(d, status);
+          const hasEarlyAccessHistory = d.earlyAccessRequested === true || d.premiumEarlyAccess === true || status !== 'none';
+          if (d.isHidden) hiddenOpps += 1;
+          if (!hasEarlyAccessHistory) normalPosts += 1;
+          if (status === 'pending') earlyAccessPendingRequests += 1;
+          else if (status === 'approved' && isExpired) expiredEarlyAccessPosts += 1;
+          else if (status === 'approved') approvedEarlyAccessPosts += 1;
+          else if (status === 'rejected') rejectedEarlyAccessPosts += 1;
+          else if (status === 'expired') expiredEarlyAccessPosts += 1;
+          lockedApplyClicks += readInt(d.lockedApplyClicks);
+          upgradeModalViews += readInt(d.upgradeModalViews);
+          upgradeClicks += readInt(d.upgradeClicks);
+          if (hasEarlyAccessHistory) addCompanyRank(earlyRequestedCompanies, d.companyId, d.companyName);
+          if (status === 'approved' || isExpired) addCompanyRank(earlyApprovedCompanies, d.companyId, d.companyName);
+          if (status === 'rejected') addCompanyRank(earlyRejectedCompanies, d.companyId, d.companyName);
+        });
+
+        const earlyAccessPosts = earlyAccessPendingRequests + approvedEarlyAccessPosts + rejectedEarlyAccessPosts + expiredEarlyAccessPosts;
+        const earlyAccessUsagePercentage = totalOpps > 0 ? (earlyAccessPosts / totalOpps) * 100 : 0;
+        const upgradeClickRate = upgradeModalViews > 0 ? (upgradeClicks / upgradeModalViews) * 100 : 0;
+        const topEarlyRequested = topCompanyRanks(earlyRequestedCompanies);
+        const topEarlyApproved = topCompanyRanks(earlyApprovedCompanies);
+        const topEarlyRejected = topCompanyRanks(earlyRejectedCompanies);
 
         const totalPending = pendingIdeas + pendingApps + pendingCompanies;
 
@@ -157,6 +201,10 @@
                 <i data-lucide="library"></i>
                 ${esc(t('dash.library', 'Library'))}
               </a>
+              <a class="dash-hero-btn" href="early-access">
+                <i data-lucide="badge-check"></i>
+                ${esc(t('dash.earlyAccess', 'Early access'))}${earlyAccessPendingRequests > 0 ? ` <span style="background:rgba(255,255,255,.22);border-radius:99px;padding:1px 7px;font-size:11px">${earlyAccessPendingRequests}</span>` : ''}
+              </a>
             </div>
           </div>
 
@@ -174,6 +222,7 @@
               ${controlCard({ count: pendingCompanies,label: t('dash.pendingCompanies', 'Companies awaiting approval'), icon: 'building-2',   color: '#14B8A6', href: 'users?role=company&status=pending' })}
               ${controlCard({ count: blockedUsers,    label: t('dash.blockedUsers', 'Blocked users'),                   icon: 'shield-alert', color: '#E24A4A', href: 'users?status=blocked' })}
               ${controlCard({ count: hiddenOpps,      label: t('dash.hiddenOpps', 'Hidden opportunities'),              icon: 'eye-off',      color: '#64748B', href: 'moderation?tab=opportunities' })}
+              ${controlCard({ count: earlyAccessPendingRequests, label: t('dash.pendingEarlyAccess', 'Early access requests'), icon: 'badge-check', color: '#179D6C', href: 'early-access' })}
             </div>
           </section>
 
@@ -248,6 +297,37 @@
             </div>
           </section>
 
+          <!-- Early access analytics -->
+          <section class="surface-panel">
+            <div class="surface-heading"><div>
+              <div class="surface-heading-title">${esc(t('dash.earlyAccessControl', 'Premium access control'))}</div>
+              <div class="surface-heading-copy">${esc(t('dash.earlyAccessControlCopy', 'Track post adoption, locked demand, and upgrade intent across the platform.'))}</div>
+            </div>
+              <a class="section-link" href="early-access">${esc(t('dash.manageEarlyAccess', 'Manage requests'))} <i data-lucide="arrow-right" class="sm"></i></a>
+            </div>
+            <div class="stats-grid">
+              ${stat(t('dash.totalPosts', 'Total posts'), totalOpps, 'package', 'var(--c-primary)')}
+              ${stat(t('dash.normalPosts', 'Normal posts'), normalPosts, 'newspaper', 'var(--c-text-faint)')}
+              ${stat(t('dash.pendingEarly', 'Pending early'), earlyAccessPendingRequests, 'hourglass', 'var(--c-warning)')}
+              ${stat(t('dash.approvedEarly', 'Approved early'), approvedEarlyAccessPosts, 'badge-check', 'var(--c-success)')}
+              ${stat(t('dash.rejectedEarly', 'Rejected early'), rejectedEarlyAccessPosts, 'ban', 'var(--c-danger)')}
+              ${stat(t('dash.expiredEarly', 'Expired early'), expiredEarlyAccessPosts, 'timer-off', 'var(--c-activity)')}
+              ${stat(t('dash.lockedClicks', 'Locked clicks'), lockedApplyClicks, 'lock', 'var(--c-accent)')}
+              ${stat(t('dash.upgradeClicks', 'Upgrade clicks'), upgradeClicks, 'crown', 'var(--c-secondary)')}
+            </div>
+            <div style="margin-top:14px">
+              ${engagement(t('dash.postsUsingEarlyAccess', 'Posts using early access'), `${earlyAccessUsagePercentage.toFixed(1)}% ${t('dash.ofAllPosts', 'of all posts')}`, 'percent', 'var(--c-accent)')}
+              ${engagement(t('dash.premiumApplicationsVsFree', 'Premium applications vs free'), fmt(t('dash.premiumFreeValue', '{premium} premium / {free} free'), { premium: premiumApps, free: freeApps }), 'bolt', 'var(--c-success)')}
+              ${engagement(t('dash.upgradeConversionIndicators', 'Upgrade conversion indicators'), fmt(t('dash.upgradeIndicatorsValue', '{views} modal views, {rate}% clicked upgrade'), { views: upgradeModalViews, rate: upgradeClickRate.toFixed(1) }), 'trending-up', 'var(--c-activity)')}
+            </div>
+          </section>
+
+          <section class="charts-grid">
+            <div class="surface-panel" id="top-early-requested"></div>
+            <div class="surface-panel" id="top-early-approved"></div>
+            <div class="surface-panel" id="top-early-rejected"></div>
+          </section>
+
           <!-- ── Engagement analytics ── -->
           <section class="surface-panel">
             <div class="surface-heading"><div>
@@ -279,6 +359,7 @@
               ${quick('graduation-cap',t('dash.quickScholarships', 'Scholarships'),  'moderation?tab=scholarships',                      'var(--c-danger)',    t('dash.quickScholarshipsCopy', 'Publish and curate scholarships.'))}
               ${quick('video',        t('dash.quickTrainings', 'Trainings'),         'moderation?tab=trainings&librarySource=youtube&libraryMode=search&filter=videos', 'var(--c-secondary)', t('dash.quickTrainingsCopy', 'Import and manage training videos.'))}
               ${quick('library',      t('dash.quickLibrary', 'Library'),             'moderation?tab=trainings&librarySource=books&libraryMode=search&filter=books',    'var(--c-info)',      t('dash.quickLibraryCopy', 'Import and manage book resources.'))}
+              ${quick('badge-check',  t('dash.quickEarlyAccess', 'Early access'),    'early-access',                                     'var(--c-success)',   t('dash.quickEarlyAccessCopy', 'Approve premium visibility windows.'))}
               ${quick('lightbulb',    t('dash.quickProjectIdeas', 'Project ideas'),  'moderation?tab=ideas',                             'var(--c-warning)',   t('dash.quickProjectIdeasCopy', 'Approve student submissions.'))}
               ${quick('users',        t('dash.quickUsers', 'Users'),                 'users',                                            'var(--c-primary)',   t('dash.quickUsersCopy', 'Approve companies, manage accounts.'))}
               ${quick('activity',     t('dash.quickActivity', 'Activity'),           'activity',                                         'var(--c-success)',   t('dash.quickActivityCopy', 'See the latest platform events.'))}
@@ -315,6 +396,9 @@
 
         renderTopList('top-applied', t('dash.mostApplied', 'Most applied'),  topApplied, t('dash.apps', 'apps'),   'var(--c-activity)', '#7C3AED');
         renderTopList('top-saved',   t('dash.mostSaved', 'Most saved'),      topSaved,   t('dash.saves', 'saves'), 'var(--c-accent)',   '#F59E0B');
+        renderCompanyRankList('top-early-requested', t('dash.topEarlyRequested', 'Companies with most early access requests'), topEarlyRequested, t('dash.requests', 'requests'), '#3B22F6');
+        renderCompanyRankList('top-early-approved', t('dash.topEarlyApproved', 'Companies with most approvals'), topEarlyApproved, t('dash.approvals', 'approvals'), '#179D6C');
+        renderCompanyRankList('top-early-rejected', t('dash.topEarlyRejected', 'Companies with most rejections'), topEarlyRejected, t('dash.rejections', 'rejections'), '#E24A4A');
         renderCharts({ bac, licence, master, doctorat, students, companies, admins, monthlyMap, months });
         await renderActivity();
         await renderRecentUsers();
@@ -356,6 +440,12 @@
       </div>`;
     }
 
+    function fmt(template, values) {
+      return String(template || '').replace(/\{(\w+)\}/g, (_, key) => (
+        Object.prototype.hasOwnProperty.call(values, key) ? values[key] : ''
+      ));
+    }
+
     function controlCard({ count, label, icon, color, href }) {
       const empty = count === 0;
       return `<a class="control-card${empty ? ' control-empty' : ''}" href="${href}" style="--ca:${color};--control-accent:${color}">
@@ -375,6 +465,48 @@
         : null;
       if (key) return t(key, fallbackMap[value] || value);
       return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function readInt(value) {
+      if (typeof value === 'number' && Number.isFinite(value)) return Math.trunc(value);
+      const parsed = Number.parseInt(String(value || '0'), 10);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function normalizeEarlyAccessStatus(value) {
+      const status = String(value || 'none').trim().toLowerCase();
+      return ['pending', 'approved', 'rejected', 'expired', 'none'].includes(status) ? status : 'none';
+    }
+
+    function dateFromValue(value) {
+      if (!value) return null;
+      if (typeof value.toDate === 'function') return value.toDate();
+      if (value instanceof Date) return value;
+      if (typeof value.seconds === 'number') return new Date(value.seconds * 1000);
+      const parsed = Date.parse(value);
+      return Number.isNaN(parsed) ? null : new Date(parsed);
+    }
+
+    function isExpiredEarlyAccess(data, status) {
+      if (status === 'expired') return true;
+      if (status !== 'approved') return false;
+      const publicVisibleAt = dateFromValue(data.publicVisibleAt);
+      return publicVisibleAt ? Date.now() >= publicVisibleAt.getTime() : false;
+    }
+
+    function addCompanyRank(target, companyId, companyName) {
+      const id = String(companyId || '').trim();
+      if (!id) return;
+      if (!target[id]) {
+        target[id] = { id, title: String(companyName || '').trim() || t('dash.unknownCompany', 'Unknown company'), count: 0 };
+      }
+      target[id].count += 1;
+    }
+
+    function topCompanyRanks(source) {
+      return Object.values(source)
+        .sort((a, b) => b.count - a.count || a.title.localeCompare(b.title))
+        .slice(0, 3);
     }
 
     /* ── Top lists ────────────────────────────────────── */
@@ -409,6 +541,25 @@
     }
 
     /* ── Charts ───────────────────────────────────────── */
+
+    function renderCompanyRankList(id, title, items, label, hexColor) {
+      const el = document.getElementById(id);
+      let html = `<div class="surface-heading"><div><div class="surface-heading-title">${esc(title)}</div></div></div>`;
+      if (items.length === 0) {
+        html += emptyStateHtml(t('dash.highlightsAppear', 'Highlights appear here once activity grows.'), { title: t('dash.noHighlights', 'No highlights yet'), icon: 'building-2' });
+      } else {
+        html += '<div class="list-grid">' + items.map((item, i) => `
+          <a class="top-item" href="users?userId=${encodeURIComponent(item.id)}">
+            <div class="top-rank" style="background:${hexColor}1a;color:${hexColor}">#${i + 1}</div>
+            <div class="top-body">
+              <div class="top-title">${esc(item.title)}</div>
+              <div class="top-sub"><span class="mini-badge"><i data-lucide="building-2"></i>${esc(t('label.role.company', 'Company'))}</span></div>
+            </div>
+            <div class="top-count" style="background:${hexColor}1a;color:${hexColor}">${item.count} ${esc(label)}</div>
+          </a>`).join('') + '</div>';
+      }
+      el.innerHTML = html;
+    }
 
     function getCssColor(varName) {
       return getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || varName;
@@ -605,6 +756,7 @@
           ${avatar}
           <div class="row-body">
             <div class="row-title">${esc(d.title || t('mod.untitled', 'Untitled'))}</div>
+            ${earlyAccessBadgeHtml(d)}
             <div class="row-sub">${esc(d.companyName || '—')} · ${esc(d.location || '—')} · ${esc(typeLabel(subType))}</div>
           </div>
           <div class="activity-time">${esc(formatTimestamp(d.createdAt))}</div>
@@ -614,6 +766,19 @@
         const id = row.getAttribute('data-opp-id');
         row.addEventListener('click', () => openDetailsModal('opportunity', id));
       });
+    }
+
+    function earlyAccessBadgeHtml(item) {
+      const status = normalizeEarlyAccessStatus(item?.earlyAccessStatus);
+      if (status === 'none') return '';
+      const meta = {
+        pending: { label: t('earlyAccess.pending', 'Pending'), cls: 'badge-warning', icon: 'hourglass' },
+        approved: { label: t('earlyAccess.approved', 'Approved'), cls: 'badge-success', icon: 'badge-check' },
+        rejected: { label: t('earlyAccess.rejected', 'Rejected'), cls: 'badge-danger', icon: 'ban' },
+        expired: { label: t('earlyAccess.expired', 'Expired'), cls: 'badge-info', icon: 'timer-off' },
+      }[status];
+      if (!meta) return '';
+      return `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;"><span class="badge ${meta.cls}"><i data-lucide="${meta.icon}"></i>${esc(t('earlyAccess.label', 'Early access'))}: ${esc(meta.label)}</span></div>`;
     }
 
     function roleColor(r) { return r==='student'?'#2563EB':r==='company'?'#14B8A6':r==='admin'?'#F59E0B':'#64748B'; }

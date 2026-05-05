@@ -1077,6 +1077,7 @@ function renderCompanyOpportunitiesList(companyName, opportunities) {
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
               <span class="badge badge-info"><i data-lucide="${opportunityTypeIcon(type)}"></i>${esc(formatChoiceLabel(type))}</span>
               <span class="badge ${status === 'open' ? 'badge-success' : 'badge-warning'}">${esc(statusLabel)}</span>
+              ${earlyAccessOpportunityBadge(opportunity)}
               ${opportunity.isHidden === true ? `<span class="badge badge-warning"><i data-lucide="eye-off"></i>${esc(t('users.opps.hiddenBadge', 'Hidden'))}</span>` : ''}
             </div>
           </div>
@@ -1103,6 +1104,18 @@ function renderCompanyOpportunitiesList(companyName, opportunities) {
     });
   });
   if (window.lucide) window.lucide.createIcons();
+}
+
+function earlyAccessOpportunityBadge(opportunity) {
+  const status = cleanText(opportunity?.earlyAccessStatus).toLowerCase();
+  if (!['pending', 'approved', 'rejected', 'expired'].includes(status)) return '';
+  const meta = {
+    pending: { label: t('earlyAccess.pending', 'Pending'), className: 'badge-warning', icon: 'hourglass' },
+    approved: { label: t('earlyAccess.approved', 'Approved'), className: 'badge-success', icon: 'badge-check' },
+    rejected: { label: t('earlyAccess.rejected', 'Rejected'), className: 'badge-danger', icon: 'ban' },
+    expired: { label: t('earlyAccess.expired', 'Expired'), className: 'badge-info', icon: 'timer-off' },
+  }[status];
+  return `<span class="badge ${meta.className}"><i data-lucide="${meta.icon}"></i>${esc(t('earlyAccess.label', 'Early access'))}: ${esc(meta.label)}</span>`;
 }
 
 function openCompanyOpportunityDetail(companyName, opportunity, onBack) {

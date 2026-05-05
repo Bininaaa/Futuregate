@@ -26,6 +26,7 @@ const WORKSPACE_ROUTE_NAMES = new Set([
   'index',
   'users',
   'moderation',
+  'early-access',
   'activity',
   'notifications',
   'idea-editor',
