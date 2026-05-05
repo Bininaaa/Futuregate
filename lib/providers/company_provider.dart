@@ -47,9 +47,18 @@ class CompanyProvider extends ChangeNotifier {
     int pendingStandardCount = 0;
     int approvedCount = 0;
     int rejectedCount = 0;
+    int totalViewsCount = 0;
+    int premiumApplicationsCount = 0;
+    int freeApplicationsCount = 0;
+    int normalPosts = 0;
+    int pendingEarlyAccessPosts = 0;
+    int approvedEarlyAccessPosts = 0;
+    int rejectedEarlyAccessPosts = 0;
+    int expiredEarlyAccessPosts = 0;
 
     for (final app in _applications) {
-      switch (ApplicationStatus.parse(app.status)) {
+      final status = ApplicationStatus.parse(app.status);
+      switch (status) {
         case ApplicationStatus.pending:
           pendingCount++;
           if (app.shouldPrioritizeApplication) {
@@ -64,12 +73,57 @@ class CompanyProvider extends ChangeNotifier {
         case ApplicationStatus.rejected:
           rejectedCount++;
           break;
+        case ApplicationStatus.withdrawn:
+          break;
+      }
+
+      if (status != ApplicationStatus.withdrawn) {
+        if (app.isPremiumAtApply || app.priorityApplication) {
+          premiumApplicationsCount++;
+        } else {
+          freeApplicationsCount++;
+        }
+      }
+    }
+
+    for (final opportunity in _opportunities) {
+      final earlyStatus = opportunity.earlyAccessStatus;
+      final isExpiredEarlyAccess = _isExpiredEarlyAccess(opportunity);
+      final hasEarlyAccessHistory =
+          opportunity.earlyAccessRequested ||
+          opportunity.premiumEarlyAccess ||
+          earlyStatus != 'none';
+
+      totalViewsCount += opportunity.viewsCount;
+
+      if (!hasEarlyAccessHistory) {
+        normalPosts++;
+      }
+      if (earlyStatus == 'pending') {
+        pendingEarlyAccessPosts++;
+      } else if (earlyStatus == 'approved' && isExpiredEarlyAccess) {
+        expiredEarlyAccessPosts++;
+      } else if (earlyStatus == 'approved') {
+        approvedEarlyAccessPosts++;
+      } else if (earlyStatus == 'rejected') {
+        rejectedEarlyAccessPosts++;
+      } else if (earlyStatus == 'expired') {
+        expiredEarlyAccessPosts++;
       }
     }
 
     _stats = {
       'totalOpportunities': _opportunities.length,
+      'totalPosts': _opportunities.length,
+      'normalPosts': normalPosts,
       'totalApplications': _applications.length,
+      'totalViewsCount': totalViewsCount,
+      'premiumApplicationsCount': premiumApplicationsCount,
+      'freeApplicationsCount': freeApplicationsCount,
+      'pendingEarlyAccessPosts': pendingEarlyAccessPosts,
+      'approvedEarlyAccessPosts': approvedEarlyAccessPosts,
+      'rejectedEarlyAccessPosts': rejectedEarlyAccessPosts,
+      'expiredEarlyAccessPosts': expiredEarlyAccessPosts,
       'pendingApplications': pendingCount,
       'pendingPremiumApplications': pendingPremiumCount,
       'pendingStandardApplications': pendingStandardCount,
@@ -86,6 +140,18 @@ class CompanyProvider extends ChangeNotifier {
           .where((o) => o.publisherStatus() == 'closed')
           .length,
     };
+  }
+
+  bool _isExpiredEarlyAccess(OpportunityModel opportunity) {
+    if (opportunity.earlyAccessStatus == 'expired') {
+      return true;
+    }
+    if (opportunity.earlyAccessStatus != 'approved') {
+      return false;
+    }
+
+    final publicVisibleAt = opportunity.publicVisibleAt;
+    return publicVisibleAt != null && !DateTime.now().isBefore(publicVisibleAt);
   }
 
   Future<void> loadDashboard(String companyId) async {

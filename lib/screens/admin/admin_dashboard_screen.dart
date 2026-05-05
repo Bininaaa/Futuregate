@@ -299,6 +299,126 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             const SizedBox(height: 24),
             AdminSectionHeader(
+              eyebrow: 'Early access',
+              title: 'Premium access control',
+              subtitle:
+                  'Track post adoption, locked demand, and upgrade intent across the platform.',
+            ),
+            const SizedBox(height: 12),
+            _DashboardMetricGrid(
+              items: [
+                _DashboardMetric(
+                  title: 'Total posts',
+                  value: '${_intStat(stats, 'totalPosts')}',
+                  icon: Icons.inventory_2_outlined,
+                  color: AdminPalette.primary,
+                ),
+                _DashboardMetric(
+                  title: 'Normal posts',
+                  value: '${_intStat(stats, 'normalPosts')}',
+                  icon: Icons.article_outlined,
+                  color: AdminPalette.textMuted,
+                ),
+                _DashboardMetric(
+                  title: 'Pending early',
+                  value: '${_intStat(stats, 'earlyAccessPendingRequests')}',
+                  icon: Icons.hourglass_top_rounded,
+                  color: AdminPalette.warning,
+                ),
+                _DashboardMetric(
+                  title: 'Approved early',
+                  value: '${_intStat(stats, 'approvedEarlyAccessPosts')}',
+                  icon: Icons.verified_outlined,
+                  color: AdminPalette.success,
+                ),
+                _DashboardMetric(
+                  title: 'Rejected early',
+                  value: '${_intStat(stats, 'rejectedEarlyAccessPosts')}',
+                  icon: Icons.block_outlined,
+                  color: AdminPalette.danger,
+                ),
+                _DashboardMetric(
+                  title: 'Expired early',
+                  value: '${_intStat(stats, 'expiredEarlyAccessPosts')}',
+                  icon: Icons.timer_off_outlined,
+                  color: AdminPalette.activity,
+                ),
+                _DashboardMetric(
+                  title: 'Locked clicks',
+                  value: '${_intStat(stats, 'lockedApplyClicks')}',
+                  icon: Icons.lock_outline_rounded,
+                  color: AdminPalette.accent,
+                ),
+                _DashboardMetric(
+                  title: 'Upgrade clicks',
+                  value: '${_intStat(stats, 'upgradeClicks')}',
+                  icon: Icons.workspace_premium_outlined,
+                  color: AdminPalette.secondary,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _InsightTile(
+              icon: Icons.percent_rounded,
+              iconColor: AdminPalette.accent,
+              title: 'Posts using early access',
+              value:
+                  '${_doubleStat(stats, 'earlyAccessUsagePercentage').toStringAsFixed(1)}% of all posts',
+            ),
+            const SizedBox(height: 10),
+            _InsightTile(
+              icon: Icons.bolt_rounded,
+              iconColor: AdminPalette.success,
+              title: 'Premium applications vs free',
+              value:
+                  '${_intStat(stats, 'premiumApplicationsCount')} premium / ${_intStat(stats, 'freeApplicationsCount')} free',
+            ),
+            const SizedBox(height: 10),
+            _InsightTile(
+              icon: Icons.trending_up_rounded,
+              iconColor: AdminPalette.activity,
+              title: 'Upgrade conversion indicators',
+              value:
+                  '${_intStat(stats, 'upgradeModalViews')} modal views, ${_doubleStat(stats, 'upgradeClickRate').toStringAsFixed(1)}% clicked upgrade',
+            ),
+            const SizedBox(height: 16),
+            _RankedListCard(
+              title: 'Companies with most early access requests',
+              icon: Icons.business_center_outlined,
+              color: AdminPalette.primary,
+              items:
+                  (stats['topEarlyAccessRequestedCompanies']
+                      as List<dynamic>?) ??
+                  [],
+              suffixLabel: 'requests',
+              showTypeBadge: false,
+            ),
+            const SizedBox(height: 16),
+            _RankedListCard(
+              title: 'Companies with most approvals',
+              icon: Icons.verified_outlined,
+              color: AdminPalette.success,
+              items:
+                  (stats['topEarlyAccessApprovedCompanies']
+                      as List<dynamic>?) ??
+                  [],
+              suffixLabel: 'approvals',
+              showTypeBadge: false,
+            ),
+            const SizedBox(height: 16),
+            _RankedListCard(
+              title: 'Companies with most rejections',
+              icon: Icons.block_outlined,
+              color: AdminPalette.danger,
+              items:
+                  (stats['topEarlyAccessRejectedCompanies']
+                      as List<dynamic>?) ??
+                  [],
+              suffixLabel: 'rejections',
+              showTypeBadge: false,
+            ),
+            const SizedBox(height: 24),
+            AdminSectionHeader(
               eyebrow: l10n.uiPerformance,
               title: l10n.uiEngagementAnalytics,
               subtitle:
@@ -418,6 +538,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _intStat(Map<String, dynamic> stats, String key) {
     final value = stats[key];
     return value is int ? value : int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  double _doubleStat(Map<String, dynamic> stats, String key) {
+    final value = stats[key];
+    if (value is double) {
+      return value;
+    }
+    if (value is num) {
+      return value.toDouble();
+    }
+    return double.tryParse(value?.toString() ?? '') ?? 0;
   }
 
   void _openActivityCenter() {
@@ -2531,6 +2662,7 @@ class _RankedListCard extends StatelessWidget {
   final Color color;
   final List<dynamic> items;
   final String suffixLabel;
+  final bool showTypeBadge;
 
   const _RankedListCard({
     required this.title,
@@ -2538,6 +2670,7 @@ class _RankedListCard extends StatelessWidget {
     required this.color,
     required this.items,
     required this.suffixLabel,
+    this.showTypeBadge = true,
   });
 
   @override
@@ -2605,10 +2738,12 @@ class _RankedListCard extends StatelessWidget {
                       ),
                     ),
                   );
-                  final typeBadge = OpportunityTypeBadge(
-                    type: (item['type'] ?? '').toString(),
-                    fontSize: 10.4,
-                  );
+                  final typeBadge = showTypeBadge
+                      ? OpportunityTypeBadge(
+                          type: (item['type'] ?? '').toString(),
+                          fontSize: 10.4,
+                        )
+                      : null;
 
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -2649,7 +2784,7 @@ class _RankedListCard extends StatelessWidget {
                             Wrap(
                               spacing: 8,
                               runSpacing: 8,
-                              children: [typeBadge, badge],
+                              children: [?typeBadge, badge],
                             ),
                           ],
                         ),

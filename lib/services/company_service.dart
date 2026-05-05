@@ -459,6 +459,16 @@ class CompanyService {
       nextData['status'] = normalizeOpportunityStatus(nextData['status']);
     }
 
+    if (isCreate) {
+      nextData['viewsCount'] = 0;
+      nextData['applicationsCount'] = 0;
+      nextData['premiumApplicationsCount'] = 0;
+      nextData['freeApplicationsCount'] = 0;
+      nextData['lockedApplyClicks'] = 0;
+      nextData['upgradeModalViews'] = 0;
+      nextData['upgradeClicks'] = 0;
+    }
+
     if (nextData.containsKey('requirementItems') || isCreate) {
       nextData['requirementItems'] =
           OpportunityMetadata.extractRequirementItems(

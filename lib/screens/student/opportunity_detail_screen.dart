@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -12,6 +14,7 @@ import '../../providers/chat_provider.dart';
 import '../../providers/cv_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../services/application_service.dart';
+import '../../services/opportunity_analytics_service.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/application_status.dart';
 import '../../utils/content_language.dart';
@@ -73,6 +76,9 @@ class OpportunityDetailsScreen extends StatefulWidget {
 }
 
 class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
+  final OpportunityAnalyticsService _analyticsService =
+      OpportunityAnalyticsService();
+
   late Future<ApplicationEligibilityStatus> _eligibilityFuture;
   bool _isBookmarkBusy = false;
   bool _isApplying = false;
@@ -137,6 +143,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
   void initState() {
     super.initState();
     _eligibilityFuture = _loadEligibility();
+    unawaited(_analyticsService.recordView(widget.opportunity.id));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -187,16 +194,27 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
     });
   }
 
-  Future<void> _showEarlyAccessUpgradeModal() async {
+  Future<void> _showEarlyAccessUpgradeModal({
+    bool countLockedClick = false,
+  }) async {
     final l10n = AppLocalizations.of(context)!;
+    if (countLockedClick) {
+      unawaited(
+        _analyticsService.recordLockedApplyClick(widget.opportunity.id),
+      );
+    }
+    unawaited(_analyticsService.recordUpgradeModalView(widget.opportunity.id));
     await showPremiumUpgradeModal(
       context,
       title: l10n.earlyAccessLockedModalTitle,
       body: l10n.earlyAccessLockedModalBody,
       highlightText: l10n.earlyAccessLockedMessage,
-      onUpgrade: () => Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => const PremiumPassScreen())),
+      onUpgrade: () {
+        unawaited(_analyticsService.recordUpgradeClick(widget.opportunity.id));
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const PremiumPassScreen()));
+      },
     );
   }
 
@@ -223,7 +241,7 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
       widget.opportunity,
       context.read<SubscriptionProvider>().subscription,
     )) {
-      await _showEarlyAccessUpgradeModal();
+      await _showEarlyAccessUpgradeModal(countLockedClick: true);
       return;
     }
 
@@ -1025,7 +1043,8 @@ class _OpportunityDetailsScreenState extends State<OpportunityDetailsScreen> {
         } else if (canApply && earlyAccessLocked) {
           primaryAction = LockedApplyButton(
             isBusy: _isApplying,
-            onPressed: _showEarlyAccessUpgradeModal,
+            onPressed: () =>
+                _showEarlyAccessUpgradeModal(countLockedClick: true),
           );
         } else if (canApply &&
             earlyAccessActive &&

@@ -4,11 +4,12 @@ import '../models/application_model.dart';
 import '../models/opportunity_model.dart';
 import '../models/student_application_item_model.dart';
 import '../models/subscription_model.dart';
-import 'notification_worker_service.dart';
 import 'cv_service.dart';
 import 'subscription_service.dart';
 import '../utils/application_status.dart';
 import 'interfaces/i_application_service.dart';
+import 'notification_worker_service.dart';
+import 'opportunity_analytics_service.dart';
 import '../utils/crashlytics_logger.dart';
 
 enum ApplicationEligibilityStatus {
@@ -25,6 +26,8 @@ class ApplicationService implements IApplicationService {
       NotificationWorkerService();
   final CvService _cvService = CvService();
   final SubscriptionService _subscriptionService = SubscriptionService();
+  final OpportunityAnalyticsService _analyticsService =
+      OpportunityAnalyticsService();
 
   @override
   Future<int> getApplicationsCount(String studentId) async {
@@ -242,6 +245,7 @@ class ApplicationService implements IApplicationService {
     // Early-access lock: free users cannot apply during the premium window
     if (opportunity.isEarlyAccessActive) {
       if (!isPremiumAtApply) {
+        await _analyticsService.recordLockedApplyClick(opportunityId);
         throw EarlyAccessLockedException(
           'This opportunity is in early access. Upgrade to Premium Pass to apply now.',
           publicVisibleAt: opportunity.publicVisibleAt,
@@ -262,6 +266,10 @@ class ApplicationService implements IApplicationService {
       isPremiumAtApply: isPremiumAtApply,
       subscriptionSnapshot: subscriptionSnapshot,
     )) {
+      await _analyticsService.recordApplicationSubmitted(
+        opportunityId,
+        isPremium: isPremiumAtApply,
+      );
       await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
       return;
     }
@@ -325,6 +333,10 @@ class ApplicationService implements IApplicationService {
           );
 
           await applicationRef.set(fallbackData);
+          await _analyticsService.recordApplicationSubmitted(
+            opportunityId,
+            isPremium: false,
+          );
           await _notificationWorker.notifyApplicationSubmitted(
             applicationRef.id,
           );
@@ -336,6 +348,10 @@ class ApplicationService implements IApplicationService {
       rethrow;
     }
 
+    await _analyticsService.recordApplicationSubmitted(
+      opportunityId,
+      isPremium: isPremiumAtApply,
+    );
     await _notificationWorker.notifyApplicationSubmitted(applicationRef.id);
   }
 

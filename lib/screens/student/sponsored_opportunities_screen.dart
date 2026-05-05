@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +14,7 @@ import '../../providers/opportunity_provider.dart';
 import '../../providers/saved_opportunity_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../services/application_service.dart';
+import '../../services/opportunity_analytics_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/application_status.dart';
@@ -77,6 +80,9 @@ class _SponsoredPalette {
 
 class _SponsoredOpportunitiesScreenState
     extends State<SponsoredOpportunitiesScreen> {
+  final OpportunityAnalyticsService _analyticsService =
+      OpportunityAnalyticsService();
+
   List<_SponsoredFilterDefinition> _buildFilters(AppLocalizations l10n) => [
     _SponsoredFilterDefinition(value: _SponsoredFilter.all, label: l10n.uiAll),
     _SponsoredFilterDefinition(
@@ -300,17 +306,27 @@ class _SponsoredOpportunitiesScreenState
     }
   }
 
-  Future<void> _showEarlyAccessUpgradeModal() async {
+  Future<void> _showEarlyAccessUpgradeModal(
+    OpportunityModel opportunity, {
+    bool countLockedClick = false,
+  }) async {
     final l10n = AppLocalizations.of(context)!;
+    if (countLockedClick) {
+      unawaited(_analyticsService.recordLockedApplyClick(opportunity.id));
+    }
+    unawaited(_analyticsService.recordUpgradeModalView(opportunity.id));
     await showPremiumUpgradeModal(
       context,
       title: l10n.earlyAccessLockedModalTitle,
       body: l10n.earlyAccessLockedModalBody,
       highlightText: l10n.earlyAccessLockedMessage,
-      onUpgrade: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
-      ),
+      onUpgrade: () {
+        unawaited(_analyticsService.recordUpgradeClick(opportunity.id));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PremiumPassScreen()),
+        );
+      },
     );
   }
 
@@ -339,7 +355,7 @@ class _SponsoredOpportunitiesScreenState
       opportunity,
       context.read<SubscriptionProvider>().subscription,
     )) {
-      await _showEarlyAccessUpgradeModal();
+      await _showEarlyAccessUpgradeModal(opportunity, countLockedClick: true);
       return;
     }
 
@@ -392,7 +408,7 @@ class _SponsoredOpportunitiesScreenState
         );
       } on EarlyAccessLockedException {
         if (!mounted) return;
-        await _showEarlyAccessUpgradeModal();
+        await _showEarlyAccessUpgradeModal(opportunity);
         return;
       }
 

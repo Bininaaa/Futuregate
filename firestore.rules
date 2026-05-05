@@ -330,6 +330,89 @@ service cloud.firestore {
           );
     }
 
+    function isNonNegativeInt(value) {
+      return value is int && value >= 0;
+    }
+
+    function hasValidOpportunityStatsCreate(data) {
+      return (
+          !data.keys().hasAny(['viewsCount']) ||
+          isNonNegativeInt(data.viewsCount)
+        ) &&
+        (
+          !data.keys().hasAny(['applicationsCount']) ||
+          isNonNegativeInt(data.applicationsCount)
+        ) &&
+        (
+          !data.keys().hasAny(['premiumApplicationsCount']) ||
+          isNonNegativeInt(data.premiumApplicationsCount)
+        ) &&
+        (
+          !data.keys().hasAny(['freeApplicationsCount']) ||
+          isNonNegativeInt(data.freeApplicationsCount)
+        ) &&
+        (
+          !data.keys().hasAny(['lockedApplyClicks']) ||
+          isNonNegativeInt(data.lockedApplyClicks)
+        ) &&
+        (
+          !data.keys().hasAny(['upgradeModalViews']) ||
+          isNonNegativeInt(data.upgradeModalViews)
+        ) &&
+        (
+          !data.keys().hasAny(['upgradeClicks']) ||
+          isNonNegativeInt(data.upgradeClicks)
+        );
+    }
+
+    function statChanged(field) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny([field]);
+    }
+
+    function incrementsStatByOne(field) {
+      return !statChanged(field) ||
+          request.resource.data.get(field, 0) == resource.data.get(field, 0) + 1;
+    }
+
+    function canStudentIncrementOpportunityEngagementStats(opportunityId) {
+      return isStudent() &&
+          canStudentUseOpportunity(opportunityId) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'viewsCount',
+            'lockedApplyClicks',
+            'upgradeModalViews',
+            'upgradeClicks'
+          ]) &&
+          incrementsStatByOne('viewsCount') &&
+          incrementsStatByOne('lockedApplyClicks') &&
+          incrementsStatByOne('upgradeModalViews') &&
+          incrementsStatByOne('upgradeClicks');
+    }
+
+    function canStudentIncrementOpportunityApplicationStats(opportunityId) {
+      return isStudent() &&
+          exists(applicationPath(request.auth.uid + '_' + opportunityId)) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'applicationsCount',
+            'premiumApplicationsCount',
+            'freeApplicationsCount'
+          ]) &&
+          statChanged('applicationsCount') &&
+          (
+            (
+              statChanged('premiumApplicationsCount') &&
+              !statChanged('freeApplicationsCount')
+            ) ||
+            (
+              statChanged('freeApplicationsCount') &&
+              !statChanged('premiumApplicationsCount')
+            )
+          ) &&
+          incrementsStatByOne('applicationsCount') &&
+          incrementsStatByOne('premiumApplicationsCount') &&
+          incrementsStatByOne('freeApplicationsCount');
+    }
+
     function isApplicationStatus(value) {
       return value == 'pending' ||
           value == 'accepted' ||
@@ -1107,7 +1190,14 @@ service cloud.firestore {
             'applicationDeadline',
             'earlyAccessRequested',
             'earlyAccessStatus',
-            'requestedEarlyAccessAt'
+            'requestedEarlyAccessAt',
+            'viewsCount',
+            'applicationsCount',
+            'premiumApplicationsCount',
+            'freeApplicationsCount',
+            'lockedApplyClicks',
+            'upgradeModalViews',
+            'upgradeClicks'
           ]) &&
           request.resource.data.id == opportunityId &&
           request.resource.data.companyId == request.auth.uid &&
@@ -1119,6 +1209,7 @@ service cloud.firestore {
           isOpportunityType(request.resource.data.type) &&
           isOpportunityStatus(request.resource.data.status) &&
           hasValidOpportunityMetadata(request.resource.data) &&
+          hasValidOpportunityStatsCreate(request.resource.data) &&
           hasValidOpportunityEarlyAccessCreate(request.resource.data);
 
       allow update: if (
@@ -1218,6 +1309,10 @@ service cloud.firestore {
             hasValidOpportunityMetadata(request.resource.data) &&
             hasValidCompanyOpportunityEarlyAccessUpdate()
           )
+          ||
+          canStudentIncrementOpportunityEngagementStats(opportunityId)
+          ||
+          canStudentIncrementOpportunityApplicationStats(opportunityId)
         );
 
       allow delete: if isAdmin() ||

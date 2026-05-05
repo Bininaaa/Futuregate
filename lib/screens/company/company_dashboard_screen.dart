@@ -188,6 +188,64 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
     }).length;
   }
 
+  bool _isExpiredEarlyAccess(OpportunityModel opportunity) {
+    if (opportunity.earlyAccessStatus == 'expired') {
+      return true;
+    }
+    if (opportunity.earlyAccessStatus != 'approved') {
+      return false;
+    }
+
+    final publicVisibleAt = opportunity.publicVisibleAt;
+    return publicVisibleAt != null && !DateTime.now().isBefore(publicVisibleAt);
+  }
+
+  String _earlyAccessStatusLabel(OpportunityModel opportunity) {
+    if (_isExpiredEarlyAccess(opportunity)) {
+      return _l10n.earlyAccessExpiredStatus;
+    }
+
+    switch (opportunity.earlyAccessStatus) {
+      case 'pending':
+        return _l10n.earlyAccessPendingStatus;
+      case 'approved':
+        return _l10n.earlyAccessApprovedStatus;
+      case 'rejected':
+        return _l10n.earlyAccessRejectedStatus;
+      default:
+        return _l10n.earlyAccessNoneStatus;
+    }
+  }
+
+  Color _earlyAccessStatusColor(OpportunityModel opportunity) {
+    if (_isExpiredEarlyAccess(opportunity)) {
+      return CompanyDashboardPalette.textMuted;
+    }
+
+    switch (opportunity.earlyAccessStatus) {
+      case 'pending':
+        return CompanyDashboardPalette.warning;
+      case 'approved':
+        return CompanyDashboardPalette.success;
+      case 'rejected':
+        return CompanyDashboardPalette.error;
+      default:
+        return CompanyDashboardPalette.textMuted;
+    }
+  }
+
+  String _publicVisibleLabel(OpportunityModel opportunity) {
+    final publicVisibleAt = opportunity.publicVisibleAt;
+    if (publicVisibleAt == null) {
+      return _l10n.uiNotSpecified;
+    }
+    return LocalizedDisplay.shortDate(
+      context,
+      publicVisibleAt,
+      includeYear: true,
+    );
+  }
+
   String _companyDisplayName(UserModel? user) {
     final companyName = (user?.companyName ?? '').trim();
     if (companyName.isNotEmpty) {
@@ -242,10 +300,77 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
           .where((item) => item.publisherStatus() == 'open')
           .length,
     );
+    final totalPosts = _intStat(
+      stats,
+      'totalPosts',
+      provider.opportunities.length,
+    );
+    final normalPosts = _intStat(
+      stats,
+      'normalPosts',
+      provider.opportunities
+          .where(
+            (item) =>
+                !item.earlyAccessRequested &&
+                !item.premiumEarlyAccess &&
+                item.earlyAccessStatus == 'none',
+          )
+          .length,
+    );
+    final pendingEarlyAccessPosts = _intStat(
+      stats,
+      'pendingEarlyAccessPosts',
+      provider.opportunities
+          .where((item) => item.earlyAccessStatus == 'pending')
+          .length,
+    );
+    final approvedEarlyAccessPosts = _intStat(
+      stats,
+      'approvedEarlyAccessPosts',
+      provider.opportunities
+          .where(
+            (item) =>
+                item.earlyAccessStatus == 'approved' &&
+                !_isExpiredEarlyAccess(item),
+          )
+          .length,
+    );
+    final rejectedEarlyAccessPosts = _intStat(
+      stats,
+      'rejectedEarlyAccessPosts',
+      provider.opportunities
+          .where((item) => item.earlyAccessStatus == 'rejected')
+          .length,
+    );
+    final expiredEarlyAccessPosts = _intStat(
+      stats,
+      'expiredEarlyAccessPosts',
+      provider.opportunities.where(_isExpiredEarlyAccess).length,
+    );
+    final totalViews = _intStat(
+      stats,
+      'totalViewsCount',
+      provider.opportunities.fold<int>(
+        0,
+        (total, item) => total + item.viewsCount,
+      ),
+    );
     final totalApplications = _intStat(
       stats,
       'totalApplications',
       provider.applications.length,
+    );
+    final premiumApplications = _intStat(
+      stats,
+      'premiumApplicationsCount',
+      provider.applications
+          .where((item) => item.isPremiumAtApply || item.priorityApplication)
+          .length,
+    );
+    final freeApplications = _intStat(
+      stats,
+      'freeApplicationsCount',
+      math.max(0, provider.applications.length - premiumApplications),
     );
     final pendingApplications = _intStat(
       stats,
@@ -418,6 +543,13 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               tone: CompanyDashboardPalette.secondary,
             ),
             const SizedBox(height: 12),
+            _buildStatCard(
+              label: 'Views',
+              value: '$totalViews',
+              icon: Icons.visibility_outlined,
+              tone: CompanyDashboardPalette.accent,
+            ),
+            const SizedBox(height: 12),
             _buildApplicationStatusSummaryCard(
               pendingApplications: pendingApplications,
               pendingPremiumApplications: pendingPremiumApplications,
@@ -425,6 +557,19 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
               approvedApplications: approvedApplications,
               rejectedApplications: rejectedApplications,
             ),
+            const SizedBox(height: 12),
+            _buildEarlyAccessSummaryCard(
+              totalPosts: totalPosts,
+              normalPosts: normalPosts,
+              pendingEarlyAccessPosts: pendingEarlyAccessPosts,
+              approvedEarlyAccessPosts: approvedEarlyAccessPosts,
+              rejectedEarlyAccessPosts: rejectedEarlyAccessPosts,
+              expiredEarlyAccessPosts: expiredEarlyAccessPosts,
+              premiumApplications: premiumApplications,
+              freeApplications: freeApplications,
+            ),
+            const SizedBox(height: 12),
+            _buildOpportunityAccessStatusCard(provider.opportunities),
             const SizedBox(height: 18),
             _buildChartCard(chartPoints: chartPoints, labels: chartLabels),
             const SizedBox(height: 22),
@@ -1086,6 +1231,315 @@ class _CompanyDashboardScreenState extends State<CompanyDashboardScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEarlyAccessSummaryCard({
+    required int totalPosts,
+    required int normalPosts,
+    required int pendingEarlyAccessPosts,
+    required int approvedEarlyAccessPosts,
+    required int rejectedEarlyAccessPosts,
+    required int expiredEarlyAccessPosts,
+    required int premiumApplications,
+    required int freeApplications,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: CompanyDashboardPalette.surface,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: CompanyDashboardPalette.border),
+        boxShadow: [
+          BoxShadow(
+            color: CompanyDashboardPalette.primary.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: CompanyDashboardPalette.activity.withValues(
+                    alpha: 0.12,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.workspace_premium_outlined,
+                  color: CompanyDashboardPalette.activity,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Early access performance',
+                      style: AppTypography.product(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: CompanyDashboardPalette.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Only your company posts and applications are included.',
+                      style: AppTypography.product(
+                        fontSize: 12,
+                        color: CompanyDashboardPalette.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              _buildCompactStatPill(
+                'Total posts',
+                totalPosts,
+                CompanyDashboardPalette.primary,
+              ),
+              _buildCompactStatPill(
+                'Normal',
+                normalPosts,
+                CompanyDashboardPalette.textMuted,
+              ),
+              _buildCompactStatPill(
+                'Pending early',
+                pendingEarlyAccessPosts,
+                CompanyDashboardPalette.warning,
+              ),
+              _buildCompactStatPill(
+                'Approved early',
+                approvedEarlyAccessPosts,
+                CompanyDashboardPalette.success,
+              ),
+              _buildCompactStatPill(
+                'Rejected early',
+                rejectedEarlyAccessPosts,
+                CompanyDashboardPalette.error,
+              ),
+              _buildCompactStatPill(
+                'Expired early',
+                expiredEarlyAccessPosts,
+                CompanyDashboardPalette.accent,
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatusChip(
+                  'Premium apps',
+                  '$premiumApplications',
+                  CompanyDashboardPalette.activity,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildStatusChip(
+                  'Free apps',
+                  '$freeApplications',
+                  CompanyDashboardPalette.secondary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOpportunityAccessStatusCard(
+    List<OpportunityModel> opportunities,
+  ) {
+    final earlyAccessPosts =
+        opportunities
+            .where(
+              (item) =>
+                  item.earlyAccessRequested ||
+                  item.premiumEarlyAccess ||
+                  item.earlyAccessStatus != 'none',
+            )
+            .toList()
+          ..sort((a, b) {
+            final aTime = a.updatedAt?.millisecondsSinceEpoch ?? 0;
+            final bTime = b.updatedAt?.millisecondsSinceEpoch ?? 0;
+            return bTime.compareTo(aTime);
+          });
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: CompanyDashboardPalette.surface,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: CompanyDashboardPalette.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Post access status',
+            style: AppTypography.product(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: CompanyDashboardPalette.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Public release dates and early access status for your posts.',
+            style: AppTypography.product(
+              fontSize: 12,
+              color: CompanyDashboardPalette.textMuted,
+            ),
+          ),
+          const SizedBox(height: 14),
+          if (earlyAccessPosts.isEmpty)
+            Text(
+              'No early access posts yet.',
+              style: AppTypography.product(
+                fontSize: 12.5,
+                color: CompanyDashboardPalette.textMuted,
+              ),
+            )
+          else
+            ...earlyAccessPosts.take(5).map(_buildOpportunityAccessRow),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOpportunityAccessRow(OpportunityModel opportunity) {
+    final color = _earlyAccessStatusColor(opportunity);
+    final title = opportunity.title.trim().isEmpty
+        ? _l10n.uiUntitledOpportunity
+        : opportunity.title.trim();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: CompanyDashboardPalette.surfaceMuted.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: CompanyDashboardPalette.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(13),
+              ),
+              child: Icon(Icons.lock_clock_rounded, color: color, size: 18),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.product(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: CompanyDashboardPalette.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Public: ${_publicVisibleLabel(opportunity)}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.product(
+                      fontSize: 11.4,
+                      color: CompanyDashboardPalette.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            _buildAccessBadge(_earlyAccessStatusLabel(opportunity), color),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompactStatPill(String label, int value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.14)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$value',
+            style: AppTypography.product(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: AppTypography.product(
+              fontSize: 11.3,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccessBadge(String label, Color color) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 112),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.11),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.16)),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppTypography.product(
+          fontSize: 10.3,
+          fontWeight: FontWeight.w800,
+          color: color,
+        ),
       ),
     );
   }

@@ -156,9 +156,21 @@ class AdminService {
     var pendingAdminApplications = 0;
     var approvedApplications = 0;
     var rejectedApplications = 0;
+    var premiumApplicationsCount = 0;
+    var freeApplicationsCount = 0;
     for (final doc in applicationsSnapshot.docs) {
       final data = doc.data();
-      switch (ApplicationStatus.parse(data['status'])) {
+      final status = ApplicationStatus.parse(data['status']);
+      if (status != ApplicationStatus.withdrawn) {
+        if (data['isPremiumAtApply'] == true ||
+            data['priorityApplication'] == true) {
+          premiumApplicationsCount++;
+        } else {
+          freeApplicationsCount++;
+        }
+      }
+
+      switch (status) {
         case ApplicationStatus.pending:
           pendingApplications++;
           final opportunityId = (data['opportunityId'] ?? '').toString().trim();
@@ -179,8 +191,29 @@ class AdminService {
     var openOpportunities = 0;
     var closedOpportunities = 0;
     var hiddenOpportunities = 0;
+    var normalPosts = 0;
+    var earlyAccessPendingRequests = 0;
+    var approvedEarlyAccessPosts = 0;
+    var rejectedEarlyAccessPosts = 0;
+    var expiredEarlyAccessPosts = 0;
+    var totalViewsCount = 0;
+    var lockedApplyClicks = 0;
+    var upgradeModalViews = 0;
+    var upgradeClicks = 0;
+    final earlyAccessRequestCompanies = <String, _CompanyRankAccumulator>{};
+    final earlyAccessApprovalCompanies = <String, _CompanyRankAccumulator>{};
+    final earlyAccessRejectionCompanies = <String, _CompanyRankAccumulator>{};
+
     for (final doc in opportunitiesSnapshot.docs) {
       final model = OpportunityModel.fromMap({...doc.data(), 'id': doc.id});
+      final data = doc.data();
+      final earlyStatus = model.earlyAccessStatus;
+      final isExpiredEarlyAccess = _isExpiredEarlyAccess(model);
+      final hasEarlyAccessHistory =
+          model.earlyAccessRequested ||
+          model.premiumEarlyAccess ||
+          earlyStatus != 'none';
+
       if (model.isHidden) {
         hiddenOpportunities++;
       }
@@ -188,6 +221,47 @@ class AdminService {
         closedOpportunities++;
       } else {
         openOpportunities++;
+      }
+      if (!hasEarlyAccessHistory) {
+        normalPosts++;
+      }
+      if (earlyStatus == 'pending') {
+        earlyAccessPendingRequests++;
+      } else if (earlyStatus == 'approved' && isExpiredEarlyAccess) {
+        expiredEarlyAccessPosts++;
+      } else if (earlyStatus == 'approved') {
+        approvedEarlyAccessPosts++;
+      } else if (earlyStatus == 'rejected') {
+        rejectedEarlyAccessPosts++;
+      } else if (earlyStatus == 'expired') {
+        expiredEarlyAccessPosts++;
+      }
+
+      totalViewsCount += _readInt(data['viewsCount']);
+      lockedApplyClicks += _readInt(data['lockedApplyClicks']);
+      upgradeModalViews += _readInt(data['upgradeModalViews']);
+      upgradeClicks += _readInt(data['upgradeClicks']);
+
+      if (hasEarlyAccessHistory) {
+        _addCompanyRank(
+          earlyAccessRequestCompanies,
+          model.companyId,
+          model.companyName,
+        );
+      }
+      if (earlyStatus == 'approved' || isExpiredEarlyAccess) {
+        _addCompanyRank(
+          earlyAccessApprovalCompanies,
+          model.companyId,
+          model.companyName,
+        );
+      }
+      if (earlyStatus == 'rejected') {
+        _addCompanyRank(
+          earlyAccessRejectionCompanies,
+          model.companyId,
+          model.companyName,
+        );
       }
     }
 
@@ -282,6 +356,20 @@ class AdminService {
     final monthlyRegistrations = monthlyMap.entries
         .map((entry) => {'month': entry.key, 'count': entry.value})
         .toList();
+    final earlyAccessPosts =
+        earlyAccessPendingRequests +
+        approvedEarlyAccessPosts +
+        rejectedEarlyAccessPosts +
+        expiredEarlyAccessPosts;
+    final earlyAccessUsagePercentage = totalOpportunities > 0
+        ? (earlyAccessPosts / totalOpportunities) * 100
+        : 0.0;
+    final upgradeViewRate = lockedApplyClicks > 0
+        ? (upgradeModalViews / lockedApplyClicks) * 100
+        : 0.0;
+    final upgradeClickRate = upgradeModalViews > 0
+        ? (upgradeClicks / upgradeModalViews) * 100
+        : 0.0;
 
     return {
       'totalUsers': totalUsers,
@@ -298,9 +386,33 @@ class AdminService {
       'activeUsers': activeUsersCount,
       'inactiveUsers': inactiveUsersCount,
       'opportunities': totalOpportunities,
+      'totalPosts': totalOpportunities,
+      'normalPosts': normalPosts,
       'openOpportunities': openOpportunities,
       'closedOpportunities': closedOpportunities,
       'hiddenOpportunities': hiddenOpportunities,
+      'earlyAccessPendingRequests': earlyAccessPendingRequests,
+      'approvedEarlyAccessPosts': approvedEarlyAccessPosts,
+      'rejectedEarlyAccessPosts': rejectedEarlyAccessPosts,
+      'expiredEarlyAccessPosts': expiredEarlyAccessPosts,
+      'earlyAccessUsagePercentage': earlyAccessUsagePercentage,
+      'totalViewsCount': totalViewsCount,
+      'lockedApplyClicks': lockedApplyClicks,
+      'upgradeModalViews': upgradeModalViews,
+      'upgradeClicks': upgradeClicks,
+      'upgradeViewRate': upgradeViewRate,
+      'upgradeClickRate': upgradeClickRate,
+      'premiumApplicationsCount': premiumApplicationsCount,
+      'freeApplicationsCount': freeApplicationsCount,
+      'topEarlyAccessRequestedCompanies': _topRankedCompanies(
+        earlyAccessRequestCompanies,
+      ),
+      'topEarlyAccessApprovedCompanies': _topRankedCompanies(
+        earlyAccessApprovalCompanies,
+      ),
+      'topEarlyAccessRejectedCompanies': _topRankedCompanies(
+        earlyAccessRejectionCompanies,
+      ),
       'trainings': trainingsSnapshot.docs.length,
       'scholarships': scholarshipsSnapshot.docs.length,
       'applications': totalApplications,
@@ -2115,6 +2227,66 @@ class AdminService {
     return (rawValue ?? '').toString().trim();
   }
 
+  int _readInt(Object? rawValue) {
+    if (rawValue is int) {
+      return rawValue;
+    }
+    if (rawValue is num) {
+      return rawValue.toInt();
+    }
+    return int.tryParse((rawValue ?? '').toString()) ?? 0;
+  }
+
+  bool _isExpiredEarlyAccess(OpportunityModel opportunity) {
+    if (opportunity.earlyAccessStatus == 'expired') {
+      return true;
+    }
+    if (opportunity.earlyAccessStatus != 'approved') {
+      return false;
+    }
+
+    final publicVisibleAt = opportunity.publicVisibleAt;
+    return publicVisibleAt != null && !DateTime.now().isBefore(publicVisibleAt);
+  }
+
+  void _addCompanyRank(
+    Map<String, _CompanyRankAccumulator> target,
+    String companyId,
+    String companyName,
+  ) {
+    final id = companyId.trim();
+    if (id.isEmpty) {
+      return;
+    }
+
+    final label = companyName.trim().isEmpty ? 'Unknown company' : companyName;
+    final accumulator = target.putIfAbsent(
+      id,
+      () => _CompanyRankAccumulator(id: id, title: label),
+    );
+    accumulator.count++;
+  }
+
+  List<Map<String, dynamic>> _topRankedCompanies(
+    Map<String, _CompanyRankAccumulator> source,
+  ) {
+    final values = source.values.toList()
+      ..sort((a, b) {
+        final countCompare = b.count.compareTo(a.count);
+        if (countCompare != 0) {
+          return countCompare;
+        }
+        return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      });
+
+    return values
+        .take(3)
+        .map(
+          (item) => {'id': item.id, 'title': item.title, 'count': item.count},
+        )
+        .toList(growable: false);
+  }
+
   Map<String, dynamic>? _buildRankedOpportunityItem({
     required String id,
     required int count,
@@ -2167,4 +2339,12 @@ class AdminService {
 
     return num.tryParse(normalized) ?? 0;
   }
+}
+
+class _CompanyRankAccumulator {
+  final String id;
+  final String title;
+  int count = 0;
+
+  _CompanyRankAccumulator({required this.id, required this.title});
 }
