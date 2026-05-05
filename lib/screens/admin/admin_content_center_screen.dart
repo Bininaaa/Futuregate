@@ -76,6 +76,7 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
   static const String _opportunityFilterAll = 'all';
   static const String _opportunityFilterAdmin = 'admin';
   static const String _opportunityFilterPendingApps = 'pending_apps';
+  static const String _opportunityFilterEarlyAccess = 'early_access';
   static const String _opportunityFilterClosed = 'closed';
   static const String _opportunityFilterFeatured = 'featured';
   static const String _opportunityFilterHidden = 'hidden';
@@ -1300,6 +1301,11 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
       );
     }).length;
+    final earlyAccessCount = allOpportunities
+        .where(
+          (item) => _isEarlyAccessOpportunity(OpportunityModel.fromMap(item)),
+        )
+        .length;
     final closedCount = allOpportunities
         .where(
           (item) =>
@@ -1422,6 +1428,20 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
                           _opportunityFilter = _toggleFilterValue(
                             _opportunityFilter,
                             _opportunityFilterPendingApps,
+                            allValue: _opportunityFilterAll,
+                          );
+                        }),
+                      ),
+                      _CollectionHeaderFilter(
+                        label: l10n.earlyAccessLabel,
+                        selected:
+                            _opportunityFilter == _opportunityFilterEarlyAccess,
+                        icon: Icons.verified_outlined,
+                        badgeCount: earlyAccessCount,
+                        onTap: () => setState(() {
+                          _opportunityFilter = _toggleFilterValue(
+                            _opportunityFilter,
+                            _opportunityFilterEarlyAccess,
                             allValue: _opportunityFilterAll,
                           );
                         }),
@@ -2323,6 +2343,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         return apps.any(
           (a) => ApplicationStatus.parse(a.status) == ApplicationStatus.pending,
         );
+      case _opportunityFilterEarlyAccess:
+        return _isEarlyAccessOpportunity(opportunityModel);
       case _opportunityFilterClosed:
         return opportunityModel.effectiveStatus() == 'closed';
       case _opportunityFilterFeatured:
@@ -2332,6 +2354,15 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
       default:
         return true;
     }
+  }
+
+  bool _isEarlyAccessOpportunity(OpportunityModel opportunity) {
+    final status = opportunity.earlyAccessStatus.trim().toLowerCase();
+    return opportunity.earlyAccessRequested ||
+        status == 'pending' ||
+        status == 'approved' ||
+        status == 'rejected' ||
+        status == 'expired';
   }
 
   bool _matchesOpportunityTypeFilter(
@@ -2352,6 +2383,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         return l10n.uiAdminOpportunities;
       case _opportunityFilterPendingApps:
         return l10n.uiPendingApplications;
+      case _opportunityFilterEarlyAccess:
+        return l10n.earlyAccessLabel;
       case _opportunityFilterClosed:
         return l10n.uiClosedOpportunities;
       case _opportunityFilterFeatured:
@@ -2391,6 +2424,8 @@ class _AdminContentCenterScreenState extends State<AdminContentCenterScreen>
         return l10n.uiNoAdminPostedItemsMatchSearch(opportunityLabel);
       case _opportunityFilterPendingApps:
         return l10n.uiNoItemsWithPendingApplicationsRightNow(opportunityLabel);
+      case _opportunityFilterEarlyAccess:
+        return l10n.uiNoItemsMatchSearch(opportunityLabel);
       case _opportunityFilterClosed:
         return l10n.uiNoClosedItemsMatchSearch(opportunityLabel);
       case _opportunityFilterFeatured:

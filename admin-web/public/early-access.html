@@ -11,54 +11,174 @@
   <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    .ea-hero { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr); gap:14px; align-items:stretch; }
-    .ea-hero-main { border-radius:26px; padding:22px; color:#fff; background:linear-gradient(135deg,#2a1b93,#3b22f6 54%,#14b8a6); box-shadow:0 24px 54px rgba(59,34,246,.22); }
-    .ea-hero-icon { width:50px; height:50px; border-radius:17px; display:grid; place-items:center; background:rgba(255,255,255,.16); margin-bottom:14px; }
-    .ea-hero-icon [data-lucide] { width:25px; height:25px; }
-    .ea-eyebrow { font-size:11px; font-weight:800; letter-spacing:.10em; text-transform:uppercase; opacity:.78; }
-    .ea-title { font-family:var(--font-display); font-size:clamp(26px,3vw,38px); line-height:1.05; font-weight:800; margin:7px 0 8px; }
-    .ea-copy { color:rgba(255,255,255,.78); line-height:1.6; max-width:62ch; }
-    .ea-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    .ea-summary-card { border-radius:22px; padding:16px; background:var(--c-surface); border:1px solid var(--c-border); box-shadow:0 16px 34px rgba(15,23,42,.06); }
-    .ea-summary-label { color:var(--c-text-muted); font-size:12px; font-weight:800; }
-    .ea-summary-value { color:var(--c-text); font-size:28px; font-weight:800; margin-top:4px; }
-    .ea-toolbar { display:flex; flex-direction:column; gap:12px; }
+    /* ── Hero ── */
+    .ea-hero {
+      position:relative; overflow:hidden; isolation:isolate;
+      border-radius:28px; padding:28px 28px 26px; color:#fff;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.18), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(20,184,166,.32), transparent 50%),
+        linear-gradient(135deg,#1e1b9c 0%,#4f46e5 48%,#0d9488 100%);
+      box-shadow:0 28px 60px rgba(67,56,202,.28);
+    }
+    .ea-hero::before {
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background:
+        radial-gradient(circle at 90% -10%, rgba(255,255,255,.18), transparent 35%),
+        radial-gradient(circle at -10% 110%, rgba(255,255,255,.10), transparent 40%);
+    }
+    .ea-hero-orb { position:absolute; border-radius:50%; filter:blur(60px); opacity:.55; pointer-events:none; z-index:-1; }
+    .ea-hero-orb--a { width:280px; height:280px; background:#a855f7; top:-90px; right:-60px; }
+    .ea-hero-orb--b { width:240px; height:240px; background:#22d3ee; bottom:-110px; left:18%; opacity:.45; }
+    .ea-hero-content { position:relative; display:grid; grid-template-columns:auto minmax(0,1fr); gap:18px; align-items:center; }
+    .ea-hero-icon {
+      width:56px; height:56px; border-radius:18px; display:grid; place-items:center;
+      background:rgba(255,255,255,.16); backdrop-filter:blur(8px);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+    }
+    .ea-hero-icon [data-lucide] { width:26px; height:26px; color:#fff; }
+    .ea-eyebrow { font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; opacity:.85; display:inline-flex; align-items:center; gap:8px; }
+    .ea-eyebrow::before { content:""; width:6px; height:6px; border-radius:50%; background:#fbbf24; box-shadow:0 0 12px #fbbf24; }
+    .ea-title { font-family:var(--font-display); font-size:clamp(24px,2.6vw,34px); line-height:1.08; font-weight:800; margin:8px 0 6px; }
+    .ea-copy { color:rgba(255,255,255,.82); line-height:1.55; max-width:64ch; font-size:14.5px; }
+
+    /* ── Summary stats inside the hero ── */
+    .ea-hero-stats {
+      position:relative; margin-top:22px; display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px;
+    }
+    .ea-stat {
+      border-radius:18px; padding:14px 16px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.16);
+      backdrop-filter:blur(10px);
+      transition:transform .25s ease, background .25s ease;
+    }
+    .ea-stat:hover { transform:translateY(-2px); background:rgba(255,255,255,.14); }
+    .ea-stat-label { font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.72); display:flex; align-items:center; gap:6px; }
+    .ea-stat-label [data-lucide] { width:13px; height:13px; }
+    .ea-stat-value { font-family:var(--font-display); font-size:30px; font-weight:800; margin-top:6px; line-height:1; color:#fff; }
+    .ea-stat--pending  .ea-stat-label [data-lucide] { color:#fde68a; }
+    .ea-stat--approved .ea-stat-label [data-lucide] { color:#86efac; }
+    .ea-stat--rejected .ea-stat-label [data-lucide] { color:#fca5a5; }
+    .ea-stat--total    .ea-stat-label [data-lucide] { color:#a5b4fc; }
+
+    /* ── Toolbar ── */
+    .ea-toolbar { display:flex; flex-direction:column; gap:14px; }
     .ea-filter-row { display:flex; flex-wrap:wrap; gap:8px; }
-    .ea-filter-chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--c-border); border-radius:999px; background:var(--c-surface); color:var(--c-text); padding:9px 12px; font-weight:800; cursor:pointer; }
-    .ea-filter-chip.is-active { background:linear-gradient(135deg,var(--c-primary),var(--c-activity)); color:#fff; border-color:transparent; }
+    .ea-filter-chip {
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--c-border); border-radius:999px;
+      background:var(--c-surface); color:var(--c-text);
+      padding:9px 14px; font-weight:700; font-size:13px; cursor:pointer;
+      transition:all .2s ease;
+    }
+    .ea-filter-chip:hover { border-color:var(--c-primary); color:var(--c-primary); transform:translateY(-1px); }
+    .ea-filter-chip.is-active {
+      background:linear-gradient(135deg,var(--c-primary),var(--c-activity));
+      color:#fff; border-color:transparent;
+      box-shadow:0 8px 20px rgba(99,102,241,.32);
+    }
     .ea-filter-chip [data-lucide] { width:15px; height:15px; }
-    .ea-card { border-radius:24px; border:1px solid var(--c-border); background:var(--c-surface); box-shadow:0 16px 34px rgba(15,23,42,.06); padding:16px; display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:14px; align-items:start; }
-    .ea-card-icon { width:46px; height:46px; border-radius:16px; display:grid; place-items:center; background:var(--ea-soft); color:var(--ea-color); }
+    .ea-filter-chip .ea-filter-count {
+      display:inline-grid; place-items:center; min-width:22px; height:22px;
+      padding:0 7px; border-radius:999px; font-size:11px; font-weight:800;
+      background:var(--c-surface-muted); color:var(--c-text-muted);
+    }
+    .ea-filter-chip.is-active .ea-filter-count { background:rgba(255,255,255,.22); color:#fff; }
+
+    /* ── Card grid ── */
+    .ea-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr)); gap:14px; }
+    .ea-card {
+      position:relative; overflow:hidden;
+      border-radius:22px; border:1px solid var(--c-border);
+      background:var(--c-surface);
+      box-shadow:0 12px 28px rgba(15,23,42,.06);
+      padding:18px; display:flex; flex-direction:column; gap:14px;
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .ea-card::before {
+      content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+      background:linear-gradient(180deg, var(--ea-color), var(--ea-status));
+      opacity:.85;
+    }
+    .ea-card:hover { transform:translateY(-3px); box-shadow:0 20px 40px rgba(15,23,42,.10); border-color:color-mix(in srgb, var(--ea-color) 30%, var(--c-border)); }
+    .ea-card-head { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px; align-items:start; }
+    .ea-card-icon {
+      width:46px; height:46px; border-radius:14px; display:grid; place-items:center;
+      background:var(--ea-soft); color:var(--ea-color);
+    }
     .ea-card-icon [data-lucide] { width:22px; height:22px; }
-    .ea-card-title { color:var(--c-text); font-weight:800; line-height:1.25; margin-bottom:5px; }
-    .ea-card-sub { color:var(--c-text-muted); font-size:13px; line-height:1.45; }
-    .ea-meta { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
-    .ea-pill { display:inline-flex; align-items:center; gap:5px; border-radius:999px; padding:5px 8px; background:var(--c-surface-muted); color:var(--c-text-muted); font-size:11px; font-weight:800; }
+    .ea-card-title { color:var(--c-text); font-family:var(--font-display); font-weight:800; line-height:1.25; font-size:16px; margin-bottom:4px; word-break:break-word; }
+    .ea-card-sub { color:var(--c-text-muted); font-size:13px; line-height:1.5; }
+    .ea-card-status {
+      align-self:flex-start; flex-shrink:0;
+      display:inline-flex; align-items:center; gap:6px;
+      border-radius:999px; padding:6px 10px;
+      background:var(--ea-status-bg); color:var(--ea-status);
+      font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
+    }
+    .ea-card-status [data-lucide] { width:13px; height:13px; }
+
+    .ea-meta { display:flex; flex-wrap:wrap; gap:6px; }
+    .ea-pill {
+      display:inline-flex; align-items:center; gap:5px;
+      border-radius:999px; padding:5px 10px;
+      background:var(--c-surface-muted); color:var(--c-text-muted);
+      font-size:11px; font-weight:700;
+    }
     .ea-pill [data-lucide] { width:12px; height:12px; }
-    .ea-status { background:var(--ea-status-bg); color:var(--ea-status); }
-    .ea-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-    .ea-action { border:0; border-radius:14px; padding:10px 12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
-    .ea-action [data-lucide] { width:16px; height:16px; }
-    .ea-action.primary { background:rgba(23,157,108,.13); color:var(--c-success); }
-    .ea-action.danger { background:rgba(226,74,74,.12); color:var(--c-danger); }
-    .ea-action.neutral { background:rgba(100,116,139,.12); color:var(--c-text); }
+    .ea-pill--type { background:var(--ea-soft); color:var(--ea-color); }
+
+    .ea-actions { display:flex; gap:8px; flex-wrap:wrap; padding-top:10px; border-top:1px dashed var(--c-border); }
+    .ea-action {
+      flex:1; min-width:0;
+      border:0; border-radius:12px; padding:10px 12px; font-weight:700; font-size:13px; cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap:6px;
+      transition:transform .15s ease, filter .15s ease;
+    }
+    .ea-action:hover:not(:disabled) { transform:translateY(-1px); filter:brightness(1.05); }
+    .ea-action [data-lucide] { width:15px; height:15px; }
+    .ea-action.primary { background:rgba(16,185,129,.15); color:var(--c-success); }
+    .ea-action.danger { background:rgba(239,68,68,.13); color:var(--c-danger); }
+    .ea-action.neutral { background:var(--c-surface-muted); color:var(--c-text); }
     .ea-action:disabled { opacity:.55; cursor:not-allowed; }
+
+    /* ── Modal details ── */
     .ea-details-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
-    .ea-detail-item { border:1px solid var(--c-border); border-radius:16px; background:var(--c-surface-muted); padding:12px; }
-    .ea-detail-label { color:var(--c-text-muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+    .ea-detail-item { border:1px solid var(--c-border); border-radius:16px; background:var(--c-surface-muted); padding:12px 14px; }
+    .ea-detail-label { color:var(--c-text-muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
     .ea-detail-value { color:var(--c-text); font-weight:700; line-height:1.35; word-break:break-word; }
     .ea-text-section { margin-top:14px; border-top:1px solid var(--c-border); padding-top:14px; }
     .ea-text-section h4 { margin:0 0 8px; font-size:13px; color:var(--c-text); font-weight:800; }
     .ea-text-section p, .ea-text-section li { color:var(--c-text-muted); line-height:1.58; font-size:14px; }
-    html[data-theme='dark'] .ea-hero-main { background:linear-gradient(135deg,#151d35,#3b22f6 58%,#0f766e); box-shadow:0 24px 58px rgba(2,6,23,.46); }
-    html[data-theme='dark'] .ea-summary-card,
-    html[data-theme='dark'] .ea-card { box-shadow:0 20px 42px rgba(2,6,23,.34); }
-    html[data-theme='dark'] .ea-filter-chip,
-    html[data-theme='dark'] .ea-action.neutral { background:rgba(21,29,53,.86); }
-    html[data-theme='dark'] .ea-hero-icon { background:rgba(255,255,255,.11); }
-    html[data-theme='dark'] .ea-copy { color:rgba(248,250,252,.76); }
-    @media (max-width:900px) { .ea-hero { grid-template-columns:1fr; } .ea-card { grid-template-columns:1fr; } .ea-actions { justify-content:flex-start; } }
-    @media (prefers-reduced-motion: reduce) { .ea-action, .ea-filter-chip { transition:none; } }
+
+    /* ── Dark theme ── */
+    html[data-theme='dark'] .ea-hero {
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.10), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(20,184,166,.28), transparent 50%),
+        linear-gradient(135deg,#10153a 0%,#312e81 50%,#0f766e 100%);
+      box-shadow:0 28px 60px rgba(2,6,23,.55);
+    }
+    html[data-theme='dark'] .ea-card { box-shadow:0 18px 38px rgba(2,6,23,.32); }
+    html[data-theme='dark'] .ea-action.neutral { background:rgba(30,41,59,.85); }
+    html[data-theme='dark'] .ea-copy { color:rgba(248,250,252,.78); }
+
+    /* ── Responsive ── */
+    @media (max-width:760px) {
+      .ea-hero { padding:22px; }
+      .ea-hero-content { grid-template-columns:1fr; }
+      .ea-hero-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .ea-grid { grid-template-columns:1fr; }
+      .ea-card-head { grid-template-columns:auto minmax(0,1fr); }
+      .ea-card-status { grid-column:1 / -1; align-self:flex-start; }
+      .ea-stat-value { font-size:26px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ea-action, .ea-filter-chip, .ea-card, .ea-stat { transition:none; }
+      .ea-card:hover, .ea-stat:hover, .ea-action:hover, .ea-filter-chip:hover { transform:none; }
+    }
   </style>
 </head>
 <body data-page="early-access">
@@ -120,17 +240,21 @@
       const filtered = state.records.filter(matchesActiveFilters);
       root.innerHTML = `
         <section class="ea-hero">
-          <div class="ea-hero-main">
+          <div class="ea-hero-orb ea-hero-orb--a"></div>
+          <div class="ea-hero-orb ea-hero-orb--b"></div>
+          <div class="ea-hero-content">
             <div class="ea-hero-icon"><i data-lucide="badge-check"></i></div>
-            <div class="ea-eyebrow">${esc(t('earlyAccess.eyebrow', 'Premium queue'))}</div>
-            <div class="ea-title">${esc(t('earlyAccess.title', 'Early access control'))}</div>
-            <div class="ea-copy">${esc(t('earlyAccess.copy', 'Review company requests for premium early visibility, approve the locked window, or return posts to normal publishing.'))}</div>
+            <div>
+              <div class="ea-eyebrow">${esc(t('earlyAccess.eyebrow', 'Premium queue'))}</div>
+              <div class="ea-title">${esc(t('earlyAccess.title', 'Early access control'))}</div>
+              <div class="ea-copy">${esc(t('earlyAccess.copy', 'Review company requests for premium early visibility, approve the locked window, or return posts to normal publishing.'))}</div>
+            </div>
           </div>
-          <div class="ea-summary">
-            ${summaryCard(t('earlyAccess.pending', 'Pending'), summary.pending, 'var(--c-warning)')}
-            ${summaryCard(t('earlyAccess.approved', 'Approved'), summary.approved, 'var(--c-success)')}
-            ${summaryCard(t('earlyAccess.rejected', 'Rejected'), summary.rejected, 'var(--c-danger)')}
-            ${summaryCard(t('earlyAccess.total', 'Total'), summary.total, 'var(--c-primary)')}
+          <div class="ea-hero-stats">
+            ${heroStat('pending',  t('earlyAccess.pending',  'Pending'),  summary.pending,  'hourglass')}
+            ${heroStat('approved', t('earlyAccess.approved', 'Approved'), summary.approved, 'badge-check')}
+            ${heroStat('rejected', t('earlyAccess.rejected', 'Rejected'), summary.rejected, 'ban')}
+            ${heroStat('total',    t('earlyAccess.total',    'Total'),    summary.total,    'layers')}
           </div>
         </section>
         <section class="surface-panel ea-toolbar">
@@ -142,7 +266,7 @@
             ${FILTERS.map((filter) => filterChip(filter, summary)).join('')}
           </div>
         </section>
-        <section class="list-grid" id="ea-list">
+        <section class="ea-grid" id="ea-list">
           ${filtered.length ? filtered.map(cardHtml).join('') : emptyStateHtml(
             state.records.length ? t('earlyAccess.noResultsBody', 'Try another status or search term.') : t('earlyAccess.emptyBody', 'Company requests for premium early visibility will appear here as soon as they are submitted.'),
             { title: state.records.length ? t('earlyAccess.noResultsTitle', 'No results in this view') : t('earlyAccess.emptyTitle', 'No early access requests yet'), icon: 'badge-check' },
@@ -171,10 +295,10 @@
       bindActionButtons(document.getElementById('page-content') || document);
     }
 
-    function summaryCard(label, value, color) {
-      return `<div class="ea-summary-card" style="--ea-color:${color}">
-        <div class="ea-summary-label">${esc(label)}</div>
-        <div class="ea-summary-value" style="color:${color}">${value}</div>
+    function heroStat(variant, label, value, icon) {
+      return `<div class="ea-stat ea-stat--${variant}">
+        <div class="ea-stat-label"><i data-lucide="${icon}"></i>${esc(label)}</div>
+        <div class="ea-stat-value">${value}</div>
       </div>`;
     }
 
@@ -182,7 +306,7 @@
       const count = filter.id === 'all' ? summary.total : summary[filter.id];
       const label = t(filter.labelKey, filter.labelFallback);
       return `<button class="ea-filter-chip ${state.filter === filter.id ? 'is-active' : ''}" type="button" data-ea-filter="${filter.id}">
-        <i data-lucide="${filter.icon}"></i>${esc(label)} <span>${count}</span>
+        <i data-lucide="${filter.icon}"></i>${esc(label)}<span class="ea-filter-count">${count}</span>
       </button>`;
     }
 
@@ -193,23 +317,26 @@
       const typeColor = opportunityColor(subType);
       const isBusy = state.busyId === record.id;
       return `<article class="ea-card" style="--ea-color:${typeColor};--ea-soft:${typeColor}1a;--ea-status:${meta.color};--ea-status-bg:${meta.color}1a">
-        <div class="ea-card-icon"><i data-lucide="${typeIcon('opportunity', subType)}"></i></div>
-        <div>
-          <div class="ea-card-title">${esc(record.title || t('earlyAccess.untitled', 'Untitled opportunity'))}</div>
-          <div class="ea-card-sub">${esc(record.companyName || t('earlyAccess.companyNotAdded', 'Company not added'))} · ${esc(record.location || t('earlyAccess.locationNotSpecified', 'Location not specified'))}</div>
-          <div class="ea-meta">
-            <span class="ea-pill"><i data-lucide="${typeIcon('opportunity', subType)}"></i>${esc(typeLabel(subType))}</span>
-            <span class="ea-pill ea-status"><i data-lucide="${meta.icon}"></i>${esc(meta.label)}</span>
-            <span class="ea-pill"><i data-lucide="clock"></i>${esc(formatTimestamp(record.requestedEarlyAccessAt) || t('earlyAccess.unknownTime', 'Unknown time'))}</span>
-            ${record.isFeatured ? `<span class="ea-pill"><i data-lucide="star"></i>${esc(t('earlyAccess.featured', 'Featured'))}</span>` : ''}
-            ${record.isHidden ? `<span class="ea-pill"><i data-lucide="eye-off"></i>${esc(t('earlyAccess.hidden', 'Hidden'))}</span>` : ''}
+        <div class="ea-card-head">
+          <div class="ea-card-icon"><i data-lucide="${typeIcon('opportunity', subType)}"></i></div>
+          <div>
+            <div class="ea-card-title">${esc(record.title || t('earlyAccess.untitled', 'Untitled opportunity'))}</div>
+            <div class="ea-card-sub">${esc(record.companyName || t('earlyAccess.companyNotAdded', 'Company not added'))} · ${esc(record.location || t('earlyAccess.locationNotSpecified', 'Location not specified'))}</div>
           </div>
+          <span class="ea-card-status"><i data-lucide="${meta.icon}"></i>${esc(meta.label)}</span>
+        </div>
+        <div class="ea-meta">
+          <span class="ea-pill ea-pill--type"><i data-lucide="${typeIcon('opportunity', subType)}"></i>${esc(typeLabel(subType))}</span>
+          <span class="ea-pill"><i data-lucide="clock"></i>${esc(formatTimestamp(record.requestedEarlyAccessAt) || t('earlyAccess.unknownTime', 'Unknown time'))}</span>
+          ${record.earlyAccessDurationHours ? `<span class="ea-pill"><i data-lucide="timer"></i>${record.earlyAccessDurationHours}h</span>` : ''}
+          ${record.isFeatured ? `<span class="ea-pill"><i data-lucide="star"></i>${esc(t('earlyAccess.featured', 'Featured'))}</span>` : ''}
+          ${record.isHidden ? `<span class="ea-pill"><i data-lucide="eye-off"></i>${esc(t('earlyAccess.hidden', 'Hidden'))}</span>` : ''}
         </div>
         <div class="ea-actions">
           <button class="ea-action neutral" type="button" data-ea-open="${esc(record.id)}"><i data-lucide="panel-top-open"></i>${esc(t('earlyAccess.details', 'Details'))}</button>
           ${status === 'pending' ? `<button class="ea-action primary" type="button" data-ea-approve="${esc(record.id)}" ${isBusy ? 'disabled' : ''}><i data-lucide="check"></i>${esc(t('earlyAccess.approve', 'Approve'))}</button>` : ''}
           ${status === 'pending' ? `<button class="ea-action danger" type="button" data-ea-reject="${esc(record.id)}" ${isBusy ? 'disabled' : ''}><i data-lucide="x"></i>${esc(t('earlyAccess.reject', 'Reject'))}</button>` : ''}
-          ${status !== 'none' ? `<button class="ea-action neutral" type="button" data-ea-normal="${esc(record.id)}" ${isBusy ? 'disabled' : ''}><i data-lucide="rotate-ccw"></i>${esc(t('earlyAccess.makeNormal', 'Make normal'))}</button>` : ''}
+          ${status !== 'none' && status !== 'pending' ? `<button class="ea-action neutral" type="button" data-ea-normal="${esc(record.id)}" ${isBusy ? 'disabled' : ''}><i data-lucide="rotate-ccw"></i>${esc(t('earlyAccess.makeNormal', 'Make normal'))}</button>` : ''}
         </div>
       </article>`;
     }

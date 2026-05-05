@@ -547,6 +547,7 @@ const TRANSLATIONS = {
   'mod.filter.adminPosts': { ar: 'منشورات المسؤول', fr: 'Posts admin' },
   'mod.filter.allOpportunities': { ar: 'جميع الفرص', fr: 'Toutes les opportunités' },
   'mod.filter.hasPendingApps': { ar: 'بها طلبات قيد الانتظار', fr: 'A des candidatures en attente' },
+  'mod.filter.earlyAccessPosts': { ar: 'منشورات الوصول المبكر', fr: 'Posts accès anticipé' },
   'mod.filter.anyType': { ar: 'أي نوع', fr: 'Tout type' },
   'mod.pill.pendingIdeas': { ar: 'أفكار قيد الانتظار', fr: 'Idées en attente' },
   'mod.pill.pendingApps': { ar: 'طلبات قيد الانتظار', fr: 'Candidatures en attente' },

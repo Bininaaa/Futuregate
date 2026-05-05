@@ -19,7 +19,7 @@
   <script type="module">
     import { mountShell, showPage } from './js/shell.js';
     import { checkAuth, emptyStateHtml, esc, feedbackCardHtml, formatTimestamp } from './js/auth.js';
-    import { db, collection, getDocs, query, orderBy, limit, where } from './js/firebase-config.js';
+    import { auth, db, collection, getDocs, query, orderBy, limit, where } from './js/firebase-config.js';
     import { createActivityState, loadRecentActivitiesPage } from './js/activity-service.js';
     import { activityTypeLabel, adminTargetUrl, typeColor, typeIcon } from './js/admin-utils.js';
     import { openDetailsModal } from './js/details.js';
@@ -110,10 +110,21 @@
           if (d.role === 'company' && (d.approvalStatus === 'pending' || d.isApproved === false)) pendingCompanies += 1;
           if (d.isActive === false) blockedUsers += 1;
         });
+        const currentAdminId = String(auth.currentUser?.uid || '').trim();
+        const myAdminOppIds = new Set();
+        oppsSnap.forEach((s) => {
+          const d = s.data();
+          const isAdminPost = String(d.createdByRole || '').trim().toLowerCase() === 'admin';
+          const ownerId = String(d.companyId || '').trim();
+          if (isAdminPost && currentAdminId && ownerId === currentAdminId) {
+            myAdminOppIds.add(s.id);
+          }
+        });
         let pendingApps = 0, premiumApps = 0, freeApps = 0;
         appsSnap.forEach((s) => {
           const d = s.data();
-          if ((d.status || 'pending') === 'pending') pendingApps += 1;
+          const oppId = String(d.opportunityId || '').trim();
+          if (String(d.status || 'pending').toLowerCase() === 'pending' && myAdminOppIds.has(oppId)) pendingApps += 1;
           if ((d.status || '').toLowerCase() !== 'withdrawn') {
             if (d.isPremiumAtApply === true || d.priorityApplication === true) premiumApps += 1;
             else freeApps += 1;
