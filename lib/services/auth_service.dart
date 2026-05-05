@@ -17,8 +17,11 @@ class AuthService {
   static const String _passwordProviderId = 'password';
   static const Duration _authOperationTimeout = Duration(seconds: 30);
   static const Duration _profileOperationTimeout = Duration(seconds: 30);
+  static const Duration _profileWriteTimeout = Duration(seconds: 20);
   static const Duration _googleInteractiveTimeout = Duration(minutes: 2);
   static const Duration _googleCleanupTimeout = Duration(seconds: 8);
+  static const int _profileMissingRetryAttempts = 6;
+  static const Duration _profileMissingRetryDelay = Duration(milliseconds: 350);
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -182,9 +185,17 @@ class AuthService {
     };
 
     try {
-      await _firestore.collection('users').doc(uid).set(userData);
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .set(userData)
+          .timeout(_profileWriteTimeout);
     } catch (e) {
-      await userCredential.user!.delete();
+      try {
+        await userCredential.user!.delete();
+      } catch (_) {
+        // Ignore cleanup failures while rolling back registration.
+      }
       rethrow;
     }
 
@@ -265,7 +276,11 @@ class AuthService {
     };
 
     try {
-      await _firestore.collection('users').doc(uid).set(userData);
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .set(userData)
+          .timeout(_profileWriteTimeout);
       await _notificationWorker.notifyCompanyRegistration(uid);
     } catch (e) {
       if (uploadedCommercialRegister.storagePath.trim().isNotEmpty) {
@@ -369,7 +384,7 @@ class AuthService {
           'studentOnboardingPending': true,
         };
 
-        await docRef.set(userData).timeout(_profileOperationTimeout);
+        await docRef.set(userData).timeout(_profileWriteTimeout);
       } else {
         _scheduleLegacyUserProfileRepair(
           user: user,
@@ -592,12 +607,33 @@ class AuthService {
 
   Future<UserModel?> getCurrentUserProfile({
     bool reloadAuthUser = false,
+    bool retryOnMissing = false,
   }) async {
     final user = await _getCurrentUser(reload: reloadAuthUser);
     if (user == null) return null;
 
     final docRef = _firestore.collection('users').doc(user.uid);
-    final doc = await docRef.get().timeout(_profileOperationTimeout);
+    var doc = await docRef.get().timeout(_profileOperationTimeout);
+
+    // Fresh-install / signup race: the auth state listener can fire and
+    // trigger a profile read BEFORE the matching Firestore user doc has
+    // been written. Retry a few times with backoff so the listener path
+    // doesn't latch _userModel to null prematurely.
+    if (!doc.exists && retryOnMissing) {
+      for (var attempt = 1;
+          attempt <= _profileMissingRetryAttempts && !doc.exists;
+          attempt++) {
+        await Future<void>.delayed(_profileMissingRetryDelay * attempt);
+        if (_auth.currentUser?.uid != user.uid) {
+          return null;
+        }
+        try {
+          doc = await docRef.get().timeout(_profileOperationTimeout);
+        } catch (_) {
+          // Swallow transient read errors and try again on the next loop.
+        }
+      }
+    }
 
     if (!doc.exists) return null;
 

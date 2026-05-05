@@ -51,14 +51,19 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadCurrentUser() async {
+  Future<void> loadCurrentUser({bool forceRefresh = false}) async {
     final requestedUid = _authService.currentFirebaseUser?.uid;
     final existingRequest = _loadCurrentUserFuture;
-    if (existingRequest != null && _loadCurrentUserUid == requestedUid) {
+    if (!forceRefresh &&
+        existingRequest != null &&
+        _loadCurrentUserUid == requestedUid) {
       return existingRequest;
     }
 
-    final request = _loadCurrentUserInternal(requestedUid);
+    final request = _loadCurrentUserInternal(
+      requestedUid,
+      retryOnMissing: requestedUid != null,
+    );
     _loadCurrentUserFuture = request;
     _loadCurrentUserUid = requestedUid;
 
@@ -72,7 +77,10 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _loadCurrentUserInternal(String? expectedUid) async {
+  Future<void> _loadCurrentUserInternal(
+    String? expectedUid, {
+    bool retryOnMissing = false,
+  }) async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -85,6 +93,7 @@ class AuthProvider extends ChangeNotifier {
 
       final userModel = await _authService.getCurrentUserProfile(
         reloadAuthUser: true,
+        retryOnMissing: retryOnMissing,
       );
       if (_authService.currentFirebaseUser?.uid != expectedUid) {
         return;
@@ -321,7 +330,9 @@ class AuthProvider extends ChangeNotifier {
       // Send email verification for email/password signups
       await _authService.sendEmailVerification();
 
-      _userModel = await _authService.getCurrentUserProfile();
+      // Force a fresh read instead of trusting any in-flight load that the
+      // auth listener may have started before the user doc was written.
+      await loadCurrentUser(forceRefresh: true);
 
       if (_userModel != null) {
         _startUserDocListener(_userModel!.uid);
@@ -368,7 +379,9 @@ class AuthProvider extends ChangeNotifier {
       // Send email verification for email/password signups
       await _authService.sendEmailVerification();
 
-      _userModel = await _authService.getCurrentUserProfile();
+      // Force a fresh read instead of trusting any in-flight load that the
+      // auth listener may have started before the user doc was written.
+      await loadCurrentUser(forceRefresh: true);
 
       if (_userModel != null) {
         _startUserDocListener(_userModel!.uid);
@@ -473,10 +486,23 @@ class AuthProvider extends ChangeNotifier {
       return incompleteMessage;
     }
 
-    await loadCurrentUser();
+    // Force a fresh read so we don't reuse a stale in-flight load that the
+    // auth-state listener kicked off BEFORE the Firestore profile became
+    // visible (fresh-install / signup race).
+    await loadCurrentUser(forceRefresh: true);
 
     if (_authService.currentFirebaseUser?.uid != signedInUid) {
       return incompleteMessage;
+    }
+
+    if (_userModel == null) {
+      // Brief retry: on fresh installs the profile doc may take an extra
+      // moment to become visible after the write.
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      if (_authService.currentFirebaseUser?.uid != signedInUid) {
+        return incompleteMessage;
+      }
+      await loadCurrentUser(forceRefresh: true);
     }
 
     final user = _userModel;

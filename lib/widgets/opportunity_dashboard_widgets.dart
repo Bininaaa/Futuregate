@@ -822,6 +822,8 @@ class TrendingOpportunityCard extends StatelessWidget {
     final metaItems = _metaItems();
     final cardWidth = isCompactLayout ? 206.0 : 220.0;
     final earlyAccessChips = _earlyAccessChips(opportunity);
+    final isEarlyAccess = earlyAccessChips.isNotEmpty;
+    final premiumAccent = AppColors.current.accent;
 
     return Material(
       color: Colors.transparent,
@@ -849,6 +851,7 @@ class TrendingOpportunityCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -878,24 +881,60 @@ class TrendingOpportunityCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: tone.softBackground,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: tone.accent.withValues(alpha: 0.12),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: tone.softBackground,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: tone.accent.withValues(alpha: 0.12),
+                          ),
+                        ),
+                        child: _OpportunitySaveButton(
+                          isBusy: isBusy,
+                          isSaved: isSaved,
+                          onPressed: onToggleSaved,
+                          boxSize: 30,
+                          iconSize: 16,
+                          activeColor: tone.strongAccent,
+                        ),
                       ),
-                    ),
-                    child: _OpportunitySaveButton(
-                      isBusy: isBusy,
-                      isSaved: isSaved,
-                      onPressed: onToggleSaved,
-                      boxSize: 30,
-                      iconSize: 16,
-                      activeColor: tone.strongAccent,
-                    ),
+                      if (isEarlyAccess) ...[
+                        const SizedBox(height: 6),
+                        Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                premiumAccent.withValues(alpha: 0.95),
+                                premiumAccent.withValues(alpha: 0.65),
+                              ],
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: premiumAccent.withValues(alpha: 0.35),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.bolt_rounded,
+                            size: 13,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
@@ -988,10 +1027,6 @@ class TrendingOpportunityCard extends StatelessWidget {
                     ),
                   ],
                 ),
-              ],
-              if (earlyAccessChips.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Wrap(spacing: 6, runSpacing: 6, children: earlyAccessChips),
               ],
               if (applicationStatus != null) ...[
                 const SizedBox(height: 8),
@@ -1208,14 +1243,6 @@ class OpportunityListTile extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (earlyAccessChips.isNotEmpty) ...[
-                            const SizedBox(height: 6),
-                            Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: earlyAccessChips,
-                            ),
-                          ],
                           const SizedBox(height: 4),
                           Row(
                             children: [
@@ -1599,7 +1626,7 @@ class _EarlyAccessInlineChip extends StatelessWidget {
           Icon(Icons.bolt_rounded, size: 10, color: accentColor),
           const SizedBox(width: 3),
           Text(
-            'Early Access',
+            'Premium',
             style: AppTypography.product(
               fontSize: 9.5,
               fontWeight: FontWeight.w700,
