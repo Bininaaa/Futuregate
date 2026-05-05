@@ -184,9 +184,21 @@ function renderSummaryPills() {
 function renderShell() {
   const root = document.getElementById('page-content');
   root.innerHTML = `
-    <section class="surface-panel">
-      <div class="summary-pills">${renderSummaryPills()}</div>
+    <section class="adm-hero">
+      <div class="adm-hero-orb adm-hero-orb--a"></div>
+      <div class="adm-hero-orb adm-hero-orb--b"></div>
+      <div class="adm-hero-row">
+        <div class="adm-hero-icon"><i data-lucide="users"></i></div>
+        <div class="adm-hero-text">
+          <div class="adm-hero-eyebrow">${esc(t('users.hero.eyebrow', 'Member directory'))}</div>
+          <div class="adm-hero-title">${esc(t('users.hero.title', 'Users & accounts'))}</div>
+          <div class="adm-hero-copy">${esc(t('users.hero.copy', 'Browse, review, and moderate every student, company, and admin account on the platform.'))}</div>
+        </div>
+      </div>
+      <div class="adm-hero-stats summary-pills">${renderSummaryPills()}</div>
+    </section>
 
+    <section class="surface-panel">
       <div class="filter-bar">
         <div class="search-bar" style="flex:1;">
           <i data-lucide="search"></i>

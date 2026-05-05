@@ -87,7 +87,6 @@
         { v: 'all',         lk: 'mod.filter.allOpportunities', l: 'All opportunities', i: 'list' },
         { v: 'admin',       lk: 'mod.filter.adminPosts',       l: 'Admin posts',       i: 'shield' },
         { v: 'pendingApps', lk: 'mod.filter.hasPendingApps',   l: 'Has Pending Apps',  i: 'hourglass' },
-        { v: 'earlyAccess', lk: 'mod.filter.earlyAccessPosts', l: 'Early access',      i: 'badge-check' },
         { v: 'featured',    lk: 'status.featured',             l: 'Featured',          i: 'star' },
         { v: 'closed',      lk: 'status.closed',               l: 'Closed',            i: 'lock' },
         { v: 'hidden',      lk: 'status.hidden',               l: 'Hidden',            i: 'eye-off' },
@@ -125,7 +124,7 @@
       const normalized = String(value || '').trim();
       const allowed = {
         ideas: new Set(['all', 'admin', 'pending', 'approved', 'rejected', 'hidden']),
-        opportunities: new Set(['all', 'admin', 'pendingApps', 'earlyAccess', 'featured', 'closed', 'hidden']),
+        opportunities: new Set(['all', 'admin', 'pendingApps', 'featured', 'closed', 'hidden']),
         scholarships: new Set(['all', 'featured', 'hidden']),
         trainings: new Set(['all', 'featured', 'hidden', 'books', 'videos']),
       };
@@ -139,8 +138,6 @@
       const aliased =
         tab === 'opportunities' && normalized === 'pending_apps'
           ? 'pendingApps'
-          : tab === 'opportunities' && normalized === 'early_access'
-            ? 'earlyAccess'
           : normalized;
       return allowed[tab]?.has(aliased) ? aliased : 'all';
     }
@@ -307,10 +304,6 @@
     function earlyAccessStatus(value) {
       const normalized = cleanText(value).toLowerCase();
       return ['pending', 'approved', 'rejected', 'expired'].includes(normalized) ? normalized : '';
-    }
-
-    function isEarlyAccessOpportunity(item) {
-      return item?.earlyAccessRequested === true || !!earlyAccessStatus(item?.earlyAccessStatus);
     }
 
     function earlyAccessBadge(item) {
@@ -707,7 +700,19 @@
     async function initPage() {
       const root = document.getElementById('page-content');
       root.innerHTML = `
-        <div id="stats-pills" class="summary-pills"></div>
+        <section class="adm-hero">
+          <div class="adm-hero-orb adm-hero-orb--a"></div>
+          <div class="adm-hero-orb adm-hero-orb--b"></div>
+          <div class="adm-hero-row">
+            <div class="adm-hero-icon"><i data-lucide="newspaper"></i></div>
+            <div class="adm-hero-text">
+              <div class="adm-hero-eyebrow">${esc(t('mod.hero.eyebrow', 'Content workspace'))}</div>
+              <div class="adm-hero-title">${esc(t('mod.hero.title', 'Content & moderation'))}</div>
+              <div class="adm-hero-copy">${esc(t('mod.hero.copy', 'Publish opportunities, scholarships, project ideas, and learning resources, and review what is pending across the platform.'))}</div>
+            </div>
+          </div>
+          <div id="stats-pills" class="adm-hero-stats summary-pills"></div>
+        </section>
         <div class="tabs" id="tab-bar">
           ${TABS.map((tab) => `<button class="tab${tab.id === state.activeTab ? ' active' : ''}" data-tab="${tab.id}"><i data-lucide="${tab.icon}"></i><span>${esc(tabLabel(tab))}</span></button>`).join('')}
         </div>
@@ -1185,7 +1190,6 @@
         all: allItems.length,
         admin: allItems.filter((x) => isAdminOpportunity(x)).length,
         pendingApps: allItems.filter((x) => canEditOpportunity(x) && oppPendingAppsCount(x.id) > 0).length,
-        earlyAccess: allItems.filter((x) => isEarlyAccessOpportunity(x)).length,
         featured: allItems.filter((x) => x.isFeatured === true).length,
         closed: allItems.filter((x) => opportunityEffectiveStatus(x) === 'closed').length,
         hidden: allItems.filter((x) => x.isHidden === true).length,
@@ -1193,7 +1197,6 @@
       let items = allItems;
       if (state.filter === 'admin')      items = items.filter((x) => isAdminOpportunity(x));
       if (state.filter === 'pendingApps')items = items.filter((x) => canEditOpportunity(x) && oppPendingAppsCount(x.id) > 0);
-      if (state.filter === 'earlyAccess')items = items.filter((x) => isEarlyAccessOpportunity(x));
       if (state.filter === 'featured')   items = items.filter((x) => x.isFeatured === true);
       if (state.filter === 'closed')     items = items.filter((x) => opportunityEffectiveStatus(x) === 'closed');
       if (state.filter === 'hidden')     items = items.filter((x) => x.isHidden === true);
@@ -1206,7 +1209,6 @@
         .filter((x) => {
           if (state.filter === 'admin') return isAdminOpportunity(x);
           if (state.filter === 'pendingApps') return canEditOpportunity(x) && oppPendingAppsCount(x.id) > 0;
-          if (state.filter === 'earlyAccess') return isEarlyAccessOpportunity(x);
           if (state.filter === 'featured') return x.isFeatured === true;
           if (state.filter === 'closed') return opportunityEffectiveStatus(x) === 'closed';
           if (state.filter === 'hidden') return x.isHidden === true;

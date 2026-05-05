@@ -11,17 +11,6 @@
   <script src="js/lang-init.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    .act-header-card { display:flex; align-items:flex-start; gap:14px; }
-    .act-header-text { flex:1; min-width:0; }
-    .act-eyebrow { font-size:11px; font-weight:700; letter-spacing:.10em; text-transform:uppercase; color:var(--c-primary); margin-bottom:4px; }
-    .act-title { font-size:18px; font-weight:800; color:var(--c-text); line-height:1.25; margin-bottom:4px; }
-    .act-subtitle { font-size:13px; color:var(--c-text-muted); line-height:1.45; }
-    .act-refresh-btn { display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border-radius:14px; border:0; background:rgba(99,102,241,0.12); color:var(--c-primary); cursor:pointer; flex-shrink:0; transition:background .15s; }
-    .act-refresh-btn:hover { background:rgba(99,102,241,0.22); }
-    .act-refresh-btn:disabled { opacity:.55; cursor:not-allowed; }
-    .act-refresh-btn [data-lucide] { width:18px; height:18px; }
-    .act-refresh-btn .spinner { width:18px; height:18px; border-width:2px; }
-
     .act-tile { background:var(--c-surface); border:1px solid var(--c-border); border-radius:20px; padding:14px; box-shadow:0 12px 24px rgba(15,23,42,.04); cursor:pointer; transition:transform .15s, box-shadow .15s; display:flex; flex-direction:column; gap:10px; }
     .act-tile:hover { transform:translateY(-1px); box-shadow:0 16px 28px rgba(15,23,42,.07); }
     .act-tile-row1 { display:flex; align-items:flex-start; gap:12px; }
@@ -107,19 +96,26 @@
     async function initActivity() {
       const root = document.getElementById('page-content');
       root.innerHTML = `
-        <section class="surface-panel">
-          <div class="act-header-card">
-            <div class="act-header-text">
-              <div class="act-eyebrow" data-i18n="activity.eyebrow.liveFeed" data-i18n-fallback="Live feed">${esc(t('activity.eyebrow.liveFeed', 'Live feed'))}</div>
-              <div class="act-title" data-i18n="activity.title.recent" data-i18n-fallback="Recent platform activity">${esc(t('activity.title.recent', 'Recent platform activity'))}</div>
-              <div class="act-subtitle" data-i18n="activity.subtitle.review" data-i18n-fallback="Review the latest moderation updates, publishing changes, and submissions from one clean queue.">${esc(t('activity.subtitle.review', 'Review the latest moderation updates, publishing changes, and submissions from one clean queue.'))}</div>
+        <section class="adm-hero">
+          <div class="adm-hero-orb adm-hero-orb--a"></div>
+          <div class="adm-hero-orb adm-hero-orb--b"></div>
+          <div class="adm-hero-row">
+            <div class="adm-hero-icon"><i data-lucide="activity"></i></div>
+            <div class="adm-hero-text">
+              <div class="adm-hero-eyebrow" data-i18n="activity.eyebrow.liveFeed" data-i18n-fallback="Live feed">${esc(t('activity.eyebrow.liveFeed', 'Live feed'))}</div>
+              <div class="adm-hero-title" data-i18n="activity.title.recent" data-i18n-fallback="Recent platform activity">${esc(t('activity.title.recent', 'Recent platform activity'))}</div>
+              <div class="adm-hero-copy" data-i18n="activity.subtitle.review" data-i18n-fallback="Review the latest moderation updates, publishing changes, and submissions from one clean queue.">${esc(t('activity.subtitle.review', 'Review the latest moderation updates, publishing changes, and submissions from one clean queue.'))}</div>
             </div>
-            <button id="act-refresh" class="act-refresh-btn" type="button" title="${esc(t('activity.refreshTooltip', 'Refresh activity feed'))}" aria-label="${esc(t('activity.refreshTooltip', 'Refresh activity feed'))}">
-              <i data-lucide="refresh-cw"></i>
-            </button>
+            <div class="adm-hero-actions">
+              <button id="act-refresh" class="adm-hero-btn" type="button" title="${esc(t('activity.refreshTooltip', 'Refresh activity feed'))}" aria-label="${esc(t('activity.refreshTooltip', 'Refresh activity feed'))}">
+                <i data-lucide="refresh-cw"></i>
+              </button>
+            </div>
           </div>
+        </section>
 
-          <div class="search-bar" style="margin-top:14px;">
+        <section class="surface-panel">
+          <div class="search-bar">
             <i data-lucide="search"></i>
             <input id="act-search" type="search"
               data-i18n-placeholder="activity.searchPlaceholder"

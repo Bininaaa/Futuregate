@@ -276,6 +276,40 @@ async function loadRouteHeadScripts(nextDoc, targetUrl) {
   }
 }
 
+function loadRouteHeadStyles(nextDoc, targetUrl) {
+  const nodes = Array.from(nextDoc.head.querySelectorAll('link[rel="stylesheet"], style'));
+  nodes.forEach((source) => {
+    if (source.tagName === 'LINK') {
+      const href = source.getAttribute('href');
+      if (!href) return;
+      const url = new URL(href, targetUrl).href;
+      const exists = Array.from(document.head.querySelectorAll('link[rel="stylesheet"]'))
+        .some((existing) => {
+          const existingHref = existing.getAttribute('href');
+          if (!existingHref) return false;
+          try { return new URL(existingHref, document.baseURI).href === url; }
+          catch { return false; }
+        });
+      if (exists) return;
+      const link = document.createElement('link');
+      Array.from(source.attributes).forEach((attr) => link.setAttribute(attr.name, attr.value));
+      link.setAttribute('href', url);
+      link.dataset.workspaceRouteStyle = 'true';
+      document.head.appendChild(link);
+    } else {
+      const content = source.textContent || '';
+      if (!content.trim()) return;
+      const exists = Array.from(document.head.querySelectorAll('style[data-workspace-route-style]'))
+        .some((existing) => existing.textContent === content);
+      if (exists) return;
+      const style = document.createElement('style');
+      style.textContent = content;
+      style.dataset.workspaceRouteStyle = 'true';
+      document.head.appendChild(style);
+    }
+  });
+}
+
 function executeRouteScripts(nextDoc, targetUrl) {
   const scripts = Array.from(nextDoc.body.querySelectorAll('script'));
   scripts.forEach((sourceScript, index) => {
@@ -324,6 +358,7 @@ async function navigateWorkspace(target, options = {}) {
     if (navigationId !== workspaceNavigationId) return true;
 
     const nextDoc = new DOMParser().parseFromString(html, 'text/html');
+    loadRouteHeadStyles(nextDoc, targetUrl);
     await loadRouteHeadScripts(nextDoc, targetUrl);
     if (navigationId !== workspaceNavigationId) return true;
 
