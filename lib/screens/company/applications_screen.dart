@@ -92,8 +92,20 @@ class _StandaloneApplicationDetailsSheet extends StatefulWidget {
 class _StandaloneApplicationDetailsSheetState
     extends State<_StandaloneApplicationDetailsSheet> {
   final DocumentAccessService _documentAccessService = DocumentAccessService();
+  late String _currentStatus;
+  bool _isSubmitting = false;
+  AppFeedbackType? _feedbackType;
+  String? _feedbackTitle;
+  String? _feedbackMessage;
+  IconData? _feedbackIcon;
 
   AppLocalizations get _l10n => AppLocalizations.of(context)!;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentStatus = ApplicationStatus.parse(widget.application.status);
+  }
 
   _OpportunityTypeTone _toneForOpportunity(OpportunityModel? opportunity) {
     if (opportunity == null) {
@@ -232,6 +244,18 @@ class _StandaloneApplicationDetailsSheetState
     String status,
   ) async {
     final l10n = AppLocalizations.of(widget.hostContext)!;
+    if (_isSubmitting) {
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+      _feedbackType = null;
+      _feedbackTitle = null;
+      _feedbackMessage = null;
+      _feedbackIcon = null;
+    });
+
     final currentUserId = widget.hostContext
         .read<AuthProvider>()
         .userModel
@@ -241,16 +265,18 @@ class _StandaloneApplicationDetailsSheetState
       status: status,
     );
 
-    if (!widget.hostContext.mounted) {
+    if (!mounted || !widget.hostContext.mounted) {
       return;
     }
 
     if (error != null) {
-      widget.hostContext.showAppSnackBar(
-        error,
-        title: l10n.updateUnavailableTitle,
-        type: AppFeedbackType.error,
-      );
+      setState(() {
+        _isSubmitting = false;
+        _feedbackType = AppFeedbackType.error;
+        _feedbackTitle = l10n.updateUnavailableTitle;
+        _feedbackMessage = error;
+        _feedbackIcon = null;
+      });
       return;
     }
 
@@ -258,22 +284,26 @@ class _StandaloneApplicationDetailsSheetState
       await widget.provider.loadApplications(currentUserId);
     }
 
-    if (!widget.hostContext.mounted) {
+    if (!mounted || !widget.hostContext.mounted) {
       return;
     }
 
-    widget.hostContext.showAppSnackBar(
-      l10n.uiApplicationStatusValue(
-        ApplicationStatus.sentenceLabel(status, l10n),
-      ),
-      title: l10n.uiApplicationUpdated,
-      type: ApplicationStatus.parse(status) == ApplicationStatus.rejected
+    final normalizedStatus = ApplicationStatus.parse(status);
+
+    setState(() {
+      _isSubmitting = false;
+      _currentStatus = normalizedStatus;
+      _feedbackType = normalizedStatus == ApplicationStatus.rejected
           ? AppFeedbackType.removed
-          : AppFeedbackType.success,
-      icon: ApplicationStatus.parse(status) == ApplicationStatus.rejected
+          : AppFeedbackType.success;
+      _feedbackTitle = l10n.uiApplicationUpdated;
+      _feedbackMessage = l10n.uiApplicationStatusValue(
+        ApplicationStatus.sentenceLabel(normalizedStatus, l10n),
+      );
+      _feedbackIcon = normalizedStatus == ApplicationStatus.rejected
           ? Icons.block_outlined
-          : null,
-    );
+          : null;
+    });
   }
 
   Future<void> _showCvSheet(ApplicationModel application) async {
@@ -548,8 +578,9 @@ class _StandaloneApplicationDetailsSheetState
     final tone = _toneForOpportunity(opportunity);
     final opportunityTitle =
         _opportunityTitleLabel(opportunity) ?? _l10n.uiOpportunityUnavailable;
-    final status = ApplicationStatus.parse(application.status);
+    final status = _currentStatus;
     final isPending = status == ApplicationStatus.pending;
+    final isBusy = widget.provider.isAppBusy(application.id) || _isSubmitting;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.68,
@@ -590,7 +621,7 @@ class _StandaloneApplicationDetailsSheetState
                     ? null
                     : _typeLabel(opportunity.type),
                 typeTone: tone,
-                status: application.status,
+                status: status,
                 studentId: application.studentId,
                 isPriority: application.shouldPrioritizeApplication,
                 onTapProfile: () {
@@ -642,27 +673,48 @@ class _StandaloneApplicationDetailsSheetState
                 onTap: () => _openOpportunityDetailsFromSheet(opportunity),
               ),
               const SizedBox(height: 14),
+              if (_isSubmitting) ...[
+                AppInlineMessage(
+                  type: AppFeedbackType.info,
+                  title: _l10n.uiApplicationStatus,
+                  message: _l10n.uiWorking,
+                  compact: true,
+                  trailing: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: _ApplicationsPalette.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+              ] else if (_feedbackType != null &&
+                  (_feedbackMessage ?? '').trim().isNotEmpty) ...[
+                AppInlineMessage(
+                  type: _feedbackType!,
+                  title: _feedbackTitle,
+                  message: _feedbackMessage!,
+                  icon: _feedbackIcon,
+                  compact: true,
+                ),
+                const SizedBox(height: 14),
+              ],
               Consumer<CompanyProvider>(
                 builder: (_, provider, _) => _DecisionPanel(
-                  status: application.status,
-                  isBusy: provider.isAppBusy(application.id),
+                  status: status,
+                  isBusy: isBusy || provider.isAppBusy(application.id),
                   onApprove: isPending
-                      ? () {
-                          Navigator.pop(context);
-                          _updateStatus(
-                            application,
-                            ApplicationStatus.accepted,
-                          );
-                        }
+                      ? () => _updateStatus(
+                          application,
+                          ApplicationStatus.accepted,
+                        )
                       : null,
                   onReject: isPending
-                      ? () {
-                          Navigator.pop(context);
-                          _updateStatus(
-                            application,
-                            ApplicationStatus.rejected,
-                          );
-                        }
+                      ? () => _updateStatus(
+                          application,
+                          ApplicationStatus.rejected,
+                        )
                       : null,
                 ),
               ),
@@ -2190,8 +2242,69 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     final typeLabel = opportunity == null ? null : _typeLabel(opportunity.type);
     final appliedDateLabel = _appliedDateLabel(application.appliedAt);
     final relativeAppliedLabel = _relativeDateLabel(application.appliedAt);
-    final status = ApplicationStatus.parse(application.status);
-    final isPending = status == ApplicationStatus.pending;
+    var currentStatus = ApplicationStatus.parse(application.status);
+    var isSubmitting = false;
+    AppFeedbackType? feedbackType;
+    String? feedbackTitle;
+    String? feedbackMessage;
+    IconData? feedbackIcon;
+    BuildContext? decisionSheetContext;
+
+    Future<void> submitDecision(
+      String nextStatus,
+      StateSetter setSheetState,
+    ) async {
+      if (isSubmitting) {
+        return;
+      }
+
+      setSheetState(() {
+        isSubmitting = true;
+        feedbackType = null;
+        feedbackTitle = null;
+        feedbackMessage = null;
+        feedbackIcon = null;
+      });
+
+      final error = await _updateStatus(
+        context,
+        application,
+        nextStatus,
+        provider,
+      );
+
+      if (!mounted || !(decisionSheetContext?.mounted ?? false)) {
+        return;
+      }
+
+      if (error != null) {
+        setSheetState(() {
+          isSubmitting = false;
+          feedbackType = AppFeedbackType.error;
+          feedbackTitle = _l10n.updateUnavailableTitle;
+          feedbackMessage = error;
+          feedbackIcon = null;
+        });
+        return;
+      }
+
+      final normalizedStatus = ApplicationStatus.parse(nextStatus);
+
+      setSheetState(() {
+        isSubmitting = false;
+        currentStatus = normalizedStatus;
+        feedbackType = normalizedStatus == ApplicationStatus.rejected
+            ? AppFeedbackType.removed
+            : AppFeedbackType.success;
+        feedbackTitle = _l10n.uiApplicationUpdated;
+        feedbackMessage = _l10n.uiApplicationStatusValue(
+          ApplicationStatus.sentenceLabel(normalizedStatus, _l10n),
+        );
+        feedbackIcon = normalizedStatus == ApplicationStatus.rejected
+            ? Icons.block_outlined
+            : null;
+      });
+    }
 
     await showModalBottomSheet<void>(
       context: context,
@@ -2199,125 +2312,151 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.68,
-          maxChildSize: 0.88,
-          minChildSize: 0.44,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: _ApplicationsPalette.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(26),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.12),
-                    blurRadius: 28,
-                    offset: const Offset(0, -6),
-                  ),
-                ],
-              ),
-              child: ListView(
-                controller: scrollController,
-                padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
-                children: [
-                  _SheetHeaderBar(
-                    title: _l10n.uiApplicationDetails,
-                    subtitle: isPending
-                        ? _l10n.uiReviewTheCandidateBeforeMakingADecision
-                        : _l10n.uiKeepTheCandidateContextCloseAtHand,
-                    onClose: () => Navigator.pop(sheetContext),
-                  ),
-                  const SizedBox(height: 14),
-                  _DetailHeroCard(
-                    studentName: studentName,
-                    opportunityTitle: opportunityTitle,
-                    appliedLabel: appliedDateLabel,
-                    relativeAppliedLabel: relativeAppliedLabel,
-                    typeLabel: typeLabel,
-                    typeTone: tone,
-                    status: application.status,
-                    studentId: application.studentId,
-                    isPriority: application.shouldPrioritizeApplication,
-                    onTapProfile: () {
-                      _openStudentProfile(application);
-                    },
-                  ),
-                  const SizedBox(height: 14),
-                  _ActionRail(
-                    children: [
-                      _WideActionButton(
-                        label: _l10n.uiProfile,
-                        icon: Icons.person_outline_rounded,
-                        background: _ApplicationsPalette.primarySoft,
-                        foreground: _ApplicationsPalette.primary,
-                        onTap: () {
-                          _openStudentProfile(application);
-                        },
-                      ),
-                      _WideActionButton(
-                        label: _l10n.uiMessage,
-                        icon: Icons.chat_bubble_outline_rounded,
-                        background: AppColors.current.secondarySoft,
-                        foreground: _ApplicationsPalette.secondaryDark,
-                        onTap: () {
-                          _openChatWithStudent(application);
-                        },
-                      ),
-                      _WideActionButton(
-                        label: _l10n.uiViewCv,
-                        icon: Icons.description_outlined,
-                        background: _ApplicationsPalette.accentSoft,
-                        foreground: _ApplicationsPalette.accent,
-                        onTap: () {
-                          _showCvSheet(context, application, provider);
-                        },
+        decisionSheetContext = sheetContext;
+        return StatefulBuilder(
+          builder: (_, setSheetState) {
+            final isPending = currentStatus == ApplicationStatus.pending;
+            final isBusy = provider.isAppBusy(application.id) || isSubmitting;
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.68,
+              maxChildSize: 0.88,
+              minChildSize: 0.44,
+              expand: false,
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: _ApplicationsPalette.surface,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(26),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 28,
+                        offset: const Offset(0, -6),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
-                  _OpportunityLinkButton(
-                    title: opportunity == null
-                        ? _l10n.uiOpportunityUnavailable
-                        : _l10n.uiOpportunityDetails,
-                    subtitle: opportunityTitle,
-                    icon: OpportunityType.icon(
-                      opportunity?.type ?? OpportunityType.job,
-                    ),
-                    tone: tone.foreground,
-                    onTap: () => _openOpportunityDetailsFromSheet(opportunity),
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.fromLTRB(18, 10, 18, 28),
+                    children: [
+                      _SheetHeaderBar(
+                        title: _l10n.uiApplicationDetails,
+                        subtitle: isPending
+                            ? _l10n.uiReviewTheCandidateBeforeMakingADecision
+                            : _l10n.uiKeepTheCandidateContextCloseAtHand,
+                        onClose: () => Navigator.pop(sheetContext),
+                      ),
+                      const SizedBox(height: 14),
+                      _DetailHeroCard(
+                        studentName: studentName,
+                        opportunityTitle: opportunityTitle,
+                        appliedLabel: appliedDateLabel,
+                        relativeAppliedLabel: relativeAppliedLabel,
+                        typeLabel: typeLabel,
+                        typeTone: tone,
+                        status: currentStatus,
+                        studentId: application.studentId,
+                        isPriority: application.shouldPrioritizeApplication,
+                        onTapProfile: () {
+                          _openStudentProfile(application);
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      _ActionRail(
+                        children: [
+                          _WideActionButton(
+                            label: _l10n.uiProfile,
+                            icon: Icons.person_outline_rounded,
+                            background: _ApplicationsPalette.primarySoft,
+                            foreground: _ApplicationsPalette.primary,
+                            onTap: () {
+                              _openStudentProfile(application);
+                            },
+                          ),
+                          _WideActionButton(
+                            label: _l10n.uiMessage,
+                            icon: Icons.chat_bubble_outline_rounded,
+                            background: AppColors.current.secondarySoft,
+                            foreground: _ApplicationsPalette.secondaryDark,
+                            onTap: () {
+                              _openChatWithStudent(application);
+                            },
+                          ),
+                          _WideActionButton(
+                            label: _l10n.uiViewCv,
+                            icon: Icons.description_outlined,
+                            background: _ApplicationsPalette.accentSoft,
+                            foreground: _ApplicationsPalette.accent,
+                            onTap: () {
+                              _showCvSheet(context, application, provider);
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      _OpportunityLinkButton(
+                        title: opportunity == null
+                            ? _l10n.uiOpportunityUnavailable
+                            : _l10n.uiOpportunityDetails,
+                        subtitle: opportunityTitle,
+                        icon: OpportunityType.icon(
+                          opportunity?.type ?? OpportunityType.job,
+                        ),
+                        tone: tone.foreground,
+                        onTap: () =>
+                            _openOpportunityDetailsFromSheet(opportunity),
+                      ),
+                      const SizedBox(height: 14),
+                      if (isSubmitting) ...[
+                        AppInlineMessage(
+                          type: AppFeedbackType.info,
+                          title: _l10n.uiApplicationStatus,
+                          message: _l10n.uiWorking,
+                          compact: true,
+                          trailing: SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: _ApplicationsPalette.primary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                      ] else if (feedbackType != null &&
+                          (feedbackMessage ?? '').trim().isNotEmpty) ...[
+                        AppInlineMessage(
+                          type: feedbackType!,
+                          title: feedbackTitle,
+                          message: feedbackMessage!,
+                          icon: feedbackIcon,
+                          compact: true,
+                        ),
+                        const SizedBox(height: 14),
+                      ],
+                      _DecisionPanel(
+                        status: currentStatus,
+                        isBusy: isBusy,
+                        onApprove: isPending
+                            ? () => submitDecision(
+                                ApplicationStatus.accepted,
+                                setSheetState,
+                              )
+                            : null,
+                        onReject: isPending
+                            ? () => submitDecision(
+                                ApplicationStatus.rejected,
+                                setSheetState,
+                              )
+                            : null,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 14),
-                  _DecisionPanel(
-                    status: status,
-                    isBusy: provider.isAppBusy(application.id),
-                    onApprove: isPending
-                        ? () {
-                            Navigator.pop(sheetContext);
-                            _updateStatus(
-                              context,
-                              application,
-                              ApplicationStatus.accepted,
-                              provider,
-                            );
-                          }
-                        : null,
-                    onReject: isPending
-                        ? () {
-                            Navigator.pop(sheetContext);
-                            _updateStatus(
-                              context,
-                              application,
-                              ApplicationStatus.rejected,
-                              provider,
-                            );
-                          }
-                        : null,
-                  ),
-                ],
-              ),
+                );
+              },
             );
           },
         );
@@ -2655,7 +2794,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     }
   }
 
-  Future<void> _updateStatus(
+  Future<String?> _updateStatus(
     BuildContext context,
     ApplicationModel application,
     String status,
@@ -2668,39 +2807,15 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       status: status,
     );
 
-    if (!context.mounted) {
-      return;
-    }
-
-    if (error != null) {
-      context.showAppSnackBar(
-        error,
-        title: _l10n.updateUnavailableTitle,
-        type: AppFeedbackType.error,
-      );
-      return;
+    if (!context.mounted || error != null) {
+      return error;
     }
 
     if (currentUserId != null) {
       await provider.loadApplications(currentUserId);
     }
 
-    if (!context.mounted) {
-      return;
-    }
-
-    context.showAppSnackBar(
-      _l10n.uiApplicationStatusValue(
-        ApplicationStatus.sentenceLabel(status, _l10n),
-      ),
-      title: _l10n.uiApplicationUpdated,
-      type: ApplicationStatus.parse(status) == ApplicationStatus.rejected
-          ? AppFeedbackType.removed
-          : AppFeedbackType.success,
-      icon: ApplicationStatus.parse(status) == ApplicationStatus.rejected
-          ? Icons.block_outlined
-          : null,
-    );
+    return null;
   }
 
   Future<void> _showCvSheet(

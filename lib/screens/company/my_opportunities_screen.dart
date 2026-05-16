@@ -342,8 +342,6 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       return;
     }
 
-    final applications = _applicationsForOpportunity(provider, opportunity.id);
-
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -353,14 +351,19 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
         alpha: AppColors.isDark ? 0.62 : 0.38,
       ),
       builder: (sheetContext) {
-        return _ApplicantsSheet(
-          opportunity: opportunity,
-          applications: applications,
-          error: provider.applicationsError,
-          onClose: () => Navigator.pop(sheetContext),
-          appliedDateLabel: _applicationDateLabel,
-          onApplicationTap: (application) =>
-              _showApplicantDetails(opportunity, application),
+        return Consumer<CompanyProvider>(
+          builder: (_, liveProvider, _) => _ApplicantsSheet(
+            opportunity: opportunity,
+            applications: _applicationsForOpportunity(
+              liveProvider,
+              opportunity.id,
+            ),
+            error: liveProvider.applicationsError,
+            onClose: () => Navigator.pop(sheetContext),
+            appliedDateLabel: _applicationDateLabel,
+            onApplicationTap: (application) =>
+                _showApplicantDetails(opportunity, application),
+          ),
         );
       },
     );
@@ -410,27 +413,13 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
               onTapCv: () {
                 _showCvSheet(context, application, provider);
               },
-              onApprove: isPending
-                  ? () {
-                      Navigator.pop(sheetContext);
-                      _updateApplicationStatus(
-                        context,
-                        application,
-                        ApplicationStatus.accepted,
-                        provider,
-                      );
-                    }
-                  : null,
-              onReject: isPending
-                  ? () {
-                      Navigator.pop(sheetContext);
-                      _updateApplicationStatus(
-                        context,
-                        application,
-                        ApplicationStatus.rejected,
-                        provider,
-                      );
-                    }
+              onDecision: isPending
+                  ? (status) => _updateApplicationStatus(
+                      context,
+                      application,
+                      status,
+                      provider,
+                    )
                   : null,
             );
           },
@@ -761,7 +750,7 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
     );
   }
 
-  Future<void> _updateApplicationStatus(
+  Future<String?> _updateApplicationStatus(
     BuildContext context,
     ApplicationModel application,
     String status,
@@ -774,39 +763,15 @@ class _MyOpportunitiesScreenState extends State<MyOpportunitiesScreen> {
       status: status,
     );
 
-    if (!context.mounted) {
-      return;
-    }
-
-    if (error != null) {
-      context.showAppSnackBar(
-        error,
-        title: _l10n.updateUnavailableTitle,
-        type: AppFeedbackType.error,
-      );
-      return;
+    if (!context.mounted || error != null) {
+      return error;
     }
 
     if (currentUserId != null) {
       await provider.loadApplications(currentUserId);
     }
 
-    if (!context.mounted) {
-      return;
-    }
-
-    context.showAppSnackBar(
-      _l10n.uiApplicationStatusValue(
-        ApplicationStatus.sentenceLabel(status, _l10n),
-      ),
-      title: _l10n.uiApplicationUpdated,
-      type: ApplicationStatus.parse(status) == ApplicationStatus.rejected
-          ? AppFeedbackType.removed
-          : AppFeedbackType.success,
-      icon: ApplicationStatus.parse(status) == ApplicationStatus.rejected
-          ? Icons.block_outlined
-          : null,
-    );
+    return null;
   }
 
   Future<void> _toggleStatus(OpportunityModel opportunity) async {
@@ -2445,7 +2410,7 @@ class _ApplicantsSheet extends StatelessWidget {
   }
 }
 
-class _ApplicantDetailsSheet extends StatelessWidget {
+class _ApplicantDetailsSheet extends StatefulWidget {
   final OpportunityModel opportunity;
   final ApplicationModel application;
   final String appliedDateLabel;
@@ -2457,8 +2422,7 @@ class _ApplicantDetailsSheet extends StatelessWidget {
   final VoidCallback onTapProfile;
   final VoidCallback onTapMessage;
   final VoidCallback onTapCv;
-  final VoidCallback? onApprove;
-  final VoidCallback? onReject;
+  final Future<String?> Function(String status)? onDecision;
 
   const _ApplicantDetailsSheet({
     required this.opportunity,
@@ -2472,20 +2436,89 @@ class _ApplicantDetailsSheet extends StatelessWidget {
     required this.onTapProfile,
     required this.onTapMessage,
     required this.onTapCv,
-    this.onApprove,
-    this.onReject,
+    this.onDecision,
   });
+
+  @override
+  State<_ApplicantDetailsSheet> createState() => _ApplicantDetailsSheetState();
+}
+
+class _ApplicantDetailsSheetState extends State<_ApplicantDetailsSheet> {
+  late String _currentStatus;
+  bool _isSubmitting = false;
+  AppFeedbackType? _feedbackType;
+  String? _feedbackTitle;
+  String? _feedbackMessage;
+  IconData? _feedbackIcon;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentStatus = ApplicationStatus.parse(widget.application.status);
+  }
+
+  Future<void> _submitDecision(String status) async {
+    final onDecision = widget.onDecision;
+    if (onDecision == null || _isSubmitting) {
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+
+    setState(() {
+      _isSubmitting = true;
+      _feedbackType = null;
+      _feedbackTitle = null;
+      _feedbackMessage = null;
+      _feedbackIcon = null;
+    });
+
+    final error = await onDecision(status);
+
+    if (!mounted) {
+      return;
+    }
+
+    if (error != null) {
+      setState(() {
+        _isSubmitting = false;
+        _feedbackType = AppFeedbackType.error;
+        _feedbackTitle = l10n.updateUnavailableTitle;
+        _feedbackMessage = error;
+        _feedbackIcon = null;
+      });
+      return;
+    }
+
+    final normalizedStatus = ApplicationStatus.parse(status);
+
+    setState(() {
+      _isSubmitting = false;
+      _currentStatus = normalizedStatus;
+      _feedbackType = normalizedStatus == ApplicationStatus.rejected
+          ? AppFeedbackType.removed
+          : AppFeedbackType.success;
+      _feedbackTitle = l10n.uiApplicationUpdated;
+      _feedbackMessage = l10n.uiApplicationStatusValue(
+        ApplicationStatus.sentenceLabel(normalizedStatus, l10n),
+      );
+      _feedbackIcon = normalizedStatus == ApplicationStatus.rejected
+          ? Icons.block_outlined
+          : null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final studentName = application.studentName.trim().isEmpty
+    final studentName = widget.application.studentName.trim().isEmpty
         ? l10n.uiStudent
-        : application.studentName.trim();
-    final opportunityTitle = opportunity.title.trim().isEmpty
+        : widget.application.studentName.trim();
+    final opportunityTitle = widget.opportunity.title.trim().isEmpty
         ? l10n.uiUntitledOpportunity
-        : opportunity.title.trim();
-    final isPending = onApprove != null || onReject != null;
+        : widget.opportunity.title.trim();
+    final isPending = _currentStatus == ApplicationStatus.pending;
+    final isBusy = widget.isBusy || _isSubmitting;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.68,
@@ -2514,20 +2547,20 @@ class _ApplicantDetailsSheet extends StatelessWidget {
                 subtitle: isPending
                     ? l10n.uiReviewTheCandidateBeforeMakingADecision
                     : l10n.uiKeepTheCandidateContextCloseAtHand,
-                onClose: onClose,
+                onClose: widget.onClose,
               ),
               const SizedBox(height: 14),
               _AppDetailHeroCard(
                 studentName: studentName,
                 opportunityTitle: opportunityTitle,
-                appliedLabel: appliedDateLabel,
-                relativeAppliedLabel: relativeAppliedLabel,
-                typeLabel: typeLabel,
-                tone: tone,
-                status: application.status,
-                studentId: application.studentId,
-                isPriority: application.shouldPrioritizeApplication,
-                onTapProfile: onTapProfile,
+                appliedLabel: widget.appliedDateLabel,
+                relativeAppliedLabel: widget.relativeAppliedLabel,
+                typeLabel: widget.typeLabel,
+                tone: widget.tone,
+                status: _currentStatus,
+                studentId: widget.application.studentId,
+                isPriority: widget.application.shouldPrioritizeApplication,
+                onTapProfile: widget.onTapProfile,
                 l10n: l10n,
               ),
               const SizedBox(height: 14),
@@ -2539,7 +2572,7 @@ class _ApplicantDetailsSheet extends StatelessWidget {
                       icon: Icons.person_outline_rounded,
                       background: _OpportunityPalette.primarySoft,
                       foreground: _OpportunityPalette.primary,
-                      onTap: onTapProfile,
+                      onTap: widget.onTapProfile,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -2549,7 +2582,7 @@ class _ApplicantDetailsSheet extends StatelessWidget {
                       icon: Icons.chat_bubble_outline_rounded,
                       background: AppColors.current.secondarySoft,
                       foreground: CompanyDashboardPalette.secondaryDark,
-                      onTap: onTapMessage,
+                      onTap: widget.onTapMessage,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -2559,17 +2592,48 @@ class _ApplicantDetailsSheet extends StatelessWidget {
                       icon: Icons.description_outlined,
                       background: AppColors.current.accentSoft,
                       foreground: _OpportunityPalette.accent,
-                      onTap: onTapCv,
+                      onTap: widget.onTapCv,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 14),
+              if (_isSubmitting) ...[
+                AppInlineMessage(
+                  type: AppFeedbackType.info,
+                  title: l10n.uiApplicationStatus,
+                  message: l10n.uiWorking,
+                  compact: true,
+                  trailing: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: _OpportunityPalette.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+              ] else if (_feedbackType != null &&
+                  (_feedbackMessage ?? '').trim().isNotEmpty) ...[
+                AppInlineMessage(
+                  type: _feedbackType!,
+                  title: _feedbackTitle,
+                  message: _feedbackMessage!,
+                  icon: _feedbackIcon,
+                  compact: true,
+                ),
+                const SizedBox(height: 14),
+              ],
               _AppDecisionPanel(
-                status: application.status,
+                status: _currentStatus,
                 isBusy: isBusy,
-                onApprove: onApprove,
-                onReject: onReject,
+                onApprove: isPending && widget.onDecision != null
+                    ? () => _submitDecision(ApplicationStatus.accepted)
+                    : null,
+                onReject: isPending && widget.onDecision != null
+                    ? () => _submitDecision(ApplicationStatus.rejected)
+                    : null,
                 l10n: l10n,
               ),
             ],
