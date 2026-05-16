@@ -1772,7 +1772,7 @@ textarea { resize: vertical; min-height: 80px; }
 .details-content-metrics,
 .profile-content-metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 10px;
 }
 .details-content-metric,

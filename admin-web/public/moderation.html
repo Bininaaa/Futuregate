@@ -1289,18 +1289,19 @@
       const opportunity = includeOpportunity
         ? state.opportunities.find((item) => item.id === application.opportunityId)
         : null;
+      const initial = esc((application.studentName || application.studentId || 'A')[0].toUpperCase());
       return `<div class="item-row${focus ? ' card-highlight' : ''}" data-app-row-id="${esc(application.id)}">
-        <div class="activity-icon" style="background:rgba(59,34,246,0.14);color:#3B22F6"><i data-lucide="user"></i></div>
+        <div class="activity-icon" style="background:rgba(59,34,246,0.14);color:#3B22F6;font-size:15px;font-weight:800;font-family:var(--font-display);">${initial}</div>
         <div class="row-body">
           <div class="row-title">${esc(application.studentName || application.studentId || 'Applicant')}</div>
-          <div class="row-sub">${includeOpportunity ? esc(opportunity?.title || application.opportunityTitle || 'Opportunity') + ' • ' : ''}Applied ${esc(formatTimestamp(application.appliedAt) || '-')}</div>
+          <div class="row-sub">${includeOpportunity ? esc(opportunity?.title || application.opportunityTitle || 'Opportunity') + ' · ' : ''}Applied ${esc(formatTimestamp(application.appliedAt) || '-')}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
             <span class="badge badge-${statusClass}">${esc(displayLabel(status))}</span>
             ${application.coverLetter ? badge('Cover letter', '', 'message-square') : ''}
           </div>
         </div>
         <div class="row-actions">
-          <button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="review"><i data-lucide="panel-top-open"></i>Review</button>
+          <button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="review"><i data-lucide="eye"></i>Review</button>
           ${application.studentId ? `<button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="profile"><i data-lucide="user"></i>Profile</button>` : ''}
           <button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="cv"><i data-lucide="file-text"></i>CV</button>
           ${canManage && status === 'pending' ? `<button class="btn btn-sm btn-success" data-app="${esc(application.id)}" data-app-action="accept"><i data-lucide="check"></i>Approve</button>` : ''}
@@ -1422,7 +1423,7 @@
         ${requirementItems.length ? section('Requirements', 'list-checks', `<ul style="margin:0;padding-left:18px;">${requirementItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
         ${benefitItems.length ? section('Benefits', 'star', `<ul style="margin:0;padding-left:18px;">${benefitItems.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`) : ''}
         ${tagItems.length ? section('Tags', 'tags', `<div class="tag-list">${tagItems.map((item) => badge(item)).join('')}</div>`) : ''}
-        ${section('Applications (' + apps.length + ')', 'file-text', `${applicationSummaryHtml({ total: apps.length, pending, accepted, rejected })}${apps.length ? `<div class="list-grid">${apps.map((application) => applicationCardHtml(application, { canManage: canManageApplications, focus: focusApplicationId && application.id === focusApplicationId })).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>'}`)}
+        ${section('Applications (' + apps.length + ')', 'clipboard-list', `${applicationSummaryHtml({ total: apps.length, pending, accepted, rejected })}${apps.length ? `<div class="list-grid" style="margin-top:10px;">${apps.map((application) => applicationCardHtml(application, { canManage: canManageApplications, focus: focusApplicationId && application.id === focusApplicationId })).join('')}</div>` : '<p class="row-sub" style="margin:0;">No applications yet.</p>'}`)}
       `;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
@@ -1440,25 +1441,36 @@
       const canManageApplications = canEditOpportunity(opportunity);
       document.getElementById('editor-title').textContent = `Applications: ${opportunity.title || 'Opportunity'}`;
       document.getElementById('editor-body').innerHTML = `
-        ${section('Application review', 'assignment', `
+        ${section('Application review', 'clipboard-list', `
           <div class="detail-hero">
             <div class="detail-hero__copy">
-              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-                ${badge(`${apps.length} applications`, 'badge-info', 'users')}
-                ${badge(`${counts.pending || 0} pending`, 'badge-warning', 'hourglass')}
-                ${badge(`${counts.accepted || 0} accepted`, 'badge-success', 'check')}
-                ${badge(`${counts.rejected || 0} rejected`, 'badge-danger', 'x')}
-              </div>
               <p class="detail-hero__headline">${esc(opportunity.title || 'Opportunity')}</p>
               <p class="detail-hero__subline">${esc(canManageApplications ? 'Review applicants, CVs, and pending decisions in one place.' : 'Applications are visible here. Only the posting admin can approve or reject them.')}</p>
+            </div>
+          </div>
+          <div class="details-content-metrics" style="margin:14px 0 4px;">
+            <div class="details-content-metric">
+              <div class="details-content-metric__icon" style="background:rgba(37,99,235,0.1);color:#2563EB;"><i data-lucide="users"></i></div>
+              <div><div class="details-content-metric__value">${apps.length}</div><div class="details-content-metric__label">Total</div></div>
+            </div>
+            <div class="details-content-metric">
+              <div class="details-content-metric__icon" style="background:rgba(202,138,4,0.1);color:#ca8a04;"><i data-lucide="hourglass"></i></div>
+              <div><div class="details-content-metric__value">${counts.pending || 0}</div><div class="details-content-metric__label">Pending</div></div>
+            </div>
+            <div class="details-content-metric">
+              <div class="details-content-metric__icon" style="background:rgba(22,163,74,0.1);color:#16a34a;"><i data-lucide="check-circle"></i></div>
+              <div><div class="details-content-metric__value">${counts.accepted || 0}</div><div class="details-content-metric__label">Accepted</div></div>
+            </div>
+            <div class="details-content-metric">
+              <div class="details-content-metric__icon" style="background:rgba(220,38,38,0.1);color:#dc2626;"><i data-lucide="x-circle"></i></div>
+              <div><div class="details-content-metric__value">${counts.rejected || 0}</div><div class="details-content-metric__label">Rejected</div></div>
             </div>
           </div>
           <div class="details-inline-actions">
             <button class="btn btn-sm" id="back-to-opportunity"><i data-lucide="arrow-left"></i>Back to opportunity</button>
           </div>
-          ${applicationSummaryHtml({ total: apps.length, pending: counts.pending || 0, accepted: counts.accepted || 0, rejected: counts.rejected || 0 })}
         `)}
-        ${apps.length ? `<div class="list-grid">${apps.map((application) => applicationCardHtml(application, { canManage: canManageApplications, focus: focusApplicationId && application.id === focusApplicationId })).join('')}</div>` : emptyStateHtml('There are no submitted applications for this opportunity right now.', { title: 'No applications', icon: 'assignment' })}
+        ${apps.length ? `<div class="list-grid">${apps.map((application) => applicationCardHtml(application, { canManage: canManageApplications, focus: focusApplicationId && application.id === focusApplicationId })).join('')}</div>` : emptyStateHtml('There are no submitted applications for this opportunity right now.', { title: 'No applications', icon: 'clipboard-list' })}
       `;
       const saveBtn = document.getElementById('editor-save');
       if (saveBtn) saveBtn.style.display = 'none';
@@ -1487,18 +1499,19 @@
       const statusClass = status === 'accepted' ? 'success' : status === 'rejected' ? 'danger' : 'warning';
       const canManage = canEditOpportunity(opportunity) && status === 'pending';
       const academicLevel = cleanText(user?.academicLevel);
-      const subtitle = [cleanText(user?.university), cleanText(user?.location)].filter(Boolean).join(' • ');
+      const subtitleParts = [cleanText(user?.university), cleanText(user?.location)].filter(Boolean);
+      const subtitle = [...new Set(subtitleParts)].join(' · ');
       document.getElementById('editor-body').innerHTML = `
         ${section('Applicant', 'user', `
           <div class="details-profile-hero">
             <div class="details-profile-avatar" style="background:#2563EB1a;color:#2563EB">${esc((application.studentName || 'A')[0].toUpperCase())}</div>
             <div>
               <div class="details-profile-name">${esc(application.studentName || application.studentId || 'Applicant')}</div>
-              <div class="row-sub">${esc(subtitle || 'Student applicant')}</div>
+              ${subtitle ? `<div class="row-sub">${esc(subtitle)}</div>` : ''}
               <div class="details-profile-badges">
                 ${badge('Student', 'badge-info', 'graduation-cap')}
                 ${badge(status, `badge-${statusClass}`, status === 'pending' ? 'hourglass' : status === 'accepted' ? 'check' : 'x')}
-                ${academicLevel ? badge(academicLevel, '', 'school') : ''}
+                ${academicLevel ? badge(capitalizeLabel(academicLevel), '', 'book-open') : ''}
               </div>
             </div>
           </div>
@@ -1508,16 +1521,16 @@
             ${academicLevel ? `<div class="profile-block"><div class="profile-block-label">Academic level</div><div class="profile-block-value">${esc(capitalizeLabel(academicLevel))}</div></div>` : ''}
             ${cleanText(user?.fieldOfStudy) ? `<div class="profile-block"><div class="profile-block-label">Field of study</div><div class="profile-block-value">${esc(user.fieldOfStudy)}</div></div>` : ''}
           </div>
+          ${!canEditOpportunity(opportunity) ? `<div style="margin-top:14px;">${feedbackCardHtml('This application is read-only for your admin account.', { type: 'warning', title: 'Read-only application' })}</div>` : ''}
         `)}
         <div class="details-inline-actions">
           <button class="btn btn-sm" id="back-to-applications"><i data-lucide="arrow-left"></i>Back to applications</button>
           ${application.studentId ? `<button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="profile"><i data-lucide="user"></i>View profile</button>` : ''}
           <button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="cv"><i data-lucide="file-text"></i>View CV</button>
-          ${application.studentId ? `<button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="all-apps"><i data-lucide="assignment"></i>View all apps</button>` : ''}
+          ${application.studentId ? `<button class="btn btn-sm" data-app="${esc(application.id)}" data-app-action="all-apps"><i data-lucide="clipboard-list"></i>View all apps</button>` : ''}
           ${canManage ? `<button class="btn btn-sm btn-success" data-app="${esc(application.id)}" data-app-action="accept"><i data-lucide="check"></i>Approve</button>` : ''}
           ${canManage ? `<button class="btn btn-sm btn-danger" data-app="${esc(application.id)}" data-app-action="reject"><i data-lucide="x"></i>Reject</button>` : ''}
         </div>
-        ${!canEditOpportunity(opportunity) ? feedbackCardHtml('This application is read-only for your admin account.', { type: 'warning', title: 'Read-only application' }) : ''}
       `;
       document.getElementById('back-to-applications')?.addEventListener('click', () => openOpportunityApplications(opportunity, application.id));
       bindApplicationActions(document.getElementById('editor-body'), opportunity, (appId) => openApplicantQuickActions(state.applications.find((item) => item.id === appId) || application, opportunity));
@@ -1528,7 +1541,7 @@
       const apps = studentApplications(studentId);
       document.getElementById('editor-title').textContent = `${studentName || 'Student'} applications`;
       document.getElementById('editor-body').innerHTML = `
-        ${section('All applications', 'assignment', applicationSummaryHtml({
+        ${section('All applications', 'clipboard-list', applicationSummaryHtml({
           total: apps.length,
           pending: applicationStatusCounts(apps).pending || 0,
           accepted: applicationStatusCounts(apps).accepted || 0,
