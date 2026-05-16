@@ -113,19 +113,16 @@ class ChatService implements IChatService {
           ? null
           : await _applicationById(existingApplicationId);
       if (existingApplicationId.isEmpty ||
+          existingApplication == null ||
           (actorRole == 'student' &&
-              existingApplication?.isAccepted != true &&
+              !existingApplication.isAccepted &&
               application.isAccepted)) {
         updates['applicationId'] = application.id;
       }
-      if ((existingData['createdById'] ?? '').toString().trim().isEmpty &&
-          normalizedCurrentUserId.isNotEmpty) {
-        updates['createdById'] = normalizedCurrentUserId;
-      }
-      if ((existingData['createdByRole'] ?? '').toString().trim().isEmpty &&
-          actorRole.isNotEmpty) {
-        updates['createdByRole'] = actorRole;
-      }
+      // Creator metadata is immutable under the current Firestore rules.
+      // Legacy conversations may not have these fields, but trying to invent
+      // them later makes the whole repair update fail and prevents the
+      // application link from being backfilled too.
       if (!existingData.containsKey('companyHasMessaged')) {
         updates['companyHasMessaged'] = false;
       }
@@ -159,10 +156,6 @@ class ChatService implements IChatService {
             'contextLabel': updates['contextLabel'],
           if (updates.containsKey('applicationId'))
             'applicationId': updates['applicationId'],
-          if (updates.containsKey('createdById'))
-            'createdById': updates['createdById'],
-          if (updates.containsKey('createdByRole'))
-            'createdByRole': updates['createdByRole'],
           if (updates.containsKey('companyHasMessaged'))
             'companyHasMessaged': updates['companyHasMessaged'],
           if (normalizedCurrentUserId.isNotEmpty)
@@ -1265,6 +1258,34 @@ class ChatService implements IChatService {
         'createdById': payload['createdById'],
         'createdByRole': payload['createdByRole'],
         'companyHasMessaged': payload['companyHasMessaged'],
+      },
+      // Compatibility with the pre-application-linked chat ruleset. Older
+      // deployed rules reject the newer authorization metadata entirely, so
+      // keep one truly legacy payload as a last resort instead of surfacing a
+      // permission-denied error just because the backend rollout lags the app.
+      {
+        'id': payload['id'],
+        'studentId': payload['studentId'],
+        'studentName': payload['studentName'],
+        'companyId': payload['companyId'],
+        'companyName': payload['companyName'],
+        'lastMessage': payload['lastMessage'],
+        'lastMessageType': payload['lastMessageType'],
+        'lastMessageSenderId': payload['lastMessageSenderId'],
+        'lastMessageSenderName': payload['lastMessageSenderName'],
+        'lastMessageTime': payload['lastMessageTime'],
+        'startedAt': payload['startedAt'],
+        'status': payload['status'],
+        'studentUnreadCount': payload['studentUnreadCount'],
+        'companyUnreadCount': payload['companyUnreadCount'],
+        'archivedBy': payload['archivedBy'],
+        'mutedBy': payload['mutedBy'],
+        'deletedBy': payload['deletedBy'],
+        'isGroup': payload['isGroup'],
+        'groupName': payload['groupName'],
+        'groupAvatarUrl': payload['groupAvatarUrl'],
+        'contextType': payload['contextType'],
+        'contextLabel': payload['contextLabel'],
       },
     ];
 

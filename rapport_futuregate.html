@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport Mini Projet – FutureGate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Arial&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+    line-height: 1.6;
+  }
+
+  /* Page setup */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 20px auto;
+    padding: 25mm 25mm 20mm 30mm;
+    background: #fff;
+    page-break-after: always;
+    position: relative;
+  }
+
+  @media print {
+    body { margin: 0; }
+    .page {
+      margin: 0;
+      padding: 20mm 20mm 15mm 25mm;
+      page-break-after: always;
+      box-shadow: none;
+    }
+    .no-print { display: none; }
+  }
+
+  /* Cover page */
+  .cover {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 257mm;
+  }
+
+  .cover-header {
+    font-size: 10pt;
+    text-align: center;
+    line-height: 1.8;
+    border-bottom: 2px solid #1a3a6b;
+    padding-bottom: 15px;
+    width: 100%;
+  }
+
+  .cover-header .ar { font-size: 12pt; font-weight: bold; }
+  .cover-header .fr { font-size: 10.5pt; }
+
+  .cover-logo-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  .cover-logo-box {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #1a3a6b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8pt;
+    color: #1a3a6b;
+    font-weight: bold;
+  }
+
+  .cover-title-block {
+    margin: 20px 0;
+  }
+
+  .cover-title-block .report-label {
+    font-size: 22pt;
+    font-weight: bold;
+    font-family: 'Times New Roman', serif;
+    color: #1a3a6b;
+    display: block;
+  }
+
+  .cover-title-block .mini-projet {
+    font-size: 20pt;
+    font-weight: bold;
+    font-family: 'Times New Roman', serif;
+    display: block;
+    margin-top: 6px;
+  }
+
+  .cover-title-block .niveau {
+    font-size: 13pt;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+  }
+
+  .cover-project-title {
+    font-size: 24pt;
+    font-weight: bold;
+    color: #1a3a6b;
+    margin: 30px 0;
+    font-family: 'Times New Roman', serif;
+    border: 2px solid #1a3a6b;
+    padding: 15px 25px;
+    display: inline-block;
+  }
+
+  .cover-info {
+    text-align: left;
+    width: 100%;
+    font-size: 11pt;
+    line-height: 2.2;
+    margin-top: 20px;
+  }
+
+  .cover-info .label { font-weight: bold; }
+  .cover-info .indent { margin-left: 30px; }
+
+  .cover-footer {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  /* TOC */
+  .toc-entry {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted #999;
+    padding: 4px 0;
+    margin: 2px 0;
+  }
+  .toc-entry.sub { padding-left: 20px; font-size: 10.5pt; }
+  .toc-entry.subsub { padding-left: 40px; font-size: 10pt; }
+
+  /* Content styling */
+  h1 {
+    font-size: 14pt;
+    color: #1a3a6b;
+    border-bottom: 2px solid #1a3a6b;
+    padding-bottom: 4px;
+    margin: 0 0 12px 0;
+  }
+
+  h2 {
+    font-size: 12pt;
+    color: #1a3a6b;
+    margin: 14px 0 8px 0;
+    border-left: 4px solid #1a3a6b;
+    padding-left: 8px;
+  }
+
+  h3 {
+    font-size: 11pt;
+    color: #333;
+    margin: 10px 0 6px 0;
+    font-weight: bold;
+  }
+
+  p { margin-bottom: 8px; text-align: justify; }
+
+  ul {
+    margin: 6px 0 10px 20px;
+  }
+
+  ul li {
+    margin-bottom: 4px;
+  }
+
+  .section-num {
+    color: #1a3a6b;
+    font-weight: bold;
+  }
+
+  /* MLD */
+  .mld-table {
+    margin: 8px 0 12px 0;
+  }
+
+  .mld-relation {
+    background: #f0f4ff;
+    border: 1px solid #1a3a6b;
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 9.5pt;
+  }
+
+  .mld-relation .rel-name {
+    font-weight: bold;
+    color: #1a3a6b;
+  }
+
+  .mld-relation .pk { text-decoration: underline; }
+  .mld-relation .fk { font-style: italic; color: #555; }
+
+  /* Tools table */
+  .tools-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 10.5pt;
+  }
+
+  .tools-table th {
+    background: #1a3a6b;
+    color: #fff;
+    padding: 7px 10px;
+    text-align: left;
+  }
+
+  .tools-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .tools-table tr:nth-child(even) td {
+    background: #f5f7ff;
+  }
+
+  /* Architecture box */
+  .arch-box {
+    background: #f5f7ff;
+    border: 1px solid #1a3a6b;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 9.5pt;
+    margin: 10px 0;
+    white-space: pre;
+  }
+
+  /* Diagram placeholder */
+  .diagram-placeholder {
+    border: 2px dashed #1a3a6b;
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+    color: #1a3a6b;
+    font-style: italic;
+    margin: 10px 0;
+    background: #f8f9ff;
+    font-size: 10pt;
+  }
+
+  /* Description box */
+  .desc-box {
+    background: #eef2ff;
+    border-left: 4px solid #1a3a6b;
+    padding: 10px 14px;
+    margin: 8px 0;
+    font-size: 10.5pt;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* Sequence description */
+  .seq-desc {
+    margin: 8px 0;
+  }
+
+  .seq-step {
+    display: flex;
+    gap: 8px;
+    margin: 4px 0;
+    font-size: 10.5pt;
+  }
+
+  .seq-step .step-num {
+    background: #1a3a6b;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5pt;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Print button */
+  .print-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #1a3a6b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13pt;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .print-btn:hover { background: #0f2748; }
+
+  /* Divider */
+  hr.section-div {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 12px 0;
+  }
+
+  .page-num {
+    position: absolute;
+    bottom: 10mm;
+    right: 25mm;
+    font-size: 9pt;
+    color: #666;
+  }
+
+  .note-italic {
+    font-style: italic;
+    font-size: 10pt;
+    color: #555;
+  }
+
+  .highlight-box {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 8px 0;
+    font-size: 10.5pt;
+  }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨️ Imprimer / Exporter PDF</button>
+
+<!-- ============================= PAGE 1: COVER ============================= -->
+<div class="page">
+  <div class="cover">
+
+    <div style="width:100%">
+      <div class="cover-header">
+        <div class="ar">الجمهورية الجزائرية الديمقراطية الشعبية</div>
+        <div class="fr">République Algérienne Démocratique et Populaire</div>
+        <div class="ar" style="margin-top:4px;">وزارة التعليم العالي و البحث العلمي</div>
+        <div class="fr">Ministère de l'Enseignement Supérieur et de la Recherche Scientifique</div>
+        <div class="ar" style="font-size:13pt; margin-top:6px;">جامعة أبو بكر بلقا يد – تلمسان</div>
+        <div class="fr" style="font-weight:bold; font-size:12pt;">Université AbouBekr BELKAID – Tlemcen</div>
+        <div class="ar">كلية العلوم – تيجاني هدام</div>
+        <div class="fr">Faculté des Sciences – Tidjani Haddam</div>
+        <div class="ar">قسم الإعلام الآلي</div>
+        <div class="fr">Département d'Informatique</div>
+      </div>
+    </div>
+
+    <div class="cover-title-block" style="margin-top:24px;">
+      <span class="report-label">Rapport</span>
+      <span class="mini-projet">Mini Projet</span>
+      <span class="niveau">3<sup>ème</sup> Année Licence Informatique</span>
+    </div>
+
+    <div class="cover-project-title">FutureGate</div>
+    <div style="font-size:13pt; color:#333; margin-top:-20px; font-style:italic;">
+      Plateforme mobile de mise en relation étudiants–entreprises
+    </div>
+
+    <div class="cover-info">
+      <p><span class="label">Examiné le :</span> ..../..../2026</p>
+      <p style="margin-top:8px;"><span class="label">Devant le Jury :</span></p>
+      <p class="indent">Examinateur Mr : ___________________________</p>
+      <p class="indent">Examinateur Mr : ___________________________</p>
+      <p class="indent">Encadrant Mr : ___________________________</p>
+      <p style="margin-top:12px;"><span class="label">Réalisé par :</span></p>
+      <p class="indent">– &nbsp; ___________________________</p>
+      <p class="indent">– &nbsp; ___________________________</p>
+      <p class="indent">– &nbsp; ___________________________</p>
+      <p class="indent">– &nbsp; ___________________________</p>
+      <p class="indent">– &nbsp; ___________________________</p>
+      <p class="indent">– &nbsp; ___________________________</p>
+    </div>
+
+    <div class="cover-footer">Année Universitaire : 2025–2026</div>
+  </div>
+</div>
+
+
+<!-- ============================= PAGE 2: SOMMAIRE ============================= -->
+<div class="page">
+  <h1>Sommaire</h1>
+  <br>
+
+  <div class="toc-entry"><span>Introduction</span><span>3</span></div>
+
+  <div class="toc-entry"><span>1 – Spécifications des besoins</span><span>3</span></div>
+  <div class="toc-entry sub"><span>1.1 &nbsp; Besoins fonctionnels</span><span>3</span></div>
+  <div class="toc-entry sub"><span>1.2 &nbsp; Besoins non fonctionnels</span><span>4</span></div>
+
+  <div class="toc-entry"><span>2 – Diagrammes UML</span><span>4</span></div>
+  <div class="toc-entry sub"><span>2.1 &nbsp; Diagramme de cas d'utilisation</span><span>4</span></div>
+  <div class="toc-entry sub"><span>2.2 &nbsp; Description du diagramme de cas d'utilisation</span><span>5</span></div>
+  <div class="toc-entry sub"><span>2.3 &nbsp; Diagramme de classes</span><span>5</span></div>
+  <div class="toc-entry sub"><span>2.4 &nbsp; Description du diagramme de classes</span><span>6</span></div>
+  <div class="toc-entry sub"><span>2.5 &nbsp; Diagrammes de séquence</span><span>6</span></div>
+
+  <div class="toc-entry"><span>3 – Modèle Logique de Données (MLD)</span><span>8</span></div>
+
+  <div class="toc-entry"><span>4 – Outils de conception et de programmation</span><span>9</span></div>
+
+  <div class="toc-entry"><span>5 – Architecture du projet</span><span>10</span></div>
+
+  <div class="toc-entry"><span>6 – Business Model Canvas</span><span>11</span></div>
+
+  <div class="toc-entry"><span>Conclusion</span><span>12</span></div>
+</div>
+
+
+<!-- ============================= PAGE 3: INTRO + BESOINS ============================= -->
+<div class="page">
+  <h1>Introduction</h1>
+  <p>
+    Dans un contexte où l'insertion professionnelle des jeunes diplômés représente un défi majeur, la plateforme
+    <strong>FutureGate</strong> a été conçue pour rapprocher les étudiants des opportunités professionnelles disponibles
+    sur le marché algérien. L'application mobile, développée avec le framework Flutter et adossée à l'infrastructure
+    cloud Firebase, offre un espace numérique unifié permettant aux étudiants de consulter des offres de stage et
+    d'emploi, de postuler directement, de gérer leur CV, et d'accéder à des ressources pédagogiques.
+  </p>
+  <p>
+    Du côté des entreprises, la plateforme leur permet de publier des offres, de gérer les candidatures reçues et
+    de communiquer avec les candidats via un système de messagerie intégré. Un administrateur supervise la plateforme
+    en validant les comptes entreprise, en modérant les offres publiées et en consultant les statistiques globales.
+  </p>
+  <p>
+    Ce rapport présente l'ensemble des spécifications, des diagrammes de conception, du modèle de données et de
+    l'architecture technique du projet, tels qu'ils ont été réalisés et détectés dans le code source.
+  </p>
+
+  <hr class="section-div">
+
+  <h1>1 – Spécifications des besoins</h1>
+
+  <h2>1.1 Besoins fonctionnels</h2>
+
+  <h3>Acteur : Étudiant</h3>
+  <ul>
+    <li>Créer un compte, se connecter et vérifier son adresse e-mail.</li>
+    <li>Compléter son profil (université, spécialité, niveau, compétences).</li>
+    <li>Consulter, rechercher et filtrer les offres de stage et d'emploi.</li>
+    <li>Postuler à une offre en joignant une lettre de motivation.</li>
+    <li>Suivre l'état de ses candidatures (en attente, acceptée, refusée).</li>
+    <li>Sauvegarder des offres et des bourses pour consultation ultérieure.</li>
+    <li>Construire et exporter son CV en PDF (plusieurs modèles disponibles).</li>
+    <li>Accéder à des ressources de formation (YouTube, Google Books, contenu interne).</li>
+    <li>Participer au Hub d'Innovation en proposant ou rejoignant des idées de projets.</li>
+    <li>Communiquer avec les entreprises via la messagerie intégrée.</li>
+    <li>Recevoir des notifications push pour les mises à jour importantes.</li>
+    <li>Consulter et postuler aux bourses d'études disponibles.</li>
+    <li>Souscrire à un abonnement premium pour accéder à des fonctionnalités avancées.</li>
+  </ul>
+
+  <h3>Acteur : Entreprise</h3>
+  <ul>
+    <li>Créer un compte entreprise et soumettre les documents requis pour validation.</li>
+    <li>Gérer le profil de l'entreprise (nom, secteur, adresse, description).</li>
+    <li>Publier, modifier et supprimer des offres de stage ou d'emploi.</li>
+    <li>Consulter la liste des candidatures reçues pour chaque offre.</li>
+    <li>Accepter ou refuser une candidature avec confirmation.</li>
+    <li>Contacter un étudiant candidat via le système de messagerie.</li>
+    <li>Consulter les statistiques de ses offres (vues, candidatures).</li>
+  </ul>
+
+  <h3>Acteur : Administrateur</h3>
+  <ul>
+    <li>Valider ou rejeter les comptes entreprise (avec commentaire).</li>
+    <li>Modérer les offres publiées (valider, refuser, supprimer).</li>
+    <li>Gérer les comptes utilisateurs (étudiants et entreprises).</li>
+    <li>Consulter le tableau de bord analytique (statistiques globales, graphiques).</li>
+    <li>Accéder au centre de contenu pour gérer les offres, bourses et idées de projets.</li>
+    <li>Consulter le journal d'activités administratives.</li>
+  </ul>
+
+  <h2>1.2 Besoins non fonctionnels</h2>
+  <ul>
+    <li><strong>Performance :</strong> Chargement rapide des listes grâce au lazy loading et à la mise en cache des images (cached_network_image).</li>
+    <li><strong>Sécurité :</strong> Authentification via Firebase Auth, vérification d'e-mail obligatoire, indicateur de force de mot de passe, règles Firestore sécurisées.</li>
+    <li><strong>Disponibilité :</strong> Gestion de la connexion réseau avec affichage d'un écran dédié en cas d'absence d'internet (connectivity_plus).</li>
+    <li><strong>Maintenabilité :</strong> Architecture en couches (modèles, services, providers, UI), tests unitaires et de widgets présents.</li>
+    <li><strong>Internationalisation :</strong> Support multilingue (français, arabe avec RTL) via le système l10n de Flutter.</li>
+    <li><strong>Accessibilité :</strong> Thème clair/sombre persistant, typographie adaptée à l'arabe (police Cairo).</li>
+    <li><strong>Traçabilité des erreurs :</strong> Intégration de Firebase Crashlytics pour le suivi des erreurs en production.</li>
+    <li><strong>Extensibilité :</strong> Architecture Provider avec interfaces de services, facilitant l'ajout de nouvelles fonctionnalités.</li>
+  </ul>
+
+  <div class="page-num">3</div>
+</div>
+
+
+<!-- ============================= PAGE 4-5: DIAGRAMMES ============================= -->
+<div class="page">
+  <h1>2 – Diagrammes UML</h1>
+
+  <h2>2.1 Diagramme de cas d'utilisation</h2>
+
+  <div class="diagram-placeholder">
+    [ Insérer ici le diagramme de cas d'utilisation – voir fichier image fourni ]<br><br>
+    <em>Système : FutureGate | Acteurs : Étudiant, Entreprise, Administrateur</em>
+  </div>
+
+  <h2>2.2 Description du diagramme de cas d'utilisation</h2>
+
+  <div class="desc-box">
+    Le système FutureGate implique trois acteurs principaux interagissant avec la plateforme :
+    <ul style="margin-top:8px;">
+      <li>
+        <strong>L'Étudiant</strong> peut créer un compte, s'authentifier, gérer son profil, consulter et filtrer
+        les offres disponibles, postuler à une offre, gérer ses candidatures envoyées et suivre leur état.
+        Il peut également sauvegarder des offres, accéder aux ressources de formation et participer au Hub d'Innovation.
+      </li>
+      <li style="margin-top:6px;">
+        <strong>L'Entreprise</strong> peut s'authentifier, gérer son profil, publier des offres, consulter les
+        candidatures reçues, les accepter ou les refuser, puis contacter les étudiants concernés via la messagerie.
+        La publication d'offres est conditionnée à la validation préalable du compte par l'administrateur.
+      </li>
+      <li style="margin-top:6px;">
+        <strong>L'Administrateur</strong> supervise la plateforme en validant les comptes entreprise,
+        en contrôlant et modérant les offres publiées, en gérant les comptes utilisateurs, et en consultant
+        les statistiques globales de la plateforme. Il peut également supprimer tout contenu inapproprié.
+      </li>
+    </ul>
+    <p style="margin-top:8px;">
+      Les cas <em>«Postuler à une offre»</em>, <em>«Gérer les candidatures»</em> et
+      <em>«Suivre l'état de candidature»</em> incluent tous le cas <em>«S'authentifier»</em>.
+      Le cas <em>«Valider les offres publiées»</em> peut s'étendre vers <em>«Supprimer un contenu inapproprié»</em>.
+    </p>
+  </div>
+
+  <div class="page-num">4</div>
+</div>
+
+<div class="page">
+  <h2>2.3 Diagramme de classes</h2>
+
+  <div class="diagram-placeholder">
+    [ Insérer ici le diagramme de classes – voir fichier image fourni ]<br><br>
+    <em>Classes principales : Utilisateur, Étudiant, Entreprise, Administrateur, Offre, Candidature, Message</em>
+  </div>
+
+  <h2>2.4 Description du diagramme de classes</h2>
+
+  <div class="desc-box">
+    Le diagramme de classes reflète fidèlement la structure des modèles de données du code source :
+    <ul style="margin-top:8px;">
+      <li>
+        <strong>Utilisateur</strong> est la classe de base contenant les attributs communs à tous les acteurs
+        (idUtilisateur, nom, email, motDePasse, téléphone, rôle). Elle propose les méthodes
+        <code>sAuthentifier()</code>, <code>modifierProfil()</code> et <code>seDeconnecter()</code>.
+        Elle est héritée par <strong>Étudiant</strong>, <strong>Entreprise</strong> et <strong>Administrateur</strong>.
+      </li>
+      <li style="margin-top:6px;">
+        <strong>Étudiant</strong> ajoute les attributs spécifiques (spécialité, niveau, CV) et peut consulter
+        les offres (<code>consulterOffres()</code>), rechercher (<code>rechercherOffre()</code>),
+        postuler (<code>postuler()</code>) et suivre ses candidatures (<code>suivreCandidature()</code>).
+      </li>
+      <li style="margin-top:6px;">
+        <strong>Entreprise</strong> ajoute le secteur d'activité et le statut de validation, et peut publier,
+        modifier, supprimer des offres et gérer les candidatures reçues.
+      </li>
+      <li style="margin-top:6px;">
+        <strong>Administrateur</strong> supervise la plateforme via <code>validerEntreprise()</code>,
+        <code>gererUtilisateurs()</code> et <code>consulterStatistiques()</code>.
+      </li>
+      <li style="margin-top:6px;">
+        <strong>Offre</strong> contient les informations de l'annonce (titre, description, domaine, statut, dates).
+        Elle est publiée par l'Entreprise, validée par l'Administrateur, et reçoit des <strong>Candidatures</strong>
+        envoyées par les Étudiants.
+      </li>
+      <li style="margin-top:6px;">
+        <strong>Candidature</strong> est la classe liant un Étudiant à une Offre, avec le statut et
+        la lettre de motivation.
+      </li>
+      <li style="margin-top:6px;">
+        <strong>Message</strong> permet la communication directe entre l'Entreprise et l'Étudiant
+        (contenu, date, méthodes d'envoi et de consultation).
+      </li>
+    </ul>
+  </div>
+
+  <div class="page-num">5</div>
+</div>
+
+
+<!-- ============================= PAGE 6-7: SÉQUENCES ============================= -->
+<div class="page">
+  <h2>2.5 Diagrammes de séquence</h2>
+
+  <h3>Diagramme de séquence 1 – Postuler à une offre (Étudiant)</h3>
+
+  <div class="diagram-placeholder">
+    [ Insérer ici le diagramme de séquence « Postuler à une offre » – voir fichier image fourni ]
+  </div>
+
+  <div class="desc-box">
+    <strong>Description :</strong>
+    <div class="seq-desc">
+      <div class="seq-step"><div class="step-num">1</div><div>L'Étudiant consulte les offres disponibles via l'Interface Étudiant.</div></div>
+      <div class="seq-step"><div class="step-num">2</div><div>L'interface transmet la demande au Contrôleur Offre qui récupère les offres validées depuis la Base de données.</div></div>
+      <div class="seq-step"><div class="step-num">3</div><div>L'Étudiant sélectionne une offre ; l'interface demande les détails complets au Contrôleur Offre.</div></div>
+      <div class="seq-step"><div class="step-num">4</div><div>L'Étudiant confirme sa candidature ; l'interface transmet les informations au Contrôleur Candidature.</div></div>
+      <div class="seq-step"><div class="step-num">5</div><div>Le Contrôleur Candidature enregistre la candidature en base de données et retourne une confirmation.</div></div>
+      <div class="seq-step"><div class="step-num">6</div><div>L'interface affiche la confirmation de l'envoi de la candidature à l'Étudiant.</div></div>
+    </div>
+  </div>
+
+  <hr class="section-div">
+
+  <h3>Diagramme de séquence 2 – Traitement d'une candidature (Entreprise)</h3>
+
+  <div class="diagram-placeholder">
+    [ Insérer ici le diagramme de séquence « Traitement d'une candidature » – voir fichier image fourni ]
+  </div>
+
+  <div class="desc-box">
+    <strong>Description :</strong>
+    <div class="seq-desc">
+      <div class="seq-step"><div class="step-num">1</div><div>L'Entreprise consulte les candidatures reçues ; l'interface demande la liste au Contrôleur Candidature.</div></div>
+      <div class="seq-step"><div class="step-num">2</div><div>Le Contrôleur récupère les candidatures depuis la Base de données et les affiche.</div></div>
+      <div class="seq-step"><div class="step-num">3</div><div>L'Entreprise sélectionne une candidature ; les détails (profil étudiant, CV) sont récupérés et affichés.</div></div>
+      <div class="seq-step"><div class="step-num">4</div><div><strong>[Alt – Acceptée] :</strong> L'Entreprise accepte la candidature → le Contrôleur met le statut à « Acceptée » en base → confirmation affichée.</div></div>
+      <div class="seq-step"><div class="step-num">5</div><div><strong>[Alt – Refusée] :</strong> L'Entreprise refuse la candidature → le Contrôleur met le statut à « Refusée » en base → confirmation affichée.</div></div>
+    </div>
+  </div>
+
+  <div class="page-num">6</div>
+</div>
+
+<div class="page">
+  <h3>Diagramme de séquence 3 – Validation d'un compte entreprise (Administrateur)</h3>
+
+  <div class="diagram-placeholder">
+    [ Insérer ici le diagramme de séquence « Validation d'un compte entreprise » – voir fichier image fourni ]
+  </div>
+
+  <div class="desc-box">
+    <strong>Description :</strong>
+    <div class="seq-desc">
+      <div class="seq-step"><div class="step-num">1</div><div>L'Administrateur consulte la liste des comptes entreprise en attente via l'Interface Admin.</div></div>
+      <div class="seq-step"><div class="step-num">2</div><div>L'Interface Admin demande la liste au Contrôleur Utilisateur, qui récupère les entreprises non validées depuis la Base de données.</div></div>
+      <div class="seq-step"><div class="step-num">3</div><div>L'Administrateur sélectionne une entreprise ; les détails du compte sont récupérés et affichés.</div></div>
+      <div class="seq-step"><div class="step-num">4</div><div><strong>[Alt – Compte accepté] :</strong> L'Administrateur valide le compte → le Contrôleur met le statut à « Validé » → mise à jour en base → confirmation affichée.</div></div>
+      <div class="seq-step"><div class="step-num">5</div><div><strong>[Alt – Compte refusé] :</strong> L'Administrateur refuse le compte → le Contrôleur met le statut à « Refusé » → mise à jour en base → confirmation affichée.</div></div>
+    </div>
+  </div>
+
+  <div class="page-num">7</div>
+</div>
+
+
+<!-- ============================= PAGE 8: MLD ============================= -->
+<div class="page">
+  <h1>3 – Modèle Logique de Données (MLD)</h1>
+  <p>
+    Le modèle logique est dérivé du diagramme de base de données du projet. Les clés primaires sont
+    <span style="text-decoration:underline;">soulignées</span> et les clés étrangères sont indiquées en <em>italique</em>.
+  </p>
+
+  <div class="mld-table">
+
+    <div class="mld-relation">
+      <span class="rel-name">UTILISATEUR</span> (<span class="pk">id_user</span>, full_name, email, password, phone, role, created_at)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">ADMINISTRATEUR</span> (<span class="pk">id_admin</span>, <span class="fk">#id_user</span>)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">ENTREPRISE</span> (<span class="pk">id_company</span>, <span class="fk">#id_user</span>, company_name, field, address, description, is_verified)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">ÉTUDIANT</span> (<span class="pk">id_student</span>, <span class="fk">#id_user</span>, university, specialty, level, skills, cv_file)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">OFFRE</span> (<span class="pk">id_post</span>, <span class="fk">#id_company</span>, title, description, type, location, is_premium, status, created_at)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">VALIDATION_OFFRE</span> (<span class="pk">id_validation</span>, <span class="fk">#id_post</span>, <span class="fk">#id_admin</span>, decision, comment, validated_at)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">CANDIDATURE</span> (<span class="pk">id_application</span>, <span class="fk">#id_student</span>, <span class="fk">#id_post</span>, motivation_letter, status, applied_at)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">OFFRE_SAUVEGARDÉE</span> (<span class="pk">id_saved</span>, <span class="fk">#id_student</span>, <span class="fk">#id_post</span>, saved_at)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">ABONNEMENT</span> (<span class="pk">id_subscription</span>, <span class="fk">#id_student</span>, plan_name, start_date, end_date, status)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">PAIEMENT</span> (<span class="pk">id_payment</span>, <span class="fk">#id_subscription</span>, amount, payment_method, payment_date, status)
+    </div>
+
+    <div class="mld-relation">
+      <span class="rel-name">NOTIFICATION</span> (<span class="pk">id_notification</span>, <span class="fk">#id_user</span>, title, message, is_read, created_at)
+    </div>
+
+  </div>
+
+  <h3>Contraintes d'intégrité</h3>
+  <ul>
+    <li>Un <strong>UTILISATEUR</strong> a exactement un rôle parmi : <em>student</em>, <em>company</em>, <em>admin</em>.</li>
+    <li>Une <strong>ENTREPRISE</strong> ne peut publier des offres que si <code>is_verified = true</code>.</li>
+    <li>Une <strong>CANDIDATURE</strong> ne peut être soumise qu'à une <strong>OFFRE</strong> dont le statut est <em>validé</em>.</li>
+    <li>Un <strong>PAIEMENT</strong> est toujours lié à un <strong>ABONNEMENT</strong> existant.</li>
+    <li>La décision de <strong>VALIDATION_OFFRE</strong> est l'une des valeurs : <em>approuvée</em>, <em>refusée</em>.</li>
+    <li>L'attribut <code>status</code> d'une <strong>CANDIDATURE</strong> est : <em>en_attente</em>, <em>acceptée</em>, <em>refusée</em>.</li>
+  </ul>
+
+  <div class="page-num">8</div>
+</div>
+
+
+<!-- ============================= PAGE 9: OUTILS ============================= -->
+<div class="page">
+  <h1>4 – Outils de conception et de programmation</h1>
+  <p>Les outils et technologies suivants ont été détectés dans les fichiers du projet :</p>
+
+  <table class="tools-table">
+    <thead>
+      <tr>
+        <th>Catégorie</th>
+        <th>Outil / Technologie</th>
+        <th>Rôle dans le projet</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Langage</strong></td>
+        <td>Dart 3.x</td>
+        <td>Langage de programmation principal</td>
+      </tr>
+      <tr>
+        <td><strong>Framework mobile</strong></td>
+        <td>Flutter 3.x</td>
+        <td>Développement de l'application mobile multiplateforme</td>
+      </tr>
+      <tr>
+        <td><strong>Base de données</strong></td>
+        <td>Firebase Firestore</td>
+        <td>Stockage NoSQL en temps réel (offres, utilisateurs, candidatures)</td>
+      </tr>
+      <tr>
+        <td><strong>Authentification</strong></td>
+        <td>Firebase Auth</td>
+        <td>Gestion des sessions, email/mot de passe, Google Sign-In</td>
+      </tr>
+      <tr>
+        <td><strong>Stockage fichiers</strong></td>
+        <td>Firebase Storage + Cloudflare</td>
+        <td>Stockage des CV, images de profil, pièces jointes</td>
+      </tr>
+      <tr>
+        <td><strong>Notifications push</strong></td>
+        <td>Firebase Cloud Messaging</td>
+        <td>Notifications en temps réel pour les utilisateurs</td>
+      </tr>
+      <tr>
+        <td><strong>Backend API</strong></td>
+        <td>Cloudflare Workers</td>
+        <td>API serverless pour les opérations nécessitant un backend</td>
+      </tr>
+      <tr>
+        <td><strong>Gestion d'état</strong></td>
+        <td>Provider (ChangeNotifier)</td>
+        <td>Architecture réactive pour la gestion de l'état de l'application</td>
+      </tr>
+      <tr>
+        <td><strong>Navigation</strong></td>
+        <td>GoRouter 17.x</td>
+        <td>Routage déclaratif et navigation entre les écrans</td>
+      </tr>
+      <tr>
+        <td><strong>Paiement</strong></td>
+        <td>Chargily Pay</td>
+        <td>Passerelle de paiement pour les abonnements premium</td>
+      </tr>
+      <tr>
+        <td><strong>Génération PDF</strong></td>
+        <td>pdf + printing</td>
+        <td>Export du CV en format PDF</td>
+      </tr>
+      <tr>
+        <td><strong>Graphiques</strong></td>
+        <td>fl_chart</td>
+        <td>Graphiques du tableau de bord administrateur</td>
+      </tr>
+      <tr>
+        <td><strong>Suivi d'erreurs</strong></td>
+        <td>Firebase Crashlytics</td>
+        <td>Surveillance des crashs et erreurs en production</td>
+      </tr>
+      <tr>
+        <td><strong>Internationalisation</strong></td>
+        <td>Flutter Intl (l10n)</td>
+        <td>Support multilingue (français, arabe RTL)</td>
+      </tr>
+      <tr>
+        <td><strong>Services externes</strong></td>
+        <td>YouTube API, Google Books API</td>
+        <td>Ressources de formation (vidéos, livres)</td>
+      </tr>
+      <tr>
+        <td><strong>Tests</strong></td>
+        <td>flutter_test</td>
+        <td>Tests unitaires et de widgets</td>
+      </tr>
+      <tr>
+        <td><strong>Conception UML</strong></td>
+        <td>dbdiagram.io, PlantUML</td>
+        <td>Modélisation de la base de données et des diagrammes UML</td>
+      </tr>
+      <tr>
+        <td><strong>IDE</strong></td>
+        <td>Visual Studio Code / Android Studio</td>
+        <td>Environnement de développement</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-num">9</div>
+</div>
+
+
+<!-- ============================= PAGE 10: ARCHITECTURE ============================= -->
+<div class="page">
+  <h1>5 – Architecture du projet</h1>
+
+  <p>
+    Le projet adopte une <strong>architecture en couches</strong> (Layered Architecture) combinée au patron
+    de conception <strong>Provider</strong> pour la gestion de l'état réactif. Cette structure sépare clairement
+    les responsabilités entre l'interface utilisateur, la logique métier et l'accès aux données.
+  </p>
+
+  <div class="arch-box">┌─────────────────────────────────────────────────────┐
+│              COUCHE PRÉSENTATION (UI)               │
+│   lib/screens/   ──   lib/widgets/                  │
+│  (60+ écrans répartis par rôle : admin,             │
+│   company, student, auth, chat, settings…)          │
+├─────────────────────────────────────────────────────┤
+│           GESTION D'ÉTAT (Providers)                │
+│              lib/providers/ (18 providers)           │
+│  AuthProvider, OpportunityProvider,                 │
+│  ApplicationProvider, ChatProvider,                 │
+│  AdminProvider, PremiumProvider…                    │
+├─────────────────────────────────────────────────────┤
+│              COUCHE SERVICES (Logique métier)        │
+│              lib/services/ (33 services)             │
+│  AuthService, OpportunityService,                   │
+│  ApplicationService, ChatService,                   │
+│  CVService, PaymentService, NotificationService…    │
+├─────────────────────────────────────────────────────┤
+│              COUCHE MODÈLES (Données)               │
+│              lib/models/ (21 modèles)               │
+│  UserModel, OpportunityModel, ApplicationModel,     │
+│  ScholarshipModel, CVModel, MessageModel…           │
+├─────────────────────────────────────────────────────┤
+│              INFRASTRUCTURE (Backend)               │
+│  Firebase Firestore  │  Firebase Auth               │
+│  Firebase Storage    │  Firebase FCM                │
+│  Cloudflare Workers  │  Chargily Pay API            │
+└─────────────────────────────────────────────────────┘</div>
+
+  <h3>Organisation des dossiers principaux</h3>
+  <ul>
+    <li><strong>lib/config/</strong> – Configuration globale de l'application (navigation, avatars, stockage).</li>
+    <li><strong>lib/models/</strong> – Classes de données Dart correspondant aux entités de la base de données.</li>
+    <li><strong>lib/providers/</strong> – État réactif de l'application ; chaque provider gère un domaine métier.</li>
+    <li><strong>lib/services/</strong> – Accès aux APIs externes (Firebase, Cloudflare, YouTube, Google Books) et logique métier.</li>
+    <li><strong>lib/screens/</strong> – Écrans organisés par rôle utilisateur (admin/, company/, student/, auth/, chat/, settings/).</li>
+    <li><strong>lib/widgets/</strong> – Composants UI réutilisables (cartes, badges, bulles de chat, modales).</li>
+    <li><strong>lib/theme/</strong> – Système de thème Material 3 avec support du mode sombre et de la localisation.</li>
+    <li><strong>lib/utils/</strong> – Fonctions utilitaires, constantes, validateurs et formateurs.</li>
+    <li><strong>lib/l10n/</strong> – Fichiers de traduction générés automatiquement.</li>
+    <li><strong>test/</strong> – 11 fichiers de tests couvrant les validateurs, modèles et flux d'interface.</li>
+    <li><strong>admin-web/</strong> – Interface d'administration web complémentaire (JavaScript vanilla + Firebase).</li>
+    <li><strong>cloudflare-worker/</strong> – Fonctions serverless pour les opérations backend sécurisées.</li>
+  </ul>
+
+  <div class="page-num">10</div>
+</div>
+
+
+<!-- ============================= PAGE 11: BMC ============================= -->
+<div class="page">
+  <h1>6 – Business Model Canvas</h1>
+
+  <div class="diagram-placeholder" style="padding: 30px;">
+    [ Insérer ici le Business Model Canvas – voir fichier image fourni ]<br><br>
+    <em>FutureGate — Modèle économique</em>
+  </div>
+
+  <div class="desc-box" style="margin-top:14px;">
+    <strong>Synthèse du Business Model Canvas :</strong>
+    <table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:10pt;">
+      <tr>
+        <td style="vertical-align:top; padding:6px 8px; border:1px solid #bcd; width:50%;">
+          <strong>Segments clients :</strong><br>
+          Étudiants et jeunes diplômés, entreprises et recruteurs, centres de formation et structures professionnelles.
+        </td>
+        <td style="vertical-align:top; padding:6px 8px; border:1px solid #bcd; width:50%;">
+          <strong>Proposition de valeur :</strong><br>
+          Centraliser stages, emplois et formations ; connecter rapidement étudiants et entreprises ; simplifier l'insertion professionnelle via une plateforme moderne.
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top; padding:6px 8px; border:1px solid #bcd;">
+          <strong>Canaux :</strong><br>
+          Application mobile FutureGate, dashboard web pour entreprises et admin, réseaux sociaux et partenariats.
+        </td>
+        <td style="vertical-align:top; padding:6px 8px; border:1px solid #bcd;">
+          <strong>Sources de revenus :</strong><br>
+          Abonnements entreprises, offres premium et visibilité sponsorisée, services de recrutement et accès avancé aux profils.
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top; padding:6px 8px; border:1px solid #bcd;">
+          <strong>Ressources clés :</strong><br>
+          Équipe développement et UI/UX, base de données cloud et messagerie, réseau d'entreprises partenaires.
+        </td>
+        <td style="vertical-align:top; padding:6px 8px; border:1px solid #bcd;">
+          <strong>Structure des coûts :</strong><br>
+          Développement, hébergement et maintenance ; marketing et partenariats ; support, sécurité et amélioration continue.
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="vertical-align:top; padding:6px 8px; border:1px solid #bcd;">
+          <strong>Partenaires clés :</strong>
+          Écoles et instituts supérieurs, entreprises et recruteurs, incubateurs, clubs scientifiques et organismes d'emploi.
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="page-num">11</div>
+</div>
+
+
+<!-- ============================= PAGE 12: CONCLUSION ============================= -->
+<div class="page">
+  <h1>Conclusion</h1>
+
+  <p>
+    Ce mini-projet a conduit à la réalisation de <strong>FutureGate</strong>, une application mobile Flutter destinée
+    à faciliter l'insertion professionnelle des étudiants algériens. La plateforme implémente un système complet
+    à trois rôles (étudiant, entreprise, administrateur), couvrant l'ensemble du cycle de mise en relation :
+    de la publication d'une offre à son acceptation, en passant par la candidature et la messagerie intégrée.
+  </p>
+
+  <p>
+    Sur le plan technique, le projet démontre la maîtrise d'une architecture Flutter en couches (modèles,
+    services, providers, UI), l'intégration de Firebase comme backend principal (authentification, Firestore,
+    stockage, notifications push), la gestion d'état réactive avec le pattern Provider, ainsi que
+    l'internationalisation multilingue avec support du mode RTL pour l'arabe.
+  </p>
+
+  <p>
+    Des fonctionnalités avancées ont également été intégrées : un générateur de CV avec export PDF,
+    un Hub d'Innovation pour les projets collaboratifs, un système d'abonnement premium avec paiement
+    via Chargily Pay, ainsi qu'un tableau de bord analytique pour les administrateurs avec graphiques interactifs.
+  </p>
+
+  <p>
+    Parmi les perspectives d'amélioration envisageables, on peut citer :
+  </p>
+  <ul>
+    <li>L'intégration d'un moteur de recommandation d'offres basé sur le profil étudiant.</li>
+    <li>L'ajout d'un système d'entretien vidéo intégré à la plateforme.</li>
+    <li>L'extension de la couverture de tests automatisés (tests d'intégration et end-to-end).</li>
+    <li>Le déploiement d'une version iOS complète avec les configurations nécessaires.</li>
+    <li>L'enrichissement du tableau de bord analytique avec des indicateurs de performance avancés (KPIs).</li>
+  </ul>
+
+  <p style="margin-top:14px;">
+    En définitive, FutureGate constitue une base solide et évolutive pour une plateforme de mise en relation
+    professionnelle adaptée au contexte algérien, avec une architecture technique bien structurée et des
+    fonctionnalités répondant aux besoins réels des trois acteurs du système.
+  </p>
+
+  <div style="margin-top: 40px; padding: 14px; background: #f0f4ff; border: 1px solid #1a3a6b; border-radius: 6px;">
+    <p style="text-align:center; font-style:italic; color:#1a3a6b;">
+      « FutureGate — Connect students with opportunities, scholarships, and internships. »
+    </p>
+    <p style="text-align:center; font-size:10pt; color:#555; margin-top:4px;">
+      Université AbouBekr BELKAID – Tlemcen | Département d'Informatique | 2025–2026
+    </p>
+  </div>
+
+  <div class="page-num">12</div>
+</div>
+
+</body>
+</html>
